@@ -196,6 +196,7 @@ public:
 class TESAIForm : public BaseFormComponent
 {
 public:
+	// 8 - might be ExtraDataList
 	struct Data
 	{
 		UInt32	unk0;	// 0
@@ -292,7 +293,7 @@ public:
 // 14
 class TESModelRDT : public TESModel
 {
-
+public:
 };
 
 // 78
@@ -396,27 +397,27 @@ public:
 };
 
 // 14
-class BGSBehavioralGraphModel : public TESModel
+class BGSBehaviorGraphModel : public TESModel
 {
-
+public:
 };
 
 // 14
 class BGSTextureModel : public TESModel
 {
-	//
+public:
 };
 
 // 14
 class TESModelPSA : public TESModel
 {
-	//
+public:
 };
 
 // 14
 class TESModelTri : public TESModel
 {
-	//
+public:
 };
 
 // 10?
@@ -537,6 +538,7 @@ public:
 
 STATIC_ASSERT(sizeof(BSMaterialObject) == 0x40);
 
+// 04
 class TESChildCell
 {
 public:

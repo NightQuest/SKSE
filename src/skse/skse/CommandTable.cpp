@@ -1,77 +1,107 @@
 #include "CommandTable.h"
+#include "SafeWrite.h"
 
-CommandInfo	* g_blockTypeStart =		(CommandInfo *)0x0142A0A0;
-CommandInfo	* g_blockTypeEnd =			(CommandInfo *)0x0142A618;
-CommandInfo	* g_consoleCommandsStart =	(CommandInfo *)0x0142A640;
-CommandInfo	* g_consoleCommandsEnd =	(CommandInfo *)0x0142D610;
-CommandInfo	* g_scriptCommandsStart =	(CommandInfo *)0x0142D638;
-CommandInfo	* g_scriptCommandsEnd =		(CommandInfo *)0x014347D0;
+const Cmd_Parse		g_defaultParseCommand =		(Cmd_Parse)0x00587C40;
+const _ExtractArgs	ExtractArgs =				(_ExtractArgs)0x00582CB0;
 
-bool IsEmptyStr(const char * data)
+static const CommandInfo kPaddingCommand =
 {
-	return !data || !data[0];
+	"", "",
+	0,
+	"command used for padding",
+	0,
+	0,
+	NULL,
+
+	Cmd_Default_Execute,
+	NULL,
+	NULL,
+	NULL
+};
+
+bool Cmd_Default_Execute(COMMAND_ARGS)
+{
+	return true;
 }
 
-void DumpCommands(CommandInfo * start, CommandInfo * end)
+bool Cmd_Default_Eval(COMMAND_ARGS_EVAL)
 {
-	for(CommandInfo * iter = start; iter <= end; ++iter)
+	return true;
+}
+
+bool Cmd_Default_Parse(UInt32 numParams, ParamInfo * paramInfo, ScriptLineBuffer * lineBuf, ScriptBuffer * scriptBuf)
+{
+	return g_defaultParseCommand(numParams, paramInfo, lineBuf, scriptBuf);
+}
+
+CommandTable::CommandTable()
+:m_baseID(0), m_curID(0), m_patched(false)
+{
+	//
+}
+
+CommandTable::~CommandTable()
+{
+
+}
+
+void CommandTable::Init(UInt32 baseID, UInt32 sizeHint)
+{
+	ASSERT(m_commands.empty());
+
+	m_baseID = baseID;
+	m_curID = baseID;
+
+	if(sizeHint)
+		m_commands.reserve(sizeHint);
+}
+
+void CommandTable::Read(const CommandInfo * start, const CommandInfo * end)
+{
+	for(const CommandInfo * iter = start ; iter != end; ++iter)
 	{
-		std::string	line;
+		ASSERT(iter->opcode == m_curID);
 
-		line = iter->longName;
-
-		if(!IsEmptyStr(iter->shortName))
-		{
-			line += ", ";
-			line += iter->shortName;
-		}
-
-		if(iter->numParams)
-		{
-			ParamInfo	* params = iter->params;
-
-			line += ": ";
-
-			for(UInt32 i = 0; i < iter->numParams; i++)
-			{
-				ParamInfo	* param = &params[i];
-
-				if(i) line += ", ";
-
-				if(param->isOptional) line += "(";
-
-				line += param->typeStr;
-
-				if(param->isOptional) line += ")";
-			}
-		}
-
-		_MESSAGE("%04X %s", iter->opcode, line.c_str());
-
-		if(!IsEmptyStr(iter->helpText))
-		{
-			gLog.Indent();
-			_MESSAGE("%s", iter->helpText);
-			gLog.Outdent();
-		}
-	}
-
-	_MESSAGE("stubbed:");
-	for(CommandInfo * iter = start; iter <= end; ++iter)
-	{
-		if(iter->execute == (Cmd_Execute)0x005AC770)
-		{
-			_MESSAGE("%s", iter->longName);
-		}
+		m_commands.push_back(*iter);
+		m_curID++;
 	}
 }
 
-void Commands_Dump(void)
+void CommandTable::Add(const CommandInfo * cmdSrc)
 {
-	_MESSAGE("block types:");
-	DumpCommands(g_blockTypeStart, g_blockTypeEnd);
-	_MESSAGE("console commands");
-	DumpCommands(g_consoleCommandsStart, g_consoleCommandsEnd);
-	_MESSAGE("script commands");
-	DumpCommands(g_scriptCommandsStart, g_scriptCommandsEnd);
+	if(!cmdSrc) cmdSrc = &kPaddingCommand;
+
+	CommandInfo	cmd = *cmdSrc;
+
+	cmd.opcode = m_curID;
+	m_curID++;
+
+	if(!cmd.eval) cmd.eval = Cmd_Default_Eval;
+	if(!cmd.parse) cmd.parse = Cmd_Default_Parse;
+
+	m_commands.push_back(cmd);
+}
+
+void CommandTable::PatchEXE(const PatchSet * patches)
+{
+	ApplyPatch(patches->start, (UInt32)&m_commands.front());
+	ApplyPatch(patches->end, (UInt32)&m_commands.back());
+	ApplyPatch(patches->maxIdx, m_commands.size() + m_baseID);
+}
+
+void CommandTable::ApplyPatch(const PatchLocation * patch, UInt32 newData)
+{
+	for(; patch->ptr; ++patch)
+	{
+		switch(patch->type)
+		{
+		case 0:
+			SafeWrite32(patch->ptr, newData + patch->offset);
+			break;
+
+		case 1:
+			SafeWrite16(patch->ptr, newData + patch->offset);
+			break;
+		}
+	}
 }

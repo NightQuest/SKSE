@@ -1,4 +1,4 @@
-Skyrim Script Extender v1 beta 2.1
+Skyrim Script Extender v1.3.0
 by Ian Patterson, Stephen Abel and Paul Connelly
 (ianpatt, behippo and scruggsywuggsy the ferret)
 
@@ -8,7 +8,7 @@ NOTE: CURRENTLY THIS VERSION DOES NOTHING OTHER THAN PROVIDE A BASE FOR LOADING 
 
 Compatibility:
 
-SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.2.12.0). When a new version is released, we will update as soon as possible; please be patient. No editor has been released yet.
+SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.3.7.0). When a new version is released, we will update as soon as possible; please be patient. No editor has been released yet.
 
 [ Installation ]
 
@@ -22,9 +22,9 @@ Scripts written with these new commands must be created via the editor after it 
 
 If your mod requires SKSE, please provide a link to the main SKSE website <http://skse.silverlock.org/> instead of packaging it with your mod install. Future versions of SKSE will be backwards compatibile, so including a potentially old version can cause confusion and/or break other mods which require newer versions.
 
-When your mod loads, use the command GetSKSEVersion to make sure a compatible version of SKSE is installed. In general, make sure you are testing for any version later than the minimum version you support, as each update to SKSE will have a higher version number. Something like:
+When your mod loads, use the command GetSKSERelease to make sure a compatible version of SKSE is installed. This command will return an integer that will be incremented for every release of SKSE, making version checking simple. GetSKSEVersion/Minor/Beta are still available, but those are suggested to be used only to report version numbers to the user.
 
-if GetSKSEVersion < 5
+if GetSKSERelease < 5
    MessageBox "This mod requires a newer version of SKSE."
 endif
 

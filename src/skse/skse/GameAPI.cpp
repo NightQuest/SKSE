@@ -1,6 +1,71 @@
 #include "GameAPI.h"
+#include "Utilities.h"
 
-const _FormHeap_Allocate FormHeap_Allocate = (_FormHeap_Allocate)0x00402460;
-const _FormHeap_Free FormHeap_Free = (_FormHeap_Free)0x00402420;
+const _FormHeap_Allocate FormHeap_Allocate = (_FormHeap_Allocate)0x00402440;
+const _FormHeap_Free FormHeap_Free = (_FormHeap_Free)0x00402400;
 
-PlayerCharacter	** g_thePlayer = (PlayerCharacter **)0x01588324;
+PlayerCharacter	** g_thePlayer = (PlayerCharacter **)0x0156F334;
+const UInt32 * g_TlsIndexPtr = (UInt32 *)0x016031B8;
+
+struct TLSData
+{
+	// thread local storage
+
+	UInt32	pad000[(0x2F8 - 0x000) >> 2];	// 000
+	UInt8	consoleMode;					// 2F8
+	UInt8	pad2F9[3];						// 2F9
+};
+
+static TLSData * GetTLSData()
+{
+	UInt32 TlsIndex = *g_TlsIndexPtr;
+	TLSData * data = NULL;
+
+	__asm {
+		mov		ecx,	[TlsIndex]
+		mov		edx,	fs:[2Ch]	// linear address of thread local storage array
+		mov		eax,	[edx+ecx*4]
+		mov		[data], eax
+	}
+
+	return data;
+}
+
+class ConsoleManager
+{
+public:
+	MEMBER_FN_PREFIX(ConsoleManager);
+	DEFINE_MEMBER_FN(Print, void, 0x009A0B00, const char * fmt, va_list args);
+
+	ConsoleManager();
+	~ConsoleManager();
+
+	static ConsoleManager * GetSingleton(void)
+	{
+		typedef ConsoleManager * (* _GetSingleton)(void);
+
+		return ((_GetSingleton)0x0057EC20)();
+	}
+
+	void	* scriptContext;	// 00
+};
+
+void Console_Print(const char * fmt, ...)
+{
+	ConsoleManager	* mgr = ConsoleManager::GetSingleton();
+	if(mgr)
+	{
+		va_list	args;
+
+		va_start(args, fmt);
+
+		CALL_MEMBER_FN(mgr, Print)(fmt, args);
+
+		va_end(args);
+	}
+}
+
+bool IsConsoleMode(void)
+{
+	return GetTLSData()->consoleMode != 0;
+}

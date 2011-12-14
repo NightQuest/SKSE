@@ -35,3 +35,93 @@ const std::string & GetRuntimeDirectory(void)
 
 	return s_runtimeDirectory;
 }
+
+
+#pragma warning (push)
+#pragma warning (disable : 4200)
+struct RTTIType
+{
+	void	* typeInfo;
+	UInt32	pad;
+	char	name[0];
+};
+
+struct RTTILocator
+{
+	UInt32		sig, offset, cdOffset;
+	RTTIType	* type;
+};
+#pragma warning (pop)
+
+// use the RTTI information to return an object's class name
+const char * GetObjectClassName(void * objBase)
+{
+	const char	* result = "<no rtti>";
+
+	__try
+	{
+		void		** obj = (void **)objBase;
+		RTTILocator	** vtbl = (RTTILocator **)obj[0];
+		RTTILocator	* rtti = vtbl[-1];
+		RTTIType	* type = rtti->type;
+
+		// starts with ,?
+		if((type->name[0] == '.') && (type->name[1] == '?'))
+		{
+			// is at most 100 chars long
+			for(UInt32 i = 0; i < 100; i++)
+			{
+				if(type->name[i] == 0)
+				{
+					// remove the .?AV
+					result = type->name + 4;
+					break;
+				}
+			}
+		}
+	}
+	__except(EXCEPTION_EXECUTE_HANDLER)
+	{
+		// return the default
+	}
+
+	return result;
+}
+
+void DumpClass(void * theClassPtr, UInt32 nIntsToDump)
+{
+	_MESSAGE("DumpClass:");
+	UInt32* basePtr = (UInt32*)theClassPtr;
+
+	gLog.Indent();
+
+	if (!theClassPtr) return;
+	for (UInt32 ix = 0; ix < nIntsToDump; ix++ ) {
+		UInt32* curPtr = basePtr+ix;
+		const char* curPtrName = NULL;
+		UInt32 otherPtr = 0;
+		float otherFloat = 0.0;
+		const char* otherPtrName = NULL;
+		if (curPtr) {
+			curPtrName = GetObjectClassName((void*)curPtr);
+
+			__try
+			{
+				otherPtr = *curPtr;
+				otherFloat = *(float*)(curPtr);
+			}
+			__except(EXCEPTION_EXECUTE_HANDLER)
+			{
+				//
+			}
+
+			if (otherPtr) {
+				otherPtrName = GetObjectClassName((void*)otherPtr);
+			}
+		}
+
+		_MESSAGE("%3d +%03X ptr: 0x%08X: %32s *ptr: 0x%08x | %f: %32s", ix, ix*4, curPtr, curPtrName, otherPtr, otherFloat, otherPtrName);
+	}
+
+	gLog.Outdent();
+}

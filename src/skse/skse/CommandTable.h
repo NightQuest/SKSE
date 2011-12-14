@@ -1,13 +1,15 @@
 #pragma once
 
+#include <vector>
+
 struct ParamInfo;
 class TESObjectREFR;
 class Script;
-class ScriptEventList;
+class ScriptLocals;
 class ScriptLineBuffer;
 class ScriptBuffer;
 
-#define COMMAND_ARGS		ParamInfo * paramInfo, void * scriptData, TESObjectREFR * thisObj, TESObjectREFR * containingObj, Script * scriptObj, ScriptEventList * eventList, double * result, UInt32 * opcodeOffsetPtr
+#define COMMAND_ARGS		ParamInfo * paramInfo, void * scriptData, TESObjectREFR * thisObj, TESObjectREFR * containingObj, Script * scriptObj, ScriptLocals * locals, double * result, UInt32 * opcodeOffsetPtr
 #define COMMAND_ARGS_EVAL	TESObjectREFR * thisObj, void * arg1, void * arg2, double * result
 
 typedef bool (* Cmd_Execute)(COMMAND_ARGS);
@@ -19,6 +21,8 @@ bool Cmd_Default_Parse(UInt32 numParams, ParamInfo * paramInfo, ScriptLineBuffer
 typedef bool (* Cmd_Eval)(COMMAND_ARGS_EVAL);
 bool Cmd_Default_Eval(COMMAND_ARGS_EVAL);
 
+typedef bool (* _ExtractArgs)(ParamInfo * paramInfo, void * scriptData, UInt32 * arg2, TESObjectREFR * arg3, TESObjectREFR * arg4, Script * script, ScriptLocals * eventList, ...);
+extern const _ExtractArgs ExtractArgs;
 
 #ifdef RUNTIME
 #define HANDLER(x)	x
@@ -28,6 +32,50 @@ bool Cmd_Default_Eval(COMMAND_ARGS_EVAL);
 #define HANDLER_EVAL(x)	Cmd_Default_Eval
 #endif
 
+#define DEFINE_CMD_FULL(name, altName, description, refRequired, numParams, paramInfo, parser) \
+	extern bool Cmd_ ## name ## _Execute(COMMAND_ARGS); \
+	static CommandInfo (kCommandInfo_ ## name) = { \
+	#name, \
+	#altName, \
+	0, \
+	#description, \
+	refRequired, \
+	numParams, \
+	paramInfo, \
+	HANDLER(Cmd_ ## name ## _Execute), \
+	parser, \
+	NULL, \
+	0 \
+}
+
+#define DEFINE_CMD_ALT(name, altName, description, refRequired, numParams, paramInfo) \
+	DEFINE_CMD_FULL(name, altName, description, refRequired, numParams, paramInfo, Cmd_Default_Parse)	
+
+#define DEFINE_COMMAND(name, description, refRequired, numParams, paramInfo) \
+	DEFINE_CMD_FULL(name, , description, refRequired, numParams, paramInfo, Cmd_Default_Parse)	
+
+#define DEFINE_COMMAND_PLUGIN(name, description, refRequired, numParams, paramInfo) \
+	DEFINE_CMD_FULL(name, , description, refRequired, numParams, paramInfo, NULL)
+
+// for commands which can be used as conditionals
+#define DEFINE_CMD_COND(name, description, refRequired, paramInfo) \
+	extern bool Cmd_ ## name ## _Execute(COMMAND_ARGS); \
+	extern bool Cmd_ ## name ## _Eval(COMMAND_ARGS_EVAL); \
+	static CommandInfo (kCommandInfo_ ## name) = { \
+	#name,	\
+	"",		\
+	0,		\
+	#description,	\
+	refRequired,	\
+	(sizeof(paramInfo) / sizeof(ParamInfo)),	\
+	paramInfo,	\
+	HANDLER(Cmd_ ## name ## _Execute),	\
+	Cmd_Default_Parse,	\
+	HANDLER_EVAL(Cmd_ ## name ## _Eval),	\
+	1	\
+}
+
+// internal name SCRIPT_PARAMETER
 struct ParamInfo
 {
 	const char	* typeStr;
@@ -53,4 +101,41 @@ struct CommandInfo
 	UInt32		flags;			// 24
 };
 
-void Commands_Dump(void);
+class CommandTable
+{
+public:
+	CommandTable();
+	~CommandTable();
+
+	struct PatchLocation
+	{
+		UInt32	ptr;
+		UInt32	offset;
+		UInt32	type;
+	};
+
+	struct PatchSet
+	{
+		const PatchLocation * start;
+		const PatchLocation * end;
+		const PatchLocation * maxIdx;
+	};
+
+	void	Init(UInt32 baseID, UInt32 sizeHint = 0);
+	void	Read(const CommandInfo * start, const CommandInfo * end);
+
+	void	Add(const CommandInfo * cmd = NULL);	// add at cur ID
+	UInt32	GetID(void)	{ return m_curID; }
+
+	void	PatchEXE(const PatchSet * patches);
+
+private:
+	typedef std::vector <CommandInfo>	CommandList;
+	CommandList	m_commands;
+
+	UInt32	m_baseID;	// should be the same as m_commands[0].opcode when the table is filled
+	UInt32	m_curID;
+	bool	m_patched;
+
+	void	ApplyPatch(const PatchLocation * patch, UInt32 newData);
+};

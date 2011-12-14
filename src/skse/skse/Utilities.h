@@ -29,3 +29,21 @@
 	((*(obj)).*(*((obj)->_##fn##_GetPtr())))
 
 const std::string & GetRuntimeDirectory(void);
+
+// this is the solution to getting a pointer-to-member-function pointer
+template <typename T>
+UInt32 GetFnAddr(T src)
+{
+	union
+	{
+		UInt32	u32;
+		T		t;
+	} data;
+
+	data.t = src;
+
+	return data.u32;
+}
+
+const char * GetObjectClassName(void * objBase);
+void DumpClass(void * theClassPtr, UInt32 nIntsToDump = 512);

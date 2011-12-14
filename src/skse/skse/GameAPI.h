@@ -10,3 +10,6 @@ typedef void (* _FormHeap_Free)(void * ptr);
 extern const _FormHeap_Free FormHeap_Free;
 
 extern PlayerCharacter ** g_thePlayer;
+
+void Console_Print(const char * fmt, ...);
+bool IsConsoleMode(void);

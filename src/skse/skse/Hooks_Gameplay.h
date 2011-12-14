@@ -1,3 +1,3 @@
 #pragma once
 
-void Hooks_Gameplay_Install(void);
+void Hooks_Gameplay_Commit(void);

@@ -7,10 +7,11 @@
 
 IDebugLog	gLog("skse.log");
 
-STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_2_12_0);
+STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_3_7_0);
 
 #include "Hooks_Scaleform.h"
 #include "Hooks_Gameplay.h"
+#include "Hooks_ObScript.h"
 
 #else
 
@@ -26,8 +27,8 @@ void ApplyPatch(UInt32 base, UInt8 * buf, UInt32 len)
 
 void FixCoopLevel(void)
 {
-	SafeWrite8(0x00BFE797 + 1, 0x06);
-	SafeWrite8(0x00BFFC2A + 1, 0x16);
+	SafeWrite8(0x00BFB9A7 + 1, 0x06);
+	SafeWrite8(0x00BFCE0A + 1, 0x16);
 }
 
 void WaitForDebugger(void)
@@ -69,15 +70,18 @@ void SKSE_Initialize(void)
 		SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
 
 		FixCoopLevel();
-		WaitForDebugger();
+//		WaitForDebugger();
 #endif
 
 //		Commands_Dump();
 
-//		Hook_Scaleform_Install();
-		Hooks_Gameplay_Install();
+		Hooks_ObScript_Init();
 
 		g_pluginManager.Init();
+
+		Hooks_Scaleform_Commit();
+		Hooks_Gameplay_Commit();
+		Hooks_ObScript_Commit();
 
 		FlushInstructionCache(GetCurrentProcess(), NULL, 0);
 

@@ -3,156 +3,163 @@
 #include "skse/GameTypes.h"
 #include "skse/GameFormComponents.h"
 #include "skse/GamePathing.h"
+#include "skse/NiInterpolators.h"
 
 class TESForm;
+class TESObjectSTAT;
+class TESFile;
 
 typedef TESForm * (* _LookupFormByID)(UInt32 id);
 extern const _LookupFormByID LookupFormByID;
 
-// everything deriving from TESForm goes here
 // TESObject and derivatives are in GameObjects.h
+// TESObjectREFR and derivatives are in GameReferences.h
+// everything else deriving from TESForm goes here
 
 /**** form types ***************************************************************
  *	
- *	id	name
+ *	TESHair and BGSCloudClusterForm were removed in 1.2
  *	
- *	00	
- *	01	
- *	02	
- *	03	
- *	04	BGSKeyword
- *	05	BGSLocationRefType
- *	06	BGSAction
- *	07	
- *	08	BGSMenuIcon
- *	09	
- *	0A	TESClass
- *	0B	TESFaction
- *	0C	BGSHeadPart
- *	0D	
- *	0E	TESEyes
- *	0F	
- *	10	
- *	11	
- *	12	
- *	13	EffectSetting
- *	14	Script
- *	15	
- *	16	
- *	17	
- *	18	
- *	19	
- *	1A	
- *	1B	
- *	1C	
- *	1D	
- *	1E	
- *	1F	
- *	20	
- *	21	
- *	22	
- *	23	
- *	24	
- *	25	
- *	26	
- *	27	
- *	28	
- *	29	
- *	2A	
- *	2B	
- *	2C	
- *	2D	
- *	2E	
- *	2F	
- *	30	
- *	31	BGSDefaultObjectManager
- *	32	
- *	33	BGSConstructibleObject
- *	34	
- *	35	
- *	36	
- *	37	
- *	38	
- *	39	TESClimate
- *	3A	
- *	3B	BGSReferenceEffect
- *	3C	BGSCollisionLayer
- *	3D	NavMeshInfoMap
- *	3E	
- *	3F	
- *	40	
- *	41	
- *	42	
- *	43	
- *	44	
- *	45	
- *	46	
- *	47	
- *	48	
- *	49	
- *	4A	
- *	4B	NavMesh
- *	4C	
- *	4D	
- *	4E	
- *	4F	TESQuest
- *	50	
- *	51	
- *	52	TESCombatStyle
- *	53	
- *	54	
- *	55	
- *	56	
- *	57	TESEffectShader
- *	58	
- *	59
- *	5A	BGSDebris
- *	5B	
- *	5C	
- *	5D	BGSListForm
- *	5E	BGSPerk
- *	5F	BGSBodyPartData
- *	60	
- *	61	ActorValueInfo
- *	62	BGSCameraShot
- *	63	BGSCameraPath
- *	64	BGSVoiceType
- *	65	BGSMaterialType
- *	66	BGSImpactData
- *	67	BGSImpactDataSet
- *	68	
- *	69	BGSEncounterZone
- *	6A	BGSLocation
- *	6B	BGSMessage
- *	6C	BGSRagdoll
- *	6D	
- *	6E	BGSLightingTemplate
- *	6F	BGSMusicType
- *	70	BGSFootstep
- *	71	BGSFootstepSet
- *	72	BGSStoryManagerBranchNode
- *	73	BGSStoryManagerQuestNode
- *	74	BGSStoryManagerEventNode
- *	75	BGSDialogueBranch
- *	76	BGSMusicTrackFormWrapper
- *	77	
- *	78	
- *	79	
- *	7A	BGSEquipSlot
- *	7B	BGSRelationship
- *	7C	BGSScene
- *	7D	BGSAssociationType
- *	7E	BGSOutfit
- *	7F	
- *	80	BGSMaterialObject
- *	81	BGSMovementType
- *	82	BGSSoundDescriptorForm
- *	83	
- *	84	BGSSoundCategory
- *	85	BGSSoundOutput
- *	86	
- *	87	BGSColorForm
- *	88	BGSReverbParameters
+ *	1.1	1.2
+ *	id	id	code	name
+ *	
+ *	00	00	NONE	
+ *	01	01	TES4	
+ *	02	02	GRUP	
+ *	03	03	GMST	
+ *	04	04	KYWD	BGSKeyword
+ *	05	05	LCRT	BGSLocationRefType
+ *	06	06	AACT	BGSAction
+ *	07	07	TXST	
+ *	08	08	MICN	BGSMenuIcon
+ *	09	09	GLOB	TESGlobal
+ *	0A	0A	CLAS	TESClass
+ *	0B	0B	FACT	TESFaction
+ *	0C	0C	HDPT	BGSHeadPart
+ *	0D	xx	HAIR	TESHair
+ *	0E	0D	EYES	TESEyes
+ *	0F	0E	RACE	TESRace
+ *	10	0F	SOUN	
+ *	11	10	ASPC	
+ *	12	11	SKIL	
+ *	13	12	MGEF	EffectSetting
+ *	14	13	SCPT	Script
+ *	15	14	LTEX	TESLandTexture
+ *	16	15	ENCH	
+ *	17	16	SPEL	
+ *	18	17	SCRL	
+ *	19	18	ACTI	
+ *	1A	19	TACT	
+ *	1B	1A	ARMO	
+ *	1C	1B	BOOK	
+ *	1D	1C	CONT	
+ *	1E	1D	DOOR	
+ *	1F	1E	INGR	
+ *	20	1F	LIGH	
+ *	21	20	MISC	
+ *	22	21	APPA	
+ *	23	22	STAT	
+ *	24	23	SCOL	
+ *	25	24	MSTT	
+ *	26	25	GRAS	
+ *	27	26	TREE	
+ *	28	xx	CLDC	BGSCloudClusterForm
+ *	29	27	FLOR	
+ *	2A	28	FURN	
+ *	2B	29	WEAP	
+ *	2C	2A	AMMO	
+ *	2D	2B	NPC_	
+ *	2E	2C	LVLN	
+ *	2F	2D	KEYM	
+ *	30	2E	ALCH	
+ *	31	2F	IDLM	BGSDefaultObjectManager? strange
+ *	32	30	NOTE	
+ *	33	31	COBJ	BGSConstructibleObject
+ *	34	32	PROJ	
+ *	35	33	HAZD	
+ *	36	34	SLGM	
+ *	37	35	LVLI	
+ *	38	36	WTHR	TESWeather
+ *	39	37	CLMT	TESClimate
+ *	3A	38	SPGD	
+ *	3B	39	RFCT	BGSReferenceEffect
+ *	3C	3A	REGN	TESRegion
+ *	3D	3B	NAVI	NavMeshInfoMap
+ *	3E	3C	CELL	TESObjectCELL
+ *	3F	3D	REFR	TESObjectREFR / Actor
+ *	40	3E	ACHR	Character / PlayerCharacter
+ *	41	3F	PMIS	
+ *	42	40	PARW	ArrowProjectile
+ *	43	41	PGRE	GrenadeProjectile
+ *	44	42	PBEA	BeamProjectile
+ *	45	43	PFLA	FlameProjectile
+ *	46	44	PCON	ConeProjectile
+ *	47	45	PBAR	BarrierProjectile
+ *	48	46	PHZD	Hazard
+ *	49	47	WRLD	TESWorldSpace
+ *	4A	48	LAND	TESObjectLAND
+ *	4B	49	NAVM	NavMesh
+ *	4C	4A	TLOD	
+ *	4D	4B	DIAL	TESTopic
+ *	4E	4C	INFO	TESTopicInfo
+ *	4F	4D	QUST	TESQuest
+ *	50	4E	IDLE	TESIdleForm
+ *	51	4F	PACK	TESPackage
+ *	52	50	CSTY	TESCombatStyle
+ *	53	51	LSCR	TESLoadScreen
+ *	54	52	LVSP	
+ *	55	53	ANIO	TESObjectANIO
+ *	56	54	WATR	TESWaterForm
+ *	57	55	EFSH	TESEffectShader
+ *	58	56	TOFT	
+ *	59	57	EXPL	
+ *	5A	58	DEBR	BGSDebris
+ *	5B	59	IMGS	TESImageSpace
+ *	5C	5A	IMAD	TESImageSpaceModifier
+ *	5D	5B	FLST	BGSListForm
+ *	5E	5C	PERK	BGSPerk
+ *	5F	5D	BPTD	BGSBodyPartData
+ *	60	5E	ADDN
+ *	61	5F	AVIF	ActorValueInfo
+ *	62	60	CAMS	BGSCameraShot
+ *	63	61	CPTH	BGSCameraPath
+ *	64	62	VTYP	BGSVoiceType
+ *	65	63	MATT	BGSMaterialType
+ *	66	64	IPCT	BGSImpactData
+ *	67	65	IPDS	BGSImpactDataSet
+ *	68	66	ARMA	
+ *	69	67	ECZN	BGSEncounterZone
+ *	6A	68	LCTN	BGSLocation
+ *	6B	69	MESH	BGSMessage
+ *	6C	6A	RGDL	BGSRagdoll
+ *	6D	6B	DOBJ	
+ *	6E	6C	LGTM	BGSLightingTemplate
+ *	6F	6D	MUSC	BGSMusicType
+ *	70	6E	FSTP	BGSFootstep
+ *	71	6F	FSTS	BGSFootstepSet
+ *	72	70	SMBN	BGSStoryManagerBranchNode
+ *	73	71	SMQN	BGSStoryManagerQuestNode
+ *	74	72	SMEN	BGSStoryManagerEventNode
+ *	75	73	DLBR	BGSDialogueBranch
+ *	76	74	MUST	BGSMusicTrackFormWrapper
+ *	77	75	DLVW	
+ *	78	76	WOOP	TESWordOfPower
+ *	79	77	SHOU	TESShout
+ *	7A	78	EQUP	BGSEquipSlot
+ *	7B	79	RELA	BGSRelationship
+ *	7C	7A	SCEN	BGSScene
+ *	7D	7B	ASTP	BGSAssociationType
+ *	7E	7C	OTFT	BGSOutfit
+ *	7F	7D	ARTO	
+ *	80	7E	MATO	BGSMaterialObject
+ *	81	7F	MOVT	BGSMovementType
+ *	82	80	SNDR	BGSSoundDescriptorForm
+ *	83	81	DUAL
+ *	84	82	SNCT	BGSSoundCategory
+ *	85	83	SOPM	BGSSoundOutput
+ *	86	84	COLL	BGSCollisionLayer
+ *	87	85	CLFM	BGSColorForm
+ *	88	86	REVB	BGSReverbParameters
  *	
  */
 
@@ -175,8 +182,7 @@ public:
 	virtual void			Unk_10(UInt32 arg);
 	virtual void			Unk_11(UInt32 arg);
 	virtual void			Unk_12(UInt32 arg);
-	virtual void			PostLoadInit(void);	// called once all dependent forms are loaded
-												// might be called InitItem
+	virtual void			InitItem(void);		// called once all dependent forms are loaded
 	virtual void			Unk_14(void);
 	virtual UInt32			GetFormType(void);
 	virtual void			GetFormDesc(char * buf, UInt32 bufLen);
@@ -1440,6 +1446,12 @@ public:
 		UInt32	pad[0x2C / 4];
 	};
 
+	// 20
+	struct Data60
+	{
+		UInt32	pad[0x20 / 4];
+	};
+
 	// 8
 	struct Data80
 	{
@@ -1450,10 +1462,922 @@ public:
 	UInt32	unk2C;	// 2C
 	UInt32	unk30;	// 30
 	Data34	unk34;	// 34
-	// 60
-
+	Data60	unk60;	// 60
 	Data80	unk80;	// 80
 	UInt32	unk88;	// 88
 	UInt32	unk8C;	// 8C
 	float	unk90;	// 90
+	UInt32	unk94;	// 94
 };
+
+// 24
+class TESGlobal : public TESForm
+{
+public:
+	BSString	unk14;	// 14
+	UInt8		unk1C;	// 1C - type?
+	UInt8		pad[3];	// 1D
+	UInt32		unk20;	// 20
+};
+
+// 50
+class TESHair : public TESForm
+{
+public:
+	// parents
+	TESFullName	fullName;	// 14
+	TESModel	model;		// 1C
+	TESTexture	texture;	// 30
+
+	// members
+	UInt8		unk38;		// 38
+	UInt8		pad39[3];	// 39
+	TESModel	unk40;		// 3C
+};
+
+// 3C
+class TESIdleForm : public TESForm
+{
+public:
+	void				* unk14;	// 14 - linked list
+	UInt8				unk18;		// 18
+	UInt8				unk19;		// 19
+	UInt8				unk1A;		// 1A
+	UInt8				pad1B;		// 1B
+	UInt16				unk1C;		// 1C
+	UInt8				pad1E[2];	// 1E
+	UInt32				unk20;		// 20
+	UInt32				unk24;		// 24
+	UInt32				unk28;		// 28
+	StringCache::Ref	unk2C;		// 2C
+	StringCache::Ref	unk30;		// 30
+	BSString			unk34;		// 34
+};
+
+// 64
+class TESImageSpace : public TESForm
+{
+public:
+	// 50
+	struct Data14
+	{
+		float	unk00;	// 00 - init'd to 3
+		float	unk04;	// 04 - init'd to 7
+		float	unk08;	// 08 - init'd to .6
+		float	unk0C;	// 0C - init'd to .5
+		float	unk10;	// 10 - init'd to .15
+		float	unk14;	// 14 - init'd to .15
+		float	unk18;	// 18 - init'd to 1.8
+		float	unk1C;	// 1C - init'd to 1.5
+		float	unk20;	// 20 - init'd to 3.5, 3
+		float	unk24;	// 24 - init'd to 1.8, .8
+		float	unk28;	// 28 - init'd to 1.5
+		float	unk2C;	// 2C - init'd to 1.1
+		float	unk30;	// 30 - init'd to 0
+		float	unk34;	// 34 - init'd to 0
+		float	unk38;	// 38 - init'd to 0
+		float	unk3C;	// 3C - init'd to 0
+		float	unk40;	// 40 - init'd to 0
+		UInt32	unk44;	// 44 - init'd to 0
+		UInt32	unk48;	// 48 - init'd to 0
+		float	unk4C;	// 4C - init'd to 2
+	};
+
+	Data14	unk14;	// 14
+};
+
+// 72C
+// ### todo
+class TESImageSpaceModifier : public TESForm
+{
+public:
+	// 0F4
+	struct Data014
+	{
+		// 8
+		struct Data0CC
+		{
+			float	unk0;
+			float	unk4;
+		};
+
+		UInt8	unk000;		// 000
+		UInt8	pad001[3];	// 001
+		float	unk004;		// 004
+		// 008
+
+		UInt8	todo008[0xC8 - 0x08];	// 008
+
+		UInt8	unk0C8;		// 0C8
+		UInt8	unk0C9[3];	// 0C9
+		Data0CC	unk0CC;		// 0CC
+		// 0D4
+
+		UInt8	todo0D4[0xE0 - 0xD4];	// 0D4
+
+		UInt8	unk0E0;		// 0E0
+		UInt8	unk0E1;		// 0E1
+		UInt8	pad0E2[2];	// 0E2
+		// 0E4
+
+		UInt8	todo0E4[0xF4 - 0xE4];	// 0E4
+	};
+
+	Data014				unk014;				// 014
+	NiFloatInterpolator	unk108[0x15 * 2];	// 108
+	NiFloatInterpolator	unk4F8;				// 4F8
+	NiFloatInterpolator	unk510;				// 510
+	NiColorInterpolator	unk528;				// 528
+	NiColorInterpolator	unk54C;				// 54C
+	NiFloatInterpolator	unk570;				// 570
+	NiFloatInterpolator	unk588;				// 588
+	NiFloatInterpolator	unk5A0;				// 5A0
+	NiFloatInterpolator	unk5B8;				// 5B8
+	NiFloatInterpolator	unk5D0;				// 5D0
+	NiFloatInterpolator	unk5E8;				// 5E8
+	NiFloatInterpolator	unk600;				// 600
+	NiFloatInterpolator	unk618;				// 618
+	NiFloatInterpolator	unk630;				// 630
+	// 648
+
+	UInt8				todo648[0x724 - 0x648];	// 348
+
+	BSString			unk724;				// 724
+};
+
+STATIC_ASSERT(offsetof(TESImageSpaceModifier, unk108) == 0x108);
+STATIC_ASSERT(offsetof(TESImageSpaceModifier, unk4F8) == 0x4F8);
+STATIC_ASSERT(sizeof(TESImageSpaceModifier) == 0x72C);
+
+// 2C
+class TESLandTexture : public TESForm
+{
+public:
+	struct Data24
+	{
+		UInt32	unk0;	// 0
+		UInt32	unk4;	// 4
+	};
+
+	UInt32	unk14;		// 14
+	UInt8	unk18;		// 18
+	UInt8	unk19;		// 19
+	UInt8	pad1A[2];	// 1A
+	UInt32	unk1C;		// 1C
+	UInt8	unk20;		// 20
+	UInt8	pad21[3];	// 21
+	Data24	unk24;		// 24
+};
+
+// 20
+class TESLoadScreen : public TESForm
+{
+public:
+	void				* unk14;	// 14 - linked list
+	TESObjectSTAT		* object;	// 18
+	StringCache::Ref	unk1C;		// 1C
+};
+
+// 38
+class TESObjectANIO : public TESForm
+{
+public:
+	TESModelTextureSwap	textureSwap;	// 14
+	StringCache::Ref	unk30;			// 30
+	StringCache::Ref	unk34;			// 34
+};
+
+// 8C
+class TESObjectCELL : public TESForm
+{
+public:
+	// parents
+	TESFullName					fullName;	// 14
+
+	// members
+
+	// 8
+	struct Data
+	{
+		UInt32	unk0;
+		UInt32	unk4;
+	};
+
+	// 8
+	struct Data4C
+	{
+		void	* unk0;	// BSIntrusiveRefCounted at offset 14
+		UInt32	unk4;
+	};
+
+	Data						unk1C;		// 1C
+	Data						unk24;		// 24
+	UInt16						unk2C;		// 2C
+	UInt16						unk2E;		// 2E
+	UInt8						unk30;		// 30
+	UInt8						unk31;		// 31
+	UInt8						unk32;		// 32
+	UInt8						pad33;		// 33
+	TESAIForm::Data				unk34;		// 34 - ExtraDataList
+	void						* unk3C;	// 3C
+	UInt32						unk40;		// 40
+	UInt32						unk44;		// 44
+	UInt32						unk48;		// 48
+	Data4C						unk4C;		// 4C
+	TESActorBaseData::Data2C	unk54;		// 54
+	TESActorBaseData::Data2C	unk60;		// 60
+	TESActorBaseData::Data2C	unk6C;		// 6C
+	Data						unk78;		// 78
+	UInt32						unk80;		// 80
+	UInt32						unk84;		// 84
+	UInt32						unk88;		// 88
+};
+
+// 28
+class TESObjectLAND : public TESForm
+{
+public:
+	// parents
+	TESChildCell	childCell;	// 14
+
+	// members
+	UInt32		unk18;	// 18
+	UInt32		unk1C;	// 1C
+	UInt32		unk20;	// 20
+	UInt32		unk24;	// 24
+};
+
+// 80
+class TESPackage : public TESForm
+{
+public:
+	virtual bool	Unk_39(UInt32 arg0, UInt32 arg1, UInt32 arg2, UInt32 arg3);
+	virtual bool	Unk_3A(UInt32 arg0, UInt32 arg1, UInt32 arg2, UInt32 arg3, UInt32 arg4);
+	virtual bool	Unk_3B(UInt32 arg0, UInt32 arg1);
+	virtual bool	Unk_3C(UInt32 arg0, UInt32 arg1);
+	virtual bool	Unk_3D(UInt32 arg0);
+
+	enum
+	{
+		kPackageType_Find = 0,
+		kPackageType_Follow,
+		kPackageType_Escort,
+		kPackageType_Eat,
+		kPackageType_Sleep,
+		kPackageType_Wander,
+		kPackageType_Travel,
+		kPackageType_Accompany,
+		kPackageType_UseItemAt,
+		kPackageType_Ambush,
+		kPackageType_FleeNotCombat,
+		kPackageType_CastMagic,
+		kPackageType_Sandbox,
+		kPackageType_Patrol,
+		kPackageType_Guard,
+		kPackageType_Dialogue,
+		kPackageType_UseWeapon,
+		kPackageType_Find2,
+		kPackageType_Package,
+		kPackageType_PackageTemplate,
+		kPackageType_Activate,
+		kPackageType_Alarm,
+		kPackageType_Flee,
+		kPackageType_Trespass,
+		kPackageType_Spectator,
+		kPackageType_ReactToDead,
+		kPackageType_GetUpFromChair,
+		kPackageType_DoNothing,
+		kPackageType_InGameDialogue,
+		kPackageType_Surface,
+		kPackageType_SearchForAttacker,
+		kPackageType_AvoidPlayer,
+		kPackageType_ReactToDestroyedObject,
+		kPackageType_ReactToGrenadeOrMine,
+		kPackageType_StealWarning,
+		kPackageType_PickPocketWarning,
+		kPackageType_MovementBlocked
+	};
+
+	// C
+	struct Data30
+	{
+		UInt8	unk00;		// 0
+		UInt8	unk01;		// 1
+		UInt8	unk02;		// 2
+		UInt8	unk03;		// 3
+		UInt8	unk04;		// 4
+		UInt8	pad05[3];	// 5
+		UInt32	unk08;		// 8
+	};
+
+	// 10
+	struct Data
+	{
+		UInt32	unk00;	// 00
+		UInt32	unk04;	// 04
+		UInt32	unk08;	// 08
+		UInt32	unk0C;	// 0C
+	};
+
+	UInt32	packageFlags;	// 14
+	UInt8	type;			// 18 - see kPackageType_ enum
+	UInt8	unk19;			// 19
+	UInt8	unk1A;			// 1A
+	UInt8	pad1B;			// 1B
+	UInt16	unk1C;			// 1C
+	UInt16	unk1E;			// 1E
+	UInt32	unk20;			// 20
+	UInt32	unk24;			// 24
+	UInt32	unk28;			// 28
+	UInt32	unk2C;			// 2C
+	Data30	unk30;			// 30
+	void	* unk3C;		// 3C - linked list
+	UInt32	unk40;			// 40
+	UInt32	unk44;			// 44
+	Data	unk48;			// 48
+	Data	unk58;			// 58
+	Data	unk68;			// 68
+	UInt32	unk78;			// 78
+	UInt32	unk7C;			// 7C - incremented in dtor
+};
+
+// 8C
+class AlarmPackage : public TESPackage
+{
+public:
+	UInt32	unk80;		// 80
+	UInt32	unk84;		// 84
+	UInt8	unk88;		// 88
+	UInt8	pad89[3];	// 89
+};
+
+// A0
+class DialoguePackage : public TESPackage
+{
+public:
+	UInt32	unk80;		// 80
+	UInt32	unk84;		// 84
+	UInt32	unk88;		// 88
+	UInt32	unk8C;		// 8C
+	UInt8	unk90;		// 90
+	UInt8	unk91;		// 91
+	UInt8	pad92[2];	// 92
+	UInt32	unk94;		// 94
+	UInt32	unk98;		// 98
+	UInt8	unk9C;		// 9C
+	UInt8	pad9D[3];	// 9D
+};
+
+// AC
+class FleePackage : public TESPackage
+{
+public:
+	struct Data8C
+	{
+		UInt32	unk0;	// 0
+		UInt32	unk4;	// 4
+		UInt32	unk8;	// 8
+	};
+
+	TESActorBaseData::Data2C	unk80;	// 80
+	Data8C	unk8C;		// 8C
+	float	unk98;		// 98
+	UInt32	unk9C;		// 9C
+	UInt32	unkA0;		// A0
+	UInt8	unkA4;		// A4
+	UInt8	unkA5;		// A5
+	UInt8	unkA6;		// A6
+	UInt8	unkA7;		// A7
+	UInt8	unkA8;		// A8
+	UInt8	padA9[3];	// A9
+};
+
+// B0
+class SpectatorPackage : public TESPackage
+{
+public:
+	struct Data94
+	{
+		UInt32	unk0;	// 0
+		UInt32	unk4;	// 4
+		UInt32	unk8;	// 8
+	};
+
+	UInt32	unk80;		// 80
+	UInt32	pad84;		// 84 - not init'd
+	UInt32	unk88;		// 88
+	UInt32	unk8C;		// 8C
+	UInt8	unk90;		// 90
+	UInt8	pad91[3];	// 91
+	Data94	unk94;		// 94
+	TESActorBaseData::Data2C	unkA0;	// A0
+	UInt32	padAC;		// AC - not init'd
+};
+
+// 98
+class TrespassPackage : public TESPackage
+{
+public:
+	UInt32	unk80;	// 80
+	UInt32	unk84;	// 84
+	UInt32	unk88;	// 88
+	UInt32	unk8C;	// 8C
+	UInt32	unk90;	// 90
+	UInt32	unk94;	// 94
+};
+
+// 29C
+class TESRace : public TESForm
+{
+public:
+	// parents
+	TESFullName			fullName;		// 14
+	TESDescription		description;	// 1C
+	TESSpellList		spellList;		// 28
+	BGSSkinForm			skin;			// 30
+	BGSBipedObjectForm	biped;			// 38
+	BGSKeywordForm		keyword;		// 48
+	BGSAttackDataForm	attackData;		// 54
+
+	// members
+
+	// 80
+	struct Data84
+	{
+		UInt8	unk00[0x0E];		// 00
+		UInt8	pad0E[2];			// 0E
+		float	unk10[2];			// 10
+		float	unk18[2];			// 18
+		UInt32	unk20;				// 20 - not init'd
+		float	health;				// 24
+		float	magicka;			// 28
+		float	stamina;			// 2C
+		UInt32	unk30;				// 30 - not init'd
+		float	mass;				// 34
+		float	unk38;				// 38 - init'd to 1
+		float	unk3C;				// 3C - init'd to 1
+		UInt32	unk40;				// 40 - init'd to 1
+		UInt32	unk44;				// 44 - init'd to FFFFFFFF
+		UInt32	unk48;				// 48 - init'd to FFFFFFFF
+		UInt32	unk4C;				// 4C - not init'd
+		UInt32	unk50;				// 50 - init'd to FFFFFFFF
+		UInt32	unk54;				// 54
+		UInt32	unk58;				// 58
+		UInt32	unk5C;				// 5C
+		UInt32	unk60;				// 60 - init'd to 0
+		float	handReach;			// 64
+		UInt32	unk68;				// 68 - init'd to FFFFFFFF
+		UInt32	unk6C;				// 6C - init'd to 0
+		UInt32	unk70;				// 70 - init'd to 0
+		float	unk74;				// 74 - init'd to 0
+		float	angleTolerance;		// 78
+		float	angleTolerance2;	// 7C
+	};
+
+	TESModel					models[2];			// 5C
+	Data84						unk84;				// 84
+	UInt32						unk104;				// 104
+	UInt32						unk108;				// 108
+	BGSTextureModel				textureModel[2];	// 10C
+	BGSBehaviorGraphModel		behaviorGraph[2];	// 134
+	StringCache::Ref			unk15C[2];			// 15C
+	StringCache::Ref			unk164[2];			// 164
+	BGSVoiceType				* voiceTypes[2];	// 16C
+	UInt32						unk174;				// 174
+	UInt32						unk178;				// 178
+	UInt32						unk17C;				// 17C
+	TESActorBaseData::Data2C	unk180[2];			// 180
+	void						* unk198[4];		// 198
+	void						* unk1A8[2];		// 1A8 - refcounted ptr
+	StringCache::Ref			unk1B0;				// 1B0
+	UInt32						unk1B4;				// 1B4
+	UInt32						unk1B8;				// 1B8
+	UInt32						unk1BC;				// 1BC
+	UInt32						unk1C0;				// 1C0
+	UInt32						unk1C4;				// 1C4
+	StringCache::Ref			unk1C8[0x20];		// 1C8
+	TESActorBaseData::Data2C	unk248;				// 248
+	UInt32						unk254;				// 254
+	UInt32						unk258;				// 258
+	UInt32						unk25C;				// 25C
+	UInt32						unk260;				// 260
+	TESActorBaseData::Data2C	unk264;				// 264
+	TESActorBaseData::Data2C	unk270;				// 270
+	UInt8						unk27C[0x18];		// 27C
+	UInt32						unk294;				// 294
+	UInt32						unk298;				// 298
+};
+
+STATIC_ASSERT(offsetof(TESRace, unk1B0) == 0x1B0);
+STATIC_ASSERT(sizeof(TESRace) == 0x29C);
+
+// 30
+class TESRegion : public TESForm
+{
+public:
+	virtual bool	Unk_39(void);
+
+	// C
+	struct Data14
+	{
+		UInt32	unk0;		// 0
+		UInt32	unk4;		// 4
+		UInt8	unk8;		// 8
+		UInt8	unk9[3];	// 9
+	};
+
+	// 8
+	struct Data18
+	{
+		UInt32	unk0;
+		UInt32	unk4;
+	};
+
+	// C
+	struct Data24
+	{
+		UInt32	unk0;
+		UInt32	unk4;
+		UInt32	unk8;
+	};
+
+	Data14	* unk14;	// 14
+	Data18	* unk18;	// 18
+	UInt32	unk1C;		// 1C
+	UInt32	unk20;		// 20
+	Data24	unk24;		// 24
+};
+
+// 5C
+class TESShout : public TESForm
+{
+public:
+	// parents
+	TESFullName				fullName;		// 14
+	BGSMenuDisplayObject	menuDispObject;	// 1C
+	BGSEquipType			equipType;		// 24
+	TESDescription			description;	// 2C
+
+	// members
+
+	// C
+	struct Data38
+	{
+		UInt32	unk0;
+		UInt32	unk4;
+		UInt32	unk8;
+	};
+
+	Data38	unk38[3];	// 38
+};
+
+// 38
+class TESTopic : public TESForm
+{
+public:
+	// parents
+	TESFullName			fullName;	// 14
+
+	// members
+	UInt8				unk1C[4];	// 1C
+	UInt32				unk20;		// 20
+	UInt32				unk24;		// 24
+	UInt32				unk28;		// 28
+	void				** unk2C;	// 2C - buf[unk30]
+	UInt32				unk30;		// 30 - len
+	StringCache::Ref	unk34;		// 34
+};
+
+// 34
+class TESTopicInfo : public TESForm
+{
+public:
+	struct Data28
+	{
+		UInt32	unk0;	// 0
+		UInt32	unk4;	// 4
+	};
+
+	void	* unk1C;	// 1C - linked list
+	UInt16	unk20;		// 20
+	UInt8	unk22;		// 22
+	UInt8	unk23;		// 23
+	UInt8	unk24;		// 24
+	Data28	unk28;		// 28
+	UInt32	unk30;		// 30
+};
+
+// 1D4
+class TESWaterForm : public TESForm
+{
+public:
+	// parents
+	TESFullName			fullName;		// 14
+	TESAttackDamageForm	attackDamage;	// 1C
+
+	// members
+
+	// 10
+	struct Data2C
+	{
+		UInt32	unk0;	// 0
+		UInt32	unk4;	// 4
+		UInt32	unk8;	// 8
+		UInt32	unkC;	// C
+	};
+
+	// E4
+	struct Data80
+	{
+		float	unk00;		// 00 - init'd to .1
+		float	unk04;		// 04 - init'd to 90
+		float	unk08;		// 08 - init'd to .5
+		float	unk0C;		// 0C - init'd to 1
+		float	unk10;		// 10 - init'd to 50
+		float	unk14;		// 14 - init'd to .5
+		float	unk18;		// 18 - init'd to .025
+		UInt32	unk1C;		// 1C - init'd to 0
+		UInt32	unk20;		// 20 - init'd to 0
+		UInt32	unk24;		// 24 - init'd to 0
+		UInt32	unk28;		// 28 - init'd to 00808000
+		UInt32	unk2C;		// 2C - init'd to 00190000
+		UInt32	unk30;		// 30 - init'd to 00FFFFFF
+		UInt8	unk34;		// 34 - init'd to 0
+		UInt8	pad35[3];	// 35
+		float	unk38;		// 38 - init'd to 0.1
+		float	unk3C;		// 3C - init'd to 0.6
+		float	unk40;		// 40 - init'd to 0.985
+		float	unk44;		// 44 - init'd to 2
+		float	unk48;		// 48 - init'd to .01
+		float	unk4C;		// 4C - init'd to .4
+		float	unk50;		// 50 - init'd to .6
+		float	unk54;		// 54 - init'd to .985
+		float	unk58;		// 58 - init'd to 10
+		float	unk5C;		// 5C - init'd to .05
+		float	unk60;		// 60 - init'd to 300
+		UInt32	unk64;		// 64 - init'd to 0
+		UInt32	unk68;		// 68 - init'd to 0
+		UInt32	unk6C;		// 6C - init'd to 0
+		UInt32	unk70;		// 70 - init'd to 0
+		UInt32	unk74;		// 74 - init'd to 0
+		UInt32	unk78;		// 78 - init'd to 0
+		float	unk7C;		// 7C - init'd to 300
+		float	unk80;		// 80 - init'd to 300
+		float	unk84;		// 84 - init'd to 1
+		UInt32	unk88;		// 88 - not init'd
+		float	unk8C;		// 8C - init'd to 1
+		UInt32	unk90;		// 90 - init'd to 0
+		float	unk94;		// 94 - init'd to 1000
+		float	unk98;		// 98 - init'd to 250
+		float	unk9C;		// 9C - init'd to 100
+		float	unkA0;		// A0 - init'd to 1
+		float	unkA4;		// A4 - init'd to 10000
+		float	unkA8;		// A8 - init'd to 1
+		float	unkAC;		// AC - init'd to 100
+		float	unkB0;		// B0 - init'd to 100
+		float	unkB4;		// B4 - init'd to 100
+		UInt32	unkB8;		// B8 - init'd to 0
+		UInt32	unkBC;		// BC - init'd to 0
+		UInt32	unkC0;		// C0 - init'd to 0
+		float	unkC4;		// C4 - init'd to 1
+		float	unkC8;		// C8 - init'd to 1
+		float	unkCC;		// CC - init'd to 1
+		float	unkD0;		// D0 - init'd to 1
+		float	unkD4;		// D4 - init'd to 1
+		float	unkD8;		// D8 - init'd to 1
+		float	unkDC;		// DC - init'd to 1
+		float	unkE0;		// E0 - init'd to 1
+	};
+
+	// C
+	struct Data1C8
+	{
+		UInt32	unk0;	// 0
+		UInt32	unk4;	// 4
+		UInt32	unk8;	// 8
+	};
+
+	UInt8		unk024;		// 024
+	UInt8		pad025[3];	// 025
+	UInt32		unk028;		// 028
+	Data2C		unk02C;		// 02C
+	Data2C		unk03C;		// 03C
+	Data2C		unk04C;		// 04C
+	TESTexture	unk05C;		// 05C
+	TESTexture	unk064;		// 064
+	TESTexture	unk06C;		// 06C
+	UInt8		unk074;		// 074
+	UInt8		unk075;		// 075
+	UInt8		pad076[2];	// 076
+	UInt32		unk078;		// 078
+	UInt32		unk07C;		// 07C
+	Data80		unk080;		// 080
+	UInt32		unk164[3];	// 164
+	UInt32		unk170;		// 170
+	UInt32		unk174;		// 174
+	UInt32		unk178;		// 178
+	UInt32		unk17C;		// 17C
+	UInt32		unk180;		// 180
+	float		unk184;		// 184
+	float		unk188;		// 188
+	float		unk18C;		// 18C
+	float		unk190;		// 190
+	UInt32		unk194;		// 194
+	UInt32		unk198;		// 198
+	UInt32		unk19C;		// 19C
+	UInt32		unk1A0;		// 1A0
+	UInt32		unk1A4;		// 1A4
+	UInt32		unk1A8;		// 1A8
+	void		* unk1AC;	// 1AC - refcounted ptr
+	UInt32		unk1B0;		// 1B0
+	UInt8		unk1B4;		// 1B4
+	UInt8		pad1B5[3];	// 1B5
+	UInt32		unk1B8;		// 1B8
+	Data1C8		unk1BC;		// 1BC
+	Data1C8		unk1C8;		// 1C8
+};
+
+STATIC_ASSERT(sizeof(TESWaterForm) == 0x1D4);
+
+// 760
+class TESWeather : public TESForm
+{
+public:
+	// 110
+	struct Data58C
+	{
+		UInt32	unk000[0xE0 / 4];	// 000 ### todo
+		UInt32	unk0E0;				// 0E0 - init'd to 00FFFFFF
+		UInt32	unk0E4;				// 0E4 - init'd to 00FFFFFF
+		UInt32	unk0E8;				// 0E8 - init'd to 00FFFFFF
+		UInt32	unk0EC;				// 0EC - init'd to 00FFFFFF
+		UInt32	unk0F0;				// 0F0 - init'd to 00FFFFFF
+		UInt32	unk0F4;				// 0F4 - init'd to 00FFFFFF
+		UInt32	unk0F8;				// 0F8 - init'd to 00FFFFFF
+		UInt32	unk0FC;				// 0FC - init'd to 00FFFFFF
+		UInt32	unk100;				// 100 - init'd to 00FFFFFF
+		UInt32	unk104;				// 104 - init'd to 00FFFFFF
+		UInt32	unk108;				// 108 - init'd to 00FFFFFF
+		UInt32	unk10C;				// 10C - init'd to 00FFFFFF
+	};
+
+	// 13
+	struct Data558
+	{
+		UInt8	unk00[0x13];			// 00
+	};
+
+	// 20
+	struct Data56C
+	{
+		UInt32	unk00[0x10 / 4];		// 00
+		float	unk10;					// 10
+		float	unk14;					// 14
+		float	unk18;					// 18
+		float	unk1C;					// 1C
+	};
+
+	// 10
+	struct Data354
+	{
+		float	unk0;	// 0
+		float	unk4;	// 4
+		float	unk8;	// 8
+		float	unkC;	// C
+	};
+
+	// 10
+	struct Data6B4
+	{
+		UInt32	unk00[0x10 / 4];	// 00
+	};
+
+	TESTexture1024	texture[0x20];		// 014
+	UInt8			unk114[0x20];		// 114 - cleared to 0x7F
+	UInt8			unk134[0x20];		// 134 - cleared to 0x7F
+	UInt8			unk154[0x200];		// 154
+	Data354			unk354[0x20];		// 354
+	UInt32			unk554;				// 554
+	Data558			unk558;				// 558
+	UInt8			pad56B;				// 56B
+	Data56C			unk56C;				// 56C
+	Data58C			unk58C;				// 58C
+	TESAIForm::Data	unk69C;				// 69C
+	TESActorBaseData::Data2C	unk6A4;	// 6A4
+	UInt32			pad6B0;				// 6B0 - not init'd
+	Data6B4			unk6B4;				// 6B4
+	BGSLightingTemplate::Data::Data28	unk6C4[4];	// 6C4
+	TESModel		unk744;	// 744
+	UInt32			unk758;	// 758
+	UInt32			unk75C;	// 75C
+};
+
+STATIC_ASSERT(sizeof(TESWeather) == 0x760);
+
+// 20
+class TESWordOfPower : public TESForm
+{
+public:
+	// parents
+	TESFullName			fullName;	// 14
+
+	// members
+	StringCache::Ref	word;		// 1C
+};
+
+// 174
+class TESWorldSpace : public TESForm
+{
+public:
+	// parents
+	TESFullName		fullName;	// 14
+	TESTexture		texture;	// 1C
+
+	// members
+
+	// 4
+	struct Data038
+	{
+		UInt16	unk0;
+		UInt16	unk2;
+	};
+
+	// 020
+	struct Data03C
+	{
+		UInt8	unk0[0x20];
+	};
+
+	// ?
+	struct OFFSET_DATA { };
+
+	// 40
+	struct Data12C
+	{
+		// this struct keeps showing up everywhere
+		struct Entry
+		{
+			UInt8	pad00[8];	// 00
+			UInt32	unk08;		// 08
+			UInt32	unk0C;		// 0C
+			UInt32	unk10;		// 10
+			void	* unk14;	// 14
+			UInt8	pad18[4];	// 18
+			UInt32	unk1C;		// 1C
+		};
+
+		Entry	unk00;
+		Entry	unk20;
+	};
+
+	typedef NiTPointerMap <int, TESObjectCELL *>	CellMap;
+
+	CellMap	* cellMap;	// 024
+	UInt32	unk028;		// 028
+	UInt32	unk02C;		// 02C
+	UInt32	unk030;		// 030
+	UInt8	worldSpaceFlags;	// 034
+	UInt8	pad035;		// 035
+	UInt16	unk036;		// 036
+	Data038	unk038;		// 038
+	Data03C	unk03C;		// 03C
+	TESActorBaseData::Data2C	unk05C;	// 05C
+	UInt32	unk068;		// 068
+	UInt32	unk06C;		// 06C
+	TESQuest::Data05C	unk070;	// 070
+	void	* unk090;	// 090 - refcounted ptr
+	UInt32	unk094;		// 094
+	UInt32	unk098;		// 098
+	UInt32	unk09C;		// 09C
+	UInt32	unk0A0;		// 0A0
+	UInt32	unk0A4;		// 0A4
+	UInt32	unk0A8;		// 0A8
+	UInt32	unk0AC;		// 0AC
+	UInt32	unk0B0;		// 0B0
+	UInt32	unk0B4;		// 0B4
+	UInt32	unk0B8;		// 0B8
+	UInt8	unk0BC[0x10];	// 0BC
+	float	unk0CC;		// 0CC
+	UInt32	unk0D0;		// 0D0
+	UInt32	unk0D4;		// 0D4
+	UInt32	unk0D8;		// 0D8
+	UInt32	unk0DC;		// 0DC
+	UInt32	unk0E0;		// 0E0
+	UInt32	unk0E4;		// 0E4
+	UInt32	unk0E8;		// 0E8
+	UInt32	unk0EC;		// 0EC
+	NiTMap <TESFile *, TESWorldSpace::OFFSET_DATA *>	unk0F0;	// 0F0
+	BSString	unk100;	// 100
+	void		* unk108;	// 108
+	UInt32		unk10C;	// 10C
+	float		unk110;	// 110
+	UInt32		unk114;	// 114
+	UInt32		unk118;	// 118
+	TESTexture	unk11C;	// 11C
+	TESTexture	unk124;	// 124
+	Data12C		unk12C;	// 12C
+	UInt32		unk16C;	// 16C
+	UInt32		unk170;	// 170
+};
+
+STATIC_ASSERT(sizeof(TESWorldSpace) == 0x174);

@@ -31,7 +31,7 @@ public:
 
 		kTypeFlag_Managed =	1 << 6,
 
-		kMask_Type =		0x3F,
+		kMask_Type =		0x8F,	// not sure why it checks the top bit
 	};
 
 	union Data
@@ -51,11 +51,11 @@ public:
 		GFxMovieRoot	* root;
 
 		MEMBER_FN_PREFIX(ObjectInterface);
-		DEFINE_MEMBER_FN(HasMember, bool, 0x009AFEC0, const char * name);
-		DEFINE_MEMBER_FN(GetMember, bool, 0x009970D0, const char * name, GFxValue * value);
-		DEFINE_MEMBER_FN(SetMember, bool, 0x0099A770, const char * name, GFxValue * value);
-		DEFINE_MEMBER_FN(DeleteMember, bool, 0x009AFEF0, const char * name);
-		DEFINE_MEMBER_FN(Invoke, bool, 0x009A0A10, const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
+		DEFINE_MEMBER_FN(HasMember, bool, 0x009B1180, const char * name);
+		DEFINE_MEMBER_FN(GetMember, bool, 0x00998140, const char * name, GFxValue * value);
+		DEFINE_MEMBER_FN(SetMember, bool, 0x0099B940, const char * name, GFxValue * value);
+		DEFINE_MEMBER_FN(DeleteMember, bool, 0x009B11B0, const char * name);
+		DEFINE_MEMBER_FN(Invoke, bool, 0x009A1C50, const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
 	};
 
 	ObjectInterface	* objectInterface;	// 00
@@ -69,7 +69,7 @@ public:
 	wchar_t *	GetWideString(void);
 
 	MEMBER_FN_PREFIX(GFxValue);
-	DEFINE_MEMBER_FN(ReleaseManaged, void, 0x0078F880);
+	DEFINE_MEMBER_FN(ReleaseManaged, void, 0x0078FE70);
 };
 
 STATIC_ASSERT(sizeof(GFxValue) == 0x10);
@@ -108,6 +108,7 @@ public:
 	GArray <GFxValue>	args;
 };
 
+// 20
 class FxDelegateArgs
 {
 public:
@@ -128,7 +129,6 @@ public:
 	FxDelegateHandler();
 	~FxDelegateHandler();
 
-	// callbacks run from 00BF613C
 	typedef void (* Callback)(const FxDelegateArgs & params);
 
 	class CallbackProcessor

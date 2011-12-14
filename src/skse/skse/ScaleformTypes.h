@@ -9,7 +9,7 @@ public:
 	GRefCountImplCore();
 	virtual ~GRefCountImplCore();
 
-//	void	** _vtbl;	// 00
+//	void	** _vtbl;			// 00
 	volatile SInt32	refCount;	// 04
 };
 
@@ -65,8 +65,8 @@ public:
 	UInt32	GetHeapInfo(void);
 
 	MEMBER_FN_PREFIX(GString);
-	DEFINE_MEMBER_FN(Init, GString *, 0x00AA21D0, const char * str);
-	DEFINE_MEMBER_FN(Destroy, void, 0x009973B0);
+	DEFINE_MEMBER_FN(Init, GString *, 0x00AA2AF0, const char * str);
+	DEFINE_MEMBER_FN(Destroy, void, 0x00998420);
 };
 
 #pragma warning (pop)

@@ -3,7 +3,6 @@
 #include "skse/ScaleformTypes.h"
 
 class GFxValue;
-class GFxMovieRoot;
 
 // 2850?
 class GFxMovieView : GRefCountBase

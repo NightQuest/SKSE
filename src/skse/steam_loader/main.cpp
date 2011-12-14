@@ -111,7 +111,6 @@ void DumpThreads(void)
 }
 
 bool hookInstalled = false;
-wchar_t	kLoaderName[] = L"skse_loader";
 
 void InstallHook(void * retaddr)
 {
@@ -156,6 +155,8 @@ void InstallHook(void * retaddr)
 	UInt32	newHookDst = ((UInt32)OnHook) - hookBaseAddr - 5;
 
 	SafeWrite32(hookBaseAddr + 1, newHookDst);
+
+	FlushInstructionCache(GetCurrentProcess(), NULL, 0);
 }
 
 typedef void (__stdcall * _GetSystemTimeAsFileTime)(LPFILETIME * fileTime);

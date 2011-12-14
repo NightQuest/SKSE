@@ -8,7 +8,16 @@
 class BSIntrusiveRefCounted
 {
 public:
-	UInt32	m_refCount;	// 00
+	volatile UInt32	m_refCount;	// 00
+};
+
+// 04
+template <typename T>
+class BSTSmartPointer
+{
+public:
+	// refcounted
+	T	* ptr;
 };
 
 class SimpleLock
@@ -49,8 +58,9 @@ public:
 		const char	* data;
 
 		MEMBER_FN_PREFIX(Ref);
-		DEFINE_MEMBER_FN(Get, Ref *, 0x00BDA410, const char * buf);
-		DEFINE_MEMBER_FN(Release, void, 0x00BEC150);
+		DEFINE_MEMBER_FN(ctor, Ref *, 0x00BDA950, const char * buf);
+		DEFINE_MEMBER_FN(Set, Ref *, 0x00BDA9F0, const char * buf);
+		DEFINE_MEMBER_FN(Release, void, 0x00BFBFB0);
 	};
 
 	StringCache();
@@ -64,4 +74,16 @@ private:
 	Entry	* table[0x10000];	// crc16
 	Lock	locks[0x20];		// crc16 & 0x1F
 	UInt8	unk;
+};
+
+// 08
+class BSString
+{
+public:
+	const char *	Get(void);
+
+private:
+	char	* m_data;	// 00
+	UInt16	m_dataLen;	// 04
+	UInt16	m_bufLen;	// 06
 };

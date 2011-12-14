@@ -1,11 +1,11 @@
 #include "CommandTable.h"
 
-CommandInfo	* g_blockTypeStart =		(CommandInfo *)0x01426170;
-CommandInfo	* g_blockTypeEnd =			(CommandInfo *)0x014266E8;
-CommandInfo	* g_consoleCommandsStart =	(CommandInfo *)0x01426710;
-CommandInfo	* g_consoleCommandsEnd =	(CommandInfo *)0x014297D0;
-CommandInfo	* g_scriptCommandsStart =	(CommandInfo *)0x014297F8;
-CommandInfo	* g_scriptCommandsEnd =		(CommandInfo *)0x01430990;
+CommandInfo	* g_blockTypeStart =		(CommandInfo *)0x0142A0A0;
+CommandInfo	* g_blockTypeEnd =			(CommandInfo *)0x0142A618;
+CommandInfo	* g_consoleCommandsStart =	(CommandInfo *)0x0142A640;
+CommandInfo	* g_consoleCommandsEnd =	(CommandInfo *)0x0142D610;
+CommandInfo	* g_scriptCommandsStart =	(CommandInfo *)0x0142D638;
+CommandInfo	* g_scriptCommandsEnd =		(CommandInfo *)0x014347D0;
 
 bool IsEmptyStr(const char * data)
 {

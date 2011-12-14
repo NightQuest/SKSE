@@ -279,6 +279,10 @@ struct MinVersionEntry
 
 static const MinVersionEntry	kMinVersionList[] =
 {
+	// early versions of elys skill uncapper are passing in a unicode string for the name (and doing their work in Query so this doesn't even really matter)
+	// block based on version resource?
+	{	"S",	0xFFFFFFFF,	"broken name (unicode)",	kCompat_BlockFromRuntime | kCompat_BlockFromEditor },
+
 	{	NULL, 0, NULL }
 };
 

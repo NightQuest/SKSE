@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="skse"
-	ProjectGUID="{AA0365EC-47EA-45AA-BB1F-EBBCCCC466F2}"
-	RootNamespace="skse"
+	Name="plugin_example"
+	ProjectGUID="{547171CB-F934-40B9-B788-3C520FE66363}"
+	RootNamespace="plugin_example"
 	SccProjectName="SAK"
 	SccAuxPath="SAK"
 	SccLocalPath="SAK"
@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\.."
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x020C0000"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PLUGIN_EXAMPLE_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -66,8 +66,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\skse_1_2.dll"
 				LinkIncremental="2"
+				ModuleDefinitionFile="exports.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -92,8 +92,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Installing DLL..."
-				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SkyrimPath)\$(TargetFileName)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -124,7 +122,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\.."
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x020C0000"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PLUGIN_EXAMPLE_EXPORTS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -143,8 +141,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\skse_1_2.dll"
 				LinkIncremental="1"
+				ModuleDefinitionFile="exports.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -171,8 +169,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Installing DLL..."
-				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SkyrimPath)\$(TargetFileName)&quot;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -183,192 +179,16 @@
 		/>
 	</References>
 	<Files>
-		<Filter
-			Name="obscript"
-			>
-			<File
-				RelativePath=".\CommandTable.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\CommandTable.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="papyrus"
-			>
-			<File
-				RelativePath=".\PapyrusNativeFunctions.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusNativeFunctions.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="api"
-			>
-			<File
-				RelativePath=".\GameAPI.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GameAPI.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GameFormComponents.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GameFormComponents.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GameForms.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GameForms.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GameMenus.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GameMenus.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GamePathing.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GamePathing.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GameRTTI.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GameRTTI.h"
-				>
-			</File>
-			<File
-				RelativePath=".\GameTypes.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\GameTypes.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="scaleform"
-			>
-			<File
-				RelativePath=".\ScaleformAPI.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ScaleformAPI.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ScaleformCallbacks.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ScaleformCallbacks.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ScaleformMovie.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ScaleformMovie.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ScaleformTypes.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ScaleformTypes.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ScaleformVM.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ScaleformVM.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="hooks"
-			>
-			<File
-				RelativePath=".\Hooks_Scaleform.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Hooks_Scaleform.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="internals"
-			>
-			<File
-				RelativePath=".\PluginAPI.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PluginManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PluginManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SafeWrite.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SafeWrite.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Utilities.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Utilities.h"
-				>
-			</File>
-		</Filter>
 		<File
 			RelativePath=".\exports.def"
 			>
 		</File>
 		<File
-			RelativePath=".\skse.cpp"
+			RelativePath=".\main.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\skse_version.h"
-			>
-		</File>
-		<File
-			RelativePath=".\skse_version.rc"
+			RelativePath="..\skse\SafeWrite.cpp"
 			>
 		</File>
 	</Files>

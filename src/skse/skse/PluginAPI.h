@@ -59,6 +59,9 @@ typedef bool (* _SKSEPlugin_Load)(const SKSEInterface * skse);
  *	the version of SKSE or the runtime passed in, otherwise return true. In
  *	either case, fill out the PluginInfo structure.
  *	
+ *	Do not do anything other than fill out the PluginInfo structure and return
+ *	true/false in this callback.
+ *	
  *	If the plugin is being loaded in the context of the editor, isEditor will be
  *	non-zero, editorVersion will contain the current editor version, and
  *	runtimeVersion will be zero. In this case you can probably just return

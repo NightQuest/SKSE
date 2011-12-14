@@ -1,4 +1,4 @@
-Skyrim Script Extender v1 beta 1
+Skyrim Script Extender v1 beta 2
 by Ian Patterson, Stephen Abel and Paul Connelly
 (ianpatt, behippo and scruggsywuggsy the ferret)
 
@@ -8,7 +8,7 @@ NOTE: CURRENTLY THIS VERSION DOES NOTHING OTHER THAN PROVIDE A BASE FOR LOADING 
 
 Compatibility:
 
-SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.1.21.0). When a new version is released, we will update as soon as possible; please be patient. No editor has been released yet.
+SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.2.12.0). When a new version is released, we will update as soon as possible; please be patient. No editor has been released yet.
 
 [ Installation ]
 
@@ -47,6 +47,9 @@ endif
 
 * Can I include SKSE as part of a mod pack/collection or otherwise rehost the files?
  - No. Providing a link to http://skse.silverlock.org/ is the suggested method of distribution. Exceptions may be given under applicable circumstances; contact us at the email addresses below. This means that if you see this file available for download anywhere other than http://skse.silverlock.org, that service is violating copyright. I don't like having to explicitly spell this out, but my hand has been forced.
+
+* Does SKSE work with a 4GB loader?
+ - Yes, use http://skyrimnexus.com/downloads/file.php?id=1013.
 
 [ Contact the SKSE Team ]
 

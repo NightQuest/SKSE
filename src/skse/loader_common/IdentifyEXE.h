@@ -17,6 +17,7 @@ struct ProcHookInfo
 	UInt32	hookCallAddr;
 	UInt32	loadLibAddr;
 	bool	noGore;
+	bool	russian;
 };
 
 bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, ProcHookInfo * hookInfo);

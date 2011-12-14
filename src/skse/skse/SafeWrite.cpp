@@ -1,3 +1,5 @@
+#include "SafeWrite.h"
+
 void SafeWrite8(UInt32 addr, UInt32 data)
 {
 	UInt32	oldProtect;

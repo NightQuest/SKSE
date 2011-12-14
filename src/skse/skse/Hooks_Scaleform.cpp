@@ -38,5 +38,5 @@ void Hook_Scaleform_Install(void)
 
 	hook.fn = &Console::InstallCallbacks_Hooked;
 
-	SafeWrite32(0x012BCC08, hook.ptr);
+	SafeWrite32(0x012C08C0, hook.ptr);
 }

@@ -113,17 +113,20 @@ struct DebugHeader
 		return memcmp(sig, "RSDS", 4) == 0;
 	}
 
-	bool IsNoGore(bool * probablyValid) const
+	void ReadInfo(ProcHookInfo * out, bool * probablyValid) const
 	{
 		*probablyValid = false;
+
+		out->noGore = false;
+		out->russian = false;
 
 		if(SignatureValid())
 		{
 			const char	* path = (const char *)(this + 1);
 
 			// path will start with <drive letter> colon backslash
-			if(path[1] != ':') return false;
-			if(path[2] != '\\') return false;
+			if(path[1] != ':') return;
+			if(path[2] != '\\') return;
 
 			// make sure the string isn't stupidly long and only contains printable characters
 			for(UInt32 i = 0; i < 0x80; i++)
@@ -132,14 +135,10 @@ struct DebugHeader
 
 				if(!data)
 				{
-					*probablyValid = true;
+					*probablyValid = strstr(path, ".pdb") != NULL;
 
-					if(strstr(path, "TESVng.pdb"))	// ### not sure what this will be
-					{
-						_MESSAGE("pdb path = %s", path);
-
-						return true;
-					}
+					out->noGore = strstr(path, "TESVng.pdb") != NULL;	// ### not sure what this will be
+					out->russian = strstr(path, "RussianCode") != NULL;
 
 					break;
 				}
@@ -148,8 +147,6 @@ struct DebugHeader
 					break;
 			}
 		}
-
-		return false;
 	}
 };
 
@@ -174,7 +171,7 @@ const UInt8 * GetVirtualAddress(const UInt8 * base, UInt32 addr)
 	return NULL;
 }
 
-bool IsNoGore_BasicScan(const UInt8 * base, bool * probable)
+void BranchScan_Basic(const UInt8 * base, ProcHookInfo * hookInfo, bool * probable)
 {
 	*probable = false;
 
@@ -183,35 +180,36 @@ bool IsNoGore_BasicScan(const UInt8 * base, bool * probable)
 	const IMAGE_DEBUG_DIRECTORY	* debugDir =
 		(IMAGE_DEBUG_DIRECTORY *)GetVirtualAddress(base, ntHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_DEBUG].VirtualAddress);
 
-	if(!debugDir) return false;
-	if(debugDir->Characteristics) return false;
-	if(debugDir->Type != IMAGE_DEBUG_TYPE_CODEVIEW) return false;
-	if(debugDir->SizeOfData >= 0x100) return false;
-	if(debugDir->AddressOfRawData >= 0x10000000) return false;
-	if(debugDir->PointerToRawData >= 0x10000000) return false;
+	if(!debugDir) return;
+	if(debugDir->Characteristics) return;
+	if(debugDir->Type != IMAGE_DEBUG_TYPE_CODEVIEW) return;
+	if(debugDir->SizeOfData >= 0x100) return;
+	if(debugDir->AddressOfRawData >= 0x10000000) return;
+	if(debugDir->PointerToRawData >= 0x10000000) return;
 
 	const DebugHeader	* debugHeader = (DebugHeader *)(base + debugDir->PointerToRawData);
 
-	if(!debugHeader->SignatureValid()) return false;
+	if(!debugHeader->SignatureValid()) return;
 
 	*probable = true;
 
 	bool	headerProbable;	// thrown away
-	return debugHeader->IsNoGore(&headerProbable);
+	debugHeader->ReadInfo(hookInfo, &headerProbable);
 }
 
 // nogore EXE has debug info pointing to TESVng.pdb (probably something else)
 // however sometimes the debug info is pointing to the wrong place?
-bool IsNoGore(const UInt8 * base)
+void BranchScan(const UInt8 * base, ProcHookInfo * hookInfo)
 {
 	bool	result = false;
 	bool	probable = false;
 
 	// first check the header where it says it should be
-	result = IsNoGore_BasicScan(base, &probable);
+	BranchScan_Basic(base, hookInfo, &probable);
+
 	if(!probable)
 	{
-		_MESSAGE("using slow nogore check");
+		_MESSAGE("using slow branch check");
 
 		// keep scanning, now do the slow and manual way
 		// look for RSDS header in .rdata
@@ -228,11 +226,7 @@ bool IsNoGore(const UInt8 * base)
 				{
 					const DebugHeader	* header = (const DebugHeader *)(sectionBase + i);
 
-					if(header->IsNoGore(&probable))
-					{
-						result = true;
-						break;
-					}
+					header->ReadInfo(hookInfo, &probable);
 
 					if(probable)
 						break;
@@ -240,15 +234,13 @@ bool IsNoGore(const UInt8 * base)
 			}
 			__except(EXCEPTION_EXECUTE_HANDLER)
 			{
-				_WARNING("exception while scanning for nogore");
+				_WARNING("exception while scanning for branch");
 			}
 		}
 	}
-
-	return result;
 }
 
-bool ScanEXE(const char * path, bool * isSteam, bool * isNoGore, bool * isUPX)
+bool ScanEXE(const char * path, ProcHookInfo * hookInfo)
 {
 	// open and map the file in to memory
 	HANDLE	file = CreateFile(path, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -266,9 +258,25 @@ bool ScanEXE(const char * path, bool * isSteam, bool * isNoGore, bool * isUPX)
 		const UInt8	* fileBase = (const UInt8 *)MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0);
 		if(fileBase)
 		{
-			*isSteam = IsSteamImage(fileBase);
-			*isNoGore = IsNoGore(fileBase);
-			*isUPX = IsUPXImage(fileBase);
+			// scan for packing type
+			bool	isSteam = IsSteamImage(fileBase);
+			bool	isUPX = IsUPXImage(fileBase);
+
+			if(isUPX)
+			{
+				hookInfo->procType = kProcType_Packed;
+			}
+			else if(isSteam)
+			{
+				hookInfo->procType = kProcType_Steam;
+			}
+			else
+			{
+				hookInfo->procType = kProcType_Normal;
+			}
+
+			// scan for branch (russian/nogore)
+			BranchScan(fileBase, hookInfo);
 
 			result = true;
 
@@ -291,10 +299,12 @@ bool ScanEXE(const char * path, bool * isSteam, bool * isNoGore, bool * isUPX)
 	return result;
 }
 
+#pragma warning (push)
+#pragma warning (disable : 4065)
+
 bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, ProcHookInfo * hookInfo)
 {
 	UInt64	version;
-	bool	isSteam, isNoGore, isUPX;
 
 	// check file version
 	if(!GetFileVersionNumber(procName, &version))
@@ -305,35 +315,27 @@ bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, 
 
 	_MESSAGE("version = %016I64X", version);
 
-	// check for Steam EXE
-	if(!ScanEXE(procName, &isSteam, &isNoGore, &isUPX))
+	// check protection type
+	if(!ScanEXE(procName, hookInfo))
 	{
-		PrintLoaderError("Failed to identify Steam EXE.");
+		PrintLoaderError("Failed to identify EXE type.");
 		return false;
 	}
 
 	// ### how to tell the difference between nogore versions and standard without a global checksum?
 	// ### since we're mapping the exe to check for steam anyway, checksum the .text segment maybe?
 
-	_MESSAGE(isSteam ? "steam exe" : "normal exe");
-	if(isNoGore) _MESSAGE("nogore");
-	if(isUPX) _MESSAGE("upx");
+	switch(hookInfo->procType)
+	{
+		case kProcType_Steam:	_MESSAGE("steam exe"); break;
+		case kProcType_Normal:	_MESSAGE("normal exe"); break;
+		case kProcType_Packed:	_MESSAGE("packed exe"); break;
+		case kProcType_Unknown:
+		default:				_MESSAGE("unknown exe type"); break;
+	}
 
-	hookInfo->version = version;
-	hookInfo->noGore = isNoGore;
-
-	if(isUPX)
-	{
-		hookInfo->procType = kProcType_Packed;
-	}
-	else if(isSteam)
-	{
-		hookInfo->procType = kProcType_Steam;
-	}
-	else
-	{
-		hookInfo->procType = kProcType_Normal;
-	}
+	if(hookInfo->noGore) _MESSAGE("nogore");
+	if(hookInfo->russian) _MESSAGE("russian");
 
 	bool result = false;
 
@@ -346,55 +348,51 @@ bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, 
 				break;
 		}
 	}
-#if 0
-	else if(isSteam)
-	{
-		// launcher
-		const UInt64 kCurVersion = 0x00010002000E0000;	// 1.2.14.0
-
-		if(version == kCurVersion)
-		{
-			hookInfo->hookCallAddr = 0x00000000;	// would be 0x0040659E, however only thread-loading is supported
-			hookInfo->loadLibAddr = 0x00000000;
-			*dllSuffix = "steam_loader";
-			result = true;
-		}
-	}
-#endif
 	else
 	{
-		if(isUPX)
-		{
-			PrintLoaderError("Packed versions of Skyrim are not supported.");
-		}
-		else
-		{
-			const UInt64 kCurVersion = 0x0001000100150000;	// 1.1.21.0
+		const UInt64 kCurVersion = 0x00010002000C0000;	// 1.2.12.0
 
-			if(version < kCurVersion)
-			{
-				PrintLoaderError("Please update to the latest version of Skyrim.");
-			}
-			else if(version == kCurVersion)
-			{
-				if(isNoGore)
+		if(version < kCurVersion)
+		{
+			PrintLoaderError("Please update to the latest version of Skyrim.");
+		}
+		else if(version > kCurVersion)
+		{
+			PrintLoaderError("You are using a newer version of Skyrim than this version of SKSE supports. If the patch to this version just came out, please be patient while we update our code. In the meantime, please check http://skse.silverlock.org to make sure you're using the latest version of SKSE. (version = %016I64X %08X)", version, PACKED_SKSE_VERSION);
+		}
+		else switch(hookInfo->procType)
+		{
+			case kProcType_Steam:
+			case kProcType_Normal:
+				if(hookInfo->noGore)
 				{
 					PrintLoaderError("No-gore versions of the runtime are not currently supported.");
 				}
+				else if(hookInfo->russian)
+				{
+					PrintLoaderError("The Russian version of Skyrim uses a different runtime than other regions. It is currently unsupported.");
+				}
 				else
 				{
-					hookInfo->hookCallAddr = 0x0111023B;
-					hookInfo->loadLibAddr = 0x012200B4;
-					*dllSuffix = "1_1";
+					hookInfo->hookCallAddr = 0x011143FB;
+					hookInfo->loadLibAddr = 0x012240B4;
+					*dllSuffix = "1_2";
 					result = true;
 				}
-			}
-			else
-			{
-				PrintLoaderError("You are using a newer version of Skyrim than this version of SKSE supports. If the patch to this version just came out, please be patient while we update our code. In the meantime, please check http://skse.silverlock.org to make sure you're using the latest version of SKSE. (version = %016I64X %08X)", version, PACKED_SKSE_VERSION);
-			}
+				break;
+
+			case kProcType_Packed:
+				PrintLoaderError("Packed versions of Skyrim are not supported.");
+				break;
+
+			case kProcType_Unknown:
+			default:
+				PrintLoaderError("Unknown executable type.");
+				break;
 		}
 	}
 
 	return result;
 }
+
+#pragma warning (pop)

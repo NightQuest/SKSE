@@ -51,11 +51,11 @@ public:
 		GFxMovieRoot	* root;
 
 		MEMBER_FN_PREFIX(ObjectInterface);
-		DEFINE_MEMBER_FN(HasMember, bool, 0x009AF5C0, const char * name);
-		DEFINE_MEMBER_FN(GetMember, bool, 0x00996440, const char * name, GFxValue * value);
-		DEFINE_MEMBER_FN(SetMember, bool, 0x00999BD0, const char * name, GFxValue * value);
-		DEFINE_MEMBER_FN(DeleteMember, bool, 0x009AF5F0, const char * name);
-		DEFINE_MEMBER_FN(Invoke, bool, 0x0099FF80, const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
+		DEFINE_MEMBER_FN(HasMember, bool, 0x009AFEC0, const char * name);
+		DEFINE_MEMBER_FN(GetMember, bool, 0x009970D0, const char * name, GFxValue * value);
+		DEFINE_MEMBER_FN(SetMember, bool, 0x0099A770, const char * name, GFxValue * value);
+		DEFINE_MEMBER_FN(DeleteMember, bool, 0x009AFEF0, const char * name);
+		DEFINE_MEMBER_FN(Invoke, bool, 0x009A0A10, const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
 	};
 
 	ObjectInterface	* objectInterface;	// 00
@@ -69,7 +69,7 @@ public:
 	wchar_t *	GetWideString(void);
 
 	MEMBER_FN_PREFIX(GFxValue);
-	DEFINE_MEMBER_FN(ReleaseManaged, void, 0x0078E380);
+	DEFINE_MEMBER_FN(ReleaseManaged, void, 0x0078F880);
 };
 
 STATIC_ASSERT(sizeof(GFxValue) == 0x10);
@@ -128,7 +128,7 @@ public:
 	FxDelegateHandler();
 	~FxDelegateHandler();
 
-	// callbacks run from 00BF5ACE
+	// callbacks run from 00BF613C
 	typedef void (* Callback)(const FxDelegateArgs & params);
 
 	class CallbackProcessor

@@ -9,7 +9,7 @@ public:
 	IMenu();
 	virtual ~IMenu();
 	
-	virtual void	InstallCallbacks(AddCallbackVisitor * visitor);	// called from 00BF59BD
+	virtual void	InstallCallbacks(AddCallbackVisitor * visitor);	// called from 00BF602B
 	virtual void	Unk_02(void);
 	virtual void	Unk_03(void);
 	virtual UInt32	Unk_04(void * arg);
@@ -52,7 +52,7 @@ public:
 	UInt8	unk30;			// 30 - init'd to 0
 
 	// ### customization here
-	DEFINE_MEMBER_FN_LONG(Console, InstallCallbacks_Orig, void, 0x0099CFB0, AddCallbackVisitor * visitor);
+	DEFINE_MEMBER_FN_LONG(Console, InstallCallbacks_Orig, void, 0x0099DC10, AddCallbackVisitor * visitor);
 
 	void	InstallCallbacks_Hooked(AddCallbackVisitor * visitor);
 	typedef void (Console::*InstallCallbacks_Ptr)(AddCallbackVisitor * visitor);

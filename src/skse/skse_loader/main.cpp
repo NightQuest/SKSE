@@ -48,7 +48,7 @@ int main(int argc, char ** argv)
 	// create the process
 	bool	dllHasFullPath = false;
 
-	const char	* procName = g_options.m_launchCS ? "TESConstructionSet.exe" : "TESV.exe";
+	const char	* procName = g_options.m_launchCS ? "CreationKit.exe" : "TESV.exe";
 	const char	* baseDllName = g_options.m_launchCS ? "skse_editor" : "skse";
 
 	char	currentWorkingDirectory[4096];
@@ -279,6 +279,16 @@ static bool InjectDLLThread(PROCESS_INFORMATION * info, const char * dllPath, bo
 static bool DoInjectDLLThread(PROCESS_INFORMATION * info, const char * dllPath, bool sync)
 {
 	bool	result = false;
+
+	// make sure the dll exists
+	IFileStream	fileCheck;
+	if(!fileCheck.Open(dllPath))
+	{
+		PrintLoaderError("Couldn't find %s.", dllPath);
+		return false;
+	}
+
+	fileCheck.Close();
 
 	HANDLE	process = OpenProcess(
 		PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ, FALSE, info->dwProcessId);

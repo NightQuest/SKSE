@@ -1,10 +1,8 @@
-Skyrim Script Extender v1.3.0
+Skyrim Script Extender v1.4.1
 by Ian Patterson, Stephen Abel and Paul Connelly
 (ianpatt, behippo and scruggsywuggsy the ferret)
 
 The Skyrim Script Extender, or SKSE for short, is a modder's resource that expands the scripting capabilities of Skyrim. It does so without modifying the executable files on disk, so there are no permanent side effects.
-
-NOTE: CURRENTLY THIS VERSION DOES NOTHING OTHER THAN PROVIDE A BASE FOR LOADING PLUGINS.
 
 Compatibility:
 
@@ -43,7 +41,7 @@ endif
  - No; the suggested method for extending SKSE is to write a plugin. If this does not meet your needs, please email the contact addresses listed below.
 
 * How do I write a plugin for SKSE?
- - The plugin system is being redesigned to work with the changes added via the new script interpreter. Once this is done I'll update with instructions.
+ - See PluginAPI.h for instructions, as well as the example plugin project included with the rest of the source code.
 
 * Can I include SKSE as part of a mod pack/collection or otherwise rehost the files?
  - No. Providing a link to http://skse.silverlock.org/ is the suggested method of distribution. Exceptions may be given under applicable circumstances; contact us at the email addresses below. This means that if you see this file available for download anywhere other than http://skse.silverlock.org, that service is violating copyright. I don't like having to explicitly spell this out, but my hand has been forced.

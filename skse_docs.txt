@@ -1,0 +1,64 @@
+// Pseudo-actionscript documentation for additional functions added by SKSE
+// I don't really know actionscript well, so the syntax will probably be not totally correct.
+
+dynamic intrinsic class skse
+{
+	// Enable text input for Scaleform UI components.
+	// Each 'true' call must be matched with a 'false' call, or text input will remain enabled.
+	function AllowTextInput(allow : Boolean) : Void;
+	
+	// Write a string to skse.log.
+	function Log(str : String) : Void;
+	
+	// Change an INI setting.
+	// The setting's name must contain the section, for example "fUIMistMenu_CameraX_G:Interface".
+	// Currently only numeric settings are supported.
+	function SetINISetting(settingName : String, data : Number) : Void;
+	
+	// Open a menu. Known menu names:
+	// "Inventory Menu"
+	// "Console"
+	// "Dialogue Menu"
+	// "HUD Menu"
+	// "Main Menu"
+	// "MessageBoxMenu"
+	// "Cursor Menu"
+	// "Fader Menu"
+	// "Magic Menu"
+	// "Top Menu"
+	// "Overlay Menu"
+	// "Overlay Interaction Menu"
+	// "Loading Menu"
+	// "Tween Menu"
+	// "Barter Menu"
+	// "Gift Menu"
+	// "Debug Text Menu"
+	// "Map Menu"
+	// "Lockpicking Menu"
+	// "Quantity Menu"
+	// "Stats Menu"
+	// "Container Menu"
+	// "Sleep/Wait Menu"
+	// "LevelUp Menu"
+	// "Journal Menu"
+	// "Book Menu"
+	// "Favorites Menu"
+	// "RaceSex Menu"
+	// "Crafting Menu"
+	// "Training Menu"
+	// "Mist Menu"
+	// "Tutorial Menu"
+	// "Credits Menu"
+	// "TitleSequence Menu"
+	// "Console Native UI Menu"
+	function OpenMenu(menuName : String) : Void;
+	function CloseMenu(menuName : String) : Void;
+	
+	dynamic intrinsic class version
+	{
+		var	major : Number;			// SKSE major revision number
+		var	minor : Number;			// SKSE minor revision number
+		var	beta : Number;			// SKSE beta revision number
+		var	releaseIdx : Number;	// SKSE release index
+	};
+};

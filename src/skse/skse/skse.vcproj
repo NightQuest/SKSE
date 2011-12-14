@@ -275,6 +275,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GameSettings.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GameSettings.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GameTypes.cpp"
 				>
 			</File>
@@ -338,6 +346,14 @@
 		<Filter
 			Name="hooks"
 			>
+			<File
+				RelativePath=".\Hooks_DirectInput8Create.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_DirectInput8Create.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Hooks_Gameplay.cpp"
 				>

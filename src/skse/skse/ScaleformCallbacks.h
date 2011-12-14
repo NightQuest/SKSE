@@ -1,5 +1,6 @@
 #pragma once
 
+#include "skse/ScaleformAPI.h"
 #include "skse/ScaleformTypes.h"
 #include "skse/Utilities.h"
 
@@ -48,14 +49,10 @@ public:
 	// 4
 	class ObjectInterface
 	{
+	public:
 		GFxMovieRoot	* root;
 
 		MEMBER_FN_PREFIX(ObjectInterface);
-		DEFINE_MEMBER_FN(HasMember, bool, 0x009B1180, const char * name);
-		DEFINE_MEMBER_FN(GetMember, bool, 0x00998140, const char * name, GFxValue * value);
-		DEFINE_MEMBER_FN(SetMember, bool, 0x0099B940, const char * name, GFxValue * value);
-		DEFINE_MEMBER_FN(DeleteMember, bool, 0x009B11B0, const char * name);
-		DEFINE_MEMBER_FN(Invoke, bool, 0x009A1C50, const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
 	};
 
 	ObjectInterface	* objectInterface;	// 00
@@ -64,15 +61,63 @@ public:
 
 	UInt32	GetType(void) const		{ return type & kMask_Type; }
 	bool	IsManaged(void) const	{ return (type & kTypeFlag_Managed) != 0; }
+	void	CleanManaged(void);
 
+	bool		GetBool(void);
 	char *		GetString(void);
 	wchar_t *	GetWideString(void);
+	double		GetNumber(void);
+
+	void	SetUndefined(void);
+	void	SetNull(void);
+	void	SetBool(bool value);
+	void	SetNumber(double value);
 
 	MEMBER_FN_PREFIX(GFxValue);
 	DEFINE_MEMBER_FN(ReleaseManaged, void, 0x0078FE70);
+
+	DEFINE_MEMBER_FN(HasMember, bool, 0x009B1180, const char * name);
+	DEFINE_MEMBER_FN(GetMember, bool, 0x00998140, const char * name, GFxValue * value);
+	DEFINE_MEMBER_FN(SetMember, bool, 0x0099B940, const char * name, GFxValue * value);
+	DEFINE_MEMBER_FN(DeleteMember, bool, 0x009B11B0, const char * name);
+	DEFINE_MEMBER_FN(Invoke, bool, 0x009A1C50, const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
 };
 
 STATIC_ASSERT(sizeof(GFxValue) == 0x10);
+
+class GFxFunctionHandler : public GRefCountBase
+{
+public:
+	// 1C
+	class Args
+	{
+	public:
+		GFxValue		* result;	// 00
+		GFxMovieView	* movie;	// 04
+		GFxValue		* thisObj;	// 08
+		GFxValue		* unk0C;	// 0C
+		GFxValue		* args;		// 10
+		UInt32			numArgs;	// 14
+		void			* refCon;	// 18
+	};
+
+	virtual void	Invoke(Args * args) = 0;
+};
+
+template <typename T>
+void RegisterFunction(GFxValue * dst, GFxMovieView * movie, const char * name)
+{
+	// allocate the handler on the scaleform heap
+	T	* fn = (T *)ScaleformHeap_Allocate(sizeof(T));
+	new(fn) T();
+
+	// create the function object
+	GFxValue	fnValue;
+	movie->CreateFunction(&fnValue, fn);
+
+	// register it
+	CALL_MEMBER_FN(dst, SetMember)(name, &fnValue);
+}
 
 // 04
 class FxResponseArgsBase

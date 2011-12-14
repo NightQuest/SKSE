@@ -549,6 +549,24 @@ public:
 //	void	** _vtbl;
 };
 
+// 04
+class ActorValueOwner
+{
+public:
+	virtual ~ActorValueOwner();
+
+	virtual float	Unk_01(UInt32 arg);
+	virtual float	Unk_02(UInt32 arg);
+	virtual float	Unk_03(UInt32 arg);
+	virtual void	Unk_04(UInt32 arg0, UInt32 arg1);
+	virtual void	Unk_05(UInt32 arg0, UInt32 arg1);
+	virtual void	Unk_06(UInt32 arg0, UInt32 arg1, UInt32 arg2);
+	virtual void	Unk_07(UInt32 arg0, UInt32 arg1);
+	virtual bool	Unk_08(void);
+
+//	void	** _vtbl;	// 00
+};
+
 // 08
 class BSIMusicTrack
 {
@@ -644,6 +662,8 @@ public:
 
 	virtual void	Unk_01(void);
 	virtual void	Unk_02(void);
+
+//	void	** _vtbl;	// 00
 };
 
 // 04
@@ -661,4 +681,26 @@ public:
 	virtual void	Unk_07(void);
 	virtual void	Unk_08(void);
 	virtual void	Unk_09(void);
+
+//	void	** _vtbl;	// 00
+};
+
+// 04
+template <typename T>
+class BSTEventSink
+{
+public:
+	virtual ~BSTEventSink();
+
+	virtual	UInt32	TriggerEvent(UInt32 arg);	// pure
+
+//	void	** _vtbl;	// 00
+};
+
+class BGSOpenCloseForm
+{
+public:
+	virtual ~BGSOpenCloseForm();
+
+//	void	** _vtbl;	// 00
 };

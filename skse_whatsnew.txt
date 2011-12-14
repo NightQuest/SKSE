@@ -1,15 +1,24 @@
-1 beta 3:
+1.4.1:
+- more docs
+- scaleform: CloseMenu
+- preliminary scaleform plugin API
+
+1.4.0:
+- hooked scaleform vm
+- scaleform: AllowTextInput, Log, SetINISetting, OpenMenu, skse.version
+
+1.3.0:
 - support for runtime 1.3.7.0
 - hooked classic script interpreter
 
-1 beta 2.1:
+1.2.1:
 - fix the new bug in runtime 1.2.12.0 regarding spell resistance
 
-1 beta 2:
+1.2.0:
 - lots of form docs
 - support for runtime 1.2.12.0
 
-1 beta 1:
+1.1.0:
 - everything!
 - plugin manager
 - lots of scaleform docs

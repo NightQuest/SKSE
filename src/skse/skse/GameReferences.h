@@ -15,16 +15,6 @@ public:
 };
 
 // 4
-template <typename T>
-class BSTEventSink
-{
-public:
-	virtual ~BSTEventSink();
-
-	virtual UInt32	Unk_01(void * arg);
-};
-
-// 4
 class IAnimationGraphManagerHolder
 {
 public:
@@ -170,7 +160,8 @@ public:
 	float	posX;	// 34
 	float	posY;	// 38
 	float	posZ;	// 3C
-	// 40
+
+	// 40 - ExtraDataList
 };
 
 // 1B0

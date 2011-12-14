@@ -30,7 +30,7 @@ extern const _LookupFormByID LookupFormByID;
  *	04	04	KYWD	BGSKeyword
  *	05	05	LCRT	BGSLocationRefType
  *	06	06	AACT	BGSAction
- *	07	07	TXST	
+ *	07	07	TXST	BGSTextureSet
  *	08	08	MICN	BGSMenuIcon
  *	09	09	GLOB	TESGlobal
  *	0A	0A	CLAS	TESClass
@@ -40,21 +40,21 @@ extern const _LookupFormByID LookupFormByID;
  *	0E	0D	EYES	TESEyes
  *	0F	0E	RACE	TESRace
  *	10	0F	SOUN	
- *	11	10	ASPC	
+ *	11	10	ASPC	BGSAcousticSpace
  *	12	11	SKIL	
  *	13	12	MGEF	EffectSetting
  *	14	13	SCPT	Script
  *	15	14	LTEX	TESLandTexture
- *	16	15	ENCH	
- *	17	16	SPEL	
- *	18	17	SCRL	
- *	19	18	ACTI	
+ *	16	15	ENCH	EnchantmentItem
+ *	17	16	SPEL	SpellItem
+ *	18	17	SCRL	ScrollItem
+ *	19	18	ACTI	TESObjectACTI
  *	1A	19	TACT	
  *	1B	1A	ARMO	
  *	1C	1B	BOOK	
  *	1D	1C	CONT	
  *	1E	1D	DOOR	
- *	1F	1E	INGR	
+ *	1F	1E	INGR	IngredientItem
  *	20	1F	LIGH	
  *	21	20	MISC	
  *	22	21	APPA	
@@ -67,16 +67,16 @@ extern const _LookupFormByID LookupFormByID;
  *	29	27	FLOR	
  *	2A	28	FURN	
  *	2B	29	WEAP	
- *	2C	2A	AMMO	
- *	2D	2B	NPC_	
- *	2E	2C	LVLN	
+ *	2C	2A	AMMO	TESAmmo
+ *	2D	2B	NPC_	TESNPC
+ *	2E	2C	LVLN	TESLevCharacter
  *	2F	2D	KEYM	
- *	30	2E	ALCH	
- *	31	2F	IDLM	BGSDefaultObjectManager? strange
- *	32	30	NOTE	
+ *	30	2E	ALCH	AlchemyItem
+ *	31	2F	IDLM	BGSIdleMarker / BGSDefaultObjectManager? strange
+ *	32	30	NOTE	BGSNote
  *	33	31	COBJ	BGSConstructibleObject
- *	34	32	PROJ	
- *	35	33	HAZD	
+ *	34	32	PROJ	BGSProjectile
+ *	35	33	HAZD	BGSHazard
  *	36	34	SLGM	
  *	37	35	LVLI	
  *	38	36	WTHR	TESWeather
@@ -112,14 +112,14 @@ extern const _LookupFormByID LookupFormByID;
  *	56	54	WATR	TESWaterForm
  *	57	55	EFSH	TESEffectShader
  *	58	56	TOFT	
- *	59	57	EXPL	
+ *	59	57	EXPL	BGSExplosion
  *	5A	58	DEBR	BGSDebris
  *	5B	59	IMGS	TESImageSpace
  *	5C	5A	IMAD	TESImageSpaceModifier
  *	5D	5B	FLST	BGSListForm
  *	5E	5C	PERK	BGSPerk
  *	5F	5D	BPTD	BGSBodyPartData
- *	60	5E	ADDN
+ *	60	5E	ADDN	BGSAddonNode
  *	61	5F	AVIF	ActorValueInfo
  *	62	60	CAMS	BGSCameraShot
  *	63	61	CPTH	BGSCameraPath
@@ -150,11 +150,11 @@ extern const _LookupFormByID LookupFormByID;
  *	7C	7A	SCEN	BGSScene
  *	7D	7B	ASTP	BGSAssociationType
  *	7E	7C	OTFT	BGSOutfit
- *	7F	7D	ARTO	
+ *	7F	7D	ARTO	BGSArtObject
  *	80	7E	MATO	BGSMaterialObject
  *	81	7F	MOVT	BGSMovementType
  *	82	80	SNDR	BGSSoundDescriptorForm
- *	83	81	DUAL
+ *	83	81	DUAL	BGSDualCastData
  *	84	82	SNCT	BGSSoundCategory
  *	85	83	SOPM	BGSSoundOutput
  *	86	84	COLL	BGSCollisionLayer

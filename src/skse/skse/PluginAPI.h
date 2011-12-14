@@ -1,6 +1,8 @@
 #pragma once
 
 typedef UInt32	PluginHandle;	// treat this as an opaque type
+class GFxMovieView;
+class GFxValue;
 
 enum
 {
@@ -9,7 +11,10 @@ enum
 
 enum
 {
-	kInterface_Max = 0,
+	kInterface_Invalid = 0,
+	kInterface_Scaleform,
+
+	kInterface_Max,
 };
 
 struct SKSEInterface
@@ -23,6 +28,27 @@ struct SKSEInterface
 	// call during your Query or Load functions to get a PluginHandle uniquely identifying your plugin
 	// invalid if called at any other time, so call it once and save the result
 	PluginHandle	(* GetPluginHandle)(void);
+};
+
+struct SKSEScaleformInterface
+{
+	enum
+	{
+		kInterfaceVersion = 1
+	};
+
+	UInt32	interfaceVersion;
+
+	// This callback will be called once for every new menu that is created.
+	// Create your objects relative to the 'root' GFxValue parameter.
+	typedef bool (* RegisterCallback)(GFxMovieView * view, GFxValue * root);
+
+	// Register your plugin's scaleform API creation callback here.
+	// The "name" parameter will be used to create an object with the path:
+	// "skse.plugins.name" that will be passed to the callback.
+	// Make sure that the memory it points to is valid from the point the callback
+	// is registered until the game exits.
+	bool	(* Register)(const char * name, RegisterCallback callback);
 };
 
 struct PluginInfo
@@ -41,11 +67,6 @@ typedef bool (* _SKSEPlugin_Query)(const SKSEInterface * skse, PluginInfo * info
 typedef bool (* _SKSEPlugin_Load)(const SKSEInterface * skse);
 
 /**** plugin API docs **********************************************************
- *	
- *	IMPORTANT: Before releasing a plugin, you MUST contact the SKSE team at the
- *	contact addresses listed in skse_readme.txt to register a range of opcodes.
- *	This is required to prevent conflicts between multiple plugins, as each
- *	command must be assigned a unique opcode.
  *	
  *	The base API is pretty simple. Create a project based on the
  *	skse_plugin_example project included with the SKSE source code, then define
@@ -78,14 +99,8 @@ typedef bool (* _SKSEPlugin_Load)(const SKSEInterface * skse);
  *	
  *	bool SKSEPlugin_Load(const SKSEInterface * skse)
  *	
- *	In this function, use the SetOpcodeBase callback in SKSEInterface to set the
- *	opcode base to your assigned value, then use RegisterCommand to register all
- *	of your commands. SKSE will fix up your CommandInfo structure when loaded
- *	in the context of the editor, and will fill in any NULL callbacks with their
- *	default values, so don't worry about having a unique 'execute' callback for
- *	the editor, and don't provide a 'parse' callback unless you're actually
- *	overriding the default behavior. The opcode field will also be automatically
- *	updated with the next opcode in the sequence started by SetOpcodeBase.
+ *	In this function, use the interfaces above to register your commands, patch
+ *	memory, generally do whatever you need to for integration with the runtime.
  *	
  *	At this time, or at any point forward you can call the QueryInterface
  *	callback to retrieve an interface structure for the base services provided

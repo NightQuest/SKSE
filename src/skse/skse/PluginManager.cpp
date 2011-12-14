@@ -27,6 +27,19 @@ static const SKSEInterface g_SKSEInterface =
 	PluginManager::GetPluginHandle
 };
 
+#ifdef RUNTIME
+
+#include "Hooks_Scaleform.h"
+
+static const SKSEScaleformInterface g_SKSEScaleformInterface =
+{
+	SKSEScaleformInterface::kInterfaceVersion,
+
+	RegisterScaleformPlugin
+};
+
+#endif
+
 PluginManager::PluginManager()
 {
 	//
@@ -106,6 +119,10 @@ void * PluginManager::QueryInterface(UInt32 id)
 #ifdef RUNTIME
 	switch(id)
 	{
+	case kInterface_Scaleform:
+		result = (void *)&g_SKSEScaleformInterface;
+		break;
+
 	default:
 		_WARNING("unknown QueryInterface %08X", id);
 		break;

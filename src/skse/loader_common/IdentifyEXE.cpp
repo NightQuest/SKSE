@@ -139,6 +139,7 @@ struct DebugHeader
 
 					out->noGore = strstr(path, "TESVng.pdb") != NULL;	// ### not sure what this will be
 					out->russian = strstr(path, "RussianCode") != NULL;
+					out->japanese = strstr(path, "TESV_JP_1.1.21_PC") != NULL;
 
 					break;
 				}
@@ -371,6 +372,10 @@ bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, 
 				else if(hookInfo->russian)
 				{
 					PrintLoaderError("The Russian version of Skyrim uses a different runtime than other regions. It is currently unsupported.");
+				}
+				else if(hookInfo->japanese)
+				{
+					PrintLoaderError("The Japanese version of Skyrim uses a different runtime than other regions. It is currently unsupported.");
 				}
 				else
 				{

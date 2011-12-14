@@ -23,8 +23,8 @@ public:
 	UInt32	m_uiRefCount;	// 04
 };
 
-// ### not all of this is verified, I'm just assuming that little has changed from
-// ### previous versions of NetImmerse that we have .pdb files for reference
+// ### not all of this is verified, I'm just assuming that little has changed from other
+// ### games using previous versions of NetImmerse that have released .pdb files for reference
 
 // 08
 class NiObject : public NiRefObject

@@ -1,10 +1,15 @@
 #include "skse/PluginAPI.h"
 #include "skse/skse_version.h"
 #include "skse/SafeWrite.h"
+#include "skse/ScaleformCallbacks.h"
+#include "skse/ScaleformMovie.h"
+#include "skse/GameAPI.h"
 
 IDebugLog	gLog("skse_example_plugin.log");
 
 PluginHandle	g_pluginHandle = kPluginHandle_Invalid;
+
+SKSEScaleformInterface	* scaleform = NULL;
 
 void ApplyPatch(UInt32 base, UInt8 * buf, UInt32 len)
 {
@@ -22,6 +27,22 @@ void GameplayPatches(void)
 	};
 
 	ApplyPatch(0x00631E40, kPickpocketChance, sizeof(kPickpocketChance));
+}
+
+class SKSEScaleform_ExampleFunction : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		Console_Print("hello world from example plugin");
+	}
+};
+
+bool RegisterScaleform(GFxMovieView * view, GFxValue * root)
+{
+	RegisterFunction <SKSEScaleform_ExampleFunction>(root, view, "ExampleFunction");
+
+	return true;
 }
 
 extern "C"
@@ -52,6 +73,22 @@ bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info)
 		return false;
 	}
 
+	// get the scaleform interface and query its version
+	scaleform = (SKSEScaleformInterface *)skse->QueryInterface(kInterface_Scaleform);
+	if(!scaleform)
+	{
+		_MESSAGE("couldn't get scaleform interface");
+
+		return false;
+	}
+
+	if(scaleform->interfaceVersion < SKSEScaleformInterface::kInterfaceVersion)
+	{
+		_MESSAGE("scaleform interface too old (%d expected %d)", scaleform->interfaceVersion, SKSEScaleformInterface::kInterfaceVersion);
+
+		return false;
+	}
+
 	// ### do not do anything else in this callback
 	// ### only fill out PluginInfo and return true/false
 
@@ -65,6 +102,9 @@ bool SKSEPlugin_Load(const SKSEInterface * skse)
 
 	// apply patches to the game here
 	GameplayPatches();
+
+	// register scaleform callbacks
+	scaleform->Register("example_plugin", RegisterScaleform);
 
 	return true;
 }

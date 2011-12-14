@@ -6,8 +6,8 @@
 class GRefCountImplCore
 {
 public:
-	GRefCountImplCore();
-	virtual ~GRefCountImplCore();
+	GRefCountImplCore() { }
+	virtual ~GRefCountImplCore() { }
 
 //	void	** _vtbl;			// 00
 	volatile SInt32	refCount;	// 04
@@ -16,22 +16,22 @@ public:
 class GRefCountImpl : public GRefCountImplCore
 {
 public:
-	GRefCountImpl();
-	virtual ~GRefCountImpl();
+	GRefCountImpl() { }
+	virtual ~GRefCountImpl() { }
 };
 
 class GRefCountBaseStatImpl : public GRefCountImpl
 {
 public:
-	GRefCountBaseStatImpl();
-	virtual ~GRefCountBaseStatImpl();
+	GRefCountBaseStatImpl() { }
+	virtual ~GRefCountBaseStatImpl() { }
 };
 
 class GRefCountBase : public GRefCountBaseStatImpl
 {
 public:
-	GRefCountBase();
-	virtual ~GRefCountBase();
+	GRefCountBase() { }
+	virtual ~GRefCountBase() { }
 };
 
 #pragma warning (push)

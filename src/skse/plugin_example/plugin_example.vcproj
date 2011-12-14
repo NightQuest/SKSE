@@ -179,6 +179,42 @@
 		/>
 	</References>
 	<Files>
+		<Filter
+			Name="skse"
+			>
+			<Filter
+				Name="api"
+				>
+				<File
+					RelativePath="..\skse\GameAPI.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\skse\GameAPI.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="scaleform"
+				>
+				<File
+					RelativePath="..\skse\ScaleformAPI.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\skse\ScaleformAPI.h"
+					>
+				</File>
+				<File
+					RelativePath="..\skse\ScaleformCallbacks.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\skse\ScaleformCallbacks.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
 		<File
 			RelativePath=".\exports.def"
 			>

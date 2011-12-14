@@ -3,13 +3,13 @@
 #include "skse/ScaleformTypes.h"
 
 class GFxValue;
+class GFxFunctionHandler;
 
-// 2850?
-class GFxMovieView : GRefCountBase
+class GFxMovieView : public GRefCountBase
 {
 public:
 	GFxMovieView();
-	~GFxMovieView();
+	virtual ~GFxMovieView();
 
 	virtual UInt32	Unk_01(void);
 	virtual UInt32	Unk_02(void);
@@ -23,11 +23,11 @@ public:
 	virtual bool	Unk_0A(void);
 	virtual void	CreateString(GFxValue * value, const char * str);
 	virtual void	CreateWideString(GFxValue * value, const wchar_t * str);
-	virtual void	CreateObject(GFxValue * value, const char * className, GFxValue * args, UInt32 numArgs);
+	virtual void	CreateObject(GFxValue * value, const char * className = NULL, GFxValue * args = NULL, UInt32 numArgs = 0);
 	virtual void	CreateArray(GFxValue * value);
-	virtual void	CreateFunction(GFxValue * value, void * callback, void * refcon);
+	virtual void	CreateFunction(GFxValue * value, GFxFunctionHandler * callback, void * refcon = NULL);
 	virtual void	SetVariable(const char * name, GFxValue * value, UInt32 flags);
-	virtual void	GetVariable(GFxValue * value, const char * name);
+	virtual bool	GetVariable(GFxValue * value, const char * name);
 	virtual bool	SetArray(UInt32 type, const char * name, UInt32 offset, void * buf, UInt32 len, UInt32 flags);
 	virtual bool	ResizeArray(const char * name, UInt32 len, UInt32 flags);
 	virtual UInt32	GetArrayLen(const char * name);

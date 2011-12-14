@@ -12,6 +12,7 @@ STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_3_7_0);
 #include "Hooks_Scaleform.h"
 #include "Hooks_Gameplay.h"
 #include "Hooks_ObScript.h"
+#include "Hooks_DirectInput8Create.h"
 
 #else
 
@@ -82,6 +83,7 @@ void SKSE_Initialize(void)
 		Hooks_Scaleform_Commit();
 		Hooks_Gameplay_Commit();
 		Hooks_ObScript_Commit();
+		Hook_DirectInput8Create_Commit();
 
 		FlushInstructionCache(GetCurrentProcess(), NULL, 0);
 

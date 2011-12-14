@@ -10,6 +10,7 @@ IDebugLog	gLog("skse.log");
 STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_2_12_0);
 
 #include "Hooks_Scaleform.h"
+#include "Hooks_Gameplay.h"
 
 #else
 
@@ -74,6 +75,7 @@ void SKSE_Initialize(void)
 //		Commands_Dump();
 
 //		Hook_Scaleform_Install();
+		Hooks_Gameplay_Install();
 
 		g_pluginManager.Init();
 

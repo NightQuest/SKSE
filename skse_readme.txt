@@ -1,4 +1,4 @@
-Skyrim Script Extender v1 beta 2
+Skyrim Script Extender v1 beta 2.1
 by Ian Patterson, Stephen Abel and Paul Connelly
 (ianpatt, behippo and scruggsywuggsy the ferret)
 

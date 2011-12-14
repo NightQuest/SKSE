@@ -1,3 +1,6 @@
+1 beta 2.1:
+- fix the new bug in runtime 1.2.12.0 regarding spell resistance
+
 1 beta 2:
 - lots of form docs
 - support for runtime 1.2.12.0

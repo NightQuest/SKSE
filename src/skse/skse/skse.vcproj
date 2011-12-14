@@ -315,6 +315,14 @@
 			Name="hooks"
 			>
 			<File
+				RelativePath=".\Hooks_Gameplay.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_Gameplay.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Hooks_Scaleform.cpp"
 				>
 			</File>

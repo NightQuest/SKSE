@@ -1,0 +1,6 @@
+1 beta 1:
+- everything!
+- plugin manager
+- lots of scaleform docs
+- some papyrus docs
+- the obscript code is pretty much the same so there isn't much interesting there yet. will get to patching the runtime table if there are reasons to not use papyrus all the time

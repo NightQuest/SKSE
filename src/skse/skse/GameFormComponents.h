@@ -697,6 +697,7 @@ public:
 //	void	** _vtbl;	// 00
 };
 
+// 04
 class BGSOpenCloseForm
 {
 public:

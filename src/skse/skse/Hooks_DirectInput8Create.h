@@ -4,7 +4,7 @@
 #include <dinput.h>
 #include <queue>
 
-void Hook_DirectInput8Create_Commit(void);
+void Hooks_DirectInput_Commit(void);
 
 enum
 {

@@ -337,6 +337,7 @@ bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, 
 
 	if(hookInfo->noGore) _MESSAGE("nogore");
 	if(hookInfo->russian) _MESSAGE("russian");
+	if(hookInfo->japanese) _MESSAGE("japanese");
 
 	bool result = false;
 
@@ -351,7 +352,7 @@ bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, 
 	}
 	else
 	{
-		const UInt64 kCurVersion = 0x0001000300070000;	// 1.3.7.0
+		const UInt64 kCurVersion = 0x00010003000A0000;	// 1.3.10.0
 
 		if(version < kCurVersion)
 		{
@@ -371,17 +372,19 @@ bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, 
 				}
 				else if(hookInfo->russian)
 				{
+					// these alternate forks of the code base will be supported once they are merged with the trunk
 					PrintLoaderError("The Russian version of Skyrim uses a different runtime than other regions. It is currently unsupported.");
 				}
 				else if(hookInfo->japanese)
 				{
+					// these alternate forks of the code base will be supported once they are merged with the trunk
 					PrintLoaderError("The Japanese version of Skyrim uses a different runtime than other regions. It is currently unsupported.");
 				}
 				else
 				{
-					hookInfo->hookCallAddr = 0x0111156B;
-					hookInfo->loadLibAddr = 0x0120D0B4;
-					*dllSuffix = "1_3";
+					hookInfo->hookCallAddr = 0x011125DB;
+					hookInfo->loadLibAddr = 0x0120E0B4;
+					*dllSuffix = "1_3_10";
 					
 					result = true;
 				}

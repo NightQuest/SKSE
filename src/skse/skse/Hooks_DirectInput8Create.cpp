@@ -212,9 +212,9 @@ static HRESULT _stdcall Hook_DirectInput8Create_Execute(HINSTANCE instance, DWOR
 	return DI_OK;
 }
 
-void Hook_DirectInput8Create_Commit(void)
+void Hooks_DirectInput_Commit(void)
 {
-	UInt32 thunkAddress = 0x0120D01C;
+	UInt32 thunkAddress = 0x0120E01C;
 
 	DICreate_RealFunc = (CreateDInputProc)*(DWORD *)thunkAddress;
 	SafeWrite32(thunkAddress, (DWORD)Hook_DirectInput8Create_Execute);

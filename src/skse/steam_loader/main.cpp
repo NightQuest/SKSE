@@ -8,6 +8,7 @@
 #include <intrin.h>
 
 IDebugLog	gLog("skse_steam_loader.log");
+HANDLE		g_dllHandle;
 
 static void OnAttach(void);
 
@@ -33,6 +34,8 @@ BOOL WINAPI DllMain(HANDLE procHandle, DWORD reason, LPVOID reserved)
 {
 	if(reason == DLL_PROCESS_ATTACH)
 	{
+		g_dllHandle = procHandle;
+
 		OnAttach();
 	}
 
@@ -219,6 +222,7 @@ static void OnAttach(void)
 	GetSystemTimeAsFileTime(&now);
 
 	_MESSAGE("skse loader %08X (steam) %08X%08X", PACKED_SKSE_VERSION, now.dwHighDateTime, now.dwLowDateTime);
+	_MESSAGE("base addr = %08X", g_dllHandle);
 
 	UInt32	oldProtect;
 

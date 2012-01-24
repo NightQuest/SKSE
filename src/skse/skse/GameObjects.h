@@ -39,6 +39,7 @@ public:
 	virtual void	Unk_47(UInt32 arg);
 	virtual UInt32	Unk_48(void);
 	virtual UInt32	Unk_49(UInt32 arg);	// return Unk_3E(arg, 0);
+										// model-related?
 	virtual bool	Unk_4A(void);
 	virtual bool	Unk_4B(void * arg0, BSString * dst);	// steal/take string
 	virtual bool	Unk_4C(void * arg0, UInt8 arg1, UInt32 arg2, float arg3);
@@ -615,4 +616,132 @@ public:
 	UInt32	unk64;		// 64
 	UInt16	unk68;		// 68
 	UInt8	pad6A[2];	// 6A
+};
+
+// 74
+class BGSTalkingActivator : public TESObjectACTI
+{
+public:
+	void			* unk6C;	// 6C
+	BGSVoiceType	* unk70;	// 70
+};
+
+// 7C
+class TESFlora : public TESObjectACTI
+{
+public:
+	// parents
+	TESProduceForm	produce;	// 6C
+};
+
+// 84
+class TESFurniture : public TESObjectACTI
+{
+public:
+	// 4
+	struct Data78
+	{
+		UInt8	unk0;		// 0
+		UInt8	unk1;		// 1
+		UInt8	pad2[2];	// 2
+	};
+
+	TESActorBaseData::Data2C	unk6C;
+	Data78	unk78;	// 78
+	UInt32	unk7C;	// 7C
+	UInt32	unk80;	// 80
+};
+
+// 74
+class TESObjectCONT : public TESBoundAnimObject
+{
+public:
+	// parents
+	TESContainer				container;		// 20
+	TESFullName					fullName;		// 2C
+	TESModelTextureSwap			texSwap;		// 34
+	TESWeightForm				weight;			// 50
+	BGSDestructibleObjectForm	destructible;	// 58
+	BGSOpenCloseForm			openClose;		// 60
+
+	// members
+	UInt32	unk64;		// 64
+	UInt32	unk68;		// 68
+	UInt32	unk6C;		// 6C
+	UInt8	unk70;		// 70
+	UInt8	pad71[3];	// 71
+};
+
+// 70
+class TESObjectDOOR : public TESBoundAnimObject
+{
+public:
+	// parents
+	TESFullName					fullName;		// 20
+	TESModelTextureSwap			texSwap;		// 28
+	BGSDestructibleObjectForm	destructible;	// 44
+	BGSOpenCloseForm			openClose;		// 4C
+
+	// members
+	UInt32	unk50;		// 50
+	UInt32	unk54;		// 54
+	UInt32	unk58;		// 58
+	UInt32	unk5C;		// 5C
+	UInt8	unk60;		// 60
+	UInt8	pad61[3];	// 61
+	TESActorBaseData::Data2C	unk64;	// 64
+};
+
+// B4
+class TESObjectLIGH : public TESBoundAnimObject
+{
+public:
+	// parents
+	TESFullName					fullName;		// 20
+	TESModelTextureSwap			texSwap;		// 28
+	TESIcon						icon;			// 44
+	BGSMessageIcon				messageIcon;	// 4C
+	TESWeightForm				weight;			// 58
+	TESValueForm				value;			// 60
+	BGSDestructibleObjectForm	destructible;	// 68
+	BGSEquipType				equipType;		// 70
+
+	// members (78)
+
+	// 28
+	struct Data78
+	{
+		UInt32	unk00;	// 00
+		UInt32	unk04;	// 04
+		UInt32	unk08;	// 08
+		UInt32	unk0C;	// 0C
+		UInt32	unk10;	// 10
+		float	unk14;	// 14 - 90
+		float	unk18;	// 18 - .001
+		UInt32	unk1C;	// 1C
+		UInt32	unk20;	// 20
+		UInt32	unk24;	// 24
+	};
+
+	struct DataA8
+	{
+		UInt32	unk0;	// 0
+		UInt32	unk4;	// 4
+		UInt32	unk8;	// 8
+	};
+
+	Data78	unk78;	// 78
+	float	unkA0;	// A0 - 1
+	UInt32	unkA4;	// A4
+	DataA8	unkA8;	// A8
+};
+
+STATIC_ASSERT(sizeof(TESObjectLIGH) == 0xB4);
+
+// 2C
+class TESSound : public TESBoundAnimObject
+{
+public:
+	BSString	unk20;	// 20
+	UInt32		unk28;	// 28
 };

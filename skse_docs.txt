@@ -14,6 +14,7 @@ dynamic intrinsic class skse
 	// The setting's name must contain the section, for example "fUIMistMenu_CameraX_G:Interface".
 	// Currently only numeric settings are supported.
 	function SetINISetting(settingName : String, data : Number) : Void;
+	function GetINISetting(settingName : String) : Number;
 	
 	// Open a menu. Known menu names:
 	// "Inventory Menu"

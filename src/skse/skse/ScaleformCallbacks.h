@@ -74,13 +74,13 @@ public:
 	void	SetNumber(double value);
 
 	MEMBER_FN_PREFIX(GFxValue);
-	DEFINE_MEMBER_FN(ReleaseManaged, void, 0x0078FE70);
+	DEFINE_MEMBER_FN(ReleaseManaged, void, 0x007917B0);
 
-	DEFINE_MEMBER_FN(HasMember, bool, 0x009B1180, const char * name);
-	DEFINE_MEMBER_FN(GetMember, bool, 0x00998140, const char * name, GFxValue * value);
-	DEFINE_MEMBER_FN(SetMember, bool, 0x0099B940, const char * name, GFxValue * value);
-	DEFINE_MEMBER_FN(DeleteMember, bool, 0x009B11B0, const char * name);
-	DEFINE_MEMBER_FN(Invoke, bool, 0x009A1C50, const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
+	DEFINE_MEMBER_FN(HasMember, bool, 0x009B2430, const char * name);
+	DEFINE_MEMBER_FN(GetMember, bool, 0x00999590, const char * name, GFxValue * value);
+	DEFINE_MEMBER_FN(SetMember, bool, 0x0099CB90, const char * name, GFxValue * value);
+	DEFINE_MEMBER_FN(DeleteMember, bool, 0x009B2460, const char * name);
+	DEFINE_MEMBER_FN(Invoke, bool, 0x009A2D00, const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
 };
 
 STATIC_ASSERT(sizeof(GFxValue) == 0x10);

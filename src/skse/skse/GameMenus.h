@@ -169,11 +169,11 @@ public:
 	// this takes ownership of the message ptr
 //	DEFINE_MEMBER_FN(AddMessage, void, 0x004500C0, UIMessage * msg);	// old 1.1 implementation
 	// 1.3 uses a little non-thread-safe pool of UIMessages to wrap around the nicely thread-safe BSTMessageQueue it gets added to
-	DEFINE_MEMBER_FN(AddMessage, void, 0x0044FDE0, StringCache::Ref * strData, UInt32 msgID, void * objData);
+	DEFINE_MEMBER_FN(AddMessage, void, 0x00450030, StringCache::Ref * strData, UInt32 msgID, void * objData);
 
 	static UIManager *	GetSingleton(void)
 	{
-		return *((UIManager **)0x014A33BC);
+		return *((UIManager **)0x014A43BC);
 	}
 };
 
@@ -251,7 +251,7 @@ public:
 
 	static UIStringHolder *	GetSingleton(void)
 	{
-		return *((UIStringHolder **)0x014A33B8);
+		return *((UIStringHolder **)0x014A43B8);
 	}
 };
 

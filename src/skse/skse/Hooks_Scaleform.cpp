@@ -82,6 +82,15 @@ public:
 	}
 };
 
+static Setting * GetINISetting(const char * name)
+{
+	Setting	* setting = CALL_MEMBER_FN(*g_iniSettingCollection, Get)(name);
+	if(!setting)
+		setting = CALL_MEMBER_FN(*g_iniPrefSettingCollection, Get)(name);
+
+	return setting;
+}
+
 class SKSEScaleform_SetINISetting : public GFxFunctionHandler
 {
 public:
@@ -96,15 +105,50 @@ public:
 		_MESSAGE("scaleform: SetINISetting %s %f", settingName, settingValue);
 #endif
 
-		Setting	* setting = CALL_MEMBER_FN(*g_iniSettingCollection, Get)(settingName);
-		if(!setting)
-			setting = CALL_MEMBER_FN(*g_iniPrefSettingCollection, Get)(settingName);
+		Setting	* setting = GetINISetting(settingName);
 
 		if(setting)
 		{
 			if(!setting->SetDouble(settingValue))
 			{
 				_MESSAGE("tried to set a non-floating-point setting (%s)", settingName);
+			}
+		}
+		else
+		{
+			_MESSAGE("setting not found (%s)", settingName);
+		}
+	}
+};
+
+class SKSEScaleform_GetINISetting : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		ASSERT(args->numArgs >= 1);
+
+		const char	* settingName = args->args[0].GetString();
+
+#if _DEBUG
+		_MESSAGE("scaleform: GetINISetting %s", settingName);
+#endif
+
+		Setting	* setting = GetINISetting(settingName);
+
+		args->result->SetNull();
+
+		if(setting)
+		{
+			double	result;
+
+			if(!setting->GetDouble(&result))
+			{
+				_MESSAGE("tried to get a non-floating-point setting (%s)", settingName);
+			}
+			else
+			{
+				args->result->SetNumber(result);
 			}
 		}
 		else
@@ -191,6 +235,7 @@ void InstallHooks(GFxMovieView * view)
 	RegisterFunction <SKSEScaleform_AllowTextInput>(&skse, view, "AllowTextInput");
 	RegisterFunction <SKSEScaleform_Log>(&skse, view, "Log");
 	RegisterFunction <SKSEScaleform_SetINISetting>(&skse, view, "SetINISetting");
+	RegisterFunction <SKSEScaleform_GetINISetting>(&skse, view, "GetINISetting");
 	RegisterFunction <SKSEScaleform_OpenMenu>(&skse, view, "OpenMenu");
 	RegisterFunction <SKSEScaleform_CloseMenu>(&skse, view, "CloseMenu");
 
@@ -240,5 +285,5 @@ public:
 
 void Hooks_Scaleform_Commit(void)
 {
-	WriteRelCall(0x00BF1389, GetFnAddr(&GFxMovieViewSafePtr::Get_Hooked));
+	WriteRelCall(0x00BF2A09, GetFnAddr(&GFxMovieViewSafePtr::Get_Hooked));
 }

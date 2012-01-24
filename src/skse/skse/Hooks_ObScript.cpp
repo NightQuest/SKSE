@@ -5,12 +5,12 @@
 
 CommandTable	g_commandTable;
 
-const CommandInfo	* g_blockTypeStart =		(CommandInfo *)0x01411050;
-const CommandInfo	* g_blockTypeEnd =			(CommandInfo *)0x014115C8;
-const CommandInfo	* g_consoleCommandsStart =	(CommandInfo *)0x014115F0;
-const CommandInfo	* g_consoleCommandsEnd =	(CommandInfo *)0x014145C0;
-const CommandInfo	* g_scriptCommandsStart =	(CommandInfo *)0x014145E8;
-const CommandInfo	* g_scriptCommandsEnd =		(CommandInfo *)0x0141B780;
+const CommandInfo	* g_blockTypeStart =		(CommandInfo *)0x01412050;
+const CommandInfo	* g_blockTypeEnd =			(CommandInfo *)0x014125C8;
+const CommandInfo	* g_consoleCommandsStart =	(CommandInfo *)0x014125F0;
+const CommandInfo	* g_consoleCommandsEnd =	(CommandInfo *)0x014155C0;
+const CommandInfo	* g_scriptCommandsStart =	(CommandInfo *)0x014155E8;
+const CommandInfo	* g_scriptCommandsEnd =		(CommandInfo *)0x0141C780;
 
 static bool IsEmptyStr(const char * data)
 {
@@ -81,62 +81,62 @@ void ObScript_DumpCommands(void)
 	DumpCommands(g_scriptCommandsStart, g_scriptCommandsEnd);
 }
 
-// 1.3.7.0 runtime
+// 1.3.10.0 runtime
 static const CommandTable::PatchLocation kPatch_ScriptCommands_Start[] =
 {
-	{	0x00587222, 0x00 },
-	{	0x00587A51, 0x00 },
-	{	0x00587A6E, 0x04 },
-	{	0x00587A98, 0x08 },
-	{	0x005ACC05, 0x0C },
-	{	0x005ACC28, 0x00 },
-	{	0x005ACC4B, 0x04 },
-	{	0x005ACC6B, 0x0C },
-	{	0x005ACC81, 0x0C },
-	{	0x005ACCA1, 0x04 },
-	{	0x005ACCB3, 0x04 },
-	{	0x005ACCCF, 0x0C },
-	{	0x005ACCDF, 0x04 },
-	{	0x005ACCEF, 0x00 },
-	{	0x005ACD14, 0x0C },
-	{	0x005ACD24, 0x00 },
-	{	0x005ACD4C, 0x04 },
-	{	0x005ACD5E, 0x04 },
-	{	0x005ACD7A, 0x04 },
-	{	0x005ACD8A, 0x00 },
-	{	0x005ACDAF, 0x00 },
-	{	0x006A51AD, 0x20 },
-	{	0x006A51C4, 0x10 },
-	{	0x006A51F1, 0x20 },
-	{	0x006A596C, 0x14 },
-	{	0x006A5C9F, 0x12 },
-	{	0x006A5D93, 0x14 },
-	{	0x006A5DDC, 0x14 },
-	{	0x006A5E66, 0x14 },
-	{	0x006A5E82, 0x14 },
-	{	0x0079805B, 0x12 },
-	{	0x0079809A, 0x14 },
+	{	0x005889D2, 0x00 },
+	{	0x00589201, 0x00 },
+	{	0x0058921E, 0x04 },
+	{	0x00589248, 0x08 },
+	{	0x005AE4B5, 0x0C },
+	{	0x005AE4D8, 0x00 },
+	{	0x005AE4FB, 0x04 },
+	{	0x005AE51B, 0x0C },
+	{	0x005AE531, 0x0C },
+	{	0x005AE551, 0x04 },
+	{	0x005AE563, 0x04 },
+	{	0x005AE57F, 0x0C },
+	{	0x005AE58F, 0x04 },
+	{	0x005AE59F, 0x00 },
+	{	0x005AE5C4, 0x0C },
+	{	0x005AE5D4, 0x00 },
+	{	0x005AE5FC, 0x04 },
+	{	0x005AE60E, 0x04 },
+	{	0x005AE62A, 0x04 },
+	{	0x005AE63A, 0x00 },
+	{	0x005AE65F, 0x00 },
+	{	0x006A67ED, 0x20 },
+	{	0x006A6804, 0x10 },
+	{	0x006A6831, 0x20 },
+	{	0x006A6FAC, 0x14 },
+	{	0x006A72DF, 0x12 },
+	{	0x006A73D3, 0x14 },
+	{	0x006A741C, 0x14 },
+	{	0x006A74A6, 0x14 },
+	{	0x006A74C2, 0x14 },
+	{	0x00799A9B, 0x12 },
+	{	0x00799ADA, 0x14 },
 	{	0 },
 };
 
 static const CommandTable::PatchLocation kPatch_ScriptCommands_End[] =
 {
-	{	0x00584DD9, 0x08 },
+	{	0x00586589, 0x08 },
 	{	0 },
 };
 
 static const CommandTable::PatchLocation kPatch_ScriptCommands_MaxIdx[] =
 {
-	{	0x0056A919 + 1, 0 },
-	{	0x00584DD7 + 6, 0 },
-	{	0x0058720B + 3, 0 },
-	{	0x00587A40 + 3, (UInt32)(-0x1000) },
-	{	0x005ACBD8 + 6, (UInt32)(-0x1000) },
+	{	0x0056C039 + 1, 0 },
+	{	0x00586587 + 6, 0 },
+	{	0x005889BB + 3, 0 },
+	{	0x005891F0 + 3, (UInt32)(-0x1000) },
+	{	0x005AE488 + 6, (UInt32)(-0x1000) },
 
 	// condition stuff
-	{	0x006A4408 + 3,	0 },
-	{	0x006A4425 + 3, (UInt32)(-0x1000) },
-	{	0x006A4444 + 3, (UInt32)(-0x1000) },
+	{	0x006A5A48 + 3,	0 },
+	{	0x006A5A65 + 3, (UInt32)(-0x1000) },
+	{	0x006A5A84 + 3, (UInt32)(-0x1000) },
 
 	{	0 },
 };

@@ -1,8 +1,8 @@
 #include "CommandTable.h"
 #include "SafeWrite.h"
 
-const Cmd_Parse		g_defaultParseCommand =		(Cmd_Parse)0x00587C40;
-const _ExtractArgs	ExtractArgs =				(_ExtractArgs)0x00582CB0;
+const Cmd_Parse		g_defaultParseCommand =		(Cmd_Parse)0x005893F0;
+const _ExtractArgs	ExtractArgs =				(_ExtractArgs)0x00584420;
 
 static const CommandInfo kPaddingCommand =
 {

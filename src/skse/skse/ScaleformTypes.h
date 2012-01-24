@@ -65,8 +65,8 @@ public:
 	UInt32	GetHeapInfo(void);
 
 	MEMBER_FN_PREFIX(GString);
-	DEFINE_MEMBER_FN(Init, GString *, 0x00AA2AF0, const char * str);
-	DEFINE_MEMBER_FN(Destroy, void, 0x00998420);
+	DEFINE_MEMBER_FN(Init, GString *, 0x00AA3750, const char * str);
+	DEFINE_MEMBER_FN(Destroy, void, 0x00999870);
 };
 
 #pragma warning (pop)

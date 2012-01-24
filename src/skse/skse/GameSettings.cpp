@@ -1,7 +1,7 @@
 #include "GameSettings.h"
 
-extern GameSettingCollection	** g_iniSettingCollection = (GameSettingCollection **)0x015DA708;
-extern GameSettingCollection	** g_iniPrefSettingCollection = (GameSettingCollection **)0x015D225C;
+extern GameSettingCollection	** g_iniSettingCollection = (GameSettingCollection **)0x015DB708;
+extern GameSettingCollection	** g_iniPrefSettingCollection = (GameSettingCollection **)0x015D325C;
 
 UInt32 Setting::GetType(void) const
 {

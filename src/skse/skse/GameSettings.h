@@ -56,7 +56,7 @@ public:
 	Entry	items;	// 10C
 
 	MEMBER_FN_PREFIX(GameSettingCollection);
-	DEFINE_MEMBER_FN(Get, Setting *, 0x005A70A0, const char * name);
+	DEFINE_MEMBER_FN(Get, Setting *, 0x005A8890, const char * name);
 };
 
 extern GameSettingCollection	** g_iniSettingCollection;

@@ -39,7 +39,7 @@ extern const _LookupFormByID LookupFormByID;
  *	0D	xx	HAIR	TESHair
  *	0E	0D	EYES	TESEyes
  *	0F	0E	RACE	TESRace
- *	10	0F	SOUN	
+ *	10	0F	SOUN	TESSound
  *	11	10	ASPC	BGSAcousticSpace
  *	12	11	SKIL	
  *	13	12	MGEF	EffectSetting
@@ -49,13 +49,13 @@ extern const _LookupFormByID LookupFormByID;
  *	17	16	SPEL	SpellItem
  *	18	17	SCRL	ScrollItem
  *	19	18	ACTI	TESObjectACTI
- *	1A	19	TACT	
+ *	1A	19	TACT	BGSTalkingActivator
  *	1B	1A	ARMO	
  *	1C	1B	BOOK	
- *	1D	1C	CONT	
- *	1E	1D	DOOR	
+ *	1D	1C	CONT	TESObjectCONT
+ *	1E	1D	DOOR	TESObjectDOOR
  *	1F	1E	INGR	IngredientItem
- *	20	1F	LIGH	
+ *	20	1F	LIGH	TESObjectLIGH
  *	21	20	MISC	
  *	22	21	APPA	
  *	23	22	STAT	
@@ -64,8 +64,8 @@ extern const _LookupFormByID LookupFormByID;
  *	26	25	GRAS	
  *	27	26	TREE	
  *	28	xx	CLDC	BGSCloudClusterForm
- *	29	27	FLOR	
- *	2A	28	FURN	
+ *	29	27	FLOR	TESFlora
+ *	2A	28	FURN	TESFurniture
  *	2B	29	WEAP	
  *	2C	2A	AMMO	TESAmmo
  *	2D	2B	NPC_	TESNPC

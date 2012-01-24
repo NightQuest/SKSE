@@ -298,7 +298,11 @@ static const MinVersionEntry	kMinVersionList[] =
 {
 	// early versions of elys skill uncapper are passing in a unicode string for the name (and doing their work in Query so this doesn't even really matter)
 	// block based on version resource?
-	{	"S",	0xFFFFFFFF,	"broken name (unicode)",	kCompat_BlockFromRuntime | kCompat_BlockFromEditor },
+	{	"S",		0xFFFFFFFF,	"broken name (unicode)",	kCompat_BlockFromRuntime | kCompat_BlockFromEditor },
+
+	// first revision of TESVAL had a broken patch, version 2 and later are fixed
+	{	"TESVAL",	2,			"please upgrade to version 2 or later: http://www.skyrimnexus.com/downloads/file.php?id=4387",
+															kCompat_BlockFromRuntime },
 
 	{	NULL, 0, NULL }
 };

@@ -6,6 +6,7 @@
 #include "loader_common/Error.h"
 #include "Options.h"
 #include "Inject.h"
+#include "Steam.h"
 #include "skse/skse_version.h"
 
 IDebugLog	gLog("skse_loader.log");
@@ -124,6 +125,17 @@ int main(int argc, char ** argv)
 
 	if(procHookInfo.procType == kProcType_Steam)
 	{
+		// if steam isn't running, launch it
+		if(!SteamCheckPassive())
+		{
+			_MESSAGE("steam not running, launching it");
+
+			if(!SteamLaunch())
+			{
+				_WARNING("failed to launch steam");
+			}
+		}
+
 		// same for standard and nogore
 		const char * kAppID = "72850";
 
@@ -146,7 +158,7 @@ int main(int argc, char ** argv)
 		NULL,	// no args
 		NULL,	// default process security
 		NULL,	// default thread security
-		TRUE,	// don't inherit handles
+		FALSE,	// don't inherit handles
 		CREATE_SUSPENDED,
 		NULL,	// no new environment
 		NULL,	// no new cwd

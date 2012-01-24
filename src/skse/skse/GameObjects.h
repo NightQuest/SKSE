@@ -745,3 +745,375 @@ public:
 	BSString	unk20;	// 20
 	UInt32		unk28;	// 28
 };
+
+// 54
+class TESGrass : public TESBoundObject
+{
+public:
+	virtual UInt8	GetUnk34(void);				// return unk34;
+	virtual bool	SetUnk34(UInt8 data);		// if(data > 100) return false;
+												// unk34 = data; return true;
+	virtual UInt8	GetUnk35(void);				// return unk35;
+	virtual bool	SetUnk35(UInt8 data);		// if(data > 90) return false;
+												// if(data > unk36) return false;
+												// unk35 = data; return true;
+	virtual UInt8	GetUnk36(void);				// return unk36;
+	virtual bool	SetUnk36(UInt8 data);		// if(data > 90) return false;
+												// if(data < unk35) return false;
+												// unk36 = data; return true;
+	virtual float	GetUnk35_Float(void);		// return unk35 * (M_PI / 180);
+	virtual float	GetUnk36_Float(void);		// return unk36 * (M_PI / 180);
+	virtual UInt16	GetUnk38(void);				// return unk38;
+	virtual void	SetUnk38(UInt16 data);		// unk38 = data;
+	virtual UInt32	GetUnk3C(void);				// return unk3C;
+	virtual void	SetUnk3C(UInt32 data);		// unk3C = data;
+	virtual float	GetUnk40(void);				// return unk40;
+	virtual bool	SetUnk40(float data);		// if((data < 0) || (data > 512)) return false;
+												// unk40 = data; return true;
+	virtual float	GetUnk44(void);				// return unk44;
+	virtual bool	SetUnk44(float data);		// if((data < 0) || (data > 1)) return false;
+												// unk44 = data; return true;
+	virtual float	GetUnk48(void);				// return unk48;
+	virtual bool	GetUnk48(float data);		// if((data < 0) || (data > 1)) return false;
+												// unk48 = data; return true;
+	virtual float	GetUnk4C(void);				// return unk4C;
+	virtual bool	SetUnk4C(float data);		// if(data <= 0) return false;
+												// unk4C = data; return true;
+	virtual bool	GetUnk50_01(void);			// return (unk50 & 1) != 0;
+	virtual void	SetUnk50_01(UInt8 data);	// if(data) unk50 |= 1; else unk50 &= ~1;
+	virtual bool	GetUnk50_02(void);			// return (unk50 & 2) != 0;
+	virtual void	SetUnk50_02(UInt8 data);	// if(data) unk50 |= 2; else unk50 &= ~2;
+	virtual bool	GetUnk50_04(void);			// return (unk50 & 4) != 0;
+	virtual void	SetUnk50_04(UInt8 data);	// if(data) unk50 |= 4; else unk50 &= ~4;
+
+	// parents
+	TESModel	model;		// 20
+
+	// members
+	UInt8		unk34;		// 34
+	UInt8		unk35;		// 35 - degrees
+	UInt8		unk36;		// 36 - degrees
+	UInt8		pad37;		// 37
+	UInt16		unk38;		// 38
+	UInt8		pad3A[2];	// 3A
+	UInt32		unk3C;		// 3C
+	float		unk40;		// 40
+	float		unk44;		// 44
+	float		unk48;		// 48
+	float		unk4C;		// 4C
+	UInt8		unk50;		// 50
+	UInt8		pad51[3];	// 51
+};
+
+// 34
+class TESLevItem : public TESBoundObject
+{
+public:
+	// parents
+	TESLeveledList	leveledList;	// 20
+};
+
+// 34
+class TESLevSpell : public TESBoundObject
+{
+public:
+	// parents
+	TESLeveledList	leveledList;	// 20
+};
+
+// 12C
+class TESObjectARMO : public TESBoundObject
+{
+public:
+	// parents
+	TESFullName					fullName;		// 020
+	TESRaceForm					race;			// 028
+	TESEnchantableForm			enchantable;	// 030
+	TESValueForm				value;			// 040
+	TESWeightForm				weight;			// 048
+	BGSDestructibleObjectForm	destructible;	// 050
+	BGSPickupPutdownSounds		pickupSounds;	// 058
+	TESBipedModelForm			bipedModel;		// 064
+	BGSEquipType				equipType;		// 0DC
+	BGSBipedObjectForm			bipedObject;	// 0E4
+	BGSBlockBashData			blockBash;		// 0F4
+	BGSKeywordForm				keyword;		// 100
+	TESDescription				description;	// 10C
+
+	// members
+	UInt32	unk118;	// 118
+	TESActorBaseData::Data2C	unk11C;	// 11C
+	UInt32	unk128;	// 128
+};
+
+// AC
+class TESObjectBOOK : public TESBoundObject
+{
+public:
+	// parents
+	TESFullName					fullName;		// 20
+	TESModelTextureSwap			texSwap;		// 28
+	TESIcon						icon;			// 44
+	TESValueForm				value;			// 4C
+	TESWeightForm				weight;			// 54
+	TESDescription				description;	// 5C
+	BGSDestructibleObjectForm	destructible;	// 68
+	BGSMessageIcon				messageIcon;	// 70
+	BGSPickupPutdownSounds		pickupSounds;	// 7C
+	BGSKeywordForm				keyword;		// 88
+
+	// members
+	struct Data94
+	{
+		UInt32	unk0;	// 0
+		UInt32	unk4;	// 4
+	};
+
+	Data94	unk94;	// 94
+	UInt32	unk9C;	// 9C
+};
+
+// 88
+class TESObjectMISC : public TESBoundObject
+{
+public:
+	// parents
+	TESFullName					fullName;		// 20
+	TESModelTextureSwap			texSwap;		// 28
+	TESIcon						icon;			// 44
+	TESValueForm				value;			// 4C
+	TESWeightForm				weight;			// 54
+	BGSDestructibleObjectForm	destructible;	// 5C
+	BGSMessageIcon				messageIcon;	// 64
+	BGSPickupPutdownSounds		pickupSounds;	// 70
+	BGSKeywordForm				keyword;		// 7C
+
+	virtual void	Unk_52(void);
+	virtual void	Unk_53(UInt32 arg0, UInt32 arg1);
+	virtual void	Unk_54(void);
+};
+
+// 9C
+class BGSApparatus : public TESObjectMISC
+{
+public:
+	// parents
+	TESQualityForm	quality;		// 88
+	TESDescription	description;	// 90
+};
+
+// 88
+class TESKey : public TESObjectMISC
+{
+public:
+};
+
+// 90
+class TESSoulGem : public TESObjectMISC
+{
+public:
+	UInt32	unk88;		// 88
+	UInt8	unk8C;		// 8C
+	UInt8	unk8D;		// 8D
+	UInt8	pad8E[2];	// 8E
+};
+
+// 44
+class TESObjectSTAT : public TESBoundObject
+{
+public:
+	// parents
+	TESModelTextureSwap		texSwap;	// 20
+	
+	// members
+	// 8
+	struct Data3C
+	{
+		float	unk0;
+		UInt32	unk4;
+	};
+
+	Data3C	unk3C;	// 3C
+};
+
+// 5C
+// they probably wanted this to derive from TESObjectSTAT first
+// doesn't really hurt anything except performance (shims)
+class BGSMovableStatic : public TESFullName
+{
+public:
+	// parents
+	BGSDestructibleObjectForm	destructible;	// 08
+	TESObjectSTAT				staticObj;		// 10
+
+	// members
+	UInt8	unk58;		// 58
+	UInt8	pad59[3];	// 59
+};
+
+// 84
+class TESObjectTREE : public TESBoundObject
+{
+public:
+	// parents
+	TESModel		model;		// 20
+	TESFullName		fullName;	// 34
+	TESProduceForm	produce;	// 3C
+	
+	// members
+	// 38
+	struct Data4C
+	{
+		float	unk00;	// 00 - init'd to 1
+		float	unk04;	// 04 - init'd to 1
+		float	unk08;	// 08 - init'd to .03
+		float	unk0C;	// 0C - init'd to .6
+		float	unk10;	// 10 - init'd to .2
+		float	unk14;	// 14 - init'd to .4
+		float	unk18;	// 18 - init'd to .075
+		float	unk1C;	// 1C - init'd to .025
+		float	unk20;	// 20 - init'd to .035
+		float	unk24;	// 24 - init'd to 1
+		float	unk28;	// 28 - init'd to 1
+		float	unk2C;	// 2C - init'd to 1
+		UInt32	unk30;	// 30
+		UInt32	unk34;	// 34 - init'd to 2
+	};
+
+	Data4C	unk4C;	// 4C
+};
+
+// 138
+class TESObjectWEAP : public TESBoundObject
+{
+public:
+	// parents
+	TESFullName					fullName;		// 020
+	TESModelTextureSwap			texSwap;		// 028
+	TESIcon						icon;			// 044
+	TESEnchantableForm			enchantable;	// 04C
+	TESValueForm				value;			// 05C
+	TESWeightForm				weight;			// 064
+	TESAttackDamageForm			damage;			// 06C
+	BGSDestructibleObjectForm	destructible;	// 074
+	BGSEquipType				equipType;		// 07C
+	BGSPreloadable				preloadable;	// 084
+	BGSMessageIcon				messageIcon;	// 088
+	BGSPickupPutdownSounds		pickupSounds;	// 094
+	BGSBlockBashData			blockBash;		// 0A0
+	BGSKeywordForm				keyword;		// 0AC
+	TESDescription				description;	// 0B8
+
+	// members
+
+	// 34
+	struct DataC4
+	{
+		enum	// type
+		{
+			kType_HandToHandMelee = 0,
+			kType_OneHandSword,
+			kType_OneHandDagger,
+			kType_OneHandAxe,
+			kType_OneHandMace,
+			kType_TwoHandSword,
+			kType_TwoHandAxe,
+			kType_Bow,
+			kType_Staff,
+			kType_H2H,
+			kType_1HS,
+			kType_1HD,
+			kType_1HA,
+			kType_1HM,
+			kType_2HS,
+			kType_2HA,
+			kType_Bow2,
+			kType_Staff2
+		};
+
+		UInt32	unk00;	// 00
+		float	unk04;	// 04
+		float	reach;	// 08
+		float	unk0C;	// 0C
+		float	unk10;	// 10
+		float	unk14;	// 14
+		float	unk18;	// 18
+		float	unk1C;	// 1C
+		UInt32	unk20;	// 20
+		UInt32	unk24;	// 24
+		UInt32	unk28;	// 28
+		UInt16	unk2C;	// 2C
+		UInt8	unk2E;	// 2E
+		UInt8	unk2F;	// 2F
+		UInt8	unk30;	// 30
+		UInt8	type;	// 31
+		UInt8	unk32;	// 32
+		UInt8	unk33;	// 33
+	};
+
+	// 0C
+	struct DataF8
+	{
+		float	unk00;			// 00
+		TESForm	* spellItem;	// 04
+		UInt16	unk08;			// 08
+		UInt8	unk0A;			// 0A
+		UInt8	pad0B;			// 0B
+	};
+
+	DataC4	unk0C4;	// 0C4
+	DataF8	unk0F8;	// 0F8
+	TESForm	* scopeEffect;		// 104
+	TESForm	* attackSound;		// 108
+	TESForm	* attackSound2D;	// 10C
+	TESForm	* attackLoopSound;	// 110
+	TESForm	* attackFailSound;	// 114
+	TESForm	* idleSound;		// 118
+	TESForm	* equipSound;		// 11C
+	TESForm	* unequipSound;		// 120
+	TESForm	* impactDataSet;	// 124
+	TESForm	* firstPersonModel;	// 128
+	TESForm	* templateForm;		// 12C
+	UInt32	unk130;				// 130
+	UInt32	pad134;				// 134
+};
+
+STATIC_ASSERT(sizeof(TESObjectWEAP) == 0x138);
+
+// CC
+class TESObjectARMA : public TESObject
+{
+public:
+	// parents
+	TESRaceForm			race;	// 14
+	BGSBipedObjectForm	biped;	// 1C
+
+	// members
+
+	// 0C
+	struct Data2C
+	{
+		UInt8	unk00;	// 00
+		UInt8	unk01;	// 01
+		UInt8	unk02;	// 02
+		UInt8	unk03;	// 03
+		UInt8	unk04;	// 04
+		UInt8	unk05;	// 05
+		UInt8	unk06;	// 06
+		UInt8	pad07;	// 07
+		UInt32	unk08;	// 08
+	};
+
+	Data2C						unk2C;		// 2C
+	TESModelTextureSwap			unk38[2];	// 38
+	TESModelTextureSwap			unk70[2];	// 70
+	UInt32						unkA8;		// A8
+	UInt32						unkAC;		// AC
+	UInt32						unkB0;		// B0
+	UInt32						unkB4;		// B4
+	TESActorBaseData::Data2C	unkB8;		// B8
+	UInt32						unkC4;		// C4
+	UInt32						unkC8;		// C8
+};
+
+STATIC_ASSERT(sizeof(TESObjectARMA) == 0xCC);

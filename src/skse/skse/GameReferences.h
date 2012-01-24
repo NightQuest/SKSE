@@ -182,3 +182,69 @@ class PlayerCharacter : public Character
 {
 	//
 };
+
+// D8
+class Explosion : public TESObjectREFR
+{
+	//
+};
+
+// 118
+class ChainExplosion : public Explosion
+{
+	//
+};
+
+// 88
+class Hazard : public TESObjectREFR
+{
+	//
+};
+
+// 140+
+class Projectile : public TESObjectREFR
+{
+	//
+};
+
+// 150
+class BarrierProjectile : public Projectile
+{
+	//
+};
+
+// 174
+class BeamProjectile : public Projectile
+{
+	//
+};
+
+// 16C
+class ConeProjectile : public Projectile
+{
+	//
+};
+
+// 148
+class FlameProjectile : public Projectile
+{
+	//
+};
+
+// 148
+class GrenadeProjectile : public Projectile
+{
+	//
+};
+
+// 148
+class MissileProjectile : public Projectile
+{
+	//
+};
+
+// 150
+class ArrowProjectile : public MissileProjectile
+{
+	//
+};

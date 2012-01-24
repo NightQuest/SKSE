@@ -25,7 +25,8 @@ IDebugLog::IDebugLog(const char * name)
 
 IDebugLog::~IDebugLog()
 {
-	fclose(logFile);
+	if(logFile)
+		fclose(logFile);
 }
 
 void IDebugLog::Open(const char * path)

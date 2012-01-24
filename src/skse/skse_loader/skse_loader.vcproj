@@ -210,6 +210,14 @@
 			RelativePath="..\skse\skse_version.rc"
 			>
 		</File>
+		<File
+			RelativePath=".\Steam.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Steam.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

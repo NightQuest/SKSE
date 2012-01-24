@@ -26,7 +26,7 @@ extern const _LookupFormByID LookupFormByID;
  *	00	00	NONE	
  *	01	01	TES4	
  *	02	02	GRUP	
- *	03	03	GMST	
+ *	03	03	GMST	<nonstandard loader?>
  *	04	04	KYWD	BGSKeyword
  *	05	05	LCRT	BGSLocationRefType
  *	06	06	AACT	BGSAction
@@ -41,7 +41,7 @@ extern const _LookupFormByID LookupFormByID;
  *	0F	0E	RACE	TESRace
  *	10	0F	SOUN	TESSound
  *	11	10	ASPC	BGSAcousticSpace
- *	12	11	SKIL	
+ *	12	11	SKIL	<missing>
  *	13	12	MGEF	EffectSetting
  *	14	13	SCPT	Script
  *	15	14	LTEX	TESLandTexture
@@ -50,45 +50,45 @@ extern const _LookupFormByID LookupFormByID;
  *	18	17	SCRL	ScrollItem
  *	19	18	ACTI	TESObjectACTI
  *	1A	19	TACT	BGSTalkingActivator
- *	1B	1A	ARMO	
- *	1C	1B	BOOK	
+ *	1B	1A	ARMO	TESObjectARMO
+ *	1C	1B	BOOK	TESObjectBOOK
  *	1D	1C	CONT	TESObjectCONT
  *	1E	1D	DOOR	TESObjectDOOR
  *	1F	1E	INGR	IngredientItem
  *	20	1F	LIGH	TESObjectLIGH
- *	21	20	MISC	
- *	22	21	APPA	
- *	23	22	STAT	
- *	24	23	SCOL	
- *	25	24	MSTT	
- *	26	25	GRAS	
- *	27	26	TREE	
+ *	21	20	MISC	TESObjectMISC
+ *	22	21	APPA	BGSApparatus
+ *	23	22	STAT	TESObjectSTAT
+ *	24	23	SCOL	BGSStaticCollection
+ *	25	24	MSTT	BGSMovableStatic
+ *	26	25	GRAS	TESGrass
+ *	27	26	TREE	TESObjectTREE
  *	28	xx	CLDC	BGSCloudClusterForm
  *	29	27	FLOR	TESFlora
  *	2A	28	FURN	TESFurniture
- *	2B	29	WEAP	
+ *	2B	29	WEAP	TESObjectWEAP
  *	2C	2A	AMMO	TESAmmo
  *	2D	2B	NPC_	TESNPC
  *	2E	2C	LVLN	TESLevCharacter
- *	2F	2D	KEYM	
+ *	2F	2D	KEYM	TESKey
  *	30	2E	ALCH	AlchemyItem
  *	31	2F	IDLM	BGSIdleMarker / BGSDefaultObjectManager? strange
  *	32	30	NOTE	BGSNote
  *	33	31	COBJ	BGSConstructibleObject
  *	34	32	PROJ	BGSProjectile
  *	35	33	HAZD	BGSHazard
- *	36	34	SLGM	
- *	37	35	LVLI	
+ *	36	34	SLGM	TESSoulGem
+ *	37	35	LVLI	TESLevItem
  *	38	36	WTHR	TESWeather
  *	39	37	CLMT	TESClimate
- *	3A	38	SPGD	
+ *	3A	38	SPGD	BGSShaderParticleGeometryData
  *	3B	39	RFCT	BGSReferenceEffect
  *	3C	3A	REGN	TESRegion
  *	3D	3B	NAVI	NavMeshInfoMap
  *	3E	3C	CELL	TESObjectCELL
  *	3F	3D	REFR	TESObjectREFR / Actor
  *	40	3E	ACHR	Character / PlayerCharacter
- *	41	3F	PMIS	
+ *	41	3F	PMIS	MissileProjectile
  *	42	40	PARW	ArrowProjectile
  *	43	41	PGRE	GrenadeProjectile
  *	44	42	PBEA	BeamProjectile
@@ -99,7 +99,7 @@ extern const _LookupFormByID LookupFormByID;
  *	49	47	WRLD	TESWorldSpace
  *	4A	48	LAND	TESObjectLAND
  *	4B	49	NAVM	NavMesh
- *	4C	4A	TLOD	
+ *	4C	4A	TLOD	?
  *	4D	4B	DIAL	TESTopic
  *	4E	4C	INFO	TESTopicInfo
  *	4F	4D	QUST	TESQuest
@@ -107,11 +107,11 @@ extern const _LookupFormByID LookupFormByID;
  *	51	4F	PACK	TESPackage
  *	52	50	CSTY	TESCombatStyle
  *	53	51	LSCR	TESLoadScreen
- *	54	52	LVSP	
+ *	54	52	LVSP	TESLevSpell
  *	55	53	ANIO	TESObjectANIO
  *	56	54	WATR	TESWaterForm
  *	57	55	EFSH	TESEffectShader
- *	58	56	TOFT	
+ *	58	56	TOFT	?
  *	59	57	EXPL	BGSExplosion
  *	5A	58	DEBR	BGSDebris
  *	5B	59	IMGS	TESImageSpace
@@ -127,12 +127,12 @@ extern const _LookupFormByID LookupFormByID;
  *	65	63	MATT	BGSMaterialType
  *	66	64	IPCT	BGSImpactData
  *	67	65	IPDS	BGSImpactDataSet
- *	68	66	ARMA	
+ *	68	66	ARMA	TESObjectARMA
  *	69	67	ECZN	BGSEncounterZone
  *	6A	68	LCTN	BGSLocation
  *	6B	69	MESH	BGSMessage
  *	6C	6A	RGDL	BGSRagdoll
- *	6D	6B	DOBJ	
+ *	6D	6B	DOBJ	?
  *	6E	6C	LGTM	BGSLightingTemplate
  *	6F	6D	MUSC	BGSMusicType
  *	70	6E	FSTP	BGSFootstep
@@ -142,7 +142,7 @@ extern const _LookupFormByID LookupFormByID;
  *	74	72	SMEN	BGSStoryManagerEventNode
  *	75	73	DLBR	BGSDialogueBranch
  *	76	74	MUST	BGSMusicTrackFormWrapper
- *	77	75	DLVW	
+ *	77	75	DLVW	?
  *	78	76	WOOP	TESWordOfPower
  *	79	77	SHOU	TESShout
  *	7A	78	EQUP	BGSEquipSlot

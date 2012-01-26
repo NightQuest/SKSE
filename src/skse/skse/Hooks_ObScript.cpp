@@ -5,12 +5,12 @@
 
 CommandTable	g_commandTable;
 
-const CommandInfo	* g_blockTypeStart =		(CommandInfo *)0x01412050;
-const CommandInfo	* g_blockTypeEnd =			(CommandInfo *)0x014125C8;
-const CommandInfo	* g_consoleCommandsStart =	(CommandInfo *)0x014125F0;
-const CommandInfo	* g_consoleCommandsEnd =	(CommandInfo *)0x014155C0;
-const CommandInfo	* g_scriptCommandsStart =	(CommandInfo *)0x014155E8;
-const CommandInfo	* g_scriptCommandsEnd =		(CommandInfo *)0x0141C780;
+const CommandInfo	* g_blockTypeStart =		(CommandInfo *)0x0121A138;
+const CommandInfo	* g_blockTypeEnd =			(CommandInfo *)0x0121A6B0;
+const CommandInfo	* g_consoleCommandsStart =	(CommandInfo *)0x0121A6D8;
+const CommandInfo	* g_consoleCommandsEnd =	(CommandInfo *)0x0121D6D0;
+const CommandInfo	* g_scriptCommandsStart =	(CommandInfo *)0x0121D6F8;
+const CommandInfo	* g_scriptCommandsEnd =		(CommandInfo *)0x01224890;
 
 static bool IsEmptyStr(const char * data)
 {
@@ -81,62 +81,70 @@ void ObScript_DumpCommands(void)
 	DumpCommands(g_scriptCommandsStart, g_scriptCommandsEnd);
 }
 
-// 1.3.10.0 runtime
+// 1.4.15.0 runtime
 static const CommandTable::PatchLocation kPatch_ScriptCommands_Start[] =
 {
-	{	0x005889D2, 0x00 },
-	{	0x00589201, 0x00 },
-	{	0x0058921E, 0x04 },
-	{	0x00589248, 0x08 },
-	{	0x005AE4B5, 0x0C },
-	{	0x005AE4D8, 0x00 },
-	{	0x005AE4FB, 0x04 },
-	{	0x005AE51B, 0x0C },
-	{	0x005AE531, 0x0C },
-	{	0x005AE551, 0x04 },
-	{	0x005AE563, 0x04 },
-	{	0x005AE57F, 0x0C },
-	{	0x005AE58F, 0x04 },
-	{	0x005AE59F, 0x00 },
-	{	0x005AE5C4, 0x0C },
-	{	0x005AE5D4, 0x00 },
-	{	0x005AE5FC, 0x04 },
-	{	0x005AE60E, 0x04 },
-	{	0x005AE62A, 0x04 },
-	{	0x005AE63A, 0x00 },
-	{	0x005AE65F, 0x00 },
-	{	0x006A67ED, 0x20 },
-	{	0x006A6804, 0x10 },
-	{	0x006A6831, 0x20 },
-	{	0x006A6FAC, 0x14 },
-	{	0x006A72DF, 0x12 },
-	{	0x006A73D3, 0x14 },
-	{	0x006A741C, 0x14 },
-	{	0x006A74A6, 0x14 },
-	{	0x006A74C2, 0x14 },
-	{	0x00799A9B, 0x12 },
-	{	0x00799ADA, 0x14 },
+	{	0x00511ABB, 0x00 },
+	{	0x00511C84, 0x04 },
+	{	0x00511D1D, 0x08 },
+	{	0x00512D07, 0x00 },
+	{	0x005162BF, 0x00 },
+	{	0x0053D109, 0x0C },
+	{	0x0053D121, 0x00 },
+	{	0x0053D139, 0x04 },
+	{	0x0053D155, 0x0C },
+	{	0x0053D16F, 0x04 },
+	{	0x0053D18D, 0x00 },
+	{	0x0053D1AF, 0x00 },
+	{	0x0053D1CD, 0x04 },
+	{	0x0053D1F3, 0x00 },
+	{	0x0053D20A, 0x00 },
+	{	0x005E50D9, 0x20 },
+	{	0x005E50E5, 0x10 },
+	{	0x005E51AE, 0x12 },
+	{	0x005E51F1, 0x12 },
+	{	0x005E51FD, 0x14 },
+	{	0x005E5238, 0x12 },
+	{	0x005E5245, 0x14 },
+	{	0x005E52A6, 0x12 },
+	{	0x005E52B2, 0x14 },
+	{	0x005E52E0, 0x12 },
+	{	0x005E5351, 0x12 },
+	{	0x005E5383, 0x12 },
+	{	0x005E538F, 0x14 },
+	{	0x005E53E5, 0x12 },
+	{	0x005E5423, 0x12 },
+	{	0x005E542F, 0x14 },
+	{	0x005E54D8, 0x12 },
+	{	0x005E5507, 0x14 },
+	{	0x005E55E4, 0x12 },
+	{	0x005E5606, 0x14 },
+	{	0x005E571E, 0x12 },
+	{	0x005E5768, 0x12 },
+	{	0x005E5778, 0x14 },
+	{	0x005E5811, 0x14 },
+	{	0x0069A87C, 0x12 },
+	{	0x0069A8A9, 0x14 },
 	{	0 },
 };
 
 static const CommandTable::PatchLocation kPatch_ScriptCommands_End[] =
 {
-	{	0x00586589, 0x08 },
+	{	0x00511BC2, 0x08 },
+	{	0x00511CAF, 0x04 },
 	{	0 },
 };
 
 static const CommandTable::PatchLocation kPatch_ScriptCommands_MaxIdx[] =
 {
-	{	0x0056C039 + 1, 0 },
-	{	0x00586587 + 6, 0 },
-	{	0x005889BB + 3, 0 },
-	{	0x005891F0 + 3, (UInt32)(-0x1000) },
-	{	0x005AE488 + 6, (UInt32)(-0x1000) },
-
-	// condition stuff
-	{	0x006A5A48 + 3,	0 },
-	{	0x006A5A65 + 3, (UInt32)(-0x1000) },
-	{	0x006A5A84 + 3, (UInt32)(-0x1000) },
+	{	0x004FE147 + 1, 0 },
+	{	0x00511AA9 + 2,	(UInt32)(-0x1001) },
+	{	0x00511BC0 + 6, 0 },
+	{	0x00512CF6 + 1,	(UInt32)(-0x1001) },
+	{	0x005162B1 + 2,	(UInt32)(-0x1001) },
+	{	0x005E454D + 2,	(UInt32)(-0x1001) },
+	{	0x005E455D + 1,	(UInt32)(-0x1001) },
+	{	0x005E4569 + 2,	(UInt32)(-0x1001) },
 
 	{	0 },
 };
@@ -241,6 +249,8 @@ void Hooks_ObScript_Init(void)
 	CMD(GetSKSERelease);
 
 #undef CMD
+
+	g_commandTable.Add();	// padding command
 }
 
 void Hooks_ObScript_Commit(void)

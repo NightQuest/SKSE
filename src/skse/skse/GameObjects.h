@@ -339,7 +339,16 @@ public:
 	BGSKeywordForm	keyword;	// 28
 
 	// members
-	TESActorBaseData::Data2C	unk34;	// 34
+	struct EffectItem
+	{
+		float	magnitude;
+		UInt32	area;
+		UInt32	duration;
+		EffectSetting* mgef;
+		//float	cost;  - maybe?
+	};
+
+	tArray<EffectItem*> effectItemList;	// 34
 	UInt32	unk40;	// 40
 	UInt32	unk44;	// 44
 	UInt32	unk48;	// 48
@@ -368,14 +377,14 @@ public:
 	{
 		struct Data0
 		{
-			UInt32	unk00;	// 00
-			UInt32	unk04;	// 04
+			UInt32	value;	// 00
+			UInt32	flags;	// 04  0x20000 = harmful, food: 0x3
 		};
 
 		Data0	unk00;	// 00
 		UInt32	unk08;	// 08
 		UInt32	unk0C;	// 0C
-		UInt32	unk10;	// 10
+		BGSSoundDescriptorForm*	useSound;	// 10
 	};
 
 	Data	unkA4;	// A4
@@ -454,18 +463,18 @@ public:
 	{
 		struct Data0
 		{
-			UInt32	unk00;	// 00
+			UInt32	cost;	// 00
 			UInt32	unk04;	// 04
 		};
 
 		Data0	unk00;	// 00
 		UInt32	unk08;	// 08
-		UInt32	unk0C;	// 0C
+		float	castTime;	// 0C
 		UInt32	unk10;	// 10
 		UInt32	unk14;	// 14
 		UInt32	unk18;	// 18
 		UInt32	unk1C;	// 1C
-		UInt32	unk20;	// 20
+		BGSPerk*	spellPerk;	// 20
 	};
 
 	Data	data;	// 6C
@@ -538,7 +547,7 @@ public:
 	virtual void			Unk_54(UInt32 arg);
 	virtual TESActorBase *	Unk_55(void);
 };
-
+STATIC_ASSERT(offsetof(TESActorBase, keyword) == 0xA0);
 STATIC_ASSERT(sizeof(TESActorBase) == 0xC0);
 
 // 164
@@ -646,7 +655,7 @@ public:
 		UInt8	pad2[2];	// 2
 	};
 
-	TESActorBaseData::Data2C	unk6C;
+	UnkArray	unk6C;
 	Data78	unk78;	// 78
 	UInt32	unk7C;	// 7C
 	UInt32	unk80;	// 80
@@ -689,7 +698,7 @@ public:
 	UInt32	unk5C;		// 5C
 	UInt8	unk60;		// 60
 	UInt8	pad61[3];	// 61
-	TESActorBaseData::Data2C	unk64;	// 64
+	UnkArray	unk64;	// 64
 };
 
 // B4
@@ -841,8 +850,8 @@ public:
 	TESDescription				description;	// 10C
 
 	// members
-	UInt32	unk118;	// 118
-	TESActorBaseData::Data2C	unk11C;	// 11C
+	UInt32	armorValTimes100;	// 118
+	UnkArray	unk11C;	// 11C
 	UInt32	unk128;	// 128
 };
 
@@ -1111,7 +1120,7 @@ public:
 	UInt32						unkAC;		// AC
 	UInt32						unkB0;		// B0
 	UInt32						unkB4;		// B4
-	TESActorBaseData::Data2C	unkB8;		// B8
+	UnkArray	unkB8;		// B8
 	UInt32						unkC4;		// C4
 	UInt32						unkC8;		// C8
 };

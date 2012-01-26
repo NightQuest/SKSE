@@ -9,7 +9,7 @@ void GFxValue::CleanManaged(void)
 {
 	if(IsManaged())
 	{
-		CALL_MEMBER_FN(this, ReleaseManaged)();
+		CALL_MEMBER_FN(this, ReleaseManaged_Internal)(objectInterface, data.obj);
 
 		objectInterface = NULL;
 		type = kType_Undefined;
@@ -86,4 +86,29 @@ double GFxValue::GetNumber(void)
 		case kType_Bool:	return data.boolean ? 1 : 0;
 		default:			HALT("GFxValue::GetNumber: bad type"); return 0;
 	}
+}
+
+bool GFxValue::HasMember(const char * name)
+{
+	return CALL_MEMBER_FN(objectInterface, HasMember)(data.obj, name, IsDisplayObject());
+}
+
+bool GFxValue::SetMember(const char * name, GFxValue * value)
+{
+	return CALL_MEMBER_FN(objectInterface, SetMember)(data.obj, name, value, IsDisplayObject());
+}
+
+bool GFxValue::GetMember(const char * name, GFxValue * value)
+{
+	return CALL_MEMBER_FN(objectInterface, GetMember)(data.obj, name, value, IsDisplayObject());
+}
+
+bool GFxValue::DeleteMember(const char * name)
+{
+	return CALL_MEMBER_FN(objectInterface, DeleteMember)(data.obj, name, IsDisplayObject());
+}
+
+bool GFxValue::Invoke(const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs)
+{
+	return CALL_MEMBER_FN(objectInterface, Invoke)(data.obj, result, name, args, numArgs, IsDisplayObject());
 }

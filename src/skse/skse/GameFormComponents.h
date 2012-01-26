@@ -4,6 +4,9 @@
 
 #include "skse/GameTypes.h"
 
+class TESObjectSTAT;
+class BGSSoundDescriptorForm;
+
 //// root
 
 // 04
@@ -134,7 +137,7 @@ class BGSMenuDisplayObject : public BaseFormComponent
 public:
 	virtual UInt32	GetMenuDisplayObject(void);
 
-	UInt32	unk04;	// 04 - copyable
+	TESObjectSTAT*	worldStatic;	// 04 - copyable
 };
 
 // 0C
@@ -174,8 +177,8 @@ public:
 class BGSPickupPutdownSounds : public BaseFormComponent
 {
 public:
-	UInt32	unk04;	// 04
-	UInt32	unk08;	// 08
+	BGSSoundDescriptorForm*	pickUp;	// 04
+	BGSSoundDescriptorForm*	putDown;	// 08
 };
 
 // 04
@@ -213,24 +216,6 @@ public:
 class TESActorBaseData : public BaseFormComponent
 {
 public:
-	// C - some common linked list class, doesn't belong here
-	struct Data2C
-	{
-		struct Entry
-		{
-			void	* unk0;
-			UInt32	unk4;
-		};
-
-		struct Entry8
-		{
-			UInt32	unk;
-		};
-
-		Entry	unk0;
-		Entry8	unk8;
-	};
-
 	virtual void	Unk_04(UInt32 arg);
 	virtual bool	GetFlag20000000(void);
 	virtual bool	GetFlag80000000(void);
@@ -252,7 +237,7 @@ public:
 	UInt32	unk20;	// 20
 	UInt32	unk24;	// 24
 	UInt32	unk28;	// 28 - init'd to 0
-	Data2C	unk2C;	// 2C
+	UnkArray	unk2C;	// 2C
 };
 
 // 8
@@ -485,14 +470,14 @@ public:
 class TESValueForm : public BaseFormComponent
 {
 public:
-	UInt32	unk04;	// 04
+	UInt32	value;	// 04
 };
 
 // 08
 class TESWeightForm : public BaseFormComponent
 {
 public:
-	float	unk04;	// 04
+	float	weight;	// 04
 };
 
 //// the following are not form components
@@ -533,7 +518,7 @@ public:
 //	void	** _vtbl;	// 00
 	
 	Data	unk04;		// 04
-	TESActorBaseData::Data2C	unk34;	// 34
+	UnkArray	unk34;	// 34
 };
 
 STATIC_ASSERT(sizeof(BSMaterialObject) == 0x40);
@@ -609,8 +594,8 @@ public:
 	UInt16	unk0A;		// 0A
 	float	unk0C;		// 0C
 	UInt32	unk10;		// 10
-	TESActorBaseData::Data2C	unk14;	// 14
-	TESActorBaseData::Data2C	unk20;	// 20
+	UnkArray	unk14;	// 14
+	UnkArray	unk20;	// 20
 	UInt32	unk2C;		// 2C
 };
 
@@ -697,6 +682,17 @@ public:
 //	void	** _vtbl;	// 00
 };
 
+// 30
+template <typename T>
+class BSTEventSource
+{
+public:
+	virtual ~BSTEventSource();
+//	void	** _vtbl;	// 00
+	UInt32 unk_04[11];
+};
+STATIC_ASSERT(sizeof(BSTEventSource<void*>) == 0x30);
+
 // 04
 class BGSOpenCloseForm
 {
@@ -705,3 +701,14 @@ public:
 
 //	void	** _vtbl;	// 00
 };
+
+// C
+class MagicTarget
+{
+public:
+	virtual ~MagicTarget();
+//	void	** _vtbl;	// 00
+	UInt32 unk_04;
+	UInt32 unk_08;
+};
+STATIC_ASSERT(sizeof(MagicTarget) == 0xC);

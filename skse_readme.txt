@@ -1,4 +1,4 @@
-Skyrim Script Extender v1.4.3
+Skyrim Script Extender v1.4.5
 by Ian Patterson, Stephen Abel and Paul Connelly
 (ianpatt, behippo and scruggsywuggsy the ferret)
 
@@ -6,7 +6,7 @@ The Skyrim Script Extender, or SKSE for short, is a modder's resource that expan
 
 Compatibility:
 
-SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.3.10.0). When a new version is released, we will update as soon as possible; please be patient. No editor has been released yet.
+SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.4.15.0). When a new version is released, we will update as soon as possible; please be patient. No editor has been released yet.
 
 [ Installation ]
 
@@ -14,9 +14,11 @@ SKSE will support the latest version of Skyrim available on Steam, and _only_ th
 
 2. Launch the game via running skse_loader.exe.
 
-Scripts written with these new commands must be created via the editor after it is launched via skse_loader. Open a command prompt window, navigate to your Skyrim directory, and type "skse_loader -editor". Alternately you can create a shortcut to skse_loader.exe, open the properties window and add "-editor" to the Target field. The normal editor can open plugins with these extended scripts, but it cannot recompile them and will give errors if you try.
+If you use a desktop shortcut to launch Skyrim normally, just update the shortcut to point to skse_loader.exe instead of TESV.exe or SkyrimLauncher.exe.
 
 [ Suggestions for Modders ]
+
+Scripts written with these new commands must be created via the CreationKit after it is launched via skse_loader. Open a command prompt window, navigate to your Skyrim directory, and type "skse_loader -editor". Alternately you can create a shortcut to skse_loader.exe, open the properties window and add "-editor" to the Target field. The normal editor can open plugins with these extended scripts, but it cannot recompile them and will give errors if you try.
 
 If your mod requires SKSE, please provide a link to the main SKSE website <http://skse.silverlock.org/> instead of packaging it with your mod install. Future versions of SKSE will be backwards compatibile, so including a potentially old version can cause confusion and/or break other mods which require newer versions.
 
@@ -47,7 +49,7 @@ endif
  - No. Providing a link to http://skse.silverlock.org/ is the suggested method of distribution. Exceptions may be given under applicable circumstances; contact us at the email addresses below. This means that if you see this file available for download anywhere other than http://skse.silverlock.org, that service is violating copyright. I don't like having to explicitly spell this out, but my hand has been forced.
 
 * Does SKSE work with a 4GB loader?
- - Yes, use http://skyrimnexus.com/downloads/file.php?id=1013.
+ - 4GB loaders are no longer needed.
 
 [ Contact the SKSE Team ]
 

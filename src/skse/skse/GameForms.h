@@ -8,6 +8,12 @@
 class TESForm;
 class TESObjectSTAT;
 class TESFile;
+class TESObjectLIGH;
+class TESEffectShader;
+class BGSProjectile;
+class BGSArtObject;
+class BGSImpactDataSet;
+class TESSound;
 
 typedef TESForm * (* _LookupFormByID)(UInt32 id);
 extern const _LookupFormByID LookupFormByID;
@@ -342,7 +348,7 @@ class BGSCollisionLayer : public TESForm
 	UInt32						unk24;	// 24
 	UInt32						unk28;	// 28
 	StringCache::Ref			unk2C;	// 2C
-	TESActorBaseData::Data2C	unk30;	// 30 - really?
+	UnkArray	unk30;	// 30 - really?
 };
 
 // 24
@@ -420,7 +426,7 @@ public:
 class BGSEquipSlot : public TESForm
 {
 public:
-	TESActorBaseData::Data2C	unk14;
+	UnkArray	unk14;
 	UInt32						unk20;
 };
 
@@ -436,7 +442,7 @@ public:
 class BGSFootstepSet : public TESForm
 {
 public:
-	TESActorBaseData::Data2C	unk14[5];	// 14
+	UnkArray	unk14[5];	// 14
 };
 
 // 98
@@ -569,7 +575,7 @@ STATIC_ASSERT(sizeof(BGSLightingTemplate) == 0x94);
 class BGSListForm : public TESForm
 {
 public:
-	TESActorBaseData::Data2C	unk14;	// 14
+	UnkArray	unk14;	// 14
 	UInt32	unk20;	// 20
 	UInt32	unk24;	// 24
 };
@@ -589,14 +595,14 @@ public:
 	UInt32						unk34;		// 34 - init'd to 0
 	UInt32						unk38;		// 38 - init'd to 0
 	UInt32						unk3C;		// 3C - init'd to 0
-	TESActorBaseData::Data2C	unk40;		// 40
-	TESActorBaseData::Data2C	unk4C;		// 4C
+	UnkArray	unk40;		// 40
+	UnkArray	unk4C;		// 4C
 	UInt32						unk58;		// 58 - init'd to 0
 	UInt32						unk5C;		// 5C - init'd to 0
-	TESActorBaseData::Data2C	unk60;		// 60
+	UnkArray	unk60;		// 60
 	UInt32						unk6C;		// 6C - init'd to 0
 	UInt32						unk70;		// 70 - init'd to 0
-	TESActorBaseData::Data2C	unk74;		// 74
+	UnkArray	unk74;		// 74
 	UInt32						unk80;		// 80 - init'd to 0
 	UInt8						unk84;		// 84 - init'd to 0
 	UInt8						unk85;		// 85 - init'd to 0
@@ -614,7 +620,7 @@ public:
 	BSMaterialObject	materialObject;	// 28
 
 	// members
-	TESActorBaseData::Data2C	unk68;	// 68
+	UnkArray	unk68;	// 68
 };
 
 // 38
@@ -713,7 +719,7 @@ public:
 class BGSOutfit : public TESForm
 {
 public:
-	TESActorBaseData::Data2C	unk14;	// 14
+	UnkArray	unk14;	// 14
 };
 
 // 4C
@@ -733,7 +739,7 @@ public:
 	UInt8	unk34;		// 34
 	UInt8	pad35[3];	// 35
 	void	* unk38;	// 38
-	TESActorBaseData::Data2C	unk3C;	// 3C
+	UnkArray	unk3C;	// 3C
 	UInt32	unk48;		// 48
 };
 
@@ -772,7 +778,7 @@ public:
 		UInt8						unk00;		// 00
 		UInt8						pad01[3];	// 01
 		Data						unk04;		// 04
-		TESActorBaseData::Data2C	unk40;		// 40
+		UnkArray	unk40;		// 40
 	};
 
 	// 38
@@ -793,8 +799,8 @@ public:
 		UInt8						unk00;		// 00
 		UInt8						pad01[3];	// 01
 		Data						unk04;		// 04
-		TESActorBaseData::Data2C	unk20;		// 20
-		TESActorBaseData::Data2C	unk2C;		// 2C
+		UnkArray	unk20;		// 20
+		UnkArray	unk2C;		// 2C
 	};
 
 	// 1C
@@ -802,8 +808,8 @@ public:
 	{
 		UInt8						unk00;		// 00
 		UInt8						pad01[3];	// 01
-		TESActorBaseData::Data2C	unk04;		// 04
-		TESActorBaseData::Data2C	unk10;		// 10
+		UnkArray	unk04;		// 04
+		UnkArray	unk10;		// 10
 	};
 
 	// 24
@@ -891,11 +897,11 @@ public:
 class BGSScene : public TESForm
 {
 public:
-	TESActorBaseData::Data2C	unk14;	// 14
-	TESActorBaseData::Data2C	unk20;	// 20
-	TESActorBaseData::Data2C	unk2C;	// 2C
-	TESActorBaseData::Data2C	unk38;	// 38
-	TESActorBaseData::Data2C	unk44;	// 44
+	UnkArray	unk14;	// 14
+	UnkArray	unk20;	// 20
+	UnkArray	unk2C;	// 2C
+	UnkArray	unk38;	// 38
+	UnkArray	unk44;	// 44
 	TESForm	* quest;	// 50
 	UInt32	unk54;		// 54
 	void	* unk58;	// 58 - linked list
@@ -917,7 +923,7 @@ public:
 class BGSShaderParticleGeometryData : public TESForm
 {
 public:
-	TESActorBaseData::Data2C	unk14;		// 14
+	UnkArray	unk14;		// 14
 	TESTexture					texture;	// 20
 };
 
@@ -997,7 +1003,7 @@ public:
 class BGSStoryManagerBranchNode : public BGSStoryManagerNodeBase
 {
 public:
-	TESActorBaseData::Data2C	unk2C;	// 2C
+	UnkArray	unk2C;	// 2C
 };
 
 // 3C
@@ -1023,11 +1029,11 @@ public:
 		UInt8	data[0x20];	// ###
 	};
 
-	TESActorBaseData::Data2C	unk2C;	// 2C
+	UnkArray	unk2C;	// 2C
 	Data38						unk38;	// 38
 	Data58						unk58;	// 58
 	UInt32						unk78;	// 78
-	TESActorBaseData::Data2C	unk7C;	// 7C
+	UnkArray	unk7C;	// 7C
 };
 
 STATIC_ASSERT(sizeof(BGSStoryManagerQuestNode) == 0x88);
@@ -1075,9 +1081,9 @@ public:
 		UInt8	data[0x20];	// ### todo
 	};
 
-	TESActorBaseData::Data2C	unk020;		// 020
+	UnkArray	unk020;		// 020
 	UInt32						unk02C;		// 02C
-	TESActorBaseData::Data2C	unk030;		// 030
+	UnkArray	unk030;		// 030
 	Data03C						unk03C;		// 03C
 	Data05C						unk05C;		// 05C
 	Data07C						unk07C;		// 07C
@@ -1087,8 +1093,8 @@ public:
 	void						* unk098;	// 098 - linked list
 	void						* unk09C;	// 09C - linked list
 	Data0A0						unk0A0[2];	// 0A0
-	TESActorBaseData::Data2C	unk0E0[6];	// 0E0
-	TESActorBaseData::Data2C	unk128;		// 128
+	UnkArray	unk0E0[6];	// 0E0
+	UnkArray	unk128;		// 128
 	void						* unk134;	// 134 - linked list
 	UInt16						unk138;		// 138
 	UInt8						unk13A;		// 13A
@@ -1096,7 +1102,7 @@ public:
 	BSString					unk13C;		// 13C
 	UInt32						unk144;		// 144
 	UInt32						unk148;		// 148
-	TESActorBaseData::Data2C	unk14C;		// 14C
+	UnkArray	unk14C;		// 14C
 };
 
 STATIC_ASSERT(sizeof(TESQuest) == 0x158);
@@ -1124,42 +1130,42 @@ public:
 	// 98
 	struct Data38
 	{
-		UInt32	unk00;		// 00 - init'd to 0
-		UInt32	unk04;		// 04 - init'd to 0
+		UInt32	flags;		// 00 - init'd to 0
+		float	baseCost;		// 04 - init'd to 0
 		UInt32	unk08;		// 08 - init'd to 0
-		UInt32	unk0C;		// 0C - init'd to FFFFFFFF
-		UInt32	unk10;		// 10 - init'd to FFFFFFFF
-		UInt16	unk14;		// 14 - init'd to 0
+		UInt32	school;		// 0C - init'd to FFFFFFFF
+		UInt32	type;		// 10 - init'd to FFFFFFFF
+		UInt16	unk14;		// 14 - init'd to 0 
 		UInt8	pad16[2];	// 16
-		UInt32	unk18;		// 18 - init'd to 0
-		UInt32	unk1C;		// 1C - init'd to 0
-		UInt32	unk20;		// 20 - init'd to 0
+		TESObjectLIGH*	light;		// 18 - init'd to 0
+		float	unk1C;		// 1C - init'd to 0
+		TESEffectShader*	shader1;		// 20 - init'd to 0
 		UInt32	unk24;		// 24 - init'd to 0
 		UInt32	unk28;		// 28 - init'd to 0
 		UInt32	unk2C;		// 2C - init'd to 0
 		UInt32	unk30;		// 30 - init'd to 0
 		UInt32	unk34;		// 34 - init'd to 0
 		UInt32	unk38;		// 38 - init'd to 0
-		UInt32	unk3C;		// 3C - init'd to 0
+		UInt32	unk3C;		// 3C - init'd to 0 float 
 		UInt32	unk40;		// 40 - init'd to 0
-		UInt32	unk44;		// 44 - init'd to FFFFFFFF
-		UInt32	unk48;		// 48 - init'd to 0
+		UInt32	actorValue;	// 44 - init'd to FFFFFFFF
+		BGSProjectile*	projectile;		// 48 - init'd to 0
 		UInt32	unk4C;		// 4C - init'd to 0
-		UInt32	unk50;		// 50 - init'd to 3
-		UInt32	unk54;		// 54 - init'd to 5
-		UInt32	unk58;		// 58 - init'd to FFFFFFFF
-		UInt32	unk5C;		// 5C - init'd to 0
+		UInt32	unk50;		// 50 - init'd to 3 cast type?
+		UInt32	unk54;		// 54 - init'd to 5 cast type?
+		BGSArtObject*	artObject1;		// 58 - init'd to FFFFFFFF
+		BGSArtObject*	artObject2;		// 5C - init'd to 0
 		UInt32	unk60;		// 60 - init'd to 0
-		UInt32	unk64;		// 64 - init'd to 0
-		UInt32	unk68;		// 68 - init'd to 0
-		UInt32	unk6C;		// 6C - init'd to 0
-		float	unk70;		// 70 - init'd to 1
+		BGSImpactDataSet*	impactSet1;		// 64 - init'd to 0
+		float	effectPlayRate1;		// 68 - init'd to 0
+		BGSImpactDataSet*	impactSet2;		// 6C - init'd to 0
+		float	effectPlayRate2;		// 70 - init'd to 1
 		UInt32	unk74;		// 74 - init'd to 0
 		UInt32	unk78;		// 78 - init'd to 0
 		UInt32	unk7C;		// 7C - init'd to 0
 		UInt32	unk80;		// 80 - init'd to 0
 		UInt32	unk84;		// 84 - init'd to 0
-		UInt32	unk88;		// 88 - init'd to 0
+		BGSPerk* perk;		// 88 - init'd to 0
 		UInt32	unk8C;		// 8C - init'd to 1
 		UInt32	unk90;		// 90 - init'd to 0
 		UInt32	unk94;		// 94 - init'd to 0
@@ -1172,11 +1178,17 @@ public:
 		UInt32	unk4;
 	};
 
+	struct SoundInfo
+	{
+		UInt32 value;
+		TESSound* sound;
+	};
+
 	UInt32						unk30;		// 30
 	UInt32						unk34;		// 34
 	Data38						unk38;		// 38
 	DataD0						unkD0;		// D0
-	TESActorBaseData::Data2C	unkD8;		// D8
+	tArray<SoundInfo>			sounds;		// D8
 	StringCache::Ref			unkE4;		// E4
 	UInt32						unkE8;		// E8
 	UInt32						unkEC;		// EC
@@ -1684,9 +1696,9 @@ public:
 	UInt32						unk44;		// 44
 	UInt32						unk48;		// 48
 	Data4C						unk4C;		// 4C
-	TESActorBaseData::Data2C	unk54;		// 54
-	TESActorBaseData::Data2C	unk60;		// 60
-	TESActorBaseData::Data2C	unk6C;		// 6C
+	UnkArray	unk54;		// 54
+	UnkArray	unk60;		// 60
+	UnkArray	unk6C;		// 6C
 	Data						unk78;		// 78
 	UInt32						unk80;		// 80
 	UInt32						unk84;		// 84
@@ -1839,7 +1851,7 @@ public:
 		UInt32	unk8;	// 8
 	};
 
-	TESActorBaseData::Data2C	unk80;	// 80
+	UnkArray	unk80;	// 80
 	Data8C	unk8C;		// 8C
 	float	unk98;		// 98
 	UInt32	unk9C;		// 9C
@@ -1870,7 +1882,7 @@ public:
 	UInt8	unk90;		// 90
 	UInt8	pad91[3];	// 91
 	Data94	unk94;		// 94
-	TESActorBaseData::Data2C	unkA0;	// A0
+	UnkArray	unkA0;	// A0
 	UInt32	padAC;		// AC - not init'd
 };
 
@@ -1946,7 +1958,7 @@ public:
 	UInt32						unk174;				// 174
 	UInt32						unk178;				// 178
 	UInt32						unk17C;				// 17C
-	TESActorBaseData::Data2C	unk180[2];			// 180
+	UnkArray	unk180[2];			// 180
 	void						* unk198[4];		// 198
 	void						* unk1A8[2];		// 1A8 - refcounted ptr
 	StringCache::Ref			unk1B0;				// 1B0
@@ -1956,13 +1968,13 @@ public:
 	UInt32						unk1C0;				// 1C0
 	UInt32						unk1C4;				// 1C4
 	StringCache::Ref			unk1C8[0x20];		// 1C8
-	TESActorBaseData::Data2C	unk248;				// 248
+	UnkArray	unk248;				// 248
 	UInt32						unk254;				// 254
 	UInt32						unk258;				// 258
 	UInt32						unk25C;				// 25C
 	UInt32						unk260;				// 260
-	TESActorBaseData::Data2C	unk264;				// 264
-	TESActorBaseData::Data2C	unk270;				// 270
+	UnkArray	unk264;				// 264
+	UnkArray	unk270;				// 270
 	UInt8						unk27C[0x18];		// 27C
 	UInt32						unk294;				// 294
 	UInt32						unk298;				// 298
@@ -2263,7 +2275,7 @@ public:
 	Data56C			unk56C;				// 56C
 	Data58C			unk58C;				// 58C
 	TESAIForm::Data	unk69C;				// 69C
-	TESActorBaseData::Data2C	unk6A4;	// 6A4
+	UnkArray	unk6A4;	// 6A4
 	UInt32			pad6B0;				// 6B0 - not init'd
 	Data6B4			unk6B4;				// 6B4
 	BGSLightingTemplate::Data::Data28	unk6C4[4];	// 6C4
@@ -2341,7 +2353,7 @@ public:
 	UInt16	unk036;		// 036
 	Data038	unk038;		// 038
 	Data03C	unk03C;		// 03C
-	TESActorBaseData::Data2C	unk05C;	// 05C
+	UnkArray	unk05C;	// 05C
 	UInt32	unk068;		// 068
 	UInt32	unk06C;		// 06C
 	TESQuest::Data05C	unk070;	// 070

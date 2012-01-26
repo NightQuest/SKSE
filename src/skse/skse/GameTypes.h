@@ -58,9 +58,9 @@ public:
 		const char	* data;
 
 		MEMBER_FN_PREFIX(Ref);
-		DEFINE_MEMBER_FN(ctor, Ref *, 0x00BD90B0, const char * buf);
-		DEFINE_MEMBER_FN(Set, Ref *, 0x00BD9150, const char * buf);
-		DEFINE_MEMBER_FN(Release, void, 0x0060A280);
+		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A35AB0, const char * buf);
+		DEFINE_MEMBER_FN(Set, Ref *, 0x00A35B00, const char * buf);
+		DEFINE_MEMBER_FN(Release, void, 0x00A35AA0);
 	};
 
 	StringCache();
@@ -87,3 +87,28 @@ private:
 	UInt16	m_dataLen;	// 04
 	UInt16	m_bufLen;	// 06
 };
+
+
+template <class T>
+class tArray
+{
+public:
+	struct Array {
+		T* entries;
+		UInt32 unk4;
+	};
+
+	Array arr;
+	UInt32 count;
+	
+	bool GetNthItem(UInt32 index, T& pT)
+	{
+		if (index < count) {
+			pT = arr.entries[index];
+			return true;
+		}
+		return false;
+	}
+};
+
+typedef tArray<UInt32> UnkArray;

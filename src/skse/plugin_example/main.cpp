@@ -26,7 +26,7 @@ void GameplayPatches(void)
 		0xC3							// retn
 	};
 
-	ApplyPatch(0x00633240, kPickpocketChance, sizeof(kPickpocketChance));
+	ApplyPatch(0x00592DF0, kPickpocketChance, sizeof(kPickpocketChance));
 }
 
 class SKSEScaleform_ExampleFunction : public GFxFunctionHandler

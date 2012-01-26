@@ -51,8 +51,11 @@ public:
 	struct Data
 	{
 		UInt32	len;
-		UInt32	refCount;
+		SInt32	refCount;
 		char	data[0];
+
+		void	IncRef(void);
+		void	Release(void);
 	};
 
 	union
@@ -64,9 +67,10 @@ public:
 	Data *	GetData(void);
 	UInt32	GetHeapInfo(void);
 
+	void	Destroy(void);
+
 	MEMBER_FN_PREFIX(GString);
-	DEFINE_MEMBER_FN(Init, GString *, 0x00AA3750, const char * str);
-	DEFINE_MEMBER_FN(Destroy, void, 0x00999870);
+	DEFINE_MEMBER_FN(Init, GString *, 0x0090B840, const char * str);
 };
 
 #pragma warning (pop)

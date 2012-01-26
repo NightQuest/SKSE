@@ -84,9 +84,9 @@ public:
 
 static Setting * GetINISetting(const char * name)
 {
-	Setting	* setting = CALL_MEMBER_FN(*g_iniSettingCollection, Get)(name);
+	Setting	* setting = (*g_iniSettingCollection)->Get(name);
 	if(!setting)
-		setting = CALL_MEMBER_FN(*g_iniPrefSettingCollection, Get)(name);
+		setting = (*g_iniPrefSettingCollection)->Get(name);
 
 	return setting;
 }
@@ -208,12 +208,12 @@ void RegisterNumber(GFxValue * dst, const char * name, double value)
 
 	fxValue.SetNumber(value);
 
-	CALL_MEMBER_FN(dst, SetMember)(name, &fxValue);
+	dst->SetMember(name, &fxValue);
 }
 
 //// core hook
 
-void InstallHooks(GFxMovieView * view)
+void __stdcall InstallHooks(GFxMovieView * view)
 {
 	// called from a task, must be threadsafe
 
@@ -248,7 +248,7 @@ void InstallHooks(GFxMovieView * view)
 	RegisterNumber(&version, "beta", SKSE_VERSION_INTEGER_BETA);
 	RegisterNumber(&version, "releaseIdx", SKSE_VERSION_RELEASEIDX);
 
-	CALL_MEMBER_FN(&skse, SetMember)("version", &version);
+	skse.SetMember("version", &version);
 
 	// plugins
 	GFxValue	plugins;
@@ -261,29 +261,35 @@ void InstallHooks(GFxMovieView * view)
 
 		iter->callback(view, &plugin);
 
-		CALL_MEMBER_FN(&plugins, SetMember)(iter->name, &plugin);
+		plugins.SetMember(iter->name, &plugin);
 	}
 
-	CALL_MEMBER_FN(&skse, SetMember)("plugins", &plugins);
+	skse.SetMember("plugins", &plugins);
 
-	CALL_MEMBER_FN(&globals, SetMember)("skse", &skse);
+	globals.SetMember("skse", &skse);
 }
 
-// this is used to hook movie loading
-class GFxMovieViewSafePtr
+static const UInt32 kInstallHooks_Entry_retn = 0x00A459BE;
+
+__declspec(naked) void InstallHooks_Entry(void)
 {
-public:
-	GFxMovieView	* movieView;
-
-	GFxMovieView	* Get_Hooked(void)
+	__asm
 	{
-		InstallHooks(movieView);
+		pushad
+		push	esi				// esi contains GFxMovieView
+		call	InstallHooks	// stdcall so we don't need to do work
+		popad
 
-		return movieView;
+		// overwritten code
+		mov		edx, [edx + 0x6C]
+		push	eax
+		mov		ecx, esi
+
+		jmp		[kInstallHooks_Entry_retn]
 	}
-};
+}
 
 void Hooks_Scaleform_Commit(void)
 {
-	WriteRelCall(0x00BF2A09, GetFnAddr(&GFxMovieViewSafePtr::Get_Hooked));
+	WriteRelJump(0x00A459B8, (UInt32)InstallHooks_Entry);
 }

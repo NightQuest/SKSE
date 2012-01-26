@@ -21,6 +21,7 @@ public:
 	bool	m_verbose;
 	bool	m_moduleInfo;
 	bool	m_skipLauncher;
+	bool	m_launchSteam;
 
 	UInt32	m_fpsLimit;
 

@@ -38,16 +38,16 @@ public:
 
 	//	void	** _vtbl;						// 00
 	BSIntrusiveRefCounted		refCount;	// 04
-	TESActorBaseData::Data2C	unk08;		// 08
-	TESActorBaseData::Data2C	unk14;		// 14
-	TESActorBaseData::Data2C	unk20;		// 20
-	TESActorBaseData::Data2C	unk2C;		// 2C
-	TESActorBaseData::Data2C	unk38;		// 38
-	TESActorBaseData::Data2C	unk44;		// 44
+	UnkArray	unk08;		// 08
+	UnkArray	unk14;		// 14
+	UnkArray	unk20;		// 20
+	UnkArray	unk2C;		// 2C
+	UnkArray	unk38;		// 38
+	UnkArray	unk44;		// 44
 	Data50						unk50;		// 50
-	TESActorBaseData::Data2C	unk78;		// 78
+	UnkArray	unk78;		// 78
 	Data84						* unk84;	// 84
-	TESActorBaseData::Data2C	unk88;		// 88
+	UnkArray	unk88;		// 88
 	UInt32						unk94;		// 94
 	UInt32						unk98;		// 98
 };
@@ -93,7 +93,7 @@ public:
 		UInt32	unk1C;		// 1C
 	};
 
-	TESActorBaseData::Data2C	unk00;	// 00
+	UnkArray	unk00;	// 00
 	Data0C						unk0C;	// 0C
 };
 

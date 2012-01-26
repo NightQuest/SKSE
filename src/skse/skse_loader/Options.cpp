@@ -12,6 +12,7 @@ Options::Options()
 ,m_verbose(false)
 ,m_moduleInfo(false)
 ,m_skipLauncher(true)
+,m_launchSteam(false)
 ,m_fpsLimit(0)
 {
 	//

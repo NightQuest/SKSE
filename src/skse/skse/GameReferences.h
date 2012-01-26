@@ -42,6 +42,16 @@ public:
 //	void	** _vtbl;
 };
 
+// 128
+class IPostAnimationChannelUpdateFunctor
+{
+public:
+	virtual ~IPostAnimationChannelUpdateFunctor();
+//	void	** _vtbl;
+	UInt32	unk_04[73];
+};
+STATIC_ASSERT(sizeof(IPostAnimationChannelUpdateFunctor) == 0x128);
+
 // 54
 class TESObjectREFR : public TESForm
 {
@@ -153,22 +163,70 @@ public:
 	IAnimationGraphManagerHolder			animGraphHolder;	// 20
 
 	// members
-	// 24
+	TESForm* baseForm;// 24
 	float	rotX;	// 28
 	float	rotY;	// 2C
 	float	rotZ;	// 30
 	float	posX;	// 34
 	float	posY;	// 38
 	float	posZ;	// 3C
+	
+	TESObjectCELL* parentCell; // 40
+	BGSMovementType* movementType; // 44
+	UInt32	unk48; // BGSImpactDataSet?
+	UInt32	unk4C;
+	UInt32	unk50; // flags?
 
 	// 40 - ExtraDataList
 };
+STATIC_ASSERT(sizeof(TESObjectREFR) == 0x54);
+STATIC_ASSERT(offsetof(TESObjectREFR, handleRefObject) == 0x14);
+
+// 04
+class IMovementInterface
+{
+public:
+	virtual ~IMovementInterface();
+//	void	** _vtbl;	// 00
+};
+
+// 04
+class IMovementState : public IMovementInterface
+{
+public:
+	virtual ~IMovementState();
+};
+
+// 10 - 8 byte alignment
+class ActorState : public IMovementState
+{
+public:
+	virtual ~ActorState();
+
+	UInt32 align04;	// 04
+	UInt64 flags;	// 08
+};
+
+STATIC_ASSERT(sizeof(ActorState) == 0x10);
 
 // 1B0
 class Actor : public TESObjectREFR
 {
-	//
+public:
+	virtual ~Actor();
+
+	MagicTarget		magicTarget;					// 054
+	ActorValueOwner	actorValueOwner;				// 060
+	UInt32			align64;						// 064
+	ActorState		actorState;						// 068
+	BSTEventSink<void*> transformDeltaEvent;		// 078 .?AV?$BSTEventSink@VBSTransformDeltaEvent@@@@
+	BSTEventSink<void*>	characterMoveFinishEvent;	// 07C .?AV?$BSTEventSink@VbhkCharacterMoveFinishEvent@@@@
+	IPostAnimationChannelUpdateFunctor	unk_080;	// 080 IPostAnimationChannelUpdateFunctor
+	BSTEventSink<void*>	 menuOpenCloseEvent;		// 1A8	.?AV?$BSTEventSink@VMenuOpenCloseEvent@@@@
+	BSTEventSink<void*>	 menuModeChangeEvent;		// 1AC .?AV?$BSTEventSink@VMenuModeChangeEvent@@@@
 };
+STATIC_ASSERT(offsetof(Actor, actorState) == 0x68);
+STATIC_ASSERT(sizeof(Actor) == 0x1B0);
 
 // 1B0
 // Character + 98 = process?
@@ -180,8 +238,28 @@ class Character : public Actor
 // 718
 class PlayerCharacter : public Character
 {
-	//
+public:
+	virtual ~PlayerCharacter();
+
+	// parents
+	BSTEventSink <void *>	userEventEnabledEvent;		// 1B0 .?AV?$BSTEventSink@VUserEventEnabledEvent@@@@
+	BSTEventSource <void *>	actorCellEventSource;		// 1B4 .?AV?$BSTEventSource@UBGSActorCellEvent@@@@
+	BSTEventSource <void *>	actorDeathEventSource;		// 1E4 .?AV?$BSTEventSource@UBGSActorDeathEvent@@@@
+	BSTEventSource <void *>	positionPlayerEventSource;	// 214 .?AV?$BSTEventSource@UPositionPlayerEvent@@@@
+
+	// ### todo: confirm
+	struct ObjDesc
+	{
+		TESForm	* form;
+		void	* extraData;
+	};
+
+	MEMBER_FN_PREFIX(PlayerCharacter);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x007257A0, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x00725770, ObjDesc * pForm);
 };
+
+STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1B0);
 
 // D8
 class Explosion : public TESObjectREFR

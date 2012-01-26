@@ -125,14 +125,17 @@ int main(int argc, char ** argv)
 
 	if(procHookInfo.procType == kProcType_Steam)
 	{
-		// if steam isn't running, launch it
-		if(!SteamCheckPassive())
+		if(g_options.m_launchSteam)
 		{
-			_MESSAGE("steam not running, launching it");
-
-			if(!SteamLaunch())
+			// if steam isn't running, launch it
+			if(!SteamCheckPassive())
 			{
-				_WARNING("failed to launch steam");
+				_MESSAGE("steam not running, launching it");
+
+				if(!SteamLaunch())
+				{
+					_WARNING("failed to launch steam");
+				}
 			}
 		}
 

@@ -90,8 +90,8 @@ const char * GetObjectClassName(void * objBase)
 
 void DumpClass(void * theClassPtr, UInt32 nIntsToDump)
 {
-	_MESSAGE("DumpClass:");
 	UInt32* basePtr = (UInt32*)theClassPtr;
+	_MESSAGE("DumpClass: %X", basePtr);
 
 	gLog.Indent();
 

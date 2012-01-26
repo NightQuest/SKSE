@@ -1,3 +1,9 @@
+1.4.5
+- support for runtime 1.4.15.0
+
+1.4.4:
+- additional form docs
+
 1.4.3:
 - when running a Steam-wrapped executable, make sure Steam is running
 - fix conflict with logging system and UAC

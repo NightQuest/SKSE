@@ -53,6 +53,11 @@ public:
 		GFxMovieRoot	* root;
 
 		MEMBER_FN_PREFIX(ObjectInterface);
+		DEFINE_MEMBER_FN(HasMember, bool, 0x00906A20, void * obj, const char * name, bool isDisplayObj);
+		DEFINE_MEMBER_FN(SetMember, bool, 0x00906AF0, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
+		DEFINE_MEMBER_FN(GetMember, bool, 0x009097C0, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
+		DEFINE_MEMBER_FN(DeleteMember, bool, 0x00906BB0, void * obj, const char * name, bool isDisplayObj);
+		DEFINE_MEMBER_FN(Invoke, bool, 0x00908D30, void * obj, GFxValue * result, const char * name, GFxValue * args, UInt32 numArgs, bool isDisplayObj);
 	};
 
 	ObjectInterface	* objectInterface;	// 00
@@ -62,6 +67,7 @@ public:
 	UInt32	GetType(void) const		{ return type & kMask_Type; }
 	bool	IsManaged(void) const	{ return (type & kTypeFlag_Managed) != 0; }
 	void	CleanManaged(void);
+	bool	IsDisplayObject(void) const	{ return GetType() == kType_DisplayObject; }
 
 	bool		GetBool(void);
 	char *		GetString(void);
@@ -74,13 +80,13 @@ public:
 	void	SetNumber(double value);
 
 	MEMBER_FN_PREFIX(GFxValue);
-	DEFINE_MEMBER_FN(ReleaseManaged, void, 0x007917B0);
+	DEFINE_MEMBER_FN(ReleaseManaged_Internal, void, 0x009084C0, ObjectInterface * objInterface, void * obj);
 
-	DEFINE_MEMBER_FN(HasMember, bool, 0x009B2430, const char * name);
-	DEFINE_MEMBER_FN(GetMember, bool, 0x00999590, const char * name, GFxValue * value);
-	DEFINE_MEMBER_FN(SetMember, bool, 0x0099CB90, const char * name, GFxValue * value);
-	DEFINE_MEMBER_FN(DeleteMember, bool, 0x009B2460, const char * name);
-	DEFINE_MEMBER_FN(Invoke, bool, 0x009A2D00, const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
+	bool	HasMember(const char * name);
+	bool	SetMember(const char * name, GFxValue * value);
+	bool	GetMember(const char * name, GFxValue * value);
+	bool	DeleteMember(const char * name);
+	bool	Invoke(const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
 };
 
 STATIC_ASSERT(sizeof(GFxValue) == 0x10);
@@ -116,7 +122,7 @@ void RegisterFunction(GFxValue * dst, GFxMovieView * movie, const char * name)
 	movie->CreateFunction(&fnValue, fn);
 
 	// register it
-	CALL_MEMBER_FN(dst, SetMember)(name, &fnValue);
+	dst->SetMember(name, &fnValue);
 }
 
 // 04

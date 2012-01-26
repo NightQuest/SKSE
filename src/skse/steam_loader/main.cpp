@@ -5,6 +5,13 @@
 #include "common/IFileStream.h"
 #include "loader_common/IdentifyEXE.h"
 #include <tlhelp32.h>
+
+// hack for VS2005, intrin.h can't be included with winnt.h
+#if _MSC_VER <= 1400
+#define _interlockedbittestandreset _interlockedbittestandreset_NAME_CHANGED_TO_AVOID_MSVC2005_ERROR
+#define _interlockedbittestandset _interlockedbittestandset_NAME_CHANGED_TO_AVOID_MSVC2005_ERROR
+#endif
+
 #include <intrin.h>
 
 IDebugLog	gLog("skse_steam_loader.log");

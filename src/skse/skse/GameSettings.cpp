@@ -1,7 +1,10 @@
 #include "GameSettings.h"
 
-extern GameSettingCollection	** g_iniSettingCollection = (GameSettingCollection **)0x015DB708;
-extern GameSettingCollection	** g_iniPrefSettingCollection = (GameSettingCollection **)0x015D325C;
+extern GameSettingCollection	** g_iniSettingCollection = (GameSettingCollection **)0x013E53C4;
+extern GameSettingCollection	** g_iniPrefSettingCollection = (GameSettingCollection **)0x013DCF88;
+
+// sLanguage:General
+extern Setting	* g_gameLanguage = (Setting *)0x0120D468;
 
 UInt32 Setting::GetType(void) const
 {
@@ -56,4 +59,14 @@ bool Setting::SetDouble(double value)
 	}
 
 	return true;
+}
+
+Setting	* GameSettingCollection::Get(const char * name)
+{
+	Setting	* result = NULL;
+
+	if(!CALL_MEMBER_FN(this, Get_Internal)(name, &result))
+		result = NULL;
+
+	return result;
 }

@@ -9,10 +9,40 @@
 #include "GameMenus.h"
 #include "PluginManager.h"
 #include "skse_version.h"
+#include "GameForms.h"
+#include "GameObjects.h"
+#include "GameReferences.h"
+#include "GameRTTI.h"
 #include <new>
 #include <list>
 
+//// helpers
+
+void RegisterNumber(GFxValue * dst, const char * name, double value)
+{
+	GFxValue	fxValue;
+
+	fxValue.SetNumber(value);
+
+	dst->SetMember(name, &fxValue);
+}
+
+void RegisterBool(GFxValue* dst, const char* name, bool value)
+{
+	GFxValue fxValue;
+	fxValue.SetBool(value);
+	dst->SetMember(name, &fxValue);
+}
+
+double round(const double& r)
+{
+	return (r >= 0.0) ? floor(r + 0.5) : ceil(r - 0.5);
+}
+
 //// plugin API
+
+void RegisterNumber(GFxValue * dst, const char * name, double value);
+void RegisterBool(GFxValue * dst, const char * name, bool value);
 
 struct ScaleformPluginInfo
 {
@@ -200,15 +230,198 @@ public:
 	}
 };
 
-//// helpers
+static bool s_bExtendData = false;
 
-void RegisterNumber(GFxValue * dst, const char * name, double value)
+class SKSEScaleform_ExtendData : public GFxFunctionHandler
 {
-	GFxValue	fxValue;
+public:
+	virtual void	Invoke(Args* args)
+	{
+		ASSERT(args->numArgs >= 1);
 
-	fxValue.SetNumber(value);
+		bool bExtend = args->args[0].GetBool();
+		
+		s_bExtendData = bExtend;
+	}
+};
 
-	dst->SetMember(name, &fxValue);
+//// item card extensions
+
+class StandardItemData;
+class MagicItemData;
+
+void ExtendCommonItemData(GFxValue* pFxVal, TESForm * pForm);
+void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDesc);
+void ExtendMagicItemData(GFxValue * pFxVal, TESForm * pForm);
+
+// 20
+class StandardItemData
+{
+public:
+	virtual ~StandardItemData();
+
+	virtual const char *	GetName(void);
+	virtual UInt32			GetCount(void);
+	virtual UInt32			GetEquipState(void);
+	virtual UInt32			GetFilterFlag(void);
+	virtual UInt32			GetFavorite(void);
+	virtual bool			GetEnabled(void);
+
+//	void						** _vtbl;	// 00
+	PlayerCharacter::ObjDesc	* objDesc;	// 04
+	void						* unk08;	// 08
+	UInt32						unk0C;		// 0C
+	GFxValue					fxValue;	// 10
+
+	MEMBER_FN_PREFIX(StandardItemData);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00831670, void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
+
+	StandardItemData * ctor_Hook(void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
+};
+
+STATIC_ASSERT(sizeof(StandardItemData) == 0x20);
+
+StandardItemData * StandardItemData::ctor_Hook(void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk)
+{
+	StandardItemData	* result = CALL_MEMBER_FN(this, ctor_data)(callbacks, objDesc, unk);
+
+//	_MESSAGE("StandardItemData hook");
+
+	if(s_bExtendData)
+	{
+		ExtendCommonItemData(&result->fxValue, objDesc->form);
+		ExtendStandardItemData(&result->fxValue, objDesc);
+	}
+
+	return result;
+}
+
+void ExtendCommonItemData(GFxValue* pFxVal, TESForm * pForm)
+{
+	if(!pFxVal || !pForm)
+		return;
+
+	RegisterBool(pFxVal, "extended", true);
+	RegisterNumber(pFxVal, "formType", (double)pForm->GetFormType());
+	RegisterNumber(pFxVal, "formId", (double)pForm->formID);
+}
+
+void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDesc)
+{
+	TESForm	* pForm = objDesc->form;
+
+	if(!pForm || !pFxVal)
+		return;
+
+	PlayerCharacter	* pPC = *g_thePlayer;
+
+	switch(pForm->GetFormType())
+	{
+		case kFormType_Armor:
+		{
+			TESObjectARMO * pArmor = DYNAMIC_CAST(pForm, TESForm, TESObjectARMO);
+			if(pArmor)
+			{
+				double armorValue = CALL_MEMBER_FN(pPC, GetArmorValue)(objDesc);
+				armorValue = round(armorValue);
+				RegisterNumber(pFxVal, "armor", armorValue);
+			}
+		}
+		break;
+
+		case kFormType_Weapon:
+		{
+			TESObjectWEAP * pWeapon = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
+			if(pWeapon)
+			{
+				UInt8 weaponType = pWeapon->type();
+				double damage = CALL_MEMBER_FN(pPC, GetDamage)(objDesc);
+				damage = round(damage);
+
+				RegisterNumber(pFxVal, "subType", weaponType);
+				RegisterNumber(pFxVal, "damage", damage);
+			}
+		}
+		break;
+
+		case kFormType_Ammo:
+		{
+			TESAmmo * pAmmo = DYNAMIC_CAST(pForm, TESForm, TESAmmo);
+			if(pAmmo)
+			{
+				double damage = CALL_MEMBER_FN(pPC, GetDamage)(objDesc);
+				damage = round(damage);
+				RegisterNumber(pFxVal, "damage", damage);
+			}
+		}
+		break;
+		
+		default:
+			break;
+	}
+}
+
+// 20
+class MagicItemData
+{
+public:
+	virtual ~MagicItemData();
+
+//	void			** _vtbl;	// 00
+	UInt32			unk04;		// 04
+	UInt16			unk08;		// 08
+	UInt16			unk0A;		// 0A
+	TESForm			* form;		// 0C
+	GFxValue		fxValue;	// 10
+
+	MEMBER_FN_PREFIX(MagicItemData);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x00860EF0, void ** callbacks, TESForm * pForm, int unk);
+
+	MagicItemData * ctor_Hook(void ** callbacks, TESForm * pForm, int unk);
+};
+
+STATIC_ASSERT(sizeof(MagicItemData) == 0x20);
+
+MagicItemData * MagicItemData::ctor_Hook(void ** callbacks, TESForm * pForm, int unk)
+{
+	MagicItemData	* result = CALL_MEMBER_FN(this, ctor_data)(callbacks, pForm, unk);
+
+//	_MESSAGE("MagicItemData hook");
+
+	if(s_bExtendData)
+	{
+		ExtendCommonItemData(&result->fxValue, pForm);
+		ExtendMagicItemData(&result->fxValue, pForm);
+	}
+
+	return result;
+}
+
+void ExtendMagicItemData(GFxValue * pFxVal, TESForm * pForm)
+{
+	if(!pFxVal || !pForm)
+		return;
+	
+	switch(pForm->GetFormType())
+	{
+		case kFormType_Spell:
+		{
+			MagicItem * pMagicItem = DYNAMIC_CAST(pForm, TESForm, MagicItem);
+			MagicItem::EffectItem * pEffect = CALL_MEMBER_FN(pMagicItem, GetCostliestEffectItem)(5, false);
+			if(pEffect && pEffect->mgef)
+			{
+				UInt32 school = pEffect->mgef->school();
+				UInt32 skillLevel = pEffect->mgef->level();
+
+				RegisterNumber(pFxVal, "subType", (double)school);
+				RegisterNumber(pFxVal, "skillLevel", (double)skillLevel);
+			}
+		}
+		break;
+
+		default:
+			break;
+	}
 }
 
 //// core hook
@@ -238,6 +451,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	RegisterFunction <SKSEScaleform_GetINISetting>(&skse, view, "GetINISetting");
 	RegisterFunction <SKSEScaleform_OpenMenu>(&skse, view, "OpenMenu");
 	RegisterFunction <SKSEScaleform_CloseMenu>(&skse, view, "CloseMenu");
+	RegisterFunction <SKSEScaleform_ExtendData>(&skse, view, "ExtendData");
 
 	// version
 	GFxValue	version;
@@ -291,5 +505,10 @@ __declspec(naked) void InstallHooks_Entry(void)
 
 void Hooks_Scaleform_Commit(void)
 {
+	// movie creation hook
 	WriteRelJump(0x00A459B8, (UInt32)InstallHooks_Entry);
+
+	// item card data creation hook
+	WriteRelCall(0x00832189, GetFnAddr(&StandardItemData::ctor_Hook));
+	WriteRelCall(0x008614A9, GetFnAddr(&MagicItemData::ctor_Hook));
 }

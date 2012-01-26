@@ -10,6 +10,9 @@ class FxDelegateHandler;
 class GFxMovieView;
 class GFxMovieRoot;
 
+// the double in GFxValue is causing very weird alignment issues
+#pragma pack (push, 4)
+
 // 10
 class GFxValue
 {
@@ -90,6 +93,8 @@ public:
 };
 
 STATIC_ASSERT(sizeof(GFxValue) == 0x10);
+
+#pragma pack (pop, 4)
 
 class GFxFunctionHandler : public GRefCountBase
 {

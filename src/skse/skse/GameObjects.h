@@ -353,6 +353,9 @@ public:
 	UInt32	unk44;	// 44
 	UInt32	unk48;	// 48
 	UInt32	unk4C;	// 4C
+
+	MEMBER_FN_PREFIX(MagicItem);
+	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem*, 0x004079F0, int arg1, bool arg2);
 };
 
 STATIC_ASSERT(sizeof(MagicItem) == 0x50);
@@ -1085,6 +1088,8 @@ public:
 	TESForm	* templateForm;		// 12C
 	UInt32	unk130;				// 130
 	UInt32	pad134;				// 134
+
+	UInt8 type() { return unk0C4.type; }
 };
 
 STATIC_ASSERT(sizeof(TESObjectWEAP) == 0x138);

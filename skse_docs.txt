@@ -55,6 +55,23 @@ dynamic intrinsic class skse
 	function OpenMenu(menuName : String) : Void;
 	function CloseMenu(menuName : String) : Void;
 	
+	// Enable extended data for item cards
+	// common data for all objects:
+	//	var extended : Boolean;		// always set to true
+	//	var formType : Number;		// object type (see GameForms.h for a list)
+	//	var formId : Number;		// form's ID number
+	// data for armor:
+	//	var armor : Number;			// armor value
+	// data for weapons:
+	//	var subType : Number;		// specific weapon type (see TESObjectWEAP::DataC4 in GameObjects.h)
+	//	var damage : Number;		// damage
+	// data for ammo:
+	//	var damage : Number;		// damage
+	// data for spells:
+	//	var subType : Number;		// magic school
+	//	var skillLevel : Number;	// skill level
+	function ExtendData(enable : Boolean) : Void;
+	
 	dynamic intrinsic class version
 	{
 		var	major : Number;			// SKSE major revision number

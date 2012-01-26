@@ -58,9 +58,9 @@ public:
 		const char	* data;
 
 		MEMBER_FN_PREFIX(Ref);
-		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A35AB0, const char * buf);
-		DEFINE_MEMBER_FN(Set, Ref *, 0x00A35B00, const char * buf);
-		DEFINE_MEMBER_FN(Release, void, 0x00A35AA0);
+		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A35C20, const char * buf);
+		DEFINE_MEMBER_FN(Set, Ref *, 0x00A35C70, const char * buf);
+		DEFINE_MEMBER_FN(Release, void, 0x00A35C10);
 	};
 
 	StringCache();

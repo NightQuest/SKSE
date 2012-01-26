@@ -58,9 +58,9 @@ public:
 		MEMBER_FN_PREFIX(ObjectInterface);
 		DEFINE_MEMBER_FN(HasMember, bool, 0x00906A20, void * obj, const char * name, bool isDisplayObj);
 		DEFINE_MEMBER_FN(SetMember, bool, 0x00906AF0, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
-		DEFINE_MEMBER_FN(GetMember, bool, 0x009097C0, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
+		DEFINE_MEMBER_FN(GetMember, bool, 0x00909730, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
 		DEFINE_MEMBER_FN(DeleteMember, bool, 0x00906BB0, void * obj, const char * name, bool isDisplayObj);
-		DEFINE_MEMBER_FN(Invoke, bool, 0x00908D30, void * obj, GFxValue * result, const char * name, GFxValue * args, UInt32 numArgs, bool isDisplayObj);
+		DEFINE_MEMBER_FN(Invoke, bool, 0x00908CA0, void * obj, GFxValue * result, const char * name, GFxValue * args, UInt32 numArgs, bool isDisplayObj);
 	};
 
 	ObjectInterface	* objectInterface;	// 00
@@ -83,7 +83,7 @@ public:
 	void	SetNumber(double value);
 
 	MEMBER_FN_PREFIX(GFxValue);
-	DEFINE_MEMBER_FN(ReleaseManaged_Internal, void, 0x009084C0, ObjectInterface * objInterface, void * obj);
+	DEFINE_MEMBER_FN(ReleaseManaged_Internal, void, 0x00908430, ObjectInterface * objInterface, void * obj);
 
 	bool	HasMember(const char * name);
 	bool	SetMember(const char * name, GFxValue * value);

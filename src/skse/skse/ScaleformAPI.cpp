@@ -18,7 +18,7 @@ public:
 	virtual void	Free(void * ptr);
 };
 
-ScaleformHeap ** g_scaleformHeap = (ScaleformHeap **)0x0138E6BC;
+ScaleformHeap ** g_scaleformHeap = (ScaleformHeap **)0x0138F69C;
 
 void * ScaleformHeap_Allocate(UInt32 size)
 {

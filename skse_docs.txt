@@ -72,6 +72,9 @@ dynamic intrinsic class skse
 	//	var skillLevel : Number;	// skill level
 	function ExtendData(enable : Boolean) : Void;
 	
+	// forces containers to show categories like NPCs
+	function ForceContainerCategorization(enable : Boolean) : Void;
+	
 	dynamic intrinsic class version
 	{
 		var	major : Number;			// SKSE major revision number

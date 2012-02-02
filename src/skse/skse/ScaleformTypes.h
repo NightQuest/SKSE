@@ -1,6 +1,7 @@
 #pragma once
 
 #include "skse/Utilities.h"
+#include "skse/ScaleformAPI.h"
 
 // not sure why they nest it like this, but whatever
 class GRefCountImplCore
@@ -11,6 +12,34 @@ public:
 
 //	void	** _vtbl;			// 00
 	volatile SInt32	refCount;	// 04
+
+	// redirect new/delete to the scaleform heap
+	static void * operator new(std::size_t size)
+	{
+		return ScaleformHeap_Allocate(size);
+	}
+
+	static void * operator new(std::size_t size, const std::nothrow_t &)
+	{
+		return ScaleformHeap_Allocate(size);
+	}
+
+	// placement new
+	static void * operator new(std::size_t size, void * ptr)
+	{
+		return ptr;
+	}
+
+	static void operator delete(void * ptr)
+	{
+		ScaleformHeap_Free(ptr);
+	}
+
+	// placement delete
+	static void operator delete(void *, void *)
+	{
+		//
+	}
 };
 
 class GRefCountImpl : public GRefCountImplCore

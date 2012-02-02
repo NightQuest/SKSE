@@ -1,4 +1,5 @@
 #include "Hooks_Scaleform.h"
+#include "Hooks_Gameplay.h"
 #include "SafeWrite.h"
 #include "Utilities.h"
 #include "ScaleformCallbacks.h"
@@ -245,6 +246,19 @@ public:
 	}
 };
 
+class SKSEScaleform_ForceContainerCategorization : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args* args)
+	{
+		ASSERT(args->numArgs >= 1);
+
+		bool enable = args->args[0].GetBool();
+
+		Hooks_Gameplay_EnableForceContainerCategorization(enable);
+	}
+};
+
 //// item card extensions
 
 class StandardItemData;
@@ -274,7 +288,7 @@ public:
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00831B20, void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00831280, void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
 
 	StandardItemData * ctor_Hook(void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
 };
@@ -375,7 +389,7 @@ public:
 	GFxValue		fxValue;	// 10
 
 	MEMBER_FN_PREFIX(MagicItemData);
-	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x00861500, void ** callbacks, TESForm * pForm, int unk);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x00860EE0, void ** callbacks, TESForm * pForm, int unk);
 
 	MagicItemData * ctor_Hook(void ** callbacks, TESForm * pForm, int unk);
 };
@@ -452,6 +466,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	RegisterFunction <SKSEScaleform_OpenMenu>(&skse, view, "OpenMenu");
 	RegisterFunction <SKSEScaleform_CloseMenu>(&skse, view, "CloseMenu");
 	RegisterFunction <SKSEScaleform_ExtendData>(&skse, view, "ExtendData");
+	RegisterFunction <SKSEScaleform_ForceContainerCategorization>(&skse, view, "ForceContainerCategorization");
 
 	// version
 	GFxValue	version;
@@ -483,7 +498,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	globals.SetMember("skse", &skse);
 }
 
-static const UInt32 kInstallHooks_Entry_retn = 0x00A459EE;
+static const UInt32 kInstallHooks_Entry_retn = 0x00A455DE;
 
 __declspec(naked) void InstallHooks_Entry(void)
 {
@@ -506,9 +521,9 @@ __declspec(naked) void InstallHooks_Entry(void)
 void Hooks_Scaleform_Commit(void)
 {
 	// movie creation hook
-	WriteRelJump(0x00A459E8, (UInt32)InstallHooks_Entry);
+	WriteRelJump(0x00A455D8, (UInt32)InstallHooks_Entry);
 
 	// item card data creation hook
-	WriteRelCall(0x008324B9, GetFnAddr(&StandardItemData::ctor_Hook));
-	WriteRelCall(0x00861B09, GetFnAddr(&MagicItemData::ctor_Hook));
+	WriteRelCall(0x00831B19, GetFnAddr(&StandardItemData::ctor_Hook));
+	WriteRelCall(0x00861499, GetFnAddr(&MagicItemData::ctor_Hook));
 }

@@ -56,11 +56,11 @@ public:
 		GFxMovieRoot	* root;
 
 		MEMBER_FN_PREFIX(ObjectInterface);
-		DEFINE_MEMBER_FN(HasMember, bool, 0x00906A20, void * obj, const char * name, bool isDisplayObj);
-		DEFINE_MEMBER_FN(SetMember, bool, 0x00906AF0, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
-		DEFINE_MEMBER_FN(GetMember, bool, 0x00909730, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
-		DEFINE_MEMBER_FN(DeleteMember, bool, 0x00906BB0, void * obj, const char * name, bool isDisplayObj);
-		DEFINE_MEMBER_FN(Invoke, bool, 0x00908CA0, void * obj, GFxValue * result, const char * name, GFxValue * args, UInt32 numArgs, bool isDisplayObj);
+		DEFINE_MEMBER_FN(HasMember, bool, 0x009067E0, void * obj, const char * name, bool isDisplayObj);
+		DEFINE_MEMBER_FN(SetMember, bool, 0x009068B0, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
+		DEFINE_MEMBER_FN(GetMember, bool, 0x009094F0, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
+		DEFINE_MEMBER_FN(DeleteMember, bool, 0x00906970, void * obj, const char * name, bool isDisplayObj);
+		DEFINE_MEMBER_FN(Invoke, bool, 0x00908A60, void * obj, GFxValue * result, const char * name, GFxValue * args, UInt32 numArgs, bool isDisplayObj);
 	};
 
 	ObjectInterface	* objectInterface;	// 00
@@ -83,7 +83,7 @@ public:
 	void	SetNumber(double value);
 
 	MEMBER_FN_PREFIX(GFxValue);
-	DEFINE_MEMBER_FN(ReleaseManaged_Internal, void, 0x00908430, ObjectInterface * objInterface, void * obj);
+	DEFINE_MEMBER_FN(ReleaseManaged_Internal, void, 0x009081F0, ObjectInterface * objInterface, void * obj);
 
 	bool	HasMember(const char * name);
 	bool	SetMember(const char * name, GFxValue * value);
@@ -99,6 +99,9 @@ STATIC_ASSERT(sizeof(GFxValue) == 0x10);
 class GFxFunctionHandler : public GRefCountBase
 {
 public:
+	GFxFunctionHandler();
+	virtual ~GFxFunctionHandler();
+
 	// 1C
 	class Args
 	{
@@ -113,14 +116,16 @@ public:
 	};
 
 	virtual void	Invoke(Args * args) = 0;
+
+	MEMBER_FN_PREFIX(GFxFunctionHandler);
+	DEFINE_MEMBER_FN(Destroy, GFxFunctionHandler *, 0x00847AB0, UInt32 flags);
 };
 
 template <typename T>
 void RegisterFunction(GFxValue * dst, GFxMovieView * movie, const char * name)
 {
 	// allocate the handler on the scaleform heap
-	T	* fn = (T *)ScaleformHeap_Allocate(sizeof(T));
-	new(fn) T();
+	T	* fn = new T;
 
 	// create the function object
 	GFxValue	fnValue;

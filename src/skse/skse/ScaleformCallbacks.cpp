@@ -112,3 +112,15 @@ bool GFxValue::Invoke(const char * name, GFxValue * result, GFxValue * args, UIn
 {
 	return CALL_MEMBER_FN(objectInterface, Invoke)(data.obj, result, name, args, numArgs, IsDisplayObject());
 }
+
+UInt32 g_GFxFunctionHandler_count = 0;
+
+GFxFunctionHandler::GFxFunctionHandler()
+{
+	g_GFxFunctionHandler_count++;
+}
+
+GFxFunctionHandler::~GFxFunctionHandler()
+{
+	g_GFxFunctionHandler_count--;
+}

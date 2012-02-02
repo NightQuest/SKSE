@@ -91,11 +91,11 @@ public:
 	virtual void				Unk_16(void) = 0;
 
 	MEMBER_FN_PREFIX(NativeFunctionBase);
-	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C27F40);
-	DEFINE_MEMBER_FN(Impl_Fn06, void, 0x00C283C0, UInt32 idx, UInt32 out1, UInt32 out2);
-	DEFINE_MEMBER_FN(Impl_Invoke, UInt32, 0x00C28120, UInt32 unk0, UInt32 unk1, UInt32 unk2);
-	DEFINE_MEMBER_FN(Impl_Fn10, StringCache::Ref *, 0x00C27F80);
-	DEFINE_MEMBER_FN(Impl_Fn12, bool, 0x00C283D0, UInt32 idx, UInt32 out);
+	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C27DD0);
+	DEFINE_MEMBER_FN(Impl_Fn06, void, 0x00C28250, UInt32 idx, UInt32 out1, UInt32 out2);
+	DEFINE_MEMBER_FN(Impl_Invoke, UInt32, 0x00C27FB0, UInt32 unk0, UInt32 unk1, UInt32 unk2);
+	DEFINE_MEMBER_FN(Impl_Fn10, StringCache::Ref *, 0x00C27E10);
+	DEFINE_MEMBER_FN(Impl_Fn12, bool, 0x00C28260, UInt32 idx, UInt32 out);
 
 protected:
 	StringCache::Ref	m_fnName;		// 08
@@ -125,8 +125,8 @@ public:
 	virtual void				Unk_16(void) = 0;
 
 	MEMBER_FN_PREFIX(NativeFunction);
-	DEFINE_MEMBER_FN(Impl_ctor, NativeFunction *, 0x00C28070, const char * fnName, const char * className, UInt32 unk0, UInt32 unk1);
-	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C27F40);
+	DEFINE_MEMBER_FN(Impl_ctor, NativeFunction *, 0x00C27F00, const char * fnName, const char * className, UInt32 unk0, UInt32 unk1);
+	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C27DD0);
 
 protected:
 	void	* m_callback;	// 2C

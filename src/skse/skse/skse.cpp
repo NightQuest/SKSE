@@ -7,7 +7,7 @@
 
 IDebugLog	gLog("skse.log");
 
-STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_4_20_0);
+STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_4_21_0);
 
 #include "Hooks_Scaleform.h"
 #include "Hooks_Gameplay.h"
@@ -28,8 +28,8 @@ void ApplyPatch(UInt32 base, UInt8 * buf, UInt32 len)
 
 void FixCoopLevel(void)
 {
-	SafeWrite8(0x00A4E8B1 + 1, 0x06);
-	SafeWrite8(0x00A4F93C + 1, 0x16);
+	SafeWrite8(0x00A4E401 + 1, 0x06);
+	SafeWrite8(0x00A4F4BC + 1, 0x16);
 }
 
 void WaitForDebugger(void)
@@ -42,7 +42,7 @@ void WaitForDebugger(void)
 	Sleep(1000 * 2);
 }
 
-bool isInit = false;
+static bool isInit = false;
 
 void SKSE_Initialize(void)
 {
@@ -71,7 +71,7 @@ void SKSE_Initialize(void)
 		SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
 
 		FixCoopLevel();
-		WaitForDebugger();
+//		WaitForDebugger();
 #endif
 
 //		Commands_Dump();

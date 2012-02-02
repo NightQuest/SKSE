@@ -304,6 +304,9 @@ static const MinVersionEntry	kMinVersionList[] =
 	{	"TESVAL",	2,			"please upgrade to version 2 or later: http://www.skyrimnexus.com/downloads/file.php?id=4387",
 															kCompat_BlockFromRuntime },
 
+	// despite having runtime-version-specific code, there is no version check present in _Query
+	{	"skse_categorized_favorites_menu",	2,	"crashes due to a lack of version checks",	kCompat_BlockFromRuntime },
+
 	{	NULL, 0, NULL }
 };
 

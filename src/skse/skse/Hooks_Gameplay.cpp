@@ -1,5 +1,6 @@
 #include "Hooks_Gameplay.h"
 #include "SafeWrite.h"
+#include "Utilities.h"
 
 static UInt32 g_forceContainerCategorization = 0;
 static const UInt32 kHook_ContainerMode_Categories = 0x0083A19E;
@@ -41,4 +42,15 @@ void Hooks_Gameplay_Commit(void)
 {
 	// optionally force containers in to "npc" mode, showing categories
 	WriteRelJump(0x0083A195, (UInt32)Hook_ContainerMode);
+
+	// read config
+	UInt32	enableContainerCategorization = 0;
+	if(GetConfigOption_UInt32("Interface", "EnableContainerCategorization", &enableContainerCategorization))
+	{
+		if(enableContainerCategorization)
+		{
+			_MESSAGE(".ini enabled contained categorization");
+			g_forceContainerCategorization = 1;
+		}
+	}
 }

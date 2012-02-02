@@ -71,7 +71,7 @@ void SKSE_Initialize(void)
 		SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
 
 		FixCoopLevel();
-//		WaitForDebugger();
+		WaitForDebugger();
 #endif
 
 //		Commands_Dump();

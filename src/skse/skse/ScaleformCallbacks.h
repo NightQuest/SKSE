@@ -3,6 +3,8 @@
 #include "skse/ScaleformAPI.h"
 #include "skse/ScaleformTypes.h"
 #include "skse/Utilities.h"
+#include <typeinfo>
+#include <map>
 
 // see RakNet/DependentExtensions/GFx3/FxGameDelegate.h
 
@@ -121,11 +123,29 @@ public:
 	DEFINE_MEMBER_FN(Destroy, GFxFunctionHandler *, 0x00847AB0, UInt32 flags);
 };
 
+typedef std::map <const std::type_info *, GFxFunctionHandler *>	FunctionHandlerCache;
+extern FunctionHandlerCache g_functionHandlerCache;
+
 template <typename T>
 void RegisterFunction(GFxValue * dst, GFxMovieView * movie, const char * name)
 {
-	// allocate the handler on the scaleform heap
-	T	* fn = new T;
+	// either allocate the object or retrieve an existing instance from the cache
+	GFxFunctionHandler	* fn = NULL;
+
+	// check the cache
+	FunctionHandlerCache::iterator iter = g_functionHandlerCache.find(&typeid(T));
+	if(iter != g_functionHandlerCache.end())
+		fn = iter->second;
+
+	if(!fn)
+	{
+		// not found, allocate a new one
+		fn = new T;
+
+		// add it to the cache
+		// cache now owns the object as far as refcounting goes
+		g_functionHandlerCache[&typeid(T)] = fn;
+	}
 
 	// create the function object
 	GFxValue	fnValue;

@@ -7,7 +7,7 @@
 class GRefCountImplCore
 {
 public:
-	GRefCountImplCore() { }
+	GRefCountImplCore() :refCount(1) { }
 	virtual ~GRefCountImplCore() { }
 
 //	void	** _vtbl;			// 00
@@ -39,6 +39,19 @@ public:
 	static void operator delete(void *, void *)
 	{
 		//
+	}
+
+	void	AddRef(void)
+	{
+		InterlockedIncrement(&refCount);
+	}
+
+	void	Release(void)
+	{
+		if(InterlockedDecrement(&refCount) == 0)
+		{
+			delete this;
+		}
 	}
 };
 

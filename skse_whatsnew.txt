@@ -1,3 +1,11 @@
+1.4.9:
+- forced container categorization now configurable via .ini
+	add \Data\SKSE\skse.ini containing:
+	[Interface]
+	EnableContainerCategorization=1
+- possible refcounting fix for scaleform objects
+- cache GFxFunctionHandler objects
+
 1.4.8:
 - scaleform ForceContainerCategorization
 - support for runtime 1.4.21.0

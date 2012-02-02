@@ -1,4 +1,5 @@
 #include "ScaleformCallbacks.h"
+#include <typeinfo>
 
 GFxValue::~GFxValue()
 {
@@ -124,3 +125,5 @@ GFxFunctionHandler::~GFxFunctionHandler()
 {
 	g_GFxFunctionHandler_count--;
 }
+
+FunctionHandlerCache g_functionHandlerCache;

@@ -1,4 +1,5 @@
 #include "Utilities.h"
+#include <string>
 
 const std::string & GetRuntimeDirectory(void)
 {
@@ -36,6 +37,50 @@ const std::string & GetRuntimeDirectory(void)
 	return s_runtimeDirectory;
 }
 
+const std::string & GetConfigPath(void)
+{
+	static std::string s_configPath;
+
+	if(s_configPath.empty())
+	{
+		std::string	runtimePath = GetRuntimeDirectory();
+		if(!runtimePath.empty())
+		{
+			s_configPath = runtimePath + "Data\\SKSE\\skse.ini";
+
+			_MESSAGE("config path = %s", s_configPath.c_str());
+		}
+	}
+
+	return s_configPath;
+}
+
+std::string GetConfigOption(const char * section, const char * key)
+{
+	std::string	result;
+
+	const std::string & configPath = GetConfigPath();
+	if(!configPath.empty())
+	{
+		char	resultBuf[256];
+		resultBuf[0] = 0;
+
+		UInt32	resultLen = GetPrivateProfileString(section, key, NULL, resultBuf, 0, configPath.c_str());
+
+		result = resultBuf;
+	}
+
+	return result;
+}
+
+bool GetConfigOption_UInt32(const char * section, const char * key, UInt32 * dataOut)
+{
+	std::string	data = GetConfigOption(section, key);
+	if(data.empty())
+		return false;
+
+	return (sscanf_s(data.c_str(), "%u", dataOut) == 1);
+}
 
 #pragma warning (push)
 #pragma warning (disable : 4200)

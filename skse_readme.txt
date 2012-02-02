@@ -1,4 +1,4 @@
-Skyrim Script Extender v1.4.8
+Skyrim Script Extender v1.4.9
 by Ian Patterson, Stephen Abel and Paul Connelly
 (ianpatt, behippo and scruggsywuggsy the ferret)
 Thanks to: gibbed
@@ -51,6 +51,9 @@ endif
 
 * Does SKSE work with a 4GB loader?
  - 4GB loaders are no longer needed.
+
+* Do I need to keep old SKSE DLLs around for backwards compatibility?
+ - No, they are only needed if you want to run old versions of the runtime with the last version of SKSE released for that version. Feel free to delete any skse_*.dll files that are not included with the main archive.
 
 [ Contact the SKSE Team ]
 

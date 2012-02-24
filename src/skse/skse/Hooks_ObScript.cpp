@@ -60,15 +60,6 @@ void DumpCommands(const CommandInfo * start, const CommandInfo * end)
 			gLog.Outdent();
 		}
 	}
-
-	_MESSAGE("stubbed:");
-	for(const CommandInfo * iter = start; iter <= end; ++iter)
-	{
-		if(iter->execute == (Cmd_Execute)0x0078ABD0)
-		{
-			_MESSAGE("%s", iter->longName);
-		}
-	}
 }
 
 void ObScript_DumpCommands(void)
@@ -81,7 +72,7 @@ void ObScript_DumpCommands(void)
 	DumpCommands(g_scriptCommandsStart, g_scriptCommandsEnd);
 }
 
-// 1.4.25.0 runtime
+// 1.4.27.0 runtime
 static const CommandTable::PatchLocation kPatch_ScriptCommands_Start[] =
 {
 	{	0x00511C9B, 0x00 },

@@ -173,7 +173,7 @@ enum FormType {
 	kFormType_None = 0,			//	NONE
 	kFormType_TES4,				//	TES4
 	kFormType_Group,			//	GRUP	
-	kFormType_GMST,
+	kFormType_GMST,				//	GMST
 	kFormType_Keyword,			//	KYWD	BGSKeyword
 	kFormType_LocationRef,		//	LCRT	BGSLocationRefType
 	kFormType_Action,			//	AACT	BGSAction
@@ -192,7 +192,7 @@ enum FormType {
 	kFormType_Script,			//	SCPT	Script
 	kFormType_LandTexture,		//	LTEX	TESLandTexture
 	kFormType_Enchantment,		//	ENCH	EnchantmentItem
-	kFormType_Spell,				//	SPEL	SpellItem
+	kFormType_Spell,			//	SPEL	SpellItem
 	kFormType_ScrollItem,		//	SCRL	ScrollItem
 	kFormType_Activator,		//	ACTI	TESObjectACTI
 	kFormType_TalkingActivator,	//	TACT	BGSTalkingActivator
@@ -277,7 +277,7 @@ kFormType_ConstructibleObject,	//	COBJ	BGSConstructibleObject
 	kFormType_Location,			//	LCTN	BGSLocation
 	kFormType_Message,			//	MESH	BGSMessage
 	kFormType_Ragdoll,			//	RGDL	BGSRagdoll
-	kFormType_DOBJ,				//	DOBJ	?
+	kFormType_DOBJ,				//	DOBJ	? (used for default objects, custom loader)
 	kFormType_LightingTemplate,	//	LGTM	BGSLightingTemplate
 	kFormType_MusicType,		//	MUSC	BGSMusicType
 	kFormType_Footstep,			//	FSTP	BGSFootstep

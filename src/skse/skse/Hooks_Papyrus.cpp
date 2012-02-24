@@ -5,9 +5,9 @@
 #include "GameAPI.h"
 
 typedef void (* _RegisterPapyrusFunctions)(PapyrusClassRegistry ** registry);
-_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008E09D0;
+_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008E09C0;
 
-bool TestFunctionCallback(UInt32 unk0, UInt32 unk1, UInt32 unk2, float arg)
+bool TestFunctionCallback(PapyrusClassRegistry * registry, UInt32 unk1, UInt32 unk2, float arg)
 {
 	return false;
 }
@@ -29,5 +29,5 @@ void Hooks_Papyrus_Init(void)
 
 void Hooks_Papyrus_Commit(void)
 {
-	WriteRelCall(0x008C1191, (UInt32)RegisterPapyrusFunctions_Hook);
+	WriteRelCall(0x008C1181, (UInt32)RegisterPapyrusFunctions_Hook);
 }

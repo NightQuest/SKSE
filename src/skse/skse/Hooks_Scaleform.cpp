@@ -288,7 +288,7 @@ public:
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00831870, void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00831860, void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
 
 	StandardItemData * ctor_Hook(void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
 };
@@ -389,7 +389,7 @@ public:
 	GFxValue		fxValue;	// 10
 
 	MEMBER_FN_PREFIX(MagicItemData);
-	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x008613D0, void ** callbacks, TESForm * pForm, int unk);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x008613C0, void ** callbacks, TESForm * pForm, int unk);
 
 	MagicItemData * ctor_Hook(void ** callbacks, TESForm * pForm, int unk);
 };
@@ -447,7 +447,7 @@ public:
 	GFxValue	* fxValue;	// 08
 
 	MEMBER_FN_PREFIX(FavItemDataHook);
-	DEFINE_MEMBER_FN(Hooked, int, 0x0084A2E0, TESForm * pForm);
+	DEFINE_MEMBER_FN(Hooked, int, 0x0084A2D0, TESForm * pForm);
 
 	int Hook(TESForm * pForm);
 };
@@ -523,7 +523,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	globals.SetMember("skse", &skse);
 }
 
-static const UInt32 kInstallHooks_Entry_retn = 0x00A45E0E;
+static const UInt32 kInstallHooks_Entry_retn = 0x00A45DFE;
 
 __declspec(naked) void InstallHooks_Entry(void)
 {
@@ -546,10 +546,10 @@ __declspec(naked) void InstallHooks_Entry(void)
 void Hooks_Scaleform_Commit(void)
 {
 	// movie creation hook
-	WriteRelJump(0x00A45E08, (UInt32)InstallHooks_Entry);
+	WriteRelJump(0x00A45DF8, (UInt32)InstallHooks_Entry);
 
 	// item card data creation hook
-	WriteRelCall(0x008323A9, GetFnAddr(&StandardItemData::ctor_Hook));
-	WriteRelCall(0x00861989, GetFnAddr(&MagicItemData::ctor_Hook));
-	WriteRelCall(0x0084B18F, GetFnAddr(&FavItemDataHook::Hook));
+	WriteRelCall(0x00832399, GetFnAddr(&StandardItemData::ctor_Hook));
+	WriteRelCall(0x00861979, GetFnAddr(&MagicItemData::ctor_Hook));
+	WriteRelCall(0x0084B17F, GetFnAddr(&FavItemDataHook::Hook));
 }

@@ -1,3 +1,7 @@
+1.4.12:
+- support for runtime 1.4.27.0
+- more papyrus
+
 1.4.11:
 - hooked favorites menu item list
 - loader can retrieve name of runtime from .ini

@@ -32,11 +32,29 @@ private:
 class StringCache
 {
 public:
+	struct Ref
+	{
+		const char	* data;
+
+		MEMBER_FN_PREFIX(Ref);
+		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A361B0, const char * buf);
+		DEFINE_MEMBER_FN(Set, Ref *, 0x00A36200, const char * buf);
+		DEFINE_MEMBER_FN(Release, void, 0x00A361A0);
+	};
+
 	struct Lock
 	{
 		SimpleLock	lock;
 	};
 
+	StringCache();
+	~StringCache();
+
+	static StringCache *	GetSingleton(void);
+
+	Lock *	GetLock(UInt32 crc16);
+
+private:
 	struct Entry
 	{
 		Entry	* next;		// 00
@@ -53,24 +71,6 @@ public:
 		// data follows
 	};
 
-	struct Ref
-	{
-		const char	* data;
-
-		MEMBER_FN_PREFIX(Ref);
-		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A361C0, const char * buf);
-		DEFINE_MEMBER_FN(Set, Ref *, 0x00A36210, const char * buf);
-		DEFINE_MEMBER_FN(Release, void, 0x00A361B0);
-	};
-
-	StringCache();
-	~StringCache();
-
-	static StringCache *	GetSingleton(void);
-
-	Lock *	GetLock(UInt32 crc16);
-
-private:
 	Entry	* table[0x10000];	// crc16
 	Lock	locks[0x20];		// crc16 & 0x1F
 	UInt8	unk;

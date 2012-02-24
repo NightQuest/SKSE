@@ -32,8 +32,8 @@ public:
 	virtual void	Unk_14(void);
 	virtual void	Unk_15(void);
 	virtual void	RegisterFunction(IFunction * fn);
-	virtual void	Unk_17(void);
-	virtual void	Unk_18(void);
+	virtual void	SetFunctionFlagsEx(const char * className, UInt32 unk0, const char * fnName, UInt32 flags);
+	virtual void	SetFunctionFlags(const char * className, const char * fnName, UInt32 flags);
 	virtual void	Unk_19(void);
 	virtual void	Unk_1A(void);
 	virtual void	Unk_1B(void);
@@ -84,3 +84,62 @@ public:
 
 	PapyrusClassRegistry	* m_classRegistry;	// 00FC
 };
+
+// 08
+// possibly BSScriptVariable
+class VMValue
+{
+public:
+	VMValue();
+	~VMValue();
+
+	enum
+	{
+		kType_Identifier =	1,
+		kType_String =		2,
+		kType_Int =			3,
+		kType_Float =		4,
+		kType_Bool =		5,
+
+		kTypeFlag_Array =	1 << 0,
+	};
+
+	// 14+
+	struct ArrayData
+	{
+		volatile SInt32	refCount;	// 00
+		UInt32			unk04;		// 04
+		UInt32			len;		// 08
+		UInt32			unk0C;		// 0C
+		UInt32			unk10;		// 10
+//		VMValue			data[0];	// 14
+
+		VMValue	*	GetData(void)	{ return (VMValue *)(this + 1); }
+	};
+
+	UInt32	type;	// 00
+
+	union
+	{
+		SInt32		i;
+		UInt32		u;
+		float		f;
+		bool		b;
+		void		* p;
+		ArrayData	* arr;
+	} data;			// 04
+
+	bool	UnkTypeCheck(void) const
+	{
+		return ((type >= 0x0B) && (type <= 0x0F));
+	}
+
+	bool	IsArray(void) const
+	{
+		if(UnkTypeCheck()) return true;
+		if(type < 0x10) return false;
+		return (type & kTypeFlag_Array) != 0;
+	}
+};
+
+STATIC_ASSERT(sizeof(VMValue) == 0x08);

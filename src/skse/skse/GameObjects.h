@@ -855,7 +855,7 @@ public:
 	// members
 	UInt32	armorValTimes100;	// 118
 	UnkArray	unk11C;	// 11C
-	UInt32	unk128;	// 128
+	UInt32	unk128;	// 128 - enchantment related?
 };
 
 // AC

@@ -1,3 +1,7 @@
+1.4.10:
+- fix GFxValue destruction (this was causing the instability)
+- fix GetConfigOption (makes .ini configuration work)
+
 1.4.9:
 - forced container categorization now configurable via .ini
 	add \Data\SKSE\skse.ini containing:

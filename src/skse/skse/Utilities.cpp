@@ -65,7 +65,7 @@ std::string GetConfigOption(const char * section, const char * key)
 		char	resultBuf[256];
 		resultBuf[0] = 0;
 
-		UInt32	resultLen = GetPrivateProfileString(section, key, NULL, resultBuf, 0, configPath.c_str());
+		UInt32	resultLen = GetPrivateProfileString(section, key, NULL, resultBuf, sizeof(resultBuf), configPath.c_str());
 
 		result = resultBuf;
 	}

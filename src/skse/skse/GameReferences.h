@@ -247,6 +247,10 @@ public:
 	BSTEventSource <void *>	actorDeathEventSource;		// 1E4 .?AV?$BSTEventSource@UBGSActorDeathEvent@@@@
 	BSTEventSource <void *>	positionPlayerEventSource;	// 214 .?AV?$BSTEventSource@UPositionPlayerEvent@@@@
 
+	UInt32	pad244[(0x6C8 - 0x244) >> 2];	// 244
+	UInt8	pad6C8;							// 6C8
+	UInt8	numPerkPoints;					// 6C9
+
 	// ### todo: confirm
 	struct ObjDesc
 	{
@@ -260,6 +264,7 @@ public:
 };
 
 STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1B0);
+STATIC_ASSERT(offsetof(PlayerCharacter, numPerkPoints) == 0x6C9);
 
 // D8
 class Explosion : public TESObjectREFR

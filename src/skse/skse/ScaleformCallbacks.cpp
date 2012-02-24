@@ -10,7 +10,7 @@ void GFxValue::CleanManaged(void)
 {
 	if(IsManaged())
 	{
-		CALL_MEMBER_FN(this, ReleaseManaged_Internal)(objectInterface, data.obj);
+		CALL_MEMBER_FN(objectInterface, ReleaseManaged_Internal)(this, data.obj);
 
 		objectInterface = NULL;
 		type = kType_Undefined;

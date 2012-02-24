@@ -305,7 +305,8 @@ static const MinVersionEntry	kMinVersionList[] =
 															kCompat_BlockFromRuntime },
 
 	// despite having runtime-version-specific code, there is no version check present in _Query
-	{	"skse_categorized_favorites_menu",	2,	"crashes due to a lack of version checks",	kCompat_BlockFromRuntime },
+	// second time is my fault, GFxValue crash contained inside
+	{	"skse_categorized_favorites_menu",	3,	"please update to the latest version",	kCompat_BlockFromRuntime },
 
 	{	NULL, 0, NULL }
 };

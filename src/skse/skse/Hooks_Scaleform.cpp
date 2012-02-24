@@ -288,7 +288,7 @@ public:
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00831280, void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00831870, void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
 
 	StandardItemData * ctor_Hook(void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
 };
@@ -389,7 +389,7 @@ public:
 	GFxValue		fxValue;	// 10
 
 	MEMBER_FN_PREFIX(MagicItemData);
-	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x00860EE0, void ** callbacks, TESForm * pForm, int unk);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x008613D0, void ** callbacks, TESForm * pForm, int unk);
 
 	MagicItemData * ctor_Hook(void ** callbacks, TESForm * pForm, int unk);
 };
@@ -438,8 +438,33 @@ void ExtendMagicItemData(GFxValue * pFxVal, TESForm * pForm)
 	}
 }
 
-//// core hook
+// ### todo
+class FavItemDataHook
+{
+public:
+	UInt32		unk00;		// 00
+	UInt32		unk04;		// 04
+	GFxValue	* fxValue;	// 08
 
+	MEMBER_FN_PREFIX(FavItemDataHook);
+	DEFINE_MEMBER_FN(Hooked, int, 0x0084A2E0, TESForm * pForm);
+
+	int Hook(TESForm * pForm);
+};
+
+int FavItemDataHook::Hook(TESForm * pForm)
+{
+	int result = CALL_MEMBER_FN(this, Hooked)(pForm);
+
+	if(s_bExtendData)
+	{
+		ExtendCommonItemData(fxValue, pForm);
+	}
+
+	return result;
+}
+
+//// core hook
 void __stdcall InstallHooks(GFxMovieView * view)
 {
 	// called from a task, must be threadsafe
@@ -498,7 +523,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	globals.SetMember("skse", &skse);
 }
 
-static const UInt32 kInstallHooks_Entry_retn = 0x00A455DE;
+static const UInt32 kInstallHooks_Entry_retn = 0x00A45E0E;
 
 __declspec(naked) void InstallHooks_Entry(void)
 {
@@ -521,9 +546,10 @@ __declspec(naked) void InstallHooks_Entry(void)
 void Hooks_Scaleform_Commit(void)
 {
 	// movie creation hook
-	WriteRelJump(0x00A455D8, (UInt32)InstallHooks_Entry);
+	WriteRelJump(0x00A45E08, (UInt32)InstallHooks_Entry);
 
 	// item card data creation hook
-	WriteRelCall(0x00831B19, GetFnAddr(&StandardItemData::ctor_Hook));
-	WriteRelCall(0x00861499, GetFnAddr(&MagicItemData::ctor_Hook));
+	WriteRelCall(0x008323A9, GetFnAddr(&StandardItemData::ctor_Hook));
+	WriteRelCall(0x00861989, GetFnAddr(&MagicItemData::ctor_Hook));
+	WriteRelCall(0x0084B18F, GetFnAddr(&FavItemDataHook::Hook));
 }

@@ -56,12 +56,10 @@ public:
 	Entry	items;	// 10C
 
 	MEMBER_FN_PREFIX(GameSettingCollection);
-	DEFINE_MEMBER_FN(Get_Internal, bool, 0x00520F80, const char * name, Setting ** out);
+	DEFINE_MEMBER_FN(Get_Internal, bool, 0x00521750, const char * name, Setting ** out);
 
 	Setting	* Get(const char * name);
 };
 
 extern GameSettingCollection	** g_iniSettingCollection;
 extern GameSettingCollection	** g_iniPrefSettingCollection;
-
-extern Setting	* g_gameLanguage;

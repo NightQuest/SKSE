@@ -3,9 +3,9 @@
 #include "Utilities.h"
 
 static UInt32 g_forceContainerCategorization = 0;
-static const UInt32 kHook_ContainerMode_Categories = 0x0083A19E;
-static const UInt32 kHook_ContainerMode_NoCategories = 0x0083A1B3;
-static UInt32 ** g_containerMode = (UInt32 **)0x0138D7A4;
+static const UInt32 kHook_ContainerMode_Categories = 0x0083A82E;
+static const UInt32 kHook_ContainerMode_NoCategories = 0x0083A843;
+static UInt32 ** g_containerMode = (UInt32 **)0x0138D724;
 
 static void __declspec(naked) Hook_ContainerMode(void)
 {
@@ -41,7 +41,7 @@ void Hooks_Gameplay_EnableForceContainerCategorization(bool enable)
 void Hooks_Gameplay_Commit(void)
 {
 	// optionally force containers in to "npc" mode, showing categories
-	WriteRelJump(0x0083A195, (UInt32)Hook_ContainerMode);
+	WriteRelJump(0x0083A825, (UInt32)Hook_ContainerMode);
 
 	// read config
 	UInt32	enableContainerCategorization = 0;

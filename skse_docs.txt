@@ -55,7 +55,7 @@ dynamic intrinsic class skse
 	function OpenMenu(menuName : String) : Void;
 	function CloseMenu(menuName : String) : Void;
 	
-	// Enable extended data for item cards
+	// Enable extended data for item cards and favorites menu
 	// common data for all objects:
 	//	var extended : Boolean;		// always set to true
 	//	var formType : Number;		// object type (see GameForms.h for a list)

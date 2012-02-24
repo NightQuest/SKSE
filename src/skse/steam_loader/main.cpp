@@ -2,6 +2,7 @@
 #include <direct.h>
 #include "skse/skse_version.h"
 #include "skse/SafeWrite.h"
+#include "skse/Utilities.h"
 #include "common/IFileStream.h"
 #include "loader_common/IdentifyEXE.h"
 #include <tlhelp32.h>
@@ -228,7 +229,7 @@ static void OnAttach(void)
 	FILETIME	now;
 	GetSystemTimeAsFileTime(&now);
 
-	_MESSAGE("skse loader %08X (steam) %08X%08X", PACKED_SKSE_VERSION, now.dwHighDateTime, now.dwLowDateTime);
+	_MESSAGE("skse loader %08X (steam) %08X%08X %s", PACKED_SKSE_VERSION, now.dwHighDateTime, now.dwLowDateTime, GetOSInfoStr().c_str());
 	_MESSAGE("base addr = %08X", g_dllHandle);
 
 	UInt32	oldProtect;

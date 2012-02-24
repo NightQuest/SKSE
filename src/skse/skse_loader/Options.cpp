@@ -167,6 +167,10 @@ bool Options::Read(int argc, char ** argv)
 				{
 					m_skipLauncher = false;
 				}
+				else if(!_stricmp(arg, "launchsteam"))
+				{
+					m_launchSteam = true;
+				}
 				else
 				{
 					_ERROR("unknown switch (%s)", arg);
@@ -220,6 +224,7 @@ void Options::PrintUsage(void)
 	_MESSAGE("  -minfo - log information about the DLLs loaded in to the target process");
 	_MESSAGE("  -noskiplauncher - does not skip the default Bethesda launcher window");
 	_MESSAGE("                    note: specifying this option may cause compatibility problems");
+	_MESSAGE("  -launchsteam - attempt to launch steam if it is not running");
 }
 
 bool Options::Verify(void)

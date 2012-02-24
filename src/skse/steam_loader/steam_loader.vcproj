@@ -182,24 +182,12 @@
 			ReferencedProjectIdentifier="{20C6411C-596F-4B85-BE4E-8BC91F59D8A6}"
 			RelativePathToProject="..\common\common_vc9.vcproj"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{B657620B-DED4-48F8-ACD4-F2BA9ECBC696}"
+			RelativePathToProject=".\loader_common\loader_common.vcproj"
+		/>
 	</References>
 	<Files>
-		<File
-			RelativePath="..\loader_common\Error.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\loader_common\Error.h"
-			>
-		</File>
-		<File
-			RelativePath="..\loader_common\IdentifyEXE.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\loader_common\IdentifyEXE.h"
-			>
-		</File>
 		<File
 			RelativePath=".\main.cpp"
 			>
@@ -214,6 +202,14 @@
 		</File>
 		<File
 			RelativePath="..\skse\skse_version.rc"
+			>
+		</File>
+		<File
+			RelativePath="..\skse\Utilities.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\skse\Utilities.h"
 			>
 		</File>
 	</Files>

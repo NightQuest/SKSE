@@ -137,7 +137,7 @@ class BGSMenuDisplayObject : public BaseFormComponent
 public:
 	virtual UInt32	GetMenuDisplayObject(void);
 
-	TESObjectSTAT*	worldStatic;	// 04 - copyable
+	TESObjectSTAT	* worldStatic;	// 04 - copyable
 };
 
 // 0C
@@ -688,9 +688,11 @@ class BSTEventSource
 {
 public:
 	virtual ~BSTEventSource();
+
 //	void	** _vtbl;	// 00
-	UInt32 unk_04[11];
+	UInt32 unk04[11];	// 04
 };
+
 STATIC_ASSERT(sizeof(BSTEventSource<void*>) == 0x30);
 
 // 04
@@ -707,8 +709,10 @@ class MagicTarget
 {
 public:
 	virtual ~MagicTarget();
+
 //	void	** _vtbl;	// 00
-	UInt32 unk_04;
-	UInt32 unk_08;
+	UInt32 unk04;		// 04
+	UInt32 unk08;		// 08
 };
+
 STATIC_ASSERT(sizeof(MagicTarget) == 0xC);

@@ -1,3 +1,13 @@
+1.4.11:
+- hooked favorites menu item list
+- loader can retrieve name of runtime from .ini
+	add \Data\SKSE\skse.ini containing:
+	[Loader]
+	RuntimeName=TESV.exe
+- support for runtime 1.4.26.0
+- pass -launchsteam to the loader to attempt to launch steam
+- initial papyrus hooks
+
 1.4.10:
 - fix GFxValue destruction (this was causing the instability)
 - fix GetConfigOption (makes .ini configuration work)

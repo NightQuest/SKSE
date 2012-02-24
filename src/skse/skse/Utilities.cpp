@@ -170,3 +170,29 @@ void DumpClass(void * theClassPtr, UInt32 nIntsToDump)
 
 	gLog.Outdent();
 }
+
+const std::string & GetOSInfoStr(void)
+{
+	static std::string	result;
+	OSVERSIONINFO	info;
+
+	if(result.empty())
+	{
+		info.dwOSVersionInfoSize = sizeof(info);
+
+		if(GetVersionEx(&info))
+		{
+			char	buf[256];
+
+			sprintf_s(buf, sizeof(buf), "%d.%d (%d)", info.dwMajorVersion, info.dwMinorVersion, info.dwBuildNumber);
+
+			result = buf;
+		}
+		else
+		{
+			result = "unknown";
+		}
+	}
+
+	return result;
+}

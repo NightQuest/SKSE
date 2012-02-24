@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\.."
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x04150000"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x041A0000"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -66,7 +66,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\skse_1_4_21.dll"
+				OutputFile="$(OutDir)\skse_1_4_26.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -124,7 +124,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\.."
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x04150000"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x041A0000"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -143,7 +143,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\skse_1_4_21.dll"
+				OutputFile="$(OutDir)\skse_1_4_26.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -204,6 +204,14 @@
 			</File>
 			<File
 				RelativePath=".\PapyrusNativeFunctions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PapyrusVM.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PapyrusVM.h"
 				>
 			</File>
 		</Filter>
@@ -376,6 +384,14 @@
 			</File>
 			<File
 				RelativePath=".\Hooks_ObScript.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_Papyrus.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_Papyrus.h"
 				>
 			</File>
 			<File

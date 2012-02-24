@@ -112,7 +112,6 @@ public:
 	void	Destroy(void);
 
 	MEMBER_FN_PREFIX(GString);
-	DEFINE_MEMBER_FN(Init, GString *, 0x0090B790, const char * str);
 };
 
 #pragma warning (pop)

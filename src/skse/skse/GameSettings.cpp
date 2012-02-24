@@ -1,10 +1,10 @@
 #include "GameSettings.h"
 
-extern GameSettingCollection	** g_iniSettingCollection = (GameSettingCollection **)0x013E6344;
-extern GameSettingCollection	** g_iniPrefSettingCollection = (GameSettingCollection **)0x013DDF68;
+extern GameSettingCollection	** g_iniSettingCollection = (GameSettingCollection **)0x013E62C4;
+extern GameSettingCollection	** g_iniPrefSettingCollection = (GameSettingCollection **)0x013DDEE8;
 
 // sLanguage:General
-extern Setting	* g_gameLanguage = (Setting *)0x0120E468;
+// ### if you were using g_gameLanguage, just look it up in g_iniSettingCollection
 
 UInt32 Setting::GetType(void) const
 {

@@ -1,4 +1,4 @@
-Skyrim Script Extender v1.4.10
+Skyrim Script Extender v1.4.11
 by Ian Patterson, Stephen Abel and Paul Connelly
 (ianpatt, behippo and scruggsywuggsy the ferret)
 Thanks to: gibbed
@@ -7,7 +7,7 @@ The Skyrim Script Extender, or SKSE for short, is a modder's resource that expan
 
 Compatibility:
 
-SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.4.21.0). When a new version is released, we will update as soon as possible; please be patient. No editor has been released yet.
+SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.4.26.0). When a new version is released, we will update as soon as possible; please be patient. Support for the editor is in progress.
 
 [ Installation ]
 
@@ -19,15 +19,7 @@ If you use a desktop shortcut to launch Skyrim normally, just update the shortcu
 
 [ Suggestions for Modders ]
 
-Scripts written with these new commands must be created via the CreationKit after it is launched via skse_loader. Open a command prompt window, navigate to your Skyrim directory, and type "skse_loader -editor". Alternately you can create a shortcut to skse_loader.exe, open the properties window and add "-editor" to the Target field. The normal editor can open plugins with these extended scripts, but it cannot recompile them and will give errors if you try.
-
 If your mod requires SKSE, please provide a link to the main SKSE website <http://skse.silverlock.org/> instead of packaging it with your mod install. Future versions of SKSE will be backwards compatibile, so including a potentially old version can cause confusion and/or break other mods which require newer versions.
-
-When your mod loads, use the command GetSKSERelease to make sure a compatible version of SKSE is installed. This command will return an integer that will be incremented for every release of SKSE, making version checking simple. GetSKSEVersion/Minor/Beta are still available, but those are suggested to be used only to report version numbers to the user.
-
-if GetSKSERelease < 5
-   MessageBox "This mod requires a newer version of SKSE."
-endif
 
 [ Troubleshooting / FAQ ]
 

@@ -50,3 +50,5 @@ UInt32 GetFnAddr(T src)
 
 const char * GetObjectClassName(void * objBase);
 void DumpClass(void * theClassPtr, UInt32 nIntsToDump = 512);
+
+const std::string & GetOSInfoStr(void);

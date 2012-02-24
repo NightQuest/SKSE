@@ -218,6 +218,14 @@
 			RelativePath=".\Steam.h"
 			>
 		</File>
+		<File
+			RelativePath="..\skse\Utilities.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\skse\Utilities.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

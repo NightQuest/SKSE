@@ -2,17 +2,19 @@
 #include "CommandTable.h"
 #include "SafeWrite.h"
 #include "PluginManager.h"
+#include "Utilities.h"
 
 #if RUNTIME
 
 IDebugLog	gLog("skse.log");
 
-STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_4_21_0);
+STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_4_26_0);
 
 #include "Hooks_Scaleform.h"
 #include "Hooks_Gameplay.h"
 #include "Hooks_ObScript.h"
 #include "Hooks_DirectInput8Create.h"
+#include "Hooks_Papyrus.h"
 
 #else
 
@@ -28,8 +30,8 @@ void ApplyPatch(UInt32 base, UInt8 * buf, UInt32 len)
 
 void FixCoopLevel(void)
 {
-	SafeWrite8(0x00A4E401 + 1, 0x06);
-	SafeWrite8(0x00A4F4BC + 1, 0x16);
+	SafeWrite8(0x00A4EBF1 + 1, 0x06);
+	SafeWrite8(0x00A4FC7C + 1, 0x16);
 }
 
 void WaitForDebugger(void)
@@ -57,13 +59,13 @@ void SKSE_Initialize(void)
 		GetSystemTimeAsFileTime(&now);
 
 #if RUNTIME
-		_MESSAGE("SKSE runtime: initialize (version = %d.%d.%d %08X %08X%08X)",
+		_MESSAGE("SKSE runtime: initialize (version = %d.%d.%d %08X %08X%08X, os = %s)",
 			SKSE_VERSION_INTEGER, SKSE_VERSION_INTEGER_MINOR, SKSE_VERSION_INTEGER_BETA, RUNTIME_VERSION,
-			now.dwHighDateTime, now.dwLowDateTime);
+			now.dwHighDateTime, now.dwLowDateTime, GetOSInfoStr().c_str());
 #else
-		_MESSAGE("SKSE editor: initialize (version = %d.%d.%d %08X %08X%08X)",
+		_MESSAGE("SKSE editor: initialize (version = %d.%d.%d %08X %08X%08X, os = %s)",
 			SKSE_VERSION_INTEGER, SKSE_VERSION_INTEGER_MINOR, SKSE_VERSION_INTEGER_BETA, EDITOR_VERSION,
-			now.dwHighDateTime, now.dwLowDateTime);
+			now.dwHighDateTime, now.dwLowDateTime, GetOSInfoStr().c_str());
 #endif
 		_MESSAGE("imagebase = %08X", GetModuleHandle(NULL));
 
@@ -77,12 +79,14 @@ void SKSE_Initialize(void)
 //		Commands_Dump();
 
 		Hooks_ObScript_Init();
+		Hooks_Papyrus_Init();
 
 		g_pluginManager.Init();
 
 		Hooks_Scaleform_Commit();
 		Hooks_Gameplay_Commit();
 		Hooks_ObScript_Commit();
+		Hooks_Papyrus_Commit();
 //		Hooks_DirectInput_Commit();
 
 		FlushInstructionCache(GetCurrentProcess(), NULL, 0);

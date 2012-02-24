@@ -346,13 +346,13 @@ bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, 
 		switch(version)
 		{
 			default:
-				PrintLoaderError("No version of the editor was released when this version of SKSE was written. Please check http://skse.silverlock.org to make sure you're using the latest version of SKSE. (version = %016I64X %08X)", version, PACKED_SKSE_VERSION);
+				PrintLoaderError("Currently the editor does not need to be launched via skse_loader. Please check skse_readme.txt for details. (version = %016I64X %08X)", version, PACKED_SKSE_VERSION);
 				break;
 		}
 	}
 	else
 	{
-		const UInt64 kCurVersion = 0x0001000400150000;	// 1.4.21.0
+		const UInt64 kCurVersion = 0x00010004001A0000;	// 1.4.26.0
 
 		if(version < kCurVersion)
 		{
@@ -382,9 +382,9 @@ bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, 
 				}
 				else
 				{
-					hookInfo->hookCallAddr = 0x00F34041;
+					hookInfo->hookCallAddr = 0x00F34971;
 					hookInfo->loadLibAddr = 0x010400B4;
-					*dllSuffix = "1_4_21";
+					*dllSuffix = "1_4_26";
 					
 					result = true;
 				}

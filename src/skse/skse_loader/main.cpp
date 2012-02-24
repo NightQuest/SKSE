@@ -7,6 +7,7 @@
 #include "Options.h"
 #include "Inject.h"
 #include "Steam.h"
+#include "skse/Utilities.h"
 #include "skse/skse_version.h"
 
 IDebugLog	gLog("skse_loader.log");
@@ -24,7 +25,8 @@ int main(int argc, char ** argv)
 	FILETIME	now;
 	GetSystemTimeAsFileTime(&now);
 
-	_MESSAGE("skse loader %08X %08X%08X", PACKED_SKSE_VERSION, now.dwHighDateTime, now.dwLowDateTime);
+	_MESSAGE("skse loader %08X %08X%08X %s",
+		PACKED_SKSE_VERSION, now.dwHighDateTime, now.dwLowDateTime, GetOSInfoStr().c_str());
 
 	if(!g_options.Read(argc, argv))
 	{
@@ -46,16 +48,27 @@ int main(int argc, char ** argv)
 	if(g_options.m_launchCS)
 		_MESSAGE("launching editor");
 
-	// create the process
-	bool	dllHasFullPath = false;
-
-	const char	* procName = g_options.m_launchCS ? "CreationKit.exe" : "TESV.exe";
+	// get process/dll names
+	bool		dllHasFullPath = false;
 	const char	* baseDllName = g_options.m_launchCS ? "skse_editor" : "skse";
 
-	char	currentWorkingDirectory[4096];
-	ASSERT(_getcwd(currentWorkingDirectory, sizeof(currentWorkingDirectory)));
+	std::string	procName;
 
-	std::string procPath = std::string(currentWorkingDirectory) + "\\" + std::string(procName);
+	if(g_options.m_launchCS)
+	{
+		procName = "CreationKit.exe";
+	}
+	else
+	{
+		procName = GetConfigOption("Loader", "RuntimeName");
+		if(!procName.empty())
+			_MESSAGE("using runtime name from config: %s", procName.c_str());
+		else
+			procName = "TESV.exe";
+	}
+
+	const std::string & runtimeDir = GetRuntimeDirectory();
+	std::string procPath = runtimeDir + "\\" + procName;
 
 	if(g_options.m_altEXE.size())
 	{
@@ -65,16 +78,17 @@ int main(int argc, char ** argv)
 	
 	_MESSAGE("procPath = %s", procPath.c_str());
 
+	// check if the exe exists
 	{
 		IFileStream	fileCheck;
 		if(!fileCheck.Open(procPath.c_str()))
 		{
-			PrintLoaderError("Couldn't find %s.", procName);
+			PrintLoaderError("Couldn't find %s.", procName.c_str());
 			return 1;
 		}
 	}
 
-	_MESSAGE("launching: %s (%s)", procName, procPath.c_str());
+	_MESSAGE("launching: %s (%s)", procName.c_str(), procPath.c_str());
 
 	if(g_options.m_altDLL.size())
 	{
@@ -87,6 +101,7 @@ int main(int argc, char ** argv)
 	std::string		dllSuffix;
 	ProcHookInfo	procHookInfo;
 
+	// check exe version
 	if(!IdentifyEXE(procPath.c_str(), g_options.m_launchCS, &dllSuffix, &procHookInfo))
 	{
 		_ERROR("unknown exe");
@@ -107,7 +122,7 @@ int main(int argc, char ** argv)
 	}
 	else
 	{
-		dllPath = std::string(currentWorkingDirectory) + "\\" + baseDllName + "_" + dllSuffix + ".dll";
+		dllPath = runtimeDir + "\\" + baseDllName + "_" + dllSuffix + ".dll";
 	}
 
 	_MESSAGE("dll = %s", dllPath.c_str());
@@ -123,6 +138,7 @@ int main(int argc, char ** argv)
 		}
 	}
 
+	// steam setup
 	if(procHookInfo.procType == kProcType_Steam)
 	{
 		if(g_options.m_launchSteam)
@@ -151,6 +167,7 @@ int main(int argc, char ** argv)
 		}
 	}
 
+	// launch the app (suspended)
 	STARTUPINFO			startupInfo = { 0 };
 	PROCESS_INFORMATION	procInfo = { 0 };
 
@@ -175,11 +192,12 @@ int main(int argc, char ** argv)
 
 	bool	injectionSucceeded = false;
 
+	// inject the dll
 	switch(procHookInfo.procType)
 	{
 		case kProcType_Steam:
 		{
-			std::string	steamHookDllPath = std::string(currentWorkingDirectory) + "\\skse_steam_loader.dll";
+			std::string	steamHookDllPath = runtimeDir + "\\skse_steam_loader.dll";
 
 			injectionSucceeded = InjectDLLThread(&procInfo, steamHookDllPath.c_str(), true);
 		}
@@ -196,6 +214,7 @@ int main(int argc, char ** argv)
 			HALT("impossible");
 	}
 
+	// start the process if successful
 	if(!injectionSucceeded)
 	{
 		PrintLoaderError("Couldn't inject DLL.");
@@ -221,6 +240,7 @@ int main(int argc, char ** argv)
 			WaitForSingleObject(procInfo.hProcess, INFINITE);
 	}
 
+	// clean up
 	CloseHandle(procInfo.hProcess);
 	CloseHandle(procInfo.hThread);
 

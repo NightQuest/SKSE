@@ -339,6 +339,8 @@ void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDes
 				double armorValue = CALL_MEMBER_FN(pPC, GetArmorValue)(objDesc);
 				armorValue = round(armorValue);
 				RegisterNumber(pFxVal, "armor", armorValue);
+				RegisterNumber(pFxVal, "partMask", pArmor->bipedObject.data.parts);
+				RegisterNumber(pFxVal, "weightClass", pArmor->bipedObject.data.weight);
 			}
 		}
 		break;
@@ -419,6 +421,9 @@ void ExtendMagicItemData(GFxValue * pFxVal, TESForm * pForm)
 	switch(pForm->GetFormType())
 	{
 		case kFormType_Spell:
+		case kFormType_ScrollItem:
+		case kFormType_Ingredient:
+		case kFormType_Potion:
 		{
 			MagicItem * pMagicItem = DYNAMIC_CAST(pForm, TESForm, MagicItem);
 			MagicItem::EffectItem * pEffect = CALL_MEMBER_FN(pMagicItem, GetCostliestEffectItem)(5, false);

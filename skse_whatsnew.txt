@@ -1,3 +1,7 @@
+1.4.13:
+- more info reported to the UI for objects (see skse_docs.txt)
+- accidentally left some debug code on in 1.4.12 that would cause mouse problems, fixed
+
 1.4.12:
 - support for runtime 1.4.27.0
 - more papyrus

@@ -1,4 +1,4 @@
-Skyrim Script Extender v1.4.12
+Skyrim Script Extender v1.4.13
 by Ian Patterson, Stephen Abel and Paul Connelly
 (ianpatt, behippo and scruggsywuggsy the ferret)
 Thanks to: gibbed

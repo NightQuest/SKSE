@@ -62,14 +62,16 @@ dynamic intrinsic class skse
 	//	var formId : Number;		// form's ID number
 	// data for armor:
 	//	var armor : Number;			// armor value
+	//	var partMask : Number;		// body parts used, see BGSBipedObjectForm for a list
+	//	var weightClass : Number;	// 0 - light, 1 - heavy, 2 - none
 	// data for weapons:
 	//	var subType : Number;		// specific weapon type (see TESObjectWEAP::DataC4 in GameObjects.h)
 	//	var damage : Number;		// damage
 	// data for ammo:
 	//	var damage : Number;		// damage
-	// data for spells:
-	//	var subType : Number;		// magic school
-	//	var skillLevel : Number;	// skill level
+	// data for spells/scrolls/ingredients/potions:
+	//	var subType : Number;		// strongest effect's magic school
+	//	var skillLevel : Number;	// strongest effect's skill level
 	function ExtendData(enable : Boolean) : Void;
 	
 	// forces containers to show categories like NPCs

@@ -96,6 +96,17 @@ public:
 	// oblivion and on use this for menus and the console
 	HRESULT _stdcall GetDeviceData(DWORD dataSize, DIDEVICEOBJECTDATA * outData, DWORD * outDataLen, DWORD flags)
 	{
+		// ### begin hack land
+		if(m_deviceType == kDeviceType_Keyboard)
+		{
+			UInt8	rawData[kMaxMacros];
+			HRESULT	hr = m_device->GetDeviceState(256, rawData);
+			if(hr == DI_OK)
+			{
+				DIHookControl::GetSingleton().ProcessKeyboardData(rawData);
+			}
+		}
+
 		return DIHookControl::GetSingleton().ProcessBufferedData(m_device, dataSize, outData, outDataLen, flags);
 	}
 
@@ -169,6 +180,13 @@ public:
 	/*** IDirectInput8A methods ***/
 	HRESULT _stdcall CreateDevice(REFGUID typeGuid, IDirectInputDevice8A ** device, IUnknown * unused)
 	{
+#if 0
+		_MESSAGE("IDirectInput8A::CreateDevice: %08X-%04X-%04X-%02X%02X%02X%02X%02X%02X%02X%02X",
+			typeGuid.Data1, typeGuid.Data2, typeGuid.Data3,
+			typeGuid.Data4[0], typeGuid.Data4[1], typeGuid.Data4[2], typeGuid.Data4[3],
+			typeGuid.Data4[4], typeGuid.Data4[5], typeGuid.Data4[6], typeGuid.Data4[7]);
+#endif
+
 		if(typeGuid != GUID_SysKeyboard && typeGuid != GUID_SysMouse)
 		{
 			return m_realDInput->CreateDevice(typeGuid, device, unused);

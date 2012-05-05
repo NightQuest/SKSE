@@ -1,4 +1,4 @@
-#include "PapyrusContainer.h"
+#include "PapyrusObjectReference.h"
 
 #include "GameFormComponents.h"
 #include "GameForms.h"
@@ -140,7 +140,7 @@ public:
 	UInt32 GetCurIdx() { return m_curIndex; }
 };
 
-namespace papyrusContainer
+namespace papyrusObjectReference
 {
 
 	UInt32 GetNumItems(TESObjectREFR* pContainerRef)
@@ -211,17 +211,29 @@ namespace papyrusContainer
 		}
 		return NULL;
 	}
+
+	bool IsHarvested(TESObjectREFR* pProduceRef)
+	{
+		UInt8 formType = pProduceRef->baseForm->formType;
+		if (formType == kFormType_Tree || formType == kFormType_Flora) {
+			return ((pProduceRef->flags & 0x2000) == 0x2000) ? true : false;
+		}
+		return false;
+	}
+
 };
 
 #include "PapyrusVM.h"
 #include "PapyrusNativeFunctions.h"
 
-void papyrusContainer::RegisterFuncs(VMClassRegistry* registry)
+void papyrusObjectReference::RegisterFuncs(VMClassRegistry* registry)
 {
 	registry->RegisterFunction(
-		new NativeFunction0<TESObjectREFR, UInt32>("GetNumItems", "ObjectReference", papyrusContainer::GetNumItems, registry));
+		new NativeFunction0<TESObjectREFR, UInt32>("GetNumItems", "ObjectReference", papyrusObjectReference::GetNumItems, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1<TESObjectREFR, TESForm*, UInt32>("GetNthForm", "ObjectReference", papyrusContainer::GetNthForm, registry));
+		new NativeFunction1<TESObjectREFR, TESForm*, UInt32>("GetNthForm", "ObjectReference", papyrusObjectReference::GetNthForm, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectREFR, bool>("IsHarvested", "ObjectReference", papyrusObjectReference::IsHarvested, registry));
 }

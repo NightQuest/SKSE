@@ -19,32 +19,11 @@ namespace papyrusActor
 		}
 	}
 
-	BGSOutfit* GetDefaultOutfit(TESNPC* thisNPC)
+	BGSOutfit* GetOutfit(TESNPC* thisNPC, bool bSleepOutfit)
 	{
 		if (!thisNPC)
 			return NULL;
-		return thisNPC->defaultOutfit;
-	}
-
-	void SetDefaultOutfit(TESNPC* thisNPC, BGSOutfit* outfit)
-	{
-		if (thisNPC && outfit) {
-			thisNPC->defaultOutfit = outfit;
-		}
-	}
-
-	BGSOutfit* GetSleepOutfit(TESNPC* thisNPC)
-	{
-		if (!thisNPC)
-			return NULL;
-		return thisNPC->sleepOutfit;
-	}
-
-	void SetSleepOutfit(TESNPC* thisNPC, BGSOutfit* outfit)
-	{
-		if (thisNPC && outfit) {
-			thisNPC->sleepOutfit = outfit;
-		}
+		return (bSleepOutfit) ? thisNPC->sleepOutfit : thisNPC->defaultOutfit;
 	}
 
 	TESClass* GetClass(TESNPC* thisNPC)
@@ -76,16 +55,7 @@ void papyrusActor::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <TESNPC, void, TESCombatStyle*>("SetCombatStyle", "Actor", papyrusActor::SetCombatStyle, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction0 <TESNPC, BGSOutfit*>("GetDefaultOutfit", "Actor", papyrusActor::GetDefaultOutfit, registry));
-
-	registry->RegisterFunction(
-		new NativeFunction1 <TESNPC, void, BGSOutfit*>("SetDefaultOutfit", "Actor", papyrusActor::SetDefaultOutfit, registry));
-
-	registry->RegisterFunction(
-		new NativeFunction0 <TESNPC, BGSOutfit*>("GetSleepOutfit", "Actor", papyrusActor::GetSleepOutfit, registry));
-
-	registry->RegisterFunction(
-		new NativeFunction1 <TESNPC, void, BGSOutfit*>("SetSleepOutfit", "Actor", papyrusActor::SetSleepOutfit, registry));
+		new NativeFunction1 <TESNPC, BGSOutfit*, bool>("GetOutfit", "Actor", papyrusActor::GetOutfit, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0 <TESNPC, TESClass*>("Getclass", "Actor", papyrusActor::GetClass, registry));

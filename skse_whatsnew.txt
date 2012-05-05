@@ -1,3 +1,6 @@
+1.5.2:
+- additional papyrus functionality (Input, SKSE version functions, IsHarvested)
+
 1.5.1:
 - loader is now compatible with the windows 8 exe loader
 - papyrus support!

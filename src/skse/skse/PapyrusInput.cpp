@@ -11,17 +11,20 @@ namespace papyrusInput
 
 	void TapKey(StaticFunctionTag* thisInput, UInt32 dxKeycode)
 	{
-		DIHookControl::GetSingleton().TapKey(dxKeycode);
+		//DIHookControl::GetSingleton().TapKey(dxKeycode);
+		DIHookControl::GetSingleton().BufferedKeyTap(dxKeycode);
 	}
 
 	void HoldKey(StaticFunctionTag* thisInput, UInt32 dxKeycode)
 	{
-		DIHookControl::GetSingleton().SetKeyHeldState(dxKeycode, true);
+		//DIHookControl::GetSingleton().SetKeyHeldState(dxKeycode, true);
+		DIHookControl::GetSingleton().BufferedKeyPress(dxKeycode);
 	}
 
 	void ReleaseKey(StaticFunctionTag* thisInput, UInt32 dxKeycode)
 	{
-		DIHookControl::GetSingleton().SetKeyHeldState(dxKeycode, false);
+		//DIHookControl::GetSingleton().SetKeyHeldState(dxKeycode, false);
+		DIHookControl::GetSingleton().BufferedKeyRelease(dxKeycode);
 	}
 
 	bool IsKeyHeld(StaticFunctionTag* thisInput, UInt32 dxKeycode)

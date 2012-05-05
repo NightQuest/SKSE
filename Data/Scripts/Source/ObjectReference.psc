@@ -756,8 +756,11 @@ int Property Motion_ThinBoxIntertia = 6 AutoReadOnly
 int Property Motion_Character = 7 AutoReadOnly
 
 
-; SKSE additions built 2012-04-14 06:33:02.087000 UTC
+; SKSE additions built 2012-04-16 06:36:58.374000 UTC
 
 ; Container-only functions
 int Function GetNumItems() native
 Form Function GetNthForm(int index) native
+
+; Tree and Flora only functions
+bool Function IsHarvested() native

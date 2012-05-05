@@ -10,6 +10,7 @@ class BGSKeyword;
 class TESForm;
 class SpellItem;
 class TESShout;
+class IngredientItem;
 
 //// root
 
@@ -486,8 +487,8 @@ public:
 class TESProduceForm : public BaseFormComponent
 {
 public:
-	UInt32	unk04;		// 04
-	UInt32	unk08;		// 08
+	BGSSoundDescriptorForm*	harvestSound;		// 04
+	IngredientItem*	produce;		// 08
 	UInt8	unk0C[4];	// 0C
 };
 

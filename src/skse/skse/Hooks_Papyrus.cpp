@@ -11,11 +11,12 @@
 #include "PapyrusArmor.h"
 #include "PapyrusCell.h"
 #include "PapyrusCombatStyle.h"
-#include "PapyrusContainer.h"
 #include "PapyrusForm.h"
 #include "PapyrusInput.h"
 #include "PapyrusMath.h"
 #include "PapyrusMisc.h"
+#include "PapyrusObjectReference.h"
+#include "PapyrusSKSE.h"
 #include "PapyrusWeapon.h"
 
 typedef void (* _RegisterPapyrusFunctions)(VMClassRegistry ** registry);
@@ -27,6 +28,9 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	RegisterPapyrusFunctions(registryPtr);
 
 	VMClassRegistry * registry = *registryPtr;
+
+	// SKSE
+	papyrusSKSE::RegisterFuncs(registry);
 
 	// TESForm
 	papyrusForm::RegisterFuncs(registry);
@@ -49,8 +53,8 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// Input
 	papyrusInput::RegisterFuncs(registry);
 
-	// Container
-	papyrusContainer::RegisterFuncs(registry);
+	// ObjectReference
+	papyrusObjectReference::RegisterFuncs(registry);
 
 	// Weapon
 	papyrusWeapon::RegisterFuncs(registry);

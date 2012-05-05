@@ -119,7 +119,7 @@ Event OnUpdateGameTime()
 EndEvent
 
 
-; SKSE additions built 2012-04-14 06:33:02.080000 UTC
+; SKSE additions built 2012-04-16 06:36:58.367000 UTC
 
 ; Returns the typecode for this form object
 Int Function GetType() native

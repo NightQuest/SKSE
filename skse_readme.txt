@@ -1,4 +1,4 @@
-Skyrim Script Extender v1.5.1
+Skyrim Script Extender v1.5.2
 by Ian Patterson, Stephen Abel and Paul Connelly
 (ianpatt, behippo and scruggsywuggsy the ferret)
 Thanks to: gibbed
@@ -32,6 +32,9 @@ If your mod requires SKSE, please provide a link to the main SKSE website <http:
 * My virus scanner complains about skse_loader!
  - It is not a virus. To extend Skyrim and the editor, we use a technique called DLL injection to load our code. Since this technique can also be used by viruses, some badly-written virus scanners assume that any program doing it is a virus. Adding an exception to your scanner's rules may be necessary.
 
+* I've followed the directions, but Skyrim still seems to launch without SKSE!
+- Try running skse_loader.exe as an Administrator.  Sometimes that is necessary for people, but we haven't determined why exactly.  Right-click on skse_loader.exe and select Run As Administrator.
+ 
 * Can I modify and release my own version of SKSE based on the included source code?
  - No; the suggested method for extending SKSE is to write a plugin. If this does not meet your needs, please email the contact addresses listed below.
 

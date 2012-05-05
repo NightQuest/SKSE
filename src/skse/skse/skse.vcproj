@@ -234,14 +234,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\PapyrusContainer.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\PapyrusContainer.h"
-					>
-				</File>
-				<File
 					RelativePath=".\PapyrusForm.cpp"
 					>
 				</File>
@@ -271,6 +263,22 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusMisc.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusObjectReference.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusObjectReference.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusSKSE.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusSKSE.h"
 					>
 				</File>
 				<File

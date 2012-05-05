@@ -224,24 +224,16 @@ bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 {
 	PlayerCharacter *pPC = (*g_thePlayer);
 
-	TESForm* pForm = LookupFormByID(0xAD247);
-	BGSOutfit* pOutfit = DYNAMIC_CAST(pForm, TESForm, BGSOutfit);
-	if (pOutfit)
-		DumpClass(pOutfit);
+	//TESForm* pForm = LookupFormByID(0xAD247);
+	//BGSOutfit* pOutfit = DYNAMIC_CAST(pForm, TESForm, BGSOutfit);
+	//if (pOutfit)
+	//	DumpClass(pOutfit);
 
 
 	//pForm = LookupFormByID(0x1CE1E);
 	//TESClass* pClass = DYNAMIC_CAST(pForm, TESForm, TESClass);
 	//if (pClass)
 	//	DumpClass(pClass);
-
-	if (thisObj) {
-		TESProduceForm* pProduce = DYNAMIC_CAST(thisObj->baseForm, TESForm, TESProduceForm);
-		if (pProduce) {
-			UInt32 unk4 = pProduce->unk04;
-			DumpClass(pProduce);
-		}
-	}
 
 	return true;	
 }

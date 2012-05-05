@@ -355,7 +355,7 @@ public:
 	UInt32	unk4C;	// 4C
 
 	MEMBER_FN_PREFIX(MagicItem);
-	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407AF0, int arg1, bool arg2);
+	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407A10, int arg1, bool arg2);
 };
 
 STATIC_ASSERT(sizeof(MagicItem) == 0x50);
@@ -569,10 +569,10 @@ public:
 	UInt8		pad104[0x10A - 0x104];	// 104
 
 	UInt16		unk10A;			// 10A
-	UInt32		unk10C;			// 10C
+	TESClass*	npcClass;		// 10C
 	void		* unk110;		// 110
 	UInt32		unk114;			// 114
-	UInt32		unk118;			// 118
+	TESCombatStyle*	combatStyle;// 118
 	UInt32		unk11C;			// 11C
 	UInt32		unk120;			// 120
 	UInt32		unk124;			// 124
@@ -583,10 +583,10 @@ public:
 	
 	StringCache::Ref	unk134;	// 134
 	UInt32		unk138;			// 138
-	UInt32		unk13C;			// 13C
-	UInt32		unk140;			// 140
+	BGSOutfit*	defaultOutfit;		// 13C
+	BGSOutfit*	sleepOutfit;		// 140
 	UInt32		unk144;			// 144
-	UInt32		unk148;			// 148
+	TESFaction*	faction;		// 148
 	UInt32		unk14C;			// 14C
 	UInt8		unk150;			// 150
 	UInt8		unk151;			// 151
@@ -925,8 +925,8 @@ class TESSoulGem : public TESObjectMISC
 {
 public:
 	UInt32	unk88;		// 88
-	UInt8	unk8C;		// 8C
-	UInt8	unk8D;		// 8D
+	UInt8	soulSize;	// 8C
+	UInt8	gemSize;	// 8D
 	UInt8	pad8E[2];	// 8E
 };
 
@@ -1044,13 +1044,13 @@ public:
 		};
 
 		UInt32	unk00;	// 00
-		float	unk04;	// 04
+		float	speed;	// 04
 		float	reach;	// 08
 		float	unk0C;	// 0C
 		float	unk10;	// 10
 		float	unk14;	// 14
 		float	unk18;	// 18
-		float	unk1C;	// 1C
+		float	stagger;// 1C
 		UInt32	unk20;	// 20
 		UInt32	unk24;	// 24
 		UInt32	unk28;	// 28

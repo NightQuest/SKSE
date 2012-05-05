@@ -1,7 +1,7 @@
 #include "GameSettings.h"
 
-extern GameSettingCollection	** g_iniSettingCollection = (GameSettingCollection **)0x013E62C4;
-extern GameSettingCollection	** g_iniPrefSettingCollection = (GameSettingCollection **)0x013DDEE8;
+extern GameSettingCollection	** g_iniSettingCollection = (GameSettingCollection **)0x013EC444;
+extern GameSettingCollection	** g_iniPrefSettingCollection = (GameSettingCollection **)0x013E4048;
 
 // sLanguage:General
 // ### if you were using g_gameLanguage, just look it up in g_iniSettingCollection

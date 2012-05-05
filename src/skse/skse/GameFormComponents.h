@@ -6,6 +6,7 @@
 
 class TESObjectSTAT;
 class BGSSoundDescriptorForm;
+class BGSKeyword;
 
 //// root
 
@@ -107,10 +108,10 @@ public:
 
 	struct Data
 	{
-		UInt32	parts;		// 00 - init'd to 0
-		UInt8	unk04;		// 04 - init'd to 0
-		UInt8	pad05[3];	// 05
-		UInt32	weight;		// 08 - init'd to 2 (none)
+		UInt32	parts;			// 00 - init'd to 0
+		UInt8	unk04;			// 04 - init'd to 0
+		UInt8	pad05[3];		// 05
+		UInt32	weightClass;	// 08 - init'd to 2 (none)
 	};
 
 	Data	data;	// 04
@@ -171,8 +172,8 @@ public:
 	virtual bool	HasKeyword(UInt32 keyword);
 	virtual UInt32	GetDefaultKeyword(void);
 
-	UInt32	* keywords;		// 04
-	UInt32	numKeywords;	// 08
+	BGSKeyword	** keywords;	// 04
+	UInt32		numKeywords;	// 08
 };
 
 // 08

@@ -14,6 +14,7 @@ class BGSProjectile;
 class BGSArtObject;
 class BGSImpactDataSet;
 class TESSound;
+class TESObjectREFR;
 
 typedef TESForm * (* _LookupFormByID)(UInt32 id);
 extern const _LookupFormByID LookupFormByID;
@@ -1487,67 +1488,67 @@ class TESCombatStyle : public TESForm
 {
 public:
 	// 28
-	struct Data14	// CSGD
+	struct General	// CSGD
 	{
-		float	unk00;	// 00 - init'd to 0.5
-		float	unk04;	// 04 - init'd to 0.5
-		float	unk08;	// 08 - init'd to 1
-		float	unk0C;	// 0C - init'd to 1
-		float	unk10;	// 10 - init'd to 1
-		float	unk14;	// 14 - init'd to 1
-		float	unk18;	// 18 - init'd to 1
-		float	unk1C;	// 1C - init'd to 1
-		float	unk20;	// 20 - init'd to 1
-		float	unk24;	// 24 - init'd to 0.2
+		float	offensiveMult;	// 00 - init'd to 0.5
+		float	defensiveMult;	// 04 - init'd to 0.5
+		float	groupOffensiveMult;	// 08 - init'd to 1
+		float	meleeMult;	// 0C - init'd to 1
+		float	rangedMult;	// 10 - init'd to 1
+		float	magicMult;	// 14 - init'd to 1
+		float	shoutMult;	// 18 - init'd to 1
+		float	staffMult;	// 1C - init'd to 1
+		float	unarmedMult;	// 20 - init'd to 1
+		float	avoidThreatChance;	// 24 - init'd to 0.2
 	};
 
 	// 20
-	struct Data3C	// CSME
+	struct Melee	// CSME
 	{
-		float	unk00;	// 00 - init'd to 1
-		float	unk04;	// 04 - init'd to 1
-		float	unk08;	// 08 - init'd to 1
-		float	unk0C;	// 0C - init'd to 1
-		float	unk10;	// 10 - init'd to 1
-		float	unk14;	// 14 - init'd to 1
-		float	unk18;	// 18 - init'd to 1
-		float	unk1C;	// 1C - init'd to 0.1
+		float	attackStaggeredMult;	// 00 - init'd to 1
+		float	powerAttackStaggeredMult;	// 04 - init'd to 1
+		float	powerAttackBlockingMult;	// 08 - init'd to 1
+		float	bashMult;	// 0C - init'd to 1
+		float	bashRecoiledMult;	// 10 - init'd to 1
+		float	bashAttackMult;	// 14 - init'd to 1
+		float	bashPowerAttackMult;	// 18 - init'd to 1
+		float	specialAttackMult;	// 1C - init'd to 0.1
 	};
 
 	// 10
-	struct Data5C	// CSCR
+	struct CloseRange	// CSCR
 	{
-		float	unk00;	// 00 - init'd to 0.2
-		float	unk04;	// 04 - init'd to 0.2
-		float	unk08;	// 08 - init'd to 0.2
-		float	unk0C;	// 0C - init'd to 0.2
+		float	duelingCircleMult;	// 00 - init'd to 0.2
+		float	duelingFallbackMult;	// 04 - init'd to 0.2
+		float	flankingFlankDistance;	// 08 - init'd to 0.2
+		float	flankingStalkTime;	// 0C - init'd to 0.2
 	};
 
 	// 4
-	struct Data6C	// CSLR
+	struct LongRange	// CSLR
 	{
-		float	unk00;	// 00 - init'd to 0.2
+		float	strafeMult;	// 00 - init'd to 0.2
 	};
 
 	// 20
-	struct Data70	// CSFL
+	struct Flight	// CSFL
 	{
-		float	unk00;	// 00 - init'd to 0.5
-		float	unk04;	// 04 - init'd to 1
+		float	hoverChance;	// 00 - init'd to 0.5
+		float	diveBombChance;	// 04 - init'd to 1
 		float	unk08;	// 08 - init'd to 0.5
 		float	unk0C;	// 0C - init'd to 0.5
 		float	unk10;	// 10 - init'd to 0.5
 		float	unk14;	// 14 - init'd to 0.5
 		float	unk18;	// 18 - init'd to 0.5
-		float	unk1C;	// 1C - init'd to 0.75
+		float	flyingAttackChance;	// 1C - init'd to 0.75
 	};
 
-	Data14	unk14;		// 14 - CSGD
-	Data3C	unk3C;		// 3C - CSME
-	Data5C	unk5C;		// 5C - CSCR
-	Data6C	unk6C;		// 6C - CSLR
-	Data70	unk70;		// 70 - CSFL
-	UInt8	unk90;		// 90 - DATA
+	General	general;		// 14 - CSGD
+	Melee	melee;		// 3C - CSME
+	CloseRange	closeRange;		// 5C - CSCR
+	LongRange	longRange;		// 6C - CSLR
+	Flight	flight;		// 70 - CSFL
+	UInt8	allowDuelWielding;		// 90 - DATA
 	UInt8	pad91[3];	// 91
 };
 
@@ -1817,13 +1818,6 @@ public:
 		UInt32	unk4;
 	};
 
-	// 8
-	struct Data4C
-	{
-		void	* unk0;	// BSIntrusiveRefCounted at offset 14
-		UInt32	unk4;
-	};
-
 	Data						unk1C;		// 1C
 	Data						unk24;		// 24
 	UInt16						unk2C;		// 2C
@@ -1837,8 +1831,9 @@ public:
 	UInt32						unk40;		// 40
 	UInt32						unk44;		// 44
 	UInt32						unk48;		// 48
-	Data4C						unk4C;		// 4C
-	UnkArray	unk54;		// 54
+	tArray<TESObjectREFR*> objectList;		// 4C
+	UInt32						unk58;		// 58
+	UInt32						unk5C;		//	5C
 	UnkArray	unk60;		// 60
 	UnkArray	unk6C;		// 6C
 	Data						unk78;		// 78
@@ -1846,6 +1841,7 @@ public:
 	UInt32						unk84;		// 84
 	UInt32						unk88;		// 88
 };
+STATIC_ASSERT(offsetof(TESObjectCELL, objectList) == 0x4C);
 
 // 28
 class TESObjectLAND : public TESForm

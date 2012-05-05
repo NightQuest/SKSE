@@ -8,7 +8,7 @@
 
 IDebugLog	gLog("skse.log");
 
-STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_4_27_0);
+STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_5_24_0);
 
 #include "Hooks_Scaleform.h"
 #include "Hooks_Gameplay.h"
@@ -30,8 +30,8 @@ void ApplyPatch(UInt32 base, UInt8 * buf, UInt32 len)
 
 void FixCoopLevel(void)
 {
-	SafeWrite8(0x00A4EBE1 + 1, 0x06);
-	SafeWrite8(0x00A4FC6C + 1, 0x16);
+	SafeWrite8(0x00A51B10 + 0x71 + 1, 0x06);
+	SafeWrite8(0x00A52BC0 + 0x4C + 1, 0x16);
 }
 
 void WaitForDebugger(void)

@@ -52,3 +52,19 @@ const char * GetObjectClassName(void * objBase);
 void DumpClass(void * theClassPtr, UInt32 nIntsToDump = 512);
 
 const std::string & GetOSInfoStr(void);
+
+// remove_pointer <T>::type is T with one level of indirection removed
+// int ** -> int *
+// int * -> int
+// int -> int
+template <class T>
+struct remove_pointer
+{
+	typedef T	type;
+};
+
+template <class T>
+struct remove_pointer <T *>
+{
+	typedef T	type;
+};

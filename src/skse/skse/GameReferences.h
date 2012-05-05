@@ -259,8 +259,8 @@ public:
 	};
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
-	DEFINE_MEMBER_FN(GetDamage, double, 0x00725F70, ObjDesc * pForm);
-	DEFINE_MEMBER_FN(GetArmorValue, double, 0x00725F40, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x00727680, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x00727650, ObjDesc * pForm);
 };
 
 STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1B0);

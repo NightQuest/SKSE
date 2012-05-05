@@ -288,7 +288,7 @@ public:
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00831860, void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x008340A0, void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
 
 	StandardItemData * ctor_Hook(void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
 };
@@ -340,7 +340,7 @@ void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDes
 				armorValue = round(armorValue);
 				RegisterNumber(pFxVal, "armor", armorValue);
 				RegisterNumber(pFxVal, "partMask", pArmor->bipedObject.data.parts);
-				RegisterNumber(pFxVal, "weightClass", pArmor->bipedObject.data.weight);
+				RegisterNumber(pFxVal, "weightClass", pArmor->bipedObject.data.weightClass);
 			}
 		}
 		break;
@@ -371,7 +371,18 @@ void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDes
 			}
 		}
 		break;
-		
+
+		case kFormType_SoulGem:
+		{
+			TESSoulGem	* soulGem = DYNAMIC_CAST(pForm, TESForm, TESSoulGem);
+			if(soulGem)
+			{
+				RegisterNumber(pFxVal, "soulSize", soulGem->soulSize);
+				RegisterNumber(pFxVal, "gemSize", soulGem->gemSize);
+			}
+		}
+		break;
+
 		default:
 			break;
 	}
@@ -391,7 +402,7 @@ public:
 	GFxValue		fxValue;	// 10
 
 	MEMBER_FN_PREFIX(MagicItemData);
-	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x008613C0, void ** callbacks, TESForm * pForm, int unk);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x008637D0, void ** callbacks, TESForm * pForm, int unk);
 
 	MagicItemData * ctor_Hook(void ** callbacks, TESForm * pForm, int unk);
 };
@@ -452,7 +463,7 @@ public:
 	GFxValue	* fxValue;	// 08
 
 	MEMBER_FN_PREFIX(FavItemDataHook);
-	DEFINE_MEMBER_FN(Hooked, int, 0x0084A2D0, TESForm * pForm);
+	DEFINE_MEMBER_FN(Hooked, int, 0x0084C530, TESForm * pForm);
 
 	int Hook(TESForm * pForm);
 };
@@ -528,7 +539,8 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	globals.SetMember("skse", &skse);
 }
 
-static const UInt32 kInstallHooks_Entry_retn = 0x00A45DFE;
+static const UInt32 kInstallHooks_Base = 0x00A48D50;
+static const UInt32 kInstallHooks_Entry_retn = kInstallHooks_Base + 0xBE;
 
 __declspec(naked) void InstallHooks_Entry(void)
 {
@@ -551,10 +563,10 @@ __declspec(naked) void InstallHooks_Entry(void)
 void Hooks_Scaleform_Commit(void)
 {
 	// movie creation hook
-	WriteRelJump(0x00A45DF8, (UInt32)InstallHooks_Entry);
+	WriteRelJump(kInstallHooks_Base + 0xB8, (UInt32)InstallHooks_Entry);
 
 	// item card data creation hook
-	WriteRelCall(0x00832399, GetFnAddr(&StandardItemData::ctor_Hook));
-	WriteRelCall(0x00861979, GetFnAddr(&MagicItemData::ctor_Hook));
-	WriteRelCall(0x0084B17F, GetFnAddr(&FavItemDataHook::Hook));
+	WriteRelCall(0x00834949, GetFnAddr(&StandardItemData::ctor_Hook));
+	WriteRelCall(0x00863D89, GetFnAddr(&MagicItemData::ctor_Hook));
+	WriteRelCall(0x0084D3DF, GetFnAddr(&FavItemDataHook::Hook));
 }

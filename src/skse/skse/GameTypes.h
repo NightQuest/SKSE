@@ -37,9 +37,9 @@ public:
 		const char	* data;
 
 		MEMBER_FN_PREFIX(Ref);
-		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A361B0, const char * buf);
-		DEFINE_MEMBER_FN(Set, Ref *, 0x00A36200, const char * buf);
-		DEFINE_MEMBER_FN(Release, void, 0x00A361A0);
+		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A38CA0, const char * buf);
+		DEFINE_MEMBER_FN(Set, Ref *, 0x00A38CF0, const char * buf);
+		DEFINE_MEMBER_FN(Release, void, 0x00A38C90);
 	};
 
 	struct Lock
@@ -112,3 +112,21 @@ public:
 };
 
 typedef tArray<UInt32> UnkArray;
+
+template <class T>
+class tSimpleArray
+{
+public:
+	T* entries;
+	UInt32 count;
+
+
+	bool GetNthItem(UInt32 index, T& pT)
+	{
+		if (index < count) {
+			pT = entries[index];
+			return true;
+		}
+		return false;
+	}
+};

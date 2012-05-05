@@ -9,6 +9,29 @@
 
 class PapyrusClassRegistry;
 class VMValue;
+class VMArgList;
+
+// stack frame?
+class VMState
+{
+public:
+	VMState();
+	~VMState();
+
+	VMArgList	* argList;	// 00
+	UInt32		pad04[(0x1C - 0x04) >> 2];	// 04
+	UInt32		numArgs;	// 1C
+};
+
+class VMArgList
+{
+public:
+	VMArgList();
+	~VMArgList();
+
+	MEMBER_FN_PREFIX(VMArgList);
+	DEFINE_MEMBER_FN(Get, VMValue *, 0x00C20180, VMState * state, UInt32 idx, void * lockedArgList);
+};
 
 // 08
 class IFunction
@@ -41,7 +64,7 @@ public:
 	virtual UInt8				GetUnk21(void) = 0;
 	virtual void				SetUnk21(UInt8 arg) = 0;
 	virtual bool				HasCallback(void) = 0;
-	virtual bool				Run(UInt32 arg0, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, UInt32 arg4) = 0;	// unique to each type combination
+	virtual bool				Run(UInt32 arg0, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;	// unique to each type combination
 };
 
 // BSScript::NF_util::NativeFunctionBase
@@ -92,14 +115,14 @@ public:
 	virtual UInt8				GetUnk21(void)				{ return unk21; }
 	virtual void				SetUnk21(UInt8 arg)			{ unk21 = arg; }
 	virtual bool				HasCallback(void) = 0;
-	virtual bool				Run(UInt32 arg0, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, UInt32 arg4) = 0;
+	virtual bool				Run(UInt32 arg0, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
 
 	MEMBER_FN_PREFIX(NativeFunctionBase);
-	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C287D0);
-	DEFINE_MEMBER_FN(Impl_GetParam, void, 0x00C28C50, UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut);
-	DEFINE_MEMBER_FN(Impl_Invoke, UInt32, 0x00C289B0, UInt32 unk0, UInt32 unk1, UInt32 unk2, UInt32 unk3);
-	DEFINE_MEMBER_FN(Impl_Fn10, StringCache::Ref *, 0x00C28810);
-	DEFINE_MEMBER_FN(Impl_Fn12, bool, 0x00C28C60, UInt32 idx, UInt32 out);
+	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C2BAE0);
+	DEFINE_MEMBER_FN(Impl_GetParam, void, 0x00C2BF60, UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut);
+	DEFINE_MEMBER_FN(Impl_Invoke, UInt32, 0x00C2BCC0, UInt32 unk0, UInt32 unk1, UInt32 unk2, UInt32 unk3);
+	DEFINE_MEMBER_FN(Impl_Fn10, StringCache::Ref *, 0x00C2BB20);
+	DEFINE_MEMBER_FN(Impl_Fn12, bool, 0x00C2BF70, UInt32 idx, UInt32 out);
 
 	// redirect to formheap
 	static void * operator new(std::size_t size)
@@ -158,34 +181,15 @@ public:
 	virtual ~NativeFunction()	{ CALL_MEMBER_FN(this, Impl_dtor)(); }
 
 	virtual bool				HasCallback(void)	{ return m_callback != 0; }
-	virtual bool				Run(UInt32 arg0, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, UInt32 arg4) = 0;
+	virtual bool				Run(UInt32 arg0, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
 
 	MEMBER_FN_PREFIX(NativeFunction);
-	DEFINE_MEMBER_FN(Impl_ctor, NativeFunction *, 0x00C28900, const char * fnName, const char * className, UInt32 unk0, UInt32 numParams);
-	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C287D0);
+	DEFINE_MEMBER_FN(Impl_ctor, NativeFunction *, 0x00C2BC10, const char * fnName, const char * className, UInt32 unk0, UInt32 numParams);
+	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C2BAE0);
 
 protected:
 	void	* m_callback;	// 2C
 
 	// hide
 	NativeFunction()	{ }
-};
-
-// ### begin hack section
-// ### IFunction::Run still needs to be fully understood
-// ### until then we're limited to existing function types
-
-class NativeFunction1_static_bool_float : public NativeFunction
-{
-public:
-	typedef bool (__cdecl * Callback)(PapyrusClassRegistry * registry, UInt32 unk1, UInt32 unk2, float arg);
-
-	NativeFunction1_static_bool_float()	{ }
-	NativeFunction1_static_bool_float(const char * fnName, const char * className, Callback callback, PapyrusClassRegistry ** registry);
-
-	virtual bool	Run(UInt32 arg0, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, UInt32 arg4);
-
-	MEMBER_FN_PREFIX(NativeFunction1_static_bool_float);
-	DEFINE_MEMBER_FN(Impl_ctor, NativeFunction1_static_bool_float *, 0x008FFF90, const char * fnName, const char * className, Callback callback, PapyrusClassRegistry ** registry);
-	DEFINE_MEMBER_FN(Impl_Run, bool, 0x009001D0, UInt32 arg0, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, UInt32 arg4);
 };

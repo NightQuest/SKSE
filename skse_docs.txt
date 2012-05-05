@@ -72,6 +72,9 @@ dynamic intrinsic class skse
 	// data for spells/scrolls/ingredients/potions:
 	//	var subType : Number;		// strongest effect's magic school
 	//	var skillLevel : Number;	// strongest effect's skill level
+	// data for soul gems:
+	//	var soulSize : Number;		// captured soul size (0 = none, 5 = grand)
+	//	var gemSize : Number;		// gem capacity (1 = petty, 5 = grand)
 	function ExtendData(enable : Boolean) : Void;
 	
 	// forces containers to show categories like NPCs

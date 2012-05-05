@@ -2,5 +2,5 @@
 
 DataHandler * DataHandler::GetSingleton()
 {
-	return *((DataHandler **)0x012B219C);
+	return *((DataHandler **)0x012B821C);
 }

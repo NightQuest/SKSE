@@ -1,7 +1,7 @@
 #include "GameAPI.h"
 #include "Utilities.h"
 
-Heap * g_formHeap = (Heap *)0x01390090;
+Heap * g_formHeap = (Heap *)0x013961F0;
 
 void * FormHeap_Allocate(UInt32 size)
 {
@@ -13,8 +13,8 @@ void FormHeap_Free(void * ptr)
 	CALL_MEMBER_FN(g_formHeap, Free)(ptr, false);
 }
 
-PlayerCharacter	** g_thePlayer = (PlayerCharacter **)0x0137DBEC;
-const UInt32 * g_TlsIndexPtr = (UInt32 *)0x0140CED4;
+PlayerCharacter	** g_thePlayer = (PlayerCharacter **)0x01383CF4;
+const UInt32 * g_TlsIndexPtr = (UInt32 *)0x01413054;
 
 struct TLSData
 {
@@ -44,14 +44,14 @@ class ConsoleManager
 {
 public:
 	MEMBER_FN_PREFIX(ConsoleManager);
-	DEFINE_MEMBER_FN(Print, void, 0x00837B50, const char * fmt, va_list args);
+	DEFINE_MEMBER_FN(Print, void, 0x0083A100, const char * fmt, va_list args);
 
 	ConsoleManager();
 	~ConsoleManager();
 
 	static ConsoleManager * GetSingleton(void)
 	{
-		return *((ConsoleManager **)0x0135FF40);
+		return *((ConsoleManager **)0x01365FD8);
 	}
 
 	void	* scriptContext;	// 00
@@ -79,7 +79,7 @@ bool IsConsoleMode(void)
 
 InputManager * InputManager::GetSingleton(void)
 {
-	return *((InputManager **)0x0135FF48);
+	return *((InputManager **)0x01365FE0);
 }
 
 UInt8 InputManager::AllowTextInput(bool allow)

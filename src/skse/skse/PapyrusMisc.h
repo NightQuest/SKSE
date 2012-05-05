@@ -5,7 +5,9 @@ class BGSApparatus;
 class BGSOutfit;
 class TESForm;
 class VMClassRegistry;
+class BGSKeyword;
 
+#include "GameTypes.h"
 
 namespace papyrusSoulGem
 {
@@ -27,4 +29,11 @@ namespace papyrusOutfit
 
 	UInt32 GetNumParts(BGSOutfit* thisOutfit);
 	TESForm* GetNthPart(BGSOutfit* thisOutfit, UInt32 n);
+}
+
+namespace papyrusKeyword
+{
+	void RegisterFuncs(VMClassRegistry* registry);
+
+	BSFixedString GetString(BGSKeyword* thisKeyword);
 }

@@ -11,7 +11,9 @@
 #include "PapyrusArmor.h"
 #include "PapyrusCell.h"
 #include "PapyrusCombatStyle.h"
+#include "PapyrusEnchantment.h"
 #include "PapyrusForm.h"
+#include "PapyrusIngredient.h"
 #include "PapyrusInput.h"
 #include "PapyrusMath.h"
 #include "PapyrusMisc.h"
@@ -19,6 +21,7 @@
 #include "PapyrusPotion.h"
 #include "PapyrusSKSE.h"
 #include "PapyrusSpell.h"
+#include "PapyrusStringUtil.h"
 #include "PapyrusWeapon.h"
 
 typedef void (* _RegisterPapyrusFunctions)(VMClassRegistry ** registry);
@@ -76,6 +79,18 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 
 	// Spell
 	papyrusSpell::RegisterFuncs(registry);
+
+	// Spell
+	papyrusEnchantment::RegisterFuncs(registry);
+
+	// Ingredient
+	papyrusIngredient::RegisterFuncs(registry);
+
+	// StringUtil
+	papyrusStringUtil::RegisterFuncs(registry);
+
+	// Keyword
+	papyrusKeyword::RegisterFuncs(registry);
 }
 
 void Hooks_Papyrus_Init(void)

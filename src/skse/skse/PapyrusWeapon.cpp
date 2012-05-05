@@ -76,6 +76,47 @@ namespace papyrusWeapon
 		thisWeapon->unk0C4.type = nuType;
 	}
 
+
+	BSFixedString GetModelPath(TESObjectWEAP* thisWeapon)
+	{
+		return (thisWeapon) ? thisWeapon->texSwap.GetModelName() : NULL;
+	}
+
+	void SetModelPath(TESObjectWEAP* thisWeapon, BSFixedString nuPath)
+	{
+		if (!thisWeapon)
+			return;
+
+		thisWeapon->texSwap.SetModelName(nuPath.data);
+	}
+
+	BSFixedString GetIconPath(TESObjectWEAP* thisWeapon)
+	{
+		return (thisWeapon) ? thisWeapon->icon.str : NULL;
+	}
+
+	void SetIconPath(TESObjectWEAP* thisWeapon, BSFixedString nuPath)
+	{
+		if (!thisWeapon)
+			return;
+
+		thisWeapon->icon.str = nuPath.data;
+	}
+
+	BSFixedString GetMessageIconPath(TESObjectWEAP* thisWeapon)
+	{
+		return (thisWeapon) ? thisWeapon->messageIcon.icon.str : NULL;
+	}
+
+	void SetMessageIconPath(TESObjectWEAP* thisWeapon, BSFixedString nuPath)
+	{
+		if (!thisWeapon)
+			return;
+
+		thisWeapon->messageIcon.icon.str = nuPath.data;
+	}
+
+
 }
 
 #include "PapyrusVM.h"
@@ -114,5 +155,21 @@ void papyrusWeapon::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <TESObjectWEAP, void, float>("SetStagger", "Weapon", papyrusWeapon::SetStagger, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, BSFixedString>("GetModelPath", "Weapon", papyrusWeapon::GetModelPath, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, BSFixedString>("SetModelPath", "Weapon", papyrusWeapon::SetModelPath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, BSFixedString>("GetIconPath", "Weapon", papyrusWeapon::GetIconPath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, BSFixedString>("SetIconPath", "Weapon", papyrusWeapon::SetIconPath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, BSFixedString>("GetMessageIconPath", "Weapon", papyrusWeapon::GetMessageIconPath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, BSFixedString>("SetMessageIconPath", "Weapon", papyrusWeapon::SetMessageIconPath, registry));
 }

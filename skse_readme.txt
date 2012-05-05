@@ -1,19 +1,23 @@
-Skyrim Script Extender v1.5.3
-by Ian Patterson, Stephen Abel and Paul Connelly
-(ianpatt, behippo and scruggsywuggsy the ferret)
-Thanks to: gibbed
+Skyrim Script Extender v1.5.4
+by Ian Patterson and Stephen Abel
+(ianpatt and behippo)
+Thanks to: Paul Connelly (scruggsywuggsy the ferret), gibbed
 
 The Skyrim Script Extender, or SKSE for short, is a modder's resource that expands the scripting capabilities of Skyrim. It does so without modifying the executable files on disk, so there are no permanent side effects.
 
 Compatibility:
 
-SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.5.26.0). When a new version is released, we will update as soon as possible; please be patient. The editor does not appear to need modification, however a custom set of .pex/psc files must be installed (currently in progress).
+SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.5.26.0). When a new version is released, we will update as soon as possible; please be patient. The editor does not appear to need modification, however a custom set of .pex/psc files must be installed.
 
 [ Installation ]
 
 1. Copy the .dll and .exe files to your Skyrim directory. This is usually in your Program Files folder under Steam\SteamApps\common\skyrim\. If you see files named TESV and SkyrimLauncher, this is the correct folder. Do not copy these files to the Data folder as with a normal mod. The "src" folder is only useful for programmers, most users can ignore it.
 
-2. Launch the game via running skse_loader.exe.
+2. Copy the .pex files in Data\Scripts\ into the Data\Scripts\ folder of your installation.  The .pex files are needed by all users of SKSE. 
+
+3. Copy the .psc files in Data\Scripts\Source\ into the Data\Scripts\Source\ folder of your installation.  The .psc files are only needed if you have the CreationKit installed and intend to create or compile Papyrus scripts.
+
+4. Launch the game via running skse_loader.exe.
 
 If you use a desktop shortcut to launch Skyrim normally, just update the shortcut to point to skse_loader.exe instead of TESV.exe or SkyrimLauncher.exe.
 
@@ -37,6 +41,12 @@ If your mod requires SKSE, please provide a link to the main SKSE website <http:
  
 * Can I modify and release my own version of SKSE based on the included source code?
  - No; the suggested method for extending SKSE is to write a plugin. If this does not meet your needs, please email the contact addresses listed below.
+
+* How do I write Papyrus scripts using SKSE extensions?
+ - If you've properly installed the .psc files from Data\Scripts\Source you can simply use the new functions listed.
+ 
+* How do I know what SKSE functions have been added?
+ - Look at the included .psc files in Data\Scripts\Source\.  At the bottom of each .psc file is a label that shows the SKSE functions which have been added.  Most have comments describing their purpose, if it is not obvious from the name.
 
 * How do I write a plugin for SKSE?
  - See PluginAPI.h for instructions, as well as the example plugin project included with the rest of the source code.
@@ -62,9 +72,6 @@ Send email to ianpatt+skse [at] gmail [dot] com
 
 Stephen (behippo)
 Send email to gamer [at] silverlock [dot] org
-
-Paul (scruggsy)
-Send email to scruggsyw [at] comcast [dot] net
 
 [ Standard Disclaimer ]
 

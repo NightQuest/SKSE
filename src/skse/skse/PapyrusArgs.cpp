@@ -29,6 +29,11 @@ template <> void PackValue <bool>(VMValue * dst, bool * src, VMClassRegistry * r
 	dst->SetBool(*src);
 }
 
+template <> void PackValue <BSFixedString>(VMValue * dst, BSFixedString * src, VMClassRegistry * registry)
+{
+	dst->SetString(src->data);
+}
+
 void BindID(VMIdentifier ** identifier, void * srcData, VMClassRegistry * registry, IObjectHandlePolicy * handlePolicy, UInt32 typeID)
 {
 	UInt32	unk = 0;
@@ -111,21 +116,21 @@ template <> void UnpackValue <float>(float * dst, VMValue * src, VMClassRegistry
 {
 	switch(src->type)
 	{
-		case VMValue::kType_Int:
-			*dst = src->data.i;
-			break;
+	case VMValue::kType_Int:
+		*dst = src->data.i;
+		break;
 
-		case VMValue::kType_Float:
-			*dst = src->data.f;
-			break;
+	case VMValue::kType_Float:
+		*dst = src->data.f;
+		break;
 
-		case VMValue::kType_Bool:
-			*dst = src->data.b;
-			break;
+	case VMValue::kType_Bool:
+		*dst = src->data.b;
+		break;
 
-		default:
-			*dst = 0;
-			break;
+	default:
+		*dst = 0;
+		break;
 	}
 }
 
@@ -195,6 +200,16 @@ template <> void UnpackValue <bool>(bool * dst, VMValue * src, VMClassRegistry *
 	}
 }
 
+template <> void UnpackValue <BSFixedString>(BSFixedString * dst, VMValue * src, VMClassRegistry * registry)
+{
+	const char	* data = NULL;
+
+	if(src->type == VMValue::kType_String)
+		data = src->data.str;
+
+	CALL_MEMBER_FN(dst, Set)(data);
+}
+
 void * UnpackHandle(VMValue * src, VMClassRegistry * registry, UInt32 typeID)
 {
 	if(!src->IsIdentifier()) return NULL;
@@ -237,6 +252,11 @@ template <> UInt32 GetTypeID <float>(VMClassRegistry * registry)
 template <> UInt32 GetTypeID <bool>(VMClassRegistry * registry)
 {
 	return VMValue::kType_Bool;
+}
+
+template <> UInt32 GetTypeID <BSFixedString>(VMClassRegistry * registry)
+{
+	return VMValue::kType_String;
 }
 
 UInt32 GetTypeIDFromFormTypeID(UInt32 formTypeID, VMClassRegistry * registry)

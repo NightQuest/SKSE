@@ -1,12 +1,9 @@
-Scriptname Potion extends Form
+Scriptname Enchantment extends Form Hidden
 
-; Is this postion classified as hostile?
+; Is this enchantment classified as hostile?
 bool Function IsHostile() native
 
 ; SKSE additions built 2012-04-26 19:53:17.541000 UTC
-; Is this potion classified as Food?
-bool Function IsFood() native
-
 ; return the number of the effects
 int Function GetNumEffects() native
 

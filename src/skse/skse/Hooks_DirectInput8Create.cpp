@@ -1,6 +1,7 @@
 #include "Hooks_DirectInput8Create.h"
 #include "SafeWrite.h"
 #include <queue>
+#include "PapyrusForm.h"
 
 static const GUID GUID_SysMouse		= { 0x6F1D2B60, 0xD5A0, 0x11CF, { 0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00} };
 static const GUID GUID_SysKeyboard	= { 0x6F1D2B61, 0xD5A0, 0x11CF, { 0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00} };
@@ -377,6 +378,8 @@ void DIHookControl::ProcessKeyboardData(UInt8 * data)
 
 		data[idx] = keyDown ? 0x80 : 0x00;
 	}
+
+	papyrusForm::UpdateKeys(data);
 }
 
 void DIHookControl::ProcessMouseData(DIMOUSESTATE2 * data)

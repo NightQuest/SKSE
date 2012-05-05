@@ -11,7 +11,7 @@ class MatchBySlot : public FormMatcher
 	UInt32 m_mask;
 public:
 	MatchBySlot(UInt32 slot) : 
-	  m_mask(BGSBipedObjectForm::MaskForSlot(slot)) 
+	  m_mask(slot) 
 	{
 		
 	}

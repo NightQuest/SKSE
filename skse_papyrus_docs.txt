@@ -1,0 +1,147 @@
+SKSE 1.5.4 Papyrus Functions
+
+Actor.psc
+ - Get/SetCombatStyle
+ - GetOutfit
+ - Get/SetClass
+ - GetWornForm
+ 
+Apparatus.psc
+ - Get/SetQuality
+ 
+Armor.psc
+ - Get/Set/ModArmorRating
+ - Get/SetSlotMask
+ - AddTo/RemoveFromSlotMask
+ - GetMaskForSlot
+ - Slot properties
+ 
+Cell.psc
+ - GetNumRefs
+ - GetNthRef
+ 
+CombatStyle.psc
+ - Get/SetOffensiveMult 
+ - Get/SetDefensiveMult
+ - Get/SetGroupOffensiveMult
+ - Get/SetAvoidThreatChance
+ - Get/SetMeleeMult
+ - Get/SetRangedMult
+ - Get/SetShoutMult
+ - Get/SetStaffMult
+ - Get/SetUnarmedMult
+ - Get/SetMeleeAttackStaggeredMult
+ - Get/SetMeleePowerAttackStaggeredMult
+ - Get/SetMeleePowerAttackBlockingMult
+ - Get/SetMeleeBashMult
+ - Get/SetMeleeBashRecoiledMult
+ - Get/SetMeleeBashAttackMult
+ - Get/SetMeleeBashPowerAttackMult
+ - Get/SetMeleeSpecialAttackMult
+ - Get/SetAllowDualWielding
+ - Get/SetCloseRangeDuelingCircleMult
+ - Get/SetCloseRangeDuelingFallbackMult
+ - Get/SetCloseRangeFlankingFlankMult
+ - Get/SetCloseRangeFlankingStalkMult
+ - Get/SetLongRangeStrafeMult
+ - Get/SetFlightHoverChance
+ - Get/SetFlightDiveBombChance
+ - Get/SetFlightFlyingAttackChance
+ 
+Enchantment.psc
+ - GetNumEffects
+ - GetNthEffectMagnitude
+ - GetNthEffectArea
+ - GetNthEffectDuration
+ - GetNthEffectMagicEffect
+ - GetCostliestEffectIndex
+
+Form.psc
+ - GetType
+ - Get/SetName
+ - Get/SetWeight
+ - SetGoldValue
+ - GetNumKeywords
+ - GetNthKeyword
+
+FormType.psc
+ - properties listing Form.GetType return values.  Currently unusable.
+ 
+Ingredient.psc
+ - GetNumEffects
+ - GetNthEffectMagnitude
+ - GetNthEffectArea
+ - GetNthEffectDuration
+ - GetNthEffectMagicEffect
+ - GetCostliestEffectIndex
+
+Input.psc
+ - IsKeyPressed
+ - TapKey
+ - HoldKey
+ - ReleaseKey
+
+Keyword.psc
+ - GetString
+ 
+Math.psc
+ - Left/RightShift
+ - LogicalAnd/Or/Xor/Not
+
+ObjectReference.psc
+ - GetNumItems
+ - GetNthForm
+ - IsHarvested
+ 
+Outfit
+ - GetNumParts
+ - GetNthPart
+
+Potion.psc
+ - IsFood
+ - GetNumEffects
+ - GetNthEffectMagnitude
+ - GetNthEffectArea
+ - GetNthEffectDuration
+ - GetNthEffectMagicEffect
+ - GetCostliestEffectIndex
+
+SKSE.psc
+ - GetVersion
+ - GetVersionMinor
+ - GetVersionBeta
+ - GetVersionRelease
+
+SoulGem.psc
+ - GetSoulSize
+ - GetGemSize
+ 
+Spell.psc
+ - GetCastTime
+ - GetPerk
+ - GetNumEffects
+ - GetNthEffectMagnitude
+ - GetNthEffectArea
+ - GetNthEffectDuration
+ - GetNthEffectMagicEffect
+ - GetCostliestEffectIndex
+
+StringUtl.psc
+ - GetLength
+ - GetNthChar
+ - IsLetter/Digit/Punctuation/Printable
+ - Find
+ - Substring
+ - AsOrd/Char
+
+Weapon.psc
+ - Get/SetBaseDamage
+ - Get/SetReach
+ - Get/SetSpeed
+ - Get/SetStagger
+ - Get/SetWeaponType
+ - Get/SetModelPath
+ - Get/SetIconPath
+ - Get/SetMessageIconPath 
+ 
+

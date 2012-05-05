@@ -35,33 +35,32 @@ void RegisterBool(GFxValue * dst, const char * name, bool value)
 	dst->SetMember(name, &fxValue);
 }
 
-void RegisterKeywords(GFxValue * pFxVal, BGSKeywordForm * keywordForm)
+void RegisterKeywords(GFxValue * pFxVal, GFxMovieView * view, BGSKeywordForm * keywordForm)
 {
-	// ### disabled pending better design
-	// ### if we can get the GFxMovieView, just add an object
-	// ### adding to the root is no good
+	GFxValue	keywordRoot;
+	view->CreateObject(&keywordRoot);
 
-#if 0
 	// Add all keywords as boolean properties with value true
 
 	UInt32 count = keywordForm->numKeywords;
 	BGSKeyword ** keywords = keywordForm->keywords;
-	if(!keywords)
-		return;
-
-	for(int i = 0; i < count; i++)
+	if(keywords)
 	{
-		BGSKeyword * pKey = keywords[i];
-		if(pKey)
+		for(int i = 0; i < count; i++)
 		{
-			const char * keyString = pKey->keyword.Get();
-			if(keyString)
+			BGSKeyword * pKey = keywords[i];
+			if(pKey)
 			{
-				RegisterBool(pFxVal, keyString, true);
+				const char * keyString = pKey->keyword.Get();
+				if(keyString)
+				{
+					RegisterBool(&keywordRoot, keyString, true);
+				}
 			}
 		}
 	}
-#endif
+
+	pFxVal->SetMember("keywords", &keywordRoot);
 }
 
 double round(double r)
@@ -294,7 +293,7 @@ class StandardItemData;
 class MagicItemData;
 
 void ExtendCommonItemData(GFxValue* pFxVal, TESForm * pForm);
-void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDesc);
+void ExtendStandardItemData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerCharacter::ObjDesc * objDesc);
 void ExtendMagicItemData(GFxValue * pFxVal, TESForm * pForm);
 
 // 20
@@ -317,23 +316,23 @@ public:
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00834090, void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00834090, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 
-	StandardItemData * ctor_Hook(void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk);
+	StandardItemData * ctor_Hook(GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 };
 
 STATIC_ASSERT(sizeof(StandardItemData) == 0x20);
 
-StandardItemData * StandardItemData::ctor_Hook(void ** callbacks, PlayerCharacter::ObjDesc * objDesc, int unk)
+StandardItemData * StandardItemData::ctor_Hook(GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk)
 {
-	StandardItemData	* result = CALL_MEMBER_FN(this, ctor_data)(callbacks, objDesc, unk);
+	StandardItemData	* result = CALL_MEMBER_FN(this, ctor_data)(movieView, objDesc, unk);
 
 //	_MESSAGE("StandardItemData hook");
 
 	if(s_bExtendData)
 	{
 		ExtendCommonItemData(&result->fxValue, objDesc->form);
-		ExtendStandardItemData(&result->fxValue, objDesc);
+		ExtendStandardItemData(&result->fxValue, *movieView, objDesc);
 		// Calling this to set scrolls, potions, ingredients
 		// as this function is called for inventory, barter, container
 		ExtendMagicItemData(&result->fxValue, objDesc->form);
@@ -352,7 +351,7 @@ void ExtendCommonItemData(GFxValue* pFxVal, TESForm * pForm)
 	RegisterNumber(pFxVal, "formId", (double)pForm->formID);
 }
 
-void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDesc)
+void ExtendStandardItemData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerCharacter::ObjDesc * objDesc)
 {
 	TESForm	* pForm = objDesc->form;
 
@@ -373,7 +372,7 @@ void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDes
 				RegisterNumber(pFxVal, "armor", armorValue);
 				RegisterNumber(pFxVal, "partMask", pArmor->bipedObject.data.parts);
 				RegisterNumber(pFxVal, "weightClass", pArmor->bipedObject.data.weightClass);
-				RegisterKeywords(pFxVal, &pArmor->keyword);
+				RegisterKeywords(pFxVal, movieView, &pArmor->keyword);
 			}
 		}
 		break;
@@ -389,7 +388,7 @@ void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDes
 
 				RegisterNumber(pFxVal, "subType", weaponType);
 				RegisterNumber(pFxVal, "damage", damage);
-				RegisterKeywords(pFxVal, &pWeapon->keyword);
+				RegisterKeywords(pFxVal, movieView, &pWeapon->keyword);
 			}
 		}
 		break;
@@ -432,7 +431,7 @@ void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDes
 			TESObjectBOOK * pBook = DYNAMIC_CAST(pForm, TESForm, TESObjectBOOK);
 			if(pBook)
 			{
-				RegisterKeywords(pFxVal, &pBook->keyword);
+				RegisterKeywords(pFxVal, movieView, &pBook->keyword);
 			}
 		}
 		break;
@@ -442,7 +441,7 @@ void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDes
 			TESObjectMISC * pMisc = DYNAMIC_CAST(pForm, TESForm, TESObjectMISC);
 			if(pMisc)
 			{
-				RegisterKeywords(pFxVal, &pMisc->keyword);
+				RegisterKeywords(pFxVal, movieView, &pMisc->keyword);
 			}
 		}
 		break;
@@ -466,16 +465,16 @@ public:
 	GFxValue		fxValue;	// 10
 
 	MEMBER_FN_PREFIX(MagicItemData);
-	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x008637C0, void ** callbacks, TESForm * pForm, int unk);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x008637C0, GFxMovieView ** movieView, TESForm * pForm, int unk);
 
-	MagicItemData * ctor_Hook(void ** callbacks, TESForm * pForm, int unk);
+	MagicItemData * ctor_Hook(GFxMovieView ** movieView, TESForm * pForm, int unk);
 };
 
 STATIC_ASSERT(sizeof(MagicItemData) == 0x20);
 
-MagicItemData * MagicItemData::ctor_Hook(void ** callbacks, TESForm * pForm, int unk)
+MagicItemData * MagicItemData::ctor_Hook(GFxMovieView ** movieView, TESForm * pForm, int unk)
 {
-	MagicItemData	* result = CALL_MEMBER_FN(this, ctor_data)(callbacks, pForm, unk);
+	MagicItemData	* result = CALL_MEMBER_FN(this, ctor_data)(movieView, pForm, unk);
 
 //	_MESSAGE("MagicItemData hook");
 

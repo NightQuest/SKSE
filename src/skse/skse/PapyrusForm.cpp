@@ -2,6 +2,10 @@
 
 #include "GameForms.h"
 #include "GameRTTI.h"
+#include "PapyrusVM.h"
+
+#include <map>
+#include <set>
 
 namespace papyrusForm
 {
@@ -10,7 +14,7 @@ namespace papyrusForm
 		return (thisForm) ? thisForm->GetFormType() : 0;
 	}
 
-	const char* GetName(TESForm* thisForm)
+	BSFixedString GetName(TESForm* thisForm)
 	{
 		if (!thisForm)
 			return NULL;
@@ -23,10 +27,10 @@ namespace papyrusForm
 		return NULL;
 	}
 
-	void SetName(TESForm* thisForm, const char* nuName)
+	void SetName(TESForm* thisForm, BSFixedString nuName)
 	{
 		if (thisForm)
-			thisForm->SetName(nuName);
+			thisForm->SetName(nuName.data);
 	}
 
 	float GetWeight(TESForm* thisForm)
@@ -100,6 +104,70 @@ namespace papyrusForm
 		return NULL;
 	}
 
+	typedef std::set <UInt64>				HandleList;
+	typedef std::map <UInt32, HandleList>	RegisteredKeyMap;
+
+	// ### TODO: clear this on unload
+	RegisteredKeyMap	g_regKeyMap;
+
+	void RegisterForKey(TESForm * thisForm, UInt32 key)
+	{
+		VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
+		IObjectHandlePolicy	* policy =		registry->GetHandlePolicy();
+
+		UInt64	handle = policy->Create(thisForm->formType, (void *)thisForm);
+
+		g_regKeyMap[key].insert(handle);
+	}
+
+	class OneIntArg : public IFunctionArguments
+	{
+	public:
+		OneIntArg(UInt32 _data) :data(_data) { }
+
+		virtual bool	Copy(Output * dst)
+		{
+			dst->Resize(1);
+			dst->Get(0)->SetInt(data);
+
+			return true;
+		}
+
+	private:
+		UInt32	data;
+	};
+
+	void UpdateKeys(UInt8 * data)
+	{
+		static UInt8	oldState[0x100] = { 0 };
+
+		if(!*g_skyrimVM) return;
+
+		// ### this is off because it's a super temp hack
+#if 0
+		BSFixedString		eventName("OnKeyDown");
+		VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
+
+		for(UInt32 i = 0; i < 0x100; i++)
+		{
+			if(!oldState[i] && data[i])
+			{
+				RegisteredKeyMap::iterator	registeredHandles = g_regKeyMap.find(i);
+				if(registeredHandles != g_regKeyMap.end())
+				{
+					for(HandleList::iterator iter = registeredHandles->second.begin(); iter != registeredHandles->second.end(); ++iter)
+					{
+						OneIntArg	args(i);
+
+						registry->QueueEvent(*iter, &eventName, &args);
+					}
+				}
+			}
+
+			oldState[i] = data[i];
+		}
+#endif
+	}
 }
 
 #include "PapyrusVM.h"
@@ -109,6 +177,12 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 {
 	registry->RegisterFunction(
 		new NativeFunction0 <TESForm, UInt32> ("GetType", "Form", papyrusForm::GetType, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, BSFixedString> ("GetName", "Form", papyrusForm::GetName, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, BSFixedString> ("SetName", "Form", papyrusForm::SetName, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0 <TESForm, float> ("GetWeight", "Form", papyrusForm::GetWeight, registry));
@@ -124,4 +198,7 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESForm, BGSKeyword *, UInt32> ("GetNthKeyword", "Form", papyrusForm::GetNthKeyword, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, UInt32> ("RegisterForKey", "Form", papyrusForm::RegisterForKey, registry));
 }

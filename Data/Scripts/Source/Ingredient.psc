@@ -1,12 +1,18 @@
-Scriptname Potion extends Form
+Scriptname Ingredient extends Form
 
-; Is this postion classified as hostile?
+; Is this ingredient classified as hostile?
 bool Function IsHostile() native
 
-; SKSE additions built 2012-04-26 19:53:17.541000 UTC
-; Is this potion classified as Food?
-bool Function IsFood() native
+; Flags the effect with the given 0 based index as known by the player
+Function LearnEffect(int aiIndex) native
 
+; Flags the next unknown effect as known by the player, returning index of effect learned
+int Function LearnNextEffect() native
+
+; Flags the all effects as known by the player
+Function LearnAllEffects() native
+
+; SKSE additions built 2012-04-26 19:53:17.541000 UTC
 ; return the number of the effects
 int Function GetNumEffects() native
 

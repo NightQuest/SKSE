@@ -234,11 +234,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusEnchantment.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusEnchantment.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusForm.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\PapyrusForm.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusIngredient.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusIngredient.h"
 					>
 				</File>
 				<File
@@ -295,6 +311,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusSpell.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusStringUtil.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusStringUtil.h"
 					>
 				</File>
 				<File

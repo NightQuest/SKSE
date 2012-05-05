@@ -41,6 +41,9 @@ public:
 		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A38C90, const char * buf);
 		DEFINE_MEMBER_FN(Set, Ref *, 0x00A38CE0, const char * buf);
 		DEFINE_MEMBER_FN(Release, void, 0x00A38C80);
+
+		Ref() :data(NULL) { }
+		Ref(const char * buf);
 	};
 
 	struct Lock
@@ -76,6 +79,8 @@ private:
 	Lock	locks[0x20];		// crc16 & 0x1F
 	UInt8	unk;
 };
+
+typedef StringCache::Ref	BSFixedString;
 
 // 08
 class BSString

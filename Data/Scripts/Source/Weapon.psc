@@ -4,7 +4,7 @@ Scriptname Weapon extends Form Hidden
 Function Fire(ObjectReference akSource, Ammo akAmmo = None) native
 
 
-; SKSE additions built 2012-04-19 03:58:54.546000 UTC
+; SKSE additions built 2012-04-26 19:53:17.541000 UTC
 
 int Function GetBaseDamage() native
 Function SetBaseDamage(int damage) native
@@ -20,3 +20,15 @@ Function SetStagger(float stagger) native
 
 int Function GetWeaponType() native
 Function SetWeaponType(int type) native
+
+; works on the path to the nif file representing the in-game model of the weapon
+string Function GetModelPath() native
+Function SetModelPath(string path) native
+
+; works on the path to the nif file representing the icon for the weapon in the inventory
+string Function GetIconPath() native
+Function SetIconPath(string path) native
+
+; works on the path to the file representing the message icon for the weapon
+string Function GetMessageIconPath() native
+Function SetMessageIconPath(string path) native

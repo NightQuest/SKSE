@@ -119,10 +119,16 @@ Event OnUpdateGameTime()
 EndEvent
 
 
-; SKSE additions built 2012-04-19 03:58:54.356000 UTC
+; SKSE additions built 2012-04-26 19:53:17.541000 UTC
 
 ; Returns the typecode for this form object
 Int Function GetType() native
+
+; returns the form's name, full name if possible
+string Function GetName() native
+
+; sets the name of the form
+Function SetName(string name) native
 
 ; returns the weight of the form
 float Function GetWeight() native
@@ -138,3 +144,6 @@ int Function GetNumKeywords() native
 
 ; returns the keyword at the specified index
 Keyword Function GetNthKeyword(int index) native
+
+; upcoming support to register for OnKeyDown input events
+;Function RegisterForKey(int idx) native

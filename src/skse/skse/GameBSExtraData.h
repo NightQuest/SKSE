@@ -188,6 +188,7 @@ public:
 	UInt8 padding[3];		
 };
 
+// 08
 class BaseExtraList
 {
 public:
@@ -219,8 +220,8 @@ public:
 		return NULL;
 	}
 
-	// vtable
-	BSExtraData* m_data;
-	PresenceBitfield* m_presence;
+	BSExtraData			* m_data;		// 00
+	PresenceBitfield	* m_presence;	// 04
 };
 
+STATIC_ASSERT(sizeof(BaseExtraList) == 0x08);

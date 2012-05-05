@@ -420,7 +420,7 @@ public:
 	Data	unkA4;	// A4
 	TESIcon	unkB8;	// B8
 
-	bool IsFood() { return (unkA4.unk00.flags && 0x3) != 0; }
+	bool IsFood() { return (unkA4.unk00.flags & 0x3) != 0; }
 };
 
 // 74

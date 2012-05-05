@@ -33,6 +33,7 @@ template <> void PackValue <UInt32>(VMValue * dst, UInt32 * src, VMClassRegistry
 template <> void PackValue <SInt32>(VMValue * dst, SInt32 * src, VMClassRegistry * registry);
 template <> void PackValue <float>(VMValue * dst, float * src, VMClassRegistry * registry);
 template <> void PackValue <bool>(VMValue * dst, bool * src, VMClassRegistry * registry);
+template <> void PackValue <BSFixedString>(VMValue * dst, BSFixedString * src, VMClassRegistry * registry);
 
 void PackHandle(VMValue * dst, void * src, UInt32 typeID, VMClassRegistry * registry);
 
@@ -47,6 +48,7 @@ template <> void UnpackValue <float>(float * dst, VMValue * src, VMClassRegistry
 template <> void UnpackValue <UInt32>(UInt32 * dst, VMValue * src, VMClassRegistry * registry);
 template <> void UnpackValue <SInt32>(SInt32 * dst, VMValue * src, VMClassRegistry * registry);
 template <> void UnpackValue <bool>(bool * dst, VMValue * src, VMClassRegistry * registry);
+template <> void UnpackValue <BSFixedString>(BSFixedString * dst, VMValue * src, VMClassRegistry * registry);
 
 void * UnpackHandle(VMValue * src, VMClassRegistry * registry, UInt32 typeID);
 
@@ -64,6 +66,7 @@ template <> UInt32 GetTypeID <SInt32>(VMClassRegistry * registry);
 template <> UInt32 GetTypeID <int>(VMClassRegistry * registry);
 template <> UInt32 GetTypeID <float>(VMClassRegistry * registry);
 template <> UInt32 GetTypeID <bool>(VMClassRegistry * registry);
+template <> UInt32 GetTypeID <BSFixedString>(VMClassRegistry * registry);
 
 template <typename T>
 UInt32 GetTypeID <T *>(VMClassRegistry * registry)

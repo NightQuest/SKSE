@@ -2,6 +2,7 @@
 #include "GameAPI.h"
 
 IObjectHandlePolicy	** g_objectHandlePolicy = (IObjectHandlePolicy **)0x013FB538;
+SkyrimVM			** g_skyrimVM = (SkyrimVM **)0x012BABA8;
 
 void VMClassInfo::AddRef(void)
 {

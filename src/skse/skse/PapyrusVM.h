@@ -5,6 +5,7 @@
 
 class IFunction;
 class VMIdentifier;
+class IFunctionArguments;
 
 class IObjectHandlePolicy
 {
@@ -112,7 +113,7 @@ public:
 	virtual void	Unk_1F(void);
 	virtual void	Unk_20(void);
 	virtual void	Unk_21(void);
-	virtual void	Unk_22(void);
+	virtual void	QueueEvent(UInt64 handle, StringCache::Ref * eventName, IFunctionArguments * args);
 	virtual void	Unk_23(void);
 	virtual void	Unk_24(void);
 	virtual void	Unk_25(void);
@@ -152,7 +153,11 @@ public:
 	UInt32	pad0004[(0x00FC - 0x0004) >> 2];	// 0004
 
 	VMClassRegistry	* m_classRegistry;	// 00FC
+
+	VMClassRegistry	* GetClassRegistry(void)	{ return m_classRegistry; }
 };
+
+extern SkyrimVM	** g_skyrimVM;
 
 // 1C?
 class VMIdentifier
@@ -232,6 +237,9 @@ public:
 		void			* p;
 		ArrayData		* arr;
 		VMIdentifier	* id;
+		const char		* str;	// BSFixedString
+
+		BSFixedString *	GetStr(void)	{ return (BSFixedString *)(&str); }
 	} data;			// 04
 
 	MEMBER_FN_PREFIX(VMValue);
@@ -291,6 +299,14 @@ public:
 		}
 	}
 
+	void	SetString(const char * str)
+	{
+		CALL_MEMBER_FN(this, Destroy)();
+
+		type = kType_String;
+		CALL_MEMBER_FN(data.GetStr(), Set)(str);
+	}
+
 	// 00-0F are untouched
 	// 10+ alternate between 0x01 and 0x0B
 	UInt32	GetUnmangledType(void);
@@ -299,3 +315,25 @@ public:
 };
 
 STATIC_ASSERT(sizeof(VMValue) == 0x08);
+
+class IFunctionArguments
+{
+public:
+	virtual ~IFunctionArguments()	{ }
+
+	struct Output
+	{
+		UInt32	unk00;		// 00
+		VMValue	* m_data;	// 04 - tArray <VMValue>?
+		UInt32	unk08;		// 08
+		UInt32	m_size;		// 0C
+
+		void	Resize(UInt32 len)	{ CALL_MEMBER_FN(this, Resize)(len); }
+		VMValue	* Get(UInt32 idx)	{ return (idx < m_size) ? &m_data[idx] : NULL; }
+
+		MEMBER_FN_PREFIX(Output);
+		DEFINE_MEMBER_FN(Resize, bool, 0x008AE3A0, UInt32 len);
+	};
+
+	virtual bool	Copy(Output * dst) = 0;
+};

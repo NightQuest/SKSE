@@ -1,3 +1,10 @@
+1.5.4:
+- Add ability to pass, return strings.
+- Add Form.Get/SetName, Keyword.GetString, Weapon.Get/Set Model/Icon/MessageIcon paths
+- Add Armor SlotMask functions (Get/SetSlotMask, AddTo/RemoveFromSlotMask, GetMaskForSlot)
+- Add StringUtil.psc (Find, Substring, GetLength, GetNthChar, Char-functions: IsDigit, IsLetter etc.)
+
+
 1.5.3:
 - fix all Actor.psc functionality, Add GetWornForm
 - add Potion.psc and Spell.psc along with magicitem effect walking code

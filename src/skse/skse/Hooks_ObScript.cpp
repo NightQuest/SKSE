@@ -224,11 +224,25 @@ bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 {
 	PlayerCharacter *pPC = (*g_thePlayer);
 
-	TESForm* pForm = LookupFormByID(0xE1F17);
-	TESObjectARMO* pArmor =	DYNAMIC_CAST(pForm, TESForm, TESObjectARMO);
-	if (pArmor)
-		DumpClass(pArmor, 2048);
 
+	TESForm* pForm = LookupFormByID(0x2F2F4);
+	TESObjectWEAP* pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
+
+	pForm = LookupFormByID(0x58F5E);
+	pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
+	DumpClass(pWeap, 1024);
+
+	pForm = LookupFormByID(0x73F4C);
+	AlchemyItem* pPotion = DYNAMIC_CAST(pForm, TESForm, AlchemyItem);
+	ASSERT(pPotion->IsFood() == false);
+
+	TESForm* pForm2 = LookupFormByID(0x3AC2E);
+	AlchemyItem* pPotion2 = DYNAMIC_CAST(pForm2, TESForm, AlchemyItem);
+	ASSERT(pPotion2->IsFood() == false);
+
+	TESForm* pForm3 = LookupFormByID(0x65C99);
+	AlchemyItem* pPotion3 = DYNAMIC_CAST(pForm3, TESForm, AlchemyItem);
+	ASSERT(pPotion3->IsFood() == true);
 
 	//pForm = LookupFormByID(0x1CE1E);
 	//TESClass* pClass = DYNAMIC_CAST(pForm, TESForm, TESClass);

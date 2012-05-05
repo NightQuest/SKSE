@@ -105,8 +105,6 @@ public:
 		kPart_FX01 =		1 << 31,
 	};
 
-	static UInt32 MaskForSlot(UInt32 slot);
-
 	enum
 	{
 		kWeight_Light =	0,
@@ -123,6 +121,11 @@ public:
 	};
 
 	Data	data;	// 04
+
+	UInt32 GetSlotMask() const { return data.parts; }
+	void SetSlotMask(UInt32 mask) { data.parts = mask; }
+	UInt32 AddSlotToMask(UInt32 mask);
+	UInt32 RemoveSlotFromMask(UInt32 mask);
 };
 
 // 0C

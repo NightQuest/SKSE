@@ -1,10 +1,13 @@
 #include "skse/GameFormComponents.h"
 
-// use values listed in CK for better or worse
-UInt32 BGSBipedObjectForm::MaskForSlot(UInt32 slot)
+UInt32 BGSBipedObjectForm::AddSlotToMask(UInt32 slot)
 {
-	if (slot >= 30 && slot <= 61)
-		return 1 << (slot - 30);
-	else
-		return 0;
+	data.parts |= slot;
+	return data.parts;
+}
+
+UInt32 BGSBipedObjectForm::RemoveSlotFromMask(UInt32 slot)
+{
+	data.parts &= slot;
+	return data.parts;
 }

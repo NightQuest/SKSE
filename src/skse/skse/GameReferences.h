@@ -166,18 +166,18 @@ public:
 	IAnimationGraphManagerHolder			animGraphHolder;	// 20
 
 	// members
-	TESForm* baseForm;// 24
-	float	rotX;	// 28
-	float	rotY;	// 2C
-	float	rotZ;	// 30
-	float	posX;	// 34
-	float	posY;	// 38
-	float	posZ;	// 3C
+	TESForm* baseForm;	// 24
+	float	rotX;		// 28
+	float	rotY;		// 2C
+	float	rotZ;		// 30
+	float	posX;		// 34
+	float	posY;		// 38
+	float	posZ;		// 3C
 	
-	TESObjectCELL* parentCell; // 40
-	BGSMovementType* movementType; // 44
-	BaseExtraList extraData;
-	UInt32	unk50; // flags?
+	TESObjectCELL	* parentCell;	// 40
+	BGSMovementType	* movementType;	// 44
+	BaseExtraList	extraData;		// 48
+	UInt32			unk50;			// flags?
 };
 STATIC_ASSERT(sizeof(TESObjectREFR) == 0x54);
 STATIC_ASSERT(offsetof(TESObjectREFR, handleRefObject) == 0x14);

@@ -1,0 +1,98 @@
+// Pseudo-actionscript documentation for additional functions added by SKSE
+// I don't really know actionscript well, so the syntax will probably be not totally correct.
+
+dynamic intrinsic class skse
+{
+	// Enable text input for Scaleform UI components.
+	// Each 'true' call must be matched with a 'false' call, or text input will remain enabled.
+	function AllowTextInput(allow : Boolean) : Void;
+	
+	// Write a string to skse.log.
+	function Log(str : String) : Void;
+	
+	// Change an INI setting.
+	// The setting's name must contain the section, for example "fUIMistMenu_CameraX_G:Interface".
+	// Currently only numeric settings are supported.
+	function SetINISetting(settingName : String, data : Number) : Void;
+	function GetINISetting(settingName : String) : Number;
+	
+	// Open a menu. Known menu names:
+	// "Inventory Menu"
+	// "Console"
+	// "Dialogue Menu"
+	// "HUD Menu"
+	// "Main Menu"
+	// "MessageBoxMenu"
+	// "Cursor Menu"
+	// "Fader Menu"
+	// "Magic Menu"
+	// "Top Menu"
+	// "Overlay Menu"
+	// "Overlay Interaction Menu"
+	// "Loading Menu"
+	// "Tween Menu"
+	// "Barter Menu"
+	// "Gift Menu"
+	// "Debug Text Menu"
+	// "Map Menu"
+	// "Lockpicking Menu"
+	// "Quantity Menu"
+	// "Stats Menu"
+	// "Container Menu"
+	// "Sleep/Wait Menu"
+	// "LevelUp Menu"
+	// "Journal Menu"
+	// "Book Menu"
+	// "Favorites Menu"
+	// "RaceSex Menu"
+	// "Crafting Menu"
+	// "Training Menu"
+	// "Mist Menu"
+	// "Tutorial Menu"
+	// "Credits Menu"
+	// "TitleSequence Menu"
+	// "Console Native UI Menu"
+	function OpenMenu(menuName : String) : Void;
+	function CloseMenu(menuName : String) : Void;
+	
+	// Enable extended data for item cards and favorites menu
+	// common data for all objects:
+	//	var extended : Boolean;		// always set to true
+	//	var formType : Number;		// object type (see GameForms.h for a list)
+	//	var formId : Number;		// form's ID number
+	// if an object can have keywords: (currently armor, weapon, book, misc)
+	//	var keywords : Object;		// object containing a boolean set to true, named after each keyword
+	// data for armor:
+	//	var armor : Number;			// armor value
+	//	var partMask : Number;		// body parts used, see BGSBipedObjectForm for a list
+	//	var weightClass : Number;	// 0 - light, 1 - heavy, 2 - none
+	// data for weapons:
+	//	var subType : Number;		// specific weapon type (see TESObjectWEAP::DataC4 in GameObjects.h)
+	//	var damage : Number;		// damage
+	// data for ammo:
+	//	var damage : Number;		// damage
+	// data for spells/scrolls/ingredients/potions:
+	//	var subType : Number;		// strongest effect's magic school
+	//	var skillLevel : Number;	// strongest effect's skill level
+	//	var magnitude : Number;		// strongest effect's magnitude
+	//	var duration : Number;		// strongest effect's duration
+	//	var actorValue : Number;	// strongest effect's actor value
+	//	var magicType : Number;		// strongest effect's magic type
+	// data for soul gems:
+	//	var soulSize : Number;		// captured soul size (0 = none, 5 = grand)
+	//	var gemSize : Number;		// gem capacity (1 = petty, 5 = grand)
+	// data for potions:
+	//	var flags : Number;			// flags (see AlchemyItem)
+	function ExtendData(enable : Boolean) : Void;
+	
+	// forces containers to show categories like NPCs
+	function ForceContainerCategorization(enable : Boolean) : Void;
+	
+	dynamic intrinsic class version
+	{
+		var	major : Number;			// SKSE major revision number
+		var	minor : Number;			// SKSE minor revision number
+		var	beta : Number;			// SKSE beta revision number
+		var	releaseIdx : Number;	// SKSE release index
+	};
+};

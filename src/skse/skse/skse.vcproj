@@ -274,11 +274,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusPotion.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusPotion.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusSKSE.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\PapyrusSKSE.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusSpell.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusSpell.h"
 					>
 				</File>
 				<File
@@ -348,6 +364,10 @@
 			</File>
 			<File
 				RelativePath=".\GameData.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GameExtraData.cpp"
 				>
 			</File>
 			<File

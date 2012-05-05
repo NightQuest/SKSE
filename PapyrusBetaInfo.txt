@@ -1,5 +1,5 @@
 
-SKSE Beta 1.5.2 - Initial Papyrus Support
+SKSE Beta 1.5.3 - Initial Papyrus Support
 
 Thanks for taking an interest in helping do some initial testing of our Papyrus Support.  The functionality currently available is less than what we hope to provide in our first release, and I expect to have an update available early next week to round out our support.
 
@@ -14,7 +14,9 @@ Form
 Math
 ObjectReference
 Outfit
+Potion
 SoulGem
+Spell
 Weapon
 
 We have added the following base classes:

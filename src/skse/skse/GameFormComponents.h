@@ -11,6 +11,8 @@ class TESForm;
 class SpellItem;
 class TESShout;
 class IngredientItem;
+class TESRace;
+class EnchantmentItem;
 
 //// root
 
@@ -102,6 +104,8 @@ public:
 		kPart_Unnamed30 =	1 << 30,
 		kPart_FX01 =		1 << 31,
 	};
+
+	static UInt32 MaskForSlot(UInt32 slot);
 
 	enum
 	{
@@ -405,7 +409,7 @@ class TESEnchantableForm : public BaseFormComponent
 public:
 	virtual UInt32	Unk_04(void);	// return unk08
 
-	UInt32	unk04;		// 04 - init'd to 0
+	EnchantmentItem*	enchantment;		// 04 - init'd to 0
 	UInt32	unk08;		// 08 - init'd to 3
 	UInt16	unk0C;		// 0C - init'd to 0
 	UInt8	unk0E[2];	// 0E
@@ -503,7 +507,7 @@ public:
 class TESRaceForm : public BaseFormComponent
 {
 public:
-	UInt32	unk04;		// 04
+	TESRace	* race;	// 04
 };
 
 // 10

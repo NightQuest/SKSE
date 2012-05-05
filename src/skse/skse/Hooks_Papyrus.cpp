@@ -16,7 +16,9 @@
 #include "PapyrusMath.h"
 #include "PapyrusMisc.h"
 #include "PapyrusObjectReference.h"
+#include "PapyrusPotion.h"
 #include "PapyrusSKSE.h"
+#include "PapyrusSpell.h"
 #include "PapyrusWeapon.h"
 
 typedef void (* _RegisterPapyrusFunctions)(VMClassRegistry ** registry);
@@ -28,6 +30,7 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	RegisterPapyrusFunctions(registryPtr);
 
 	VMClassRegistry * registry = *registryPtr;
+
 
 	// SKSE
 	papyrusSKSE::RegisterFuncs(registry);
@@ -59,14 +62,20 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// Weapon
 	papyrusWeapon::RegisterFuncs(registry);
 
-	// Actor
-	papyrusActor::RegisterFuncs(registry);
-
 	// CombatStyle
 	papyrusCombatStyle::RegisterFuncs(registry);
 
+	// Actor
+	papyrusActor::RegisterFuncs(registry);
+
 	// Outfit
 	papyrusOutfit::RegisterFuncs(registry);
+
+	// Potion
+	papyrusPotion::RegisterFuncs(registry);
+
+	// Spell
+	papyrusSpell::RegisterFuncs(registry);
 }
 
 void Hooks_Papyrus_Init(void)

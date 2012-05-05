@@ -391,6 +391,8 @@ void SetAllowDuelWielding(TESCombatStyle* thisCombatStyle, bool bAllow)
 
 void papyrusCombatStyle::RegisterFuncs(VMClassRegistry* registry)
 {
+	registry->RegisterForm(TESCombatStyle::kTypeID, "CombatStyle");
+
 	// get general tab
 	registry->RegisterFunction(
 		new NativeFunction0 <TESCombatStyle, float>("GetOffensiveMult", "CombatStyle", papyrusCombatStyle::GetOffensiveMult, registry));

@@ -224,10 +224,10 @@ bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 {
 	PlayerCharacter *pPC = (*g_thePlayer);
 
-	//TESForm* pForm = LookupFormByID(0xAD247);
-	//BGSOutfit* pOutfit = DYNAMIC_CAST(pForm, TESForm, BGSOutfit);
-	//if (pOutfit)
-	//	DumpClass(pOutfit);
+	TESForm* pForm = LookupFormByID(0xE1F17);
+	TESObjectARMO* pArmor =	DYNAMIC_CAST(pForm, TESForm, TESObjectARMO);
+	if (pArmor)
+		DumpClass(pArmor, 2048);
 
 
 	//pForm = LookupFormByID(0x1CE1E);

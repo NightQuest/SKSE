@@ -378,6 +378,9 @@ public:
 
 	MEMBER_FN_PREFIX(MagicItem);
 	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407970, int arg1, bool arg2);
+	
+
+
 };
 
 STATIC_ASSERT(sizeof(MagicItem) == 0x50);
@@ -416,6 +419,8 @@ public:
 
 	Data	unkA4;	// A4
 	TESIcon	unkB8;	// B8
+
+	bool IsFood() { return (unkA4.unk00.flags && 0x3) != 0; }
 };
 
 // 74

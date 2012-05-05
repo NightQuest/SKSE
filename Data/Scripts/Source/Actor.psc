@@ -757,9 +757,10 @@ Function ForceTargetAngle(float afXAngle = 0.0, float afYAngle = 0.0, float afZA
 Function ClearForcedMovement() native
 
 
-; SKSE additions built 2012-04-16 06:36:58.358000 UTC
+; SKSE additions built 2012-04-19 03:58:54.240000 UTC
 CombatStyle Function GetCombatStyle() native
 Function SetCombatStyle(CombatStyle cs) native
 Outfit Function GetOutfit(bool bSleepOutfit = false) native
 Class Function GetClass() native
 Function SetClass(Class c) native
+Form Function GetWornForm(int slot) native

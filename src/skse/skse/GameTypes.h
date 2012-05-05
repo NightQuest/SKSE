@@ -109,6 +109,16 @@ public:
 		}
 		return false;
 	}
+
+	UInt32 GetItemIndex(T pFind)
+	{
+		for (UInt32 n = 0; n < count; n++) {
+			T& pT = arr.entries[n];
+			if (pT == pFind)
+				return n;
+		}
+		return -1;
+	}
 };
 
 typedef tArray<UInt32> UnkArray;

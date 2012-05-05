@@ -368,6 +368,10 @@ public:
 	virtual const char *	Unk_37(void);
 	virtual bool			Unk_38(void);
 
+	bool IsWeapon() { return formType == kFormType_Weapon; }
+	bool IsAmmo() { return formType == kFormType_Ammo; }
+	bool IsArmor() { return formType == kFormType_Armor; }
+
 	void	* unk04;	// 04
 	UInt32	flags;		// 08
 	UInt32	formID;		// 0C

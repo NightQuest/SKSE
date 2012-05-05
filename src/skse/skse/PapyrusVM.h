@@ -86,7 +86,7 @@ public:
 	virtual void	Unk_05(void);
 	virtual void	Unk_06(void);
 	virtual void	Unk_07(void);
-	virtual void	RegisterForm(UInt32 formID, const char * name);
+	virtual void	RegisterForm(UInt32 typeID, const char * papyrusClassName);
 	virtual void	Unk_09(void);
 	virtual bool	GetFormClass(UInt32 formID, VMClassInfo ** outClass);
 	virtual void	Unk_0B(void);

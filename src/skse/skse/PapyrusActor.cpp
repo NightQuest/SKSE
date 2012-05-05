@@ -2,45 +2,90 @@
 
 #include "GameForms.h"
 #include "GameObjects.h"
+#include "GameReferences.h"
+#include "GameExtraData.h"
+#include "GameRTTI.h"
+
+class MatchBySlot : public FormMatcher
+{
+	UInt32 m_mask;
+public:
+	MatchBySlot(UInt32 slot) : 
+	  m_mask(BGSBipedObjectForm::MaskForSlot(slot)) 
+	{
+		
+	}
+
+	bool Matches(TESForm* pForm) const {
+		if (pForm) {
+			BGSBipedObjectForm* pBip = DYNAMIC_CAST(pForm, TESForm, BGSBipedObjectForm);
+			if (pBip) {
+				return (pBip->data.parts & m_mask) != 0;
+			}
+		}
+		return false;
+	}
+};
+
 
 namespace papyrusActor
 {
-	TESCombatStyle* GetCombatStyle(TESNPC* thisNPC)
+	TESCombatStyle* GetCombatStyle(Actor* thisActor)
 	{
-		if (!thisNPC)
+		if (!thisActor)
 			return NULL;
-		return thisNPC->combatStyle;
+		TESNPC* pNPC = DYNAMIC_CAST(thisActor->baseForm, TESForm, TESNPC);
+		return pNPC ? pNPC->combatStyle : NULL;
 	}
 
-	void SetCombatStyle(TESNPC* thisNPC, TESCombatStyle* cs)
+	void SetCombatStyle(Actor* thisActor, TESCombatStyle* cs)
 	{
-		if (thisNPC && cs) {
-			thisNPC->combatStyle = cs;
+		if (thisActor && cs) {
+			TESNPC* pNPC = DYNAMIC_CAST(thisActor->baseForm, TESForm, TESNPC);
+			if (pNPC)
+				pNPC->combatStyle = cs;
 		}
 	}
 
-	BGSOutfit* GetOutfit(TESNPC* thisNPC, bool bSleepOutfit)
+	BGSOutfit* GetOutfit(Actor* thisActor, bool bSleepOutfit)
 	{
-		if (!thisNPC)
+		if (!thisActor)
 			return NULL;
-		return (bSleepOutfit) ? thisNPC->sleepOutfit : thisNPC->defaultOutfit;
+		TESNPC* pNPC = DYNAMIC_CAST(thisActor->baseForm, TESForm, TESNPC);
+		if (!pNPC)
+			return NULL;
+		return (bSleepOutfit) ? pNPC->sleepOutfit : pNPC->defaultOutfit;
 	}
 
-	TESClass* GetClass(TESNPC* thisNPC)
+	TESClass* GetClass(Actor* thisActor)
 	{
-		if (!thisNPC)
+		if (!thisActor)
 			return NULL;
-		return thisNPC->npcClass;
+		TESNPC* pNPC = DYNAMIC_CAST(thisActor->baseForm, TESForm, TESNPC);
+		if (!pNPC)
+			return NULL;
+		return pNPC->npcClass;
 	}
 
-	void SetClass(TESNPC* thisNPC, TESClass* nuClass)
+	void SetClass(Actor* thisActor, TESClass* nuClass)
 	{
-		if (thisNPC && nuClass) {
-			thisNPC->npcClass = nuClass;
+		if (thisActor && nuClass) {
+			TESNPC* pNPC = DYNAMIC_CAST(thisActor->baseForm, TESForm, TESNPC);
+			if (pNPC)
+				pNPC->npcClass = nuClass;
 		}
 	}
 
-
+	TESForm* GetWornForm(Actor* thisActor, UInt32 mask)
+	{
+		MatchBySlot matcher(mask);	
+		ExtraContainerChanges* pContainerChanges = static_cast<ExtraContainerChanges*>(thisActor->extraData.GetByType(kExtraData_ContainerChanges));
+		if (pContainerChanges) {
+			EquipData eqD = pContainerChanges->FindEquipped(matcher);
+			return eqD.pForm;
+		}
+		return NULL;
+	}
 }
 
 #include "PapyrusVM.h"
@@ -49,18 +94,20 @@ namespace papyrusActor
 void papyrusActor::RegisterFuncs(VMClassRegistry* registry)
 {
 	registry->RegisterFunction(
-		new NativeFunction0 <TESNPC, TESCombatStyle*>("GetCombatStyle", "Actor", papyrusActor::GetCombatStyle, registry));
+		new NativeFunction0 <Actor, TESCombatStyle*>("GetCombatStyle", "Actor", papyrusActor::GetCombatStyle, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1 <TESNPC, void, TESCombatStyle*>("SetCombatStyle", "Actor", papyrusActor::SetCombatStyle, registry));
+		new NativeFunction1 <Actor, void, TESCombatStyle*>("SetCombatStyle", "Actor", papyrusActor::SetCombatStyle, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1 <TESNPC, BGSOutfit*, bool>("GetOutfit", "Actor", papyrusActor::GetOutfit, registry));
+		new NativeFunction1 <Actor, BGSOutfit*, bool>("GetOutfit", "Actor", papyrusActor::GetOutfit, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction0 <TESNPC, TESClass*>("Getclass", "Actor", papyrusActor::GetClass, registry));
+		new NativeFunction0 <Actor, TESClass*>("Getclass", "Actor", papyrusActor::GetClass, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1 <TESNPC, void, TESClass*>("SetClass", "Actor", papyrusActor::SetClass, registry));
+		new NativeFunction1 <Actor, void, TESClass*>("SetClass", "Actor", papyrusActor::SetClass, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction1 <Actor, TESForm*, UInt32>("GetWornForm", "Actor", papyrusActor::GetWornForm, registry));
 }

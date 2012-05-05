@@ -68,3 +68,11 @@ struct remove_pointer <T *>
 {
 	typedef T	type;
 };
+
+class TESForm;
+
+class FormMatcher
+{
+public:
+	virtual bool Matches(TESForm* pForm) const = 0;
+};

@@ -1,3 +1,7 @@
+1.5.3:
+- fix all Actor.psc functionality, Add GetWornForm
+- add Potion.psc and Spell.psc along with magicitem effect walking code
+
 1.5.2:
 - additional papyrus functionality (Input, SKSE version functions, IsHarvested)
 

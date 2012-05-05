@@ -46,8 +46,14 @@ public:
 	};
 
 	Data * data;
-};
 
+	struct FoundEquipData {
+		TESForm* pForm;
+		BaseExtraList* pExtraData;
+	};
+	FoundEquipData FindEquipped(FormMatcher& matcher) const;
+};
+typedef ExtraContainerChanges::FoundEquipData EquipData;
  
  class ExtraWorn : public BSExtraData
 {

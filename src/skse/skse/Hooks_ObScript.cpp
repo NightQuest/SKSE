@@ -72,70 +72,70 @@ void ObScript_DumpCommands(void)
 	DumpCommands(g_scriptCommandsStart, g_scriptCommandsEnd);
 }
 
-// 1.5.24.0 runtime
+// 1.5.26.0 runtime
 static const CommandTable::PatchLocation kPatch_ScriptCommands_Start[] =
 {
-	{	0x0051154B, 0x00 },
-	{	0x00511714, 0x04 },
-	{	0x005117AD, 0x08 },
-	{	0x00512797, 0x00 },
-	{	0x00515D4F, 0x00 },
-	{	0x0053CC69, 0x0C },
-	{	0x0053CC81, 0x00 },
-	{	0x0053CC99, 0x04 },
-	{	0x0053CCB5, 0x0C },
-	{	0x0053CCCF, 0x04 },
-	{	0x0053CCED, 0x00 },
-	{	0x0053CD0F, 0x00 },
-	{	0x0053CD2D, 0x04 },
-	{	0x0053CD53, 0x00 },
-	{	0x0053CD6A, 0x00 },
-	{	0x005E54C9, 0x20 },
-	{	0x005E54D5, 0x10 },
-	{	0x005E559E, 0x12 },
-	{	0x005E55E1, 0x12 },
-	{	0x005E55ED, 0x14 },
-	{	0x005E5628, 0x12 },
-	{	0x005E5635, 0x14 },
-	{	0x005E5696, 0x12 },
-	{	0x005E56A2, 0x14 },
-	{	0x005E56D0, 0x12 },
-	{	0x005E5741, 0x12 },
-	{	0x005E5773, 0x12 },
-	{	0x005E577F, 0x14 },
-	{	0x005E57D5, 0x12 },
-	{	0x005E5813, 0x12 },
-	{	0x005E581F, 0x14 },
-	{	0x005E58C8, 0x12 },
-	{	0x005E58F7, 0x14 },
-	{	0x005E59D4, 0x12 },
-	{	0x005E59F6, 0x14 },
-	{	0x005E5B0E, 0x12 },
-	{	0x005E5B58, 0x12 },
-	{	0x005E5B68, 0x14 },
-	{	0x005E5C01, 0x14 },
-	{	0x0069BB9C, 0x12 },
-	{	0x0069BBC9, 0x14 },
+	{	0x005114DB, 0x00 },
+	{	0x005116A4, 0x04 },
+	{	0x0051173D, 0x08 },
+	{	0x00512727, 0x00 },
+	{	0x00515CDF, 0x00 },
+	{	0x0053CBF9, 0x0C },
+	{	0x0053CC11, 0x00 },
+	{	0x0053CC29, 0x04 },
+	{	0x0053CC45, 0x0C },
+	{	0x0053CC5F, 0x04 },
+	{	0x0053CC7D, 0x00 },
+	{	0x0053CC9F, 0x00 },
+	{	0x0053CCBD, 0x04 },
+	{	0x0053CCE3, 0x00 },
+	{	0x0053CCFA, 0x00 },
+	{	0x005E54A9, 0x20 },
+	{	0x005E54B5, 0x10 },
+	{	0x005E557E, 0x12 },
+	{	0x005E55C1, 0x12 },
+	{	0x005E55CD, 0x14 },
+	{	0x005E5608, 0x12 },
+	{	0x005E5615, 0x14 },
+	{	0x005E5676, 0x12 },
+	{	0x005E5682, 0x14 },
+	{	0x005E56B0, 0x12 },
+	{	0x005E5721, 0x12 },
+	{	0x005E5753, 0x12 },
+	{	0x005E575F, 0x14 },
+	{	0x005E57B5, 0x12 },
+	{	0x005E57F3, 0x12 },
+	{	0x005E57FF, 0x14 },
+	{	0x005E58A8, 0x12 },
+	{	0x005E58D7, 0x14 },
+	{	0x005E59B4, 0x12 },
+	{	0x005E59D6, 0x14 },
+	{	0x005E5AEE, 0x12 },
+	{	0x005E5B38, 0x12 },
+	{	0x005E5B48, 0x14 },
+	{	0x005E5BE1, 0x14 },
+	{	0x0069BBBC, 0x12 },
+	{	0x0069BBE9, 0x14 },
 	{	0 },
 };
 
 static const CommandTable::PatchLocation kPatch_ScriptCommands_End[] =
 {
-	{	0x00511652, 0x08 },
-	{	0x0051173F, 0x04 },
+	{	0x005115E2, 0x08 },
+	{	0x005116CF, 0x04 },
 	{	0 },
 };
 
 static const CommandTable::PatchLocation kPatch_ScriptCommands_MaxIdx[] =
 {
-	{	0x004FD940 + 0x0087 + 1,	0 },
-	{	0x00511510 + 0x0029 + 2,	(UInt32)(-0x1001) },
-	{	0x00511650 + 0x0000 + 6,	0 },
-	{	0x00512630 + 0x0156 + 1,	(UInt32)(-0x1001) },
-	{	0x005155F0 + 0x0751 + 2,	(UInt32)(-0x1001) },
-	{	0x005E4910 + 0x000D + 2,	(UInt32)(-0x1001) },
-	{	0x005E4910 + 0x001D + 1,	(UInt32)(-0x1001) },
-	{	0x005E4910 + 0x0029 + 2,	(UInt32)(-0x1001) },
+	{	0x004FD8D0 + 0x0087 + 1,	0 },
+	{	0x005114A0 + 0x0029 + 2,	(UInt32)(-0x1001) },
+	{	0x005115E0 + 0x0000 + 6,	0 },
+	{	0x005125C0 + 0x0156 + 1,	(UInt32)(-0x1001) },
+	{	0x00515580 + 0x0751 + 2,	(UInt32)(-0x1001) },
+	{	0x005E48F0 + 0x000D + 2,	(UInt32)(-0x1001) },
+	{	0x005E48F0 + 0x001D + 1,	(UInt32)(-0x1001) },
+	{	0x005E48F0 + 0x0029 + 2,	(UInt32)(-0x1001) },
 
 	{	0 },
 };
@@ -214,31 +214,27 @@ bool Cmd_GetSKSERelease_Execute(COMMAND_ARGS)
 	return Cmd_GetSKSERelease_Eval(thisObj, 0, 0, result);
 }
 
-
 #include "GameObjects.h"
 #include "GameAPI.h"
 #include "GameReferences.h"
 #include "GameForms.h"
 #include "GameRTTI.h"
 
-
 bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 {
-	TESForm* pForm1 = LookupFormByID(0x8e665);
-	TESCombatStyle* pCS1 = DYNAMIC_CAST(pForm1, TESForm, TESCombatStyle);
-	DumpClass(pForm1);
+	PlayerCharacter *pPC = (*g_thePlayer);
+	TESContainer* pContainer = DYNAMIC_CAST(pPC->baseForm, TESForm, TESContainer);
+	if (pContainer) {
+		for (UInt32 n = 0; n < pContainer->numEntries; n++) {
+			TESContainer::Entry* pEntry = pContainer->entries[n];
+			_MESSAGE("%d>FormID: %0x Count: %d", n, pEntry->form ? pEntry->form->formID : 0,
+				pEntry->count);
+		}
+	}
 
-	TESForm* pForm2 = LookupFormByID(0x38a24);
-	TESCombatStyle* pCS2 = DYNAMIC_CAST(pForm2, TESForm, TESCombatStyle);
-	DumpClass(pForm2);
-
-	TESForm* pForm3 = LookupFormByID(0x13268);
-	TESNPC* pNPC = DYNAMIC_CAST(pForm3, TESForm, TESNPC);
-	DumpClass(pForm3);
-
-	TESForm* pForm4 = LookupFormByID(0x1C4E6);
-	TESObjectWEAP* pWeap = DYNAMIC_CAST(pForm4, TESForm, TESObjectWEAP);
-	DumpClass(pForm4);
+	TESSpellList* pSpellList = DYNAMIC_CAST(pPC->baseForm, TESForm, TESSpellList);
+	if (pSpellList)
+		DumpClass(pSpellList, 32);
 
 	return true;	
 }

@@ -2,14 +2,15 @@
 
 #include "skse/GameTypes.h"
 #include "skse/GameAPI.h"
+#include "skse/PapyrusArgs.h"
+#include "skse/PapyrusVM.h"
 
 // native function bindings for papyrus
 
 // all of this is originally in namespace BSScript
 
-class PapyrusClassRegistry;
-class VMValue;
-class VMArgList;
+// use this for T_Base when there is no base
+struct StaticFunctionTag { };
 
 // stack frame?
 class VMState
@@ -21,16 +22,6 @@ public:
 	VMArgList	* argList;	// 00
 	UInt32		pad04[(0x1C - 0x04) >> 2];	// 04
 	UInt32		numArgs;	// 1C
-};
-
-class VMArgList
-{
-public:
-	VMArgList();
-	~VMArgList();
-
-	MEMBER_FN_PREFIX(VMArgList);
-	DEFINE_MEMBER_FN(Get, VMValue *, 0x00C20180, VMState * state, UInt32 idx, void * lockedArgList);
 };
 
 // 08
@@ -64,7 +55,7 @@ public:
 	virtual UInt8				GetUnk21(void) = 0;
 	virtual void				SetUnk21(UInt8 arg) = 0;
 	virtual bool				HasCallback(void) = 0;
-	virtual bool				Run(UInt32 arg0, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;	// unique to each type combination
+	virtual bool				Run(VMValue * baseValue, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;	// unique to each type combination
 };
 
 // BSScript::NF_util::NativeFunctionBase
@@ -115,14 +106,14 @@ public:
 	virtual UInt8				GetUnk21(void)				{ return unk21; }
 	virtual void				SetUnk21(UInt8 arg)			{ unk21 = arg; }
 	virtual bool				HasCallback(void) = 0;
-	virtual bool				Run(UInt32 arg0, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
+	virtual bool				Run(VMValue * baseValue, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
 
 	MEMBER_FN_PREFIX(NativeFunctionBase);
-	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C2BAE0);
-	DEFINE_MEMBER_FN(Impl_GetParam, void, 0x00C2BF60, UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut);
-	DEFINE_MEMBER_FN(Impl_Invoke, UInt32, 0x00C2BCC0, UInt32 unk0, UInt32 unk1, UInt32 unk2, UInt32 unk3);
-	DEFINE_MEMBER_FN(Impl_Fn10, StringCache::Ref *, 0x00C2BB20);
-	DEFINE_MEMBER_FN(Impl_Fn12, bool, 0x00C2BF70, UInt32 idx, UInt32 out);
+	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C2BC20);
+	DEFINE_MEMBER_FN(Impl_GetParam, void, 0x00C2C0A0, UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut);
+	DEFINE_MEMBER_FN(Impl_Invoke, UInt32, 0x00C2BE00, UInt32 unk0, UInt32 unk1, UInt32 unk2, UInt32 unk3);
+	DEFINE_MEMBER_FN(Impl_Fn10, StringCache::Ref *, 0x00C2BC60);
+	DEFINE_MEMBER_FN(Impl_Fn12, bool, 0x00C2C0B0, UInt32 idx, UInt32 out);
 
 	// redirect to formheap
 	static void * operator new(std::size_t size)
@@ -175,21 +166,54 @@ protected:
 class NativeFunction : public NativeFunctionBase
 {
 public:
-	NativeFunction(const char * fnName, const char * className, UInt32 unk0, UInt32 unk1)
-								{ CALL_MEMBER_FN(this, Impl_ctor)(fnName, className, unk0, unk1); }
+	NativeFunction(const char * fnName, const char * className, UInt32 unk0, UInt32 numParams)
+								{ CALL_MEMBER_FN(this, Impl_ctor)(fnName, className, unk0, numParams); }
 	// lower class destructors are invoked by this call
 	virtual ~NativeFunction()	{ CALL_MEMBER_FN(this, Impl_dtor)(); }
 
 	virtual bool				HasCallback(void)	{ return m_callback != 0; }
-	virtual bool				Run(UInt32 arg0, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
+	virtual bool				Run(VMValue * baseValue, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
 
 	MEMBER_FN_PREFIX(NativeFunction);
-	DEFINE_MEMBER_FN(Impl_ctor, NativeFunction *, 0x00C2BC10, const char * fnName, const char * className, UInt32 unk0, UInt32 numParams);
-	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C2BAE0);
+	DEFINE_MEMBER_FN(Impl_ctor, NativeFunction *, 0x00C2BD50, const char * fnName, const char * className, UInt32 unk0, UInt32 numParams);
+	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C2BC20);
 
 protected:
 	void	* m_callback;	// 2C
 
 	// hide
-	NativeFunction()	{ }
+	NativeFunction();
 };
+
+#define NUM_PARAMS 0
+#include "PapyrusNativeFunctionDef.inl"
+
+#define NUM_PARAMS 1
+#include "PapyrusNativeFunctionDef.inl"
+
+#define NUM_PARAMS 2
+#include "PapyrusNativeFunctionDef.inl"
+
+#define NUM_PARAMS 3
+#include "PapyrusNativeFunctionDef.inl"
+
+#define NUM_PARAMS 4
+#include "PapyrusNativeFunctionDef.inl"
+
+#define NUM_PARAMS 5
+#include "PapyrusNativeFunctionDef.inl"
+
+#define NUM_PARAMS 6
+#include "PapyrusNativeFunctionDef.inl"
+
+#define NUM_PARAMS 7
+#include "PapyrusNativeFunctionDef.inl"
+
+#define NUM_PARAMS 8
+#include "PapyrusNativeFunctionDef.inl"
+
+#define NUM_PARAMS 9
+#include "PapyrusNativeFunctionDef.inl"
+
+#define NUM_PARAMS 10
+#include "PapyrusNativeFunctionDef.inl"

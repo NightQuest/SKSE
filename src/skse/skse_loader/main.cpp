@@ -184,7 +184,15 @@ int main(int argc, char ** argv)
 		NULL,	// no new cwd
 		&startupInfo, &procInfo))
 	{
-		PrintLoaderError("Launching %s failed (%d).", procPath.c_str(), GetLastError());
+		if(GetLastError() == 740)
+		{
+			PrintLoaderError("Launching %s failed (%d). Please try running skse_loader as an administrator.", procPath.c_str(), GetLastError());
+		}
+		else
+		{
+			PrintLoaderError("Launching %s failed (%d).", procPath.c_str(), GetLastError());
+		}
+
 		return 1;
 	}
 

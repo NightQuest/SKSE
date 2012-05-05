@@ -52,6 +52,32 @@ public:
 };
 STATIC_ASSERT(sizeof(IPostAnimationChannelUpdateFunctor) == 0x128);
 
+class BSExtraData
+{
+public:
+	BSExtraData();
+	virtual ~BSExtraData();
+
+	BSExtraData* next;
+	UInt8 type;
+	UInt8 padding[3];
+};
+
+class BaseExtraList
+{
+public:
+	BaseExtraList();
+
+	struct PresenceBitfield
+	{
+		UInt8	bits[0x18];
+	};
+
+	// vtable
+	BSExtraData* head;
+	PresenceBitfield* presence;
+};
+
 // 54
 class TESObjectREFR : public TESForm
 {
@@ -173,11 +199,8 @@ public:
 	
 	TESObjectCELL* parentCell; // 40
 	BGSMovementType* movementType; // 44
-	UInt32	unk48; // BGSImpactDataSet?
-	UInt32	unk4C;
+	BaseExtraList extraData;
 	UInt32	unk50; // flags?
-
-	// 40 - ExtraDataList
 };
 STATIC_ASSERT(sizeof(TESObjectREFR) == 0x54);
 STATIC_ASSERT(offsetof(TESObjectREFR, handleRefObject) == 0x14);
@@ -259,8 +282,8 @@ public:
 	};
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
-	DEFINE_MEMBER_FN(GetDamage, double, 0x00727680, ObjDesc * pForm);
-	DEFINE_MEMBER_FN(GetArmorValue, double, 0x00727650, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x007276A0, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x00727670, ObjDesc * pForm);
 };
 
 STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1B0);

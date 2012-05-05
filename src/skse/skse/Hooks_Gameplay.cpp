@@ -3,7 +3,7 @@
 #include "Utilities.h"
 
 static UInt32 g_forceContainerCategorization = 0;
-static const UInt32 kHook_ContainerMode_Base = 0x0083CDA0;
+static const UInt32 kHook_ContainerMode_Base = 0x0083CD90;
 static const UInt32 kHook_ContainerMode_Categories = kHook_ContainerMode_Base + 0x4E;
 static const UInt32 kHook_ContainerMode_NoCategories = kHook_ContainerMode_Base + 0x63;
 static UInt32 ** g_containerMode = (UInt32 **)0x01393884;

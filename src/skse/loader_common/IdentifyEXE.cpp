@@ -352,7 +352,7 @@ bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, 
 	}
 	else
 	{
-		const UInt64 kCurVersion = 0x0001000500180000;	// 1.5.24.0
+		const UInt64 kCurVersion = 0x00010005001A0000;	// 1.5.26.0
 
 		if(version < kCurVersion)
 		{
@@ -382,9 +382,9 @@ bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, 
 				}
 				else
 				{
-					hookInfo->hookCallAddr = 0x00F39FC1;
+					hookInfo->hookCallAddr = 0x00F39FA1;
 					hookInfo->loadLibAddr = 0x010460B4;
-					*dllSuffix = "1_5_24";
+					*dllSuffix = "1_5_26";
 					
 					result = true;
 				}

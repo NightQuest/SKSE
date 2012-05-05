@@ -46,7 +46,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\.."
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x05180000"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x051A0000"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -66,7 +66,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\skse_1_5_24.dll"
+				OutputFile="$(OutDir)\skse_1_5_26.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -124,7 +124,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\.."
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x05180000"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x051A0000"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -143,7 +143,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)\skse_1_5_24.dll"
+				OutputFile="$(OutDir)\skse_1_5_26.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -201,99 +201,115 @@
 			<Filter
 				Name="functions"
 				>
-			<File
-				RelativePath=".\PapyrusActor.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusActor.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusArmor.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusArmor.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusCell.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusCell.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusCombatStyle.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusCombatStyle.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusForm.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusForm.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusInput.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusInput.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusMath.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusMath.h"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusMisc.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PapyrusMisc.h"
-				>
-			</File>
-			<File
+				<File
+					RelativePath=".\PapyrusActor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusActor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusArmor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusArmor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusCell.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusCell.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusCombatStyle.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusCombatStyle.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusForm.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusForm.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusInput.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusInput.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusMath.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusMath.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusMisc.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusMisc.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusWeapon.cpp"
-				>
-			</File>
-			<File
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusWeapon.h"
-				>
-			</File>
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="vm"
 				>
-			<File
+				<File
+					RelativePath=".\PapyrusArgs.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusArgs.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusNativeFunctionDef.inl"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusNativeFunctionDef_Base.inl"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusNativeFunctions.cpp"
-				>
-			</File>
-			<File
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusNativeFunctions.h"
-				>
-			</File>
-			<File
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusVM.cpp"
-				>
-			</File>
-			<File
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusVM.h"
-				>
-			</File>
-		</Filter>
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="api"

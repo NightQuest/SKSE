@@ -7,6 +7,7 @@
 class TESObjectSTAT;
 class BGSSoundDescriptorForm;
 class BGSKeyword;
+class TESForm;
 
 //// root
 
@@ -349,9 +350,9 @@ public:
 			float	unk08;
 		};
 
-		UInt32	unk00;
-		UInt32	unk04;
-		Data	* data;
+		UInt32	count;
+		TESForm* form;
+		Data	* data; // extra data?
 	};
 
 	Entry	** entries;	// 04
@@ -503,7 +504,7 @@ class TESSpellList : public BaseFormComponent
 public:
 	struct Data
 	{
-		void	* unk0;
+		void	* unk0;	// SpellItem**  (null terminated array of spells)
 		void	* unk4;
 		void	* unk8;
 	};

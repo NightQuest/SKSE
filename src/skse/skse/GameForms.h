@@ -734,14 +734,14 @@ public:
 	UInt32						unk34;		// 34 - init'd to 0
 	UInt32						unk38;		// 38 - init'd to 0
 	UInt32						unk3C;		// 3C - init'd to 0
-	UnkArray	unk40;		// 40
-	UnkArray	unk4C;		// 4C
+	UnkArray					unk40;		// 40
+	UnkArray					unk4C;		// 4C
 	UInt32						unk58;		// 58 - init'd to 0
 	UInt32						unk5C;		// 5C - init'd to 0
-	UnkArray	unk60;		// 60
+	UnkArray					unk60;		// 60
 	UInt32						unk6C;		// 6C - init'd to 0
 	UInt32						unk70;		// 70 - init'd to 0
-	UnkArray	unk74;		// 74
+	UnkArray					unk74;		// 74
 	UInt32						unk80;		// 80 - init'd to 0
 	UInt8						unk84;		// 84 - init'd to 0
 	UInt8						unk85;		// 85 - init'd to 0
@@ -1221,26 +1221,26 @@ public:
 	};
 
 	UnkArray	unk020;		// 020
-	UInt32						unk02C;		// 02C
+	UInt32		unk02C;		// 02C
 	UnkArray	unk030;		// 030
-	Data03C						unk03C;		// 03C
-	Data05C						unk05C;		// 05C
-	Data07C						unk07C;		// 07C
-	UInt32						unk084;		// 084
-	Data088						unk088;		// 088
-	Data088						unk090;		// 090
-	void						* unk098;	// 098 - linked list
-	void						* unk09C;	// 09C - linked list
-	Data0A0						unk0A0[2];	// 0A0
+	Data03C		unk03C;		// 03C
+	Data05C		unk05C;		// 05C
+	Data07C		unk07C;		// 07C
+	UInt32		unk084;		// 084
+	Data088		unk088;		// 088
+	Data088		unk090;		// 090
+	void		* unk098;	// 098 - linked list
+	void		* unk09C;	// 09C - linked list
+	Data0A0		unk0A0[2];	// 0A0
 	UnkArray	unk0E0[6];	// 0E0
 	UnkArray	unk128;		// 128
-	void						* unk134;	// 134 - linked list
-	UInt16						unk138;		// 138
-	UInt8						unk13A;		// 13A
-	UInt8						pad13B;		// 13B
-	BSString					unk13C;		// 13C
-	UInt32						unk144;		// 144
-	UInt32						unk148;		// 148
+	void		* unk134;	// 134 - linked list
+	UInt16		unk138;		// 138
+	UInt8		unk13A;		// 13A
+	UInt8		pad13B;		// 13B
+	BSString	unk13C;		// 13C
+	UInt32		unk144;		// 144
+	UInt32		unk148;		// 148
 	UnkArray	unk14C;		// 14C
 };
 

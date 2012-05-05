@@ -37,9 +37,9 @@ public:
 		const char	* data;
 
 		MEMBER_FN_PREFIX(Ref);
-		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A38CA0, const char * buf);
-		DEFINE_MEMBER_FN(Set, Ref *, 0x00A38CF0, const char * buf);
-		DEFINE_MEMBER_FN(Release, void, 0x00A38C90);
+		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A38C90, const char * buf);
+		DEFINE_MEMBER_FN(Set, Ref *, 0x00A38CE0, const char * buf);
+		DEFINE_MEMBER_FN(Release, void, 0x00A38C80);
 	};
 
 	struct Lock

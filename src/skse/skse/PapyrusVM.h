@@ -1,5 +1,7 @@
 #pragma once
 
+#include "skse/Utilities.h"
+
 class IFunction;
 
 // 4B04
@@ -90,11 +92,14 @@ public:
 class VMValue
 {
 public:
-	VMValue();
-	~VMValue();
+	VMValue()
+		:type(kType_None) { data.u = 0; }
+	~VMValue()
+		{ CALL_MEMBER_FN(this, Destroy)(); }
 
 	enum
 	{
+		kType_None =		0,
 		kType_Identifier =	1,
 		kType_String =		2,
 		kType_Int =			3,
@@ -139,6 +144,42 @@ public:
 		if(UnkTypeCheck()) return true;
 		if(type < 0x10) return false;
 		return (type & kTypeFlag_Array) != 0;
+	}
+
+	MEMBER_FN_PREFIX(VMValue);
+	DEFINE_MEMBER_FN(Set, void, 0x00C181E0, VMValue * src);
+	DEFINE_MEMBER_FN(Destroy, void, 0x00C180E0);
+
+	void	SetNone(void)
+	{
+		CALL_MEMBER_FN(this, Destroy)();
+
+		type = kType_None;
+		data.u = 0;
+	}
+
+	void	SetInt(SInt32 i)
+	{
+		CALL_MEMBER_FN(this, Destroy)();
+
+		type = kType_Int;
+		data.i = i;
+	}
+
+	void	SetFloat(float f)
+	{
+		CALL_MEMBER_FN(this, Destroy)();
+
+		type = kType_Float;
+		data.f = f;
+	}
+
+	void	SetBool(bool b)
+	{
+		CALL_MEMBER_FN(this, Destroy)();
+
+		type = kType_Bool;
+		data.b = b;
 	}
 };
 

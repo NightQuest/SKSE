@@ -4,14 +4,14 @@
 
 namespace papyrusWeapon
 {
-	UInt16 GetBaseDamage(TESObjectWEAP* thisWeapon)
+	UInt32 GetBaseDamage(TESObjectWEAP* thisWeapon)
 	{
 		if (!thisWeapon)
 			return 0;
 		return thisWeapon->damage.GetAttackDamage();
 	}
 
-	void SetBaseDamage(TESObjectWEAP* thisWeapon, UInt16 nuDamage)
+	void SetBaseDamage(TESObjectWEAP* thisWeapon, UInt32 nuDamage)
 	{
 		if (thisWeapon) {
 			thisWeapon->damage.attackDamage = nuDamage;
@@ -62,18 +62,57 @@ namespace papyrusWeapon
 
 
 
-	UInt8 GetWeaponType(TESObjectWEAP* thisWeapon)
+	UInt32 GetWeaponType(TESObjectWEAP* thisWeapon)
 	{
 		if (!thisWeapon)
 			return 0;
 		return thisWeapon->type();
 	}
 
-	void SetWeaponType(TESObjectWEAP* thisWeapon, UInt8 nuType)
+	void SetWeaponType(TESObjectWEAP* thisWeapon, UInt32 nuType)
 	{
 		if (!thisWeapon)
 			return;
 		thisWeapon->unk0C4.type = nuType;
 	}
+
+}
+
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
+
+void papyrusWeapon::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, UInt32>("GetWeaponType", "Weapon", papyrusWeapon::GetWeaponType, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, UInt32>("SetWeaponType", "Weapon", papyrusWeapon::SetWeaponType, registry));
+
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, UInt32>("GetBaseDamage", "Weapon", papyrusWeapon::GetBaseDamage, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, UInt32>("SetBaseDamage", "Weapon", papyrusWeapon::SetBaseDamage, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, float>("GetReach", "Weapon", papyrusWeapon::GetReach, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, float>("SetReach", "Weapon", papyrusWeapon::SetReach, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, float>("GetSpeed", "Weapon", papyrusWeapon::GetSpeed, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, float>("SetSpeed", "Weapon", papyrusWeapon::SetSpeed, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, float>("GetStagger", "Weapon", papyrusWeapon::GetStagger, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, float>("SetStagger", "Weapon", papyrusWeapon::SetStagger, registry));
+
 
 }

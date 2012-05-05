@@ -123,14 +123,14 @@ void DumpThreads(void)
 
 bool hookInstalled = false;
 
-void InstallHook(void * retaddr)
+void InstallHook(void * retaddr, UInt32 hookSrc)
 {
 	if(hookInstalled)
 		return;
 	else
 		hookInstalled = true;
 
-	_MESSAGE("InstallHook: thread = %d retaddr = %08X", GetCurrentThreadId(), retaddr);
+	_MESSAGE("InstallHook: thread = %d retaddr = %08X hookSrc = %d", GetCurrentThreadId(), retaddr, hookSrc);
 
 //	DumpThreads();
 
@@ -175,11 +175,23 @@ typedef void (__stdcall * _GetSystemTimeAsFileTime)(LPFILETIME * fileTime);
 _GetSystemTimeAsFileTime GetSystemTimeAsFileTime_Original = NULL;
 _GetSystemTimeAsFileTime * _GetSystemTimeAsFileTime_IAT = NULL;
 
+typedef void (__stdcall * _GetStartupInfoA)(STARTUPINFOA * startupInfo);
+
+_GetStartupInfoA GetStartupInfoA_Original = NULL;
+_GetStartupInfoA * _GetStartupInfoA_IAT = NULL;
+
 void __stdcall GetSystemTimeAsFileTime_Hook(LPFILETIME * fileTime)
 {
-	InstallHook(_ReturnAddress());
+	InstallHook(_ReturnAddress(), 0);
 
 	GetSystemTimeAsFileTime_Original(fileTime);
+}
+
+void __stdcall GetStartupInfoA_Hook(STARTUPINFOA * startupInfo)
+{
+	InstallHook(_ReturnAddress(), 1);
+
+	GetStartupInfoA_Original(startupInfo);
 }
 
 void * GetIATAddr(UInt8 * base, const char * searchDllName, const char * searchImportName)
@@ -252,5 +264,22 @@ static void OnAttach(void)
 	else
 	{
 		_ERROR("couldn't read IAT");
+	}
+
+	// win8 automatically initializes the stack cookie, so the previous hook doesn't get hit
+	_GetStartupInfoA_IAT = (_GetStartupInfoA *)GetIATAddr((UInt8 *)GetModuleHandle(NULL), "kernel32.dll", "GetStartupInfoA");
+	if(_GetStartupInfoA_IAT)
+	{
+		_MESSAGE("GetStartupInfoA IAT = %08X", _GetStartupInfoA_IAT);
+
+		VirtualProtect((void *)_GetStartupInfoA_IAT, 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+
+		_MESSAGE("original GetStartupInfoA = %08X", *_GetStartupInfoA_IAT);
+		GetStartupInfoA_Original = *_GetStartupInfoA_IAT;
+		*_GetStartupInfoA_IAT = GetStartupInfoA_Hook;
+		_MESSAGE("patched GetStartupInfoA = %08X", *_GetStartupInfoA_IAT);
+
+		UInt32 junk;
+		VirtualProtect((void *)_GetStartupInfoA_IAT, 4, oldProtect, &junk);
 	}
 }

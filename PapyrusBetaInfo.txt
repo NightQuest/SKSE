@@ -1,0 +1,28 @@
+
+SKSE Beta 1.5.1 - Initial Papyrus Support
+
+Thanks for taking an interest in helping do some initial testing of our Papyrus Support.  The functionality currently available is less than what we hope to provide in our first release, and I expect to have an update available early next week to round out our support.
+
+The main change from previous packages is the inclusion of our Papyrus scripts in Data/Scripts.  We have the compiled .pex files in that folder, and the .psc files in Data/Scripts/Source/.  These files replace the corresponding files in your skyrim/Data/Scripts/ folder.
+
+We have added functions to the following base classes:
+Actor
+Apparatus
+Armor
+Cell
+Form
+Math
+ObjectReference
+Outfit
+SoulGem
+Weapon
+
+We have added the following base classes:
+CombatStyle
+
+There is some important functionality which did not make it into this release, but which we expect to have before our first official release.  This includes:
+* Input commands
+* Functions which take strings as arguments and return strings as results
+* GetGameLoaded
+
+We also have not yet implemented Events.  I do not expect new events to be available in the first release.

@@ -59,6 +59,8 @@ STATIC_ASSERT(sizeof(TESBoundObject) == 0x20);
 class BGSAcousticSpace : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_AcousticSpace };
+
 	TESForm	* loopingSound;	// 20
 	TESForm	* soundRegion;	// 24
 	TESForm	* reverbType;	// 28
@@ -68,6 +70,8 @@ public:
 class BGSAddonNode : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_AddonNode };
+
 	// parents
 	TESModelTextureSwap	texSwap;	// 20
 
@@ -82,6 +86,8 @@ public:
 class BGSArtObject : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Art };
+
 	// parents
 	TESModelTextureSwap	texSwap;	// 20
 
@@ -101,6 +107,8 @@ public:
 class BGSDualCastData : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_DualCastData };
+
 	// 18
 	struct Data
 	{
@@ -119,6 +127,8 @@ public:
 class BGSExplosion : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Explosion };
+
 	// parents
 	TESFullName			fullName;		// 20
 	TESModel			model;			// 28
@@ -153,6 +163,8 @@ public:
 class BGSHazard : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Hazard };
+
 	// parents
 	TESFullName		fullName;		// 20
 	TESModel		model;			// 28
@@ -183,6 +195,8 @@ public:
 class BGSIdleMarker : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_IdleMarker };
+
 	// parents
 	TESModel			model;	// 20
 	BGSIdleCollection	idle;	// 34
@@ -192,6 +206,8 @@ public:
 class BGSNote : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Note };
+
 	// parents
 	TESModel		model;		// 20
 	TESFullName		fullName;	// 34
@@ -217,6 +233,8 @@ public:
 class BGSProjectile : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Projectile };
+
 	// parents
 	TESFullName		fullName;		// 20
 	TESModel		model;			// 28
@@ -262,6 +280,8 @@ public:
 class BGSStaticCollection : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_StaticCollection };
+
 	// parents
 	TESModelTextureSwap	texSwap;	// 20
 };
@@ -279,6 +299,8 @@ public:
 class BGSTextureSet : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_TextureSet };
+
 	// parents
 	BSTextureSet	textureSet;	// 20
 
@@ -364,6 +386,8 @@ STATIC_ASSERT(sizeof(MagicItem) == 0x50);
 class AlchemyItem : public MagicItem
 {
 public:
+	enum { kTypeID = kFormType_Potion };
+
 	// parents
 	TESModelTextureSwap	texSwap;		// 50
 	TESIcon				icon;			// 6C
@@ -398,6 +422,8 @@ public:
 class EnchantmentItem : public MagicItem
 {
 public:
+	enum { kTypeID = kFormType_Enchantment };
+
 	// 24
 	struct Data
 	{
@@ -424,6 +450,8 @@ public:
 class IngredientItem : public MagicItem
 {
 public:
+	enum { kTypeID = kFormType_Ingredient };
+
 	// parents
 	TESModelTextureSwap	texSwap;	// 50
 	TESIcon			icon;		// 6C
@@ -454,6 +482,8 @@ public:
 class SpellItem : public MagicItem
 {
 public:
+	enum { kTypeID = kFormType_Spell };
+
 	// parents
 	BGSEquipType			equipType;		// 50
 	BGSMenuDisplayObject	dispObj;		// 58
@@ -487,6 +517,8 @@ public:
 class ScrollItem : public SpellItem
 {
 public:
+	enum { kTypeID = kFormType_ScrollItem };
+
 	// parents
 	TESModelTextureSwap			texSwap;		// 90
 	BGSDestructibleObjectForm	destructible;	// AC
@@ -499,6 +531,8 @@ public:
 class TESAmmo : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Ammo };
+
 	// parents
 	TESFullName			fullName;		// 20
 	TESModelTextureSwap	texSwap;		// 28
@@ -557,6 +591,8 @@ STATIC_ASSERT(sizeof(TESActorBase) == 0xC0);
 class TESNPC : public TESActorBase
 {
 public:
+	enum { kTypeID = kFormType_NPC };
+
 	// parents
 	TESRaceForm		race;	// 0C0
 	BGSOverridePackCollection	overridePacks;	// 0C8
@@ -607,6 +643,8 @@ STATIC_ASSERT(sizeof(TESNPC) == 0x164);
 class TESLevCharacter : public TESBoundAnimObject
 {
 public:
+	enum { kTypeID = kFormType_LeveledCharacter };
+
 	TESLeveledList		leveledList;	// 20
 	TESModelTextureSwap	texSwap;		// 34
 };
@@ -615,6 +653,8 @@ public:
 class TESObjectACTI : public TESBoundAnimObject
 {
 public:
+	enum { kTypeID = kFormType_Activator };
+
 	// parents
 	TESFullName					fullName;		// 20
 	TESModelTextureSwap			texSwap;		// 28
@@ -634,6 +674,8 @@ public:
 class BGSTalkingActivator : public TESObjectACTI
 {
 public:
+	enum { kTypeID = kFormType_TalkingActivator };
+
 	void			* unk6C;	// 6C
 	BGSVoiceType	* unk70;	// 70
 };
@@ -642,6 +684,8 @@ public:
 class TESFlora : public TESObjectACTI
 {
 public:
+	enum { kTypeID = kFormType_Flora };
+
 	// parents
 	TESProduceForm	produce;	// 6C
 };
@@ -650,6 +694,8 @@ public:
 class TESFurniture : public TESObjectACTI
 {
 public:
+	enum { kTypeID = kFormType_Furniture };
+
 	// 4
 	struct Data78
 	{
@@ -668,6 +714,8 @@ public:
 class TESObjectCONT : public TESBoundAnimObject
 {
 public:
+	enum { kTypeID = kFormType_Container };
+
 	// parents
 	TESContainer				container;		// 20
 	TESFullName					fullName;		// 2C
@@ -688,6 +736,8 @@ public:
 class TESObjectDOOR : public TESBoundAnimObject
 {
 public:
+	enum { kTypeID = kFormType_Door };
+
 	// parents
 	TESFullName					fullName;		// 20
 	TESModelTextureSwap			texSwap;		// 28
@@ -708,6 +758,8 @@ public:
 class TESObjectLIGH : public TESBoundAnimObject
 {
 public:
+	enum { kTypeID = kFormType_Light };
+
 	// parents
 	TESFullName					fullName;		// 20
 	TESModelTextureSwap			texSwap;		// 28
@@ -754,6 +806,8 @@ STATIC_ASSERT(sizeof(TESObjectLIGH) == 0xB4);
 class TESSound : public TESBoundAnimObject
 {
 public:
+	enum { kTypeID = kFormType_Sound };
+
 	BSString	unk20;	// 20
 	UInt32		unk28;	// 28
 };
@@ -762,6 +816,8 @@ public:
 class TESGrass : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Grass };
+
 	virtual UInt8	GetUnk34(void);				// return unk34;
 	virtual bool	SetUnk34(UInt8 data);		// if(data > 100) return false;
 												// unk34 = data; return true;
@@ -821,6 +877,8 @@ public:
 class TESLevItem : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_LeveledItem };
+
 	// parents
 	TESLeveledList	leveledList;	// 20
 };
@@ -829,6 +887,8 @@ public:
 class TESLevSpell : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_LeveledSpell };
+
 	// parents
 	TESLeveledList	leveledList;	// 20
 };
@@ -837,6 +897,8 @@ public:
 class TESObjectARMO : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Armor };
+
 	// parents
 	TESFullName					fullName;		// 020
 	TESRaceForm					race;			// 028
@@ -862,6 +924,8 @@ public:
 class TESObjectBOOK : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Book };
+
 	// parents
 	TESFullName					fullName;		// 20
 	TESModelTextureSwap			texSwap;		// 28
@@ -889,6 +953,8 @@ public:
 class TESObjectMISC : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Misc };
+
 	// parents
 	TESFullName					fullName;		// 20
 	TESModelTextureSwap			texSwap;		// 28
@@ -909,6 +975,8 @@ public:
 class BGSApparatus : public TESObjectMISC
 {
 public:
+	enum { kTypeID = kFormType_Apparatus };
+
 	// parents
 	TESQualityForm	quality;		// 88
 	TESDescription	description;	// 90
@@ -918,12 +986,15 @@ public:
 class TESKey : public TESObjectMISC
 {
 public:
+	enum { kTypeID = kFormType_Key };
 };
 
 // 90
 class TESSoulGem : public TESObjectMISC
 {
 public:
+	enum { kTypeID = kFormType_SoulGem };
+
 	UInt32	unk88;		// 88
 	UInt8	soulSize;	// 8C
 	UInt8	gemSize;	// 8D
@@ -934,6 +1005,8 @@ public:
 class TESObjectSTAT : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Static };
+
 	// parents
 	TESModelTextureSwap		texSwap;	// 20
 	
@@ -954,6 +1027,8 @@ public:
 class BGSMovableStatic : public TESFullName
 {
 public:
+	enum { kTypeID = kFormType_MovableStatic };
+
 	// parents
 	BGSDestructibleObjectForm	destructible;	// 08
 	TESObjectSTAT				staticObj;		// 10
@@ -967,6 +1042,8 @@ public:
 class TESObjectTREE : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Tree };
+
 	// parents
 	TESModel		model;		// 20
 	TESFullName		fullName;	// 34
@@ -999,6 +1076,8 @@ public:
 class TESObjectWEAP : public TESBoundObject
 {
 public:
+	enum { kTypeID = kFormType_Weapon };
+
 	// parents
 	TESFullName					fullName;		// 020
 	TESModelTextureSwap			texSwap;		// 028
@@ -1098,6 +1177,8 @@ STATIC_ASSERT(sizeof(TESObjectWEAP) == 0x138);
 class TESObjectARMA : public TESObject
 {
 public:
+	enum { kTypeID = kFormType_ARMA };
+
 	// parents
 	TESRaceForm			race;	// 14
 	BGSBipedObjectForm	biped;	// 1C

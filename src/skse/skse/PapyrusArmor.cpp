@@ -28,3 +28,18 @@ namespace papyrusArmor
 		}
 	}
 }
+
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
+
+void papyrusArmor::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectARMO, UInt32>("GetArmorRating", "Armor", papyrusArmor::GetArmorRating, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectARMO, void, UInt32>("SetArmorRating", "Armor", papyrusArmor::SetArmorRating, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectARMO, void, SInt32>("ModArmorRating", "Armor", papyrusArmor::ModArmorRating, registry));
+}

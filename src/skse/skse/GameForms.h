@@ -234,7 +234,7 @@ kFormType_ConstructibleObject,	//	COBJ	BGSConstructibleObject
 	kFormType_Cell,				//	CELL	TESObjectCELL
 	kFormType_Reference,		//	REFR	TESObjectREFR / Actor
 	kFormType_Character,		//	ACHR	Character / PlayerCharacter
-	kFormType_Missle,			//	PMIS	MissileProjectile
+	kFormType_Missile,			//	PMIS	MissileProjectile
 	kFormType_Arrow,			//	PARW	ArrowProjectile
 	kFormType_Grenade,			//	PGRE	GrenadeProjectile
 	kFormType_BeamProj,			//	PBEA	BeamProjectile
@@ -273,7 +273,7 @@ kFormType_ConstructibleObject,	//	COBJ	BGSConstructibleObject
 	kFormType_MaterialType,		//	MATT	BGSMaterialType
 	kFormType_ImpactData,		//	IPCT	BGSImpactData
 	kFormType_ImpactDataSet,	//	IPDS	BGSImpactDataSet
-	kFormType_ARNA,				//	ARMA	TESObjectARMA
+	kFormType_ARMA,				//	ARMA	TESObjectARMA
 	kFormType_EncounterZone,	//	ECZN	BGSEncounterZone
 	kFormType_Location,			//	LCTN	BGSLocation
 	kFormType_Message,			//	MESH	BGSMessage
@@ -294,7 +294,7 @@ kFormType_ConstructibleObject,	//	COBJ	BGSConstructibleObject
 	kFormType_EquipSlot,		//	EQUP	BGSEquipSlot
 	kFormType_Relationship,		//	RELA	BGSRelationship
 	kFormType_Scene,			//	SCEN	BGSScene
-	kFormType_AssocuationType,	//	ASTP	BGSAssociationType
+	kFormType_AssociationType,	//	ASTP	BGSAssociationType
 	kFormType_Outfit,			//	OTFT	BGSOutfit
 	kFormType_Art,				//	ARTO	BGSArtObject
 	kFormType_Material,			//	MATO	BGSMaterialObject
@@ -312,6 +312,8 @@ kFormType_ConstructibleObject,	//	COBJ	BGSConstructibleObject
 class TESForm : public BaseFormComponent
 {
 public:
+	enum { kTypeID = 0 };	// special-case
+
 	virtual void			Unk_04(void);		// reset/init? would leak pointers if called on a live object
 	virtual void			Unk_05(void);		// release pointers?
 	virtual bool			LoadForm(UInt32 arg);
@@ -378,6 +380,8 @@ public:
 class ActorValueInfo : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_ActorValueInfo };
+
 	// parents
 	TESFullName			fullName;		// 14
 	TESDescription		description;	// 1C
@@ -405,6 +409,8 @@ public:
 class BGSAssociationType : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_AssociationType };
+
 	StringCache::Ref	unk14[4];	// 14
 	UInt32				unk28;		// 28
 };
@@ -413,6 +419,8 @@ public:
 class BGSBodyPartData : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_BodyPartData };
+
 	// parents
 	TESModel		model;			// 14
 	BGSPreloadable	preloadable;	// 28
@@ -437,6 +445,8 @@ public:
 class BGSCameraPath : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_CameraPath };
+
 	UInt32	unk14;		// 14
 	UInt32	unk18;		// 18
 	UInt32	unk1C;		// 1C
@@ -451,6 +461,8 @@ public:
 class BGSCameraShot : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_CameraShot };
+
 	// parents
 	TESModel					model;			// 14
 	TESImageSpaceModifiableForm	imageSpaceMod;	// 28
@@ -479,6 +491,9 @@ public:
 // 3C
 class BGSCollisionLayer : public TESForm
 {
+public:
+	enum { kTypeID = kFormType_CollisionLayer };
+
 	// parents
 	TESDescription				description;	// 14
 
@@ -493,6 +508,9 @@ class BGSCollisionLayer : public TESForm
 // 24
 class BGSColorForm : public TESForm
 {
+public:
+	enum { kTypeID = kFormType_ColorForm };
+
 	// parents
 	TESFullName	fullName;	// 14
 
@@ -505,6 +523,8 @@ class BGSColorForm : public TESForm
 class BGSConstructibleObject : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_ConstructibleObject };
+
 	// members
 	TESContainer	container;	// 14 - not inherited
 	UInt32			unk20;		// 20 - linked list
@@ -518,6 +538,8 @@ public:
 class BGSDebris : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Debris };
+
 	struct Data
 	{
 		UInt32	unk0;
@@ -544,6 +566,8 @@ public:
 class BGSDialogueBranch : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_DialogueBranch };
+
 	UInt32	unk14;		// 14 - init'd to 1
 	TESForm	* unk18;	// 18 - init'd to 0, TESQuest
 	TESForm	* unk1C;	// 1C - init'd to 0, starting topic (type 4D)
@@ -554,6 +578,8 @@ public:
 class BGSEncounterZone : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_EncounterZone };
+
 	UInt8	unk14[0x0C];	// 14
 	UInt8	unk20[0x10];	// 20
 
@@ -565,6 +591,8 @@ public:
 class BGSEquipSlot : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_EquipSlot };
+
 	UnkArray	unk14;
 	UInt32						unk20;
 };
@@ -573,6 +601,8 @@ public:
 class BGSFootstep : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Footstep };
+
 	StringCache::Ref	unk14;	// 14
 	UInt32				unk18;	// 18
 };
@@ -581,6 +611,8 @@ public:
 class BGSFootstepSet : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_FootstepSet };
+
 	UnkArray	unk14[5];	// 14
 };
 
@@ -588,6 +620,8 @@ public:
 class BGSHeadPart : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_HeadPart };
+
 	// 0C
 	struct Data
 	{
@@ -615,6 +649,8 @@ public:
 class BGSImpactData : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_ImpactData };
+
 	// 20
 	struct Data54
 	{
@@ -654,6 +690,8 @@ public:
 class BGSKeyword : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Keyword };
+
 	BSString	keyword;	// 14
 };
 
@@ -661,6 +699,8 @@ public:
 class BGSAction : public BGSKeyword
 {
 public:
+	enum { kTypeID = kFormType_Action };
+
 	UInt32	idx;	// 1C - ctor sets to a unique value
 };
 
@@ -668,12 +708,15 @@ public:
 class BGSLocationRefType : public BGSKeyword
 {
 public:
+	enum { kTypeID = kFormType_LocationRef };
 };
 
 // 94
 class BGSLightingTemplate : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_LightingTemplate };
+
 	// 5C
 	struct Data
 	{
@@ -714,6 +757,8 @@ STATIC_ASSERT(sizeof(BGSLightingTemplate) == 0x94);
 class BGSListForm : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_List };
+
 	UnkArray	unk14;	// 14
 	UInt32	unk20;	// 20
 	UInt32	unk24;	// 24
@@ -723,6 +768,8 @@ public:
 class BGSLocation : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Location };
+
 	// parents
 	TESFullName		fullName;	// 14
 	BGSKeywordForm	keyword;	// 1C
@@ -754,6 +801,8 @@ STATIC_ASSERT(sizeof(BGSLocation) == 0x88);
 class BGSMaterialObject : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Material };
+
 	// parents
 	TESModel			model;			// 14
 	BSMaterialObject	materialObject;	// 28
@@ -766,6 +815,8 @@ public:
 class BGSMaterialType : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_MaterialType };
+
 	// C
 	struct Data20
 	{
@@ -787,6 +838,8 @@ public:
 class BGSMenuIcon : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_MenuIcon };
+
 	// parents
 	TESIcon	icon;	// 14
 };
@@ -795,6 +848,8 @@ public:
 class BGSMessage : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Message };
+
 	struct Data
 	{
 		UInt32	unk0;
@@ -817,6 +872,8 @@ public:
 class BGSMovementType : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_MovementType };
+
 	// 8
 	struct Data
 	{
@@ -836,6 +893,8 @@ public:
 class BGSMusicTrackFormWrapper : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_MusicTrack };
+
 	// parents
 	BSIMusicTrack	track;	// 14
 
@@ -847,6 +906,8 @@ public:
 class BGSMusicType : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_MusicType };
+
 	// parents
 	BSIMusicType		type;	// 14
 
@@ -858,13 +919,17 @@ public:
 class BGSOutfit : public TESForm
 {
 public:
-	UnkArray	unk14;	// 14
+	enum { kTypeID = kFormType_Outfit };
+
+	tArray<TESForm*>	armorOrLeveledItemArray;	// 14
 };
 
 // 4C
 class BGSPerk : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Perk };
+
 	// parents
 	TESFullName		fullName;		// 14
 	TESDescription	description;	// 1C
@@ -886,6 +951,8 @@ public:
 class BGSRagdoll : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Ragdoll };
+
 	// parents
 	TESModel	model;	// 14
 
@@ -992,6 +1059,8 @@ STATIC_ASSERT(sizeof(BGSRagdoll) == 0x124);
 class BGSReferenceEffect : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_ReferenceEffect };
+
 	// C
 	struct Data
 	{
@@ -1007,6 +1076,8 @@ public:
 class BGSRelationship : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Relationship };
+
 	UInt32	unk14;	// 14
 	UInt32	unk18;	// 18
 	UInt32	unk1C;	// 1C
@@ -1017,6 +1088,8 @@ public:
 class BGSReverbParameters : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_ReverbParam };
+
 	BSIReverbType	reverbType;	// 14
 
 	UInt16	unk18;	// 18 - init'd to 1250
@@ -1036,6 +1109,8 @@ public:
 class BGSScene : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Scene };
+
 	UnkArray	unk14;	// 14
 	UnkArray	unk20;	// 20
 	UnkArray	unk2C;	// 2C
@@ -1062,6 +1137,8 @@ public:
 class BGSShaderParticleGeometryData : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_SPGD };
+
 	UnkArray	unk14;		// 14
 	TESTexture					texture;	// 20
 };
@@ -1070,6 +1147,8 @@ public:
 class BGSSoundCategory : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_SoundCategory };
+
 	// parents
 	TESFullName			fullName;		// 14
 	BSISoundCategory	soundCategory;	// 1C
@@ -1089,6 +1168,8 @@ public:
 class BGSSoundDescriptorForm : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_SoundDescriptor };
+
 	virtual void	Unk_39(void);	// calls something on unk18
 
 	// parents
@@ -1103,6 +1184,8 @@ public:
 class BGSSoundOutput : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_SoundOutput };
+
 	// parents
 	BSISoundOutputModel	soundOutputModel;	// 14
 
@@ -1142,6 +1225,8 @@ public:
 class BGSStoryManagerBranchNode : public BGSStoryManagerNodeBase
 {
 public:
+	enum { kTypeID = kFormType_StoryBranchNode };
+
 	UnkArray	unk2C;	// 2C
 };
 
@@ -1149,6 +1234,8 @@ public:
 class BGSStoryManagerEventNode : public BGSStoryManagerBranchNode
 {
 public:
+	enum { kTypeID = kFormType_StoryEventNode };
+
 	UInt32	unk38;	// 38
 };
 
@@ -1156,6 +1243,8 @@ public:
 class BGSStoryManagerQuestNode : public BGSStoryManagerNodeBase
 {
 public:
+	enum { kTypeID = kFormType_StoryQuestNode };
+
 	// 20
 	struct Data38
 	{
@@ -1181,6 +1270,8 @@ STATIC_ASSERT(sizeof(BGSStoryManagerQuestNode) == 0x88);
 class TESQuest : public BGSStoryManagerTreeForm
 {
 public:
+	enum { kTypeID = kFormType_Quest };
+
 	// parents
 	TESFullName	fullName;	// 18
 
@@ -1250,6 +1341,8 @@ STATIC_ASSERT(sizeof(TESQuest) == 0x158);
 class BGSVoiceType : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_VoiceType };
+
 	UInt8		unk14;		// 14
 	UInt8		pad15[3];	// 15
 	BSString	unk18;		// 18
@@ -1259,6 +1352,8 @@ public:
 class EffectSetting : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_EffectSetting };
+
 	// parents
 	TESFullName				fullName;			// 14
 	BGSMenuDisplayObject	menuDisplayObject;	// 1C
@@ -1342,6 +1437,8 @@ public:
 class NavMesh : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_NAVM };
+
 	// parents
 	TESChildCell	childCell;	// 14
 	BSNavmesh		navmesh;	// 18
@@ -1353,6 +1450,8 @@ STATIC_ASSERT(sizeof(NavMesh) == 0xB4);
 class NavMeshInfoMap : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_NAVI };
+
 	// parents
 	BSNavmeshInfoMap				infoMap;	// 14
 	PrecomputedNavmeshInfoPathMap	pathMap;	// 1C
@@ -1407,6 +1506,8 @@ STATIC_ASSERT(sizeof(NavMeshInfoMap) == 0x98);
 class Script : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Script };
+
 	// 14
 	struct Data
 	{
@@ -1444,6 +1545,8 @@ public:
 class TESClass : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Class };
+
 	// parents
 	TESFullName		fullName;		// 14
 	TESDescription	description;	// 1C
@@ -1454,10 +1557,31 @@ public:
 	// 24
 	struct Data30
 	{
-		UInt8	unk00[0x18];	// 00
+		UInt8	unk00[0x6];		// 00
+		UInt8	oneHanded;		// 06
+		UInt8	twoHanded;		// 07
+		UInt8	archery;
+		UInt8	block;
+		UInt8	smithing;
+		UInt8	heavyArmor;
+		UInt8	lightArmor;
+		UInt8	pickPocket;
+		UInt8	lockpicking;
+		UInt8	sneak;
+		UInt8	alchemy;
+		UInt8	speech;
+		UInt8	alteration;
+		UInt8	conjuration;
+		UInt8	destruction;
+		UInt8	illusion;
+		UInt8	restoration;
+		UInt8	enchanting;
 		float	bleedout;		// 18
 		UInt32	voicePoints;	// 1C
-		UInt8	unk20[0x04];	// 20
+		UInt8	health;			// 20
+		UInt8	magicka;		// 21
+		UInt8	stamina;		// 22
+		UInt8	unk23;			// 23
 	};
 
 	// 30
@@ -1470,6 +1594,8 @@ STATIC_ASSERT(sizeof(TESClass) == 0x54);
 class TESClimate : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Climate };
+
 	struct Data28
 	{
 		UInt32	unk0;
@@ -1487,6 +1613,8 @@ public:
 class TESCombatStyle : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_CombatStyle };
+
 	// 28
 	struct General	// CSGD
 	{
@@ -1556,6 +1684,8 @@ public:
 class TESEffectShader : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_EffectShader };
+
 	// 190?
 	struct Data
 	{
@@ -1576,6 +1706,8 @@ public:
 class TESEyes : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Eyes };
+
 	// parents
 	TESFullName	fullName;	// 14
 	TESTexture	texture;	// 1C
@@ -1589,6 +1721,8 @@ public:
 class TESFaction : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Faction };
+
 	// parents
 	TESFullName		fullName;	// 14
 	TESReactionForm	reaction;	// 1C
@@ -1629,6 +1763,8 @@ public:
 class TESGlobal : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Global };
+
 	BSString	unk14;	// 14
 	UInt8		unk1C;	// 1C - type?
 	UInt8		pad[3];	// 1D
@@ -1654,6 +1790,8 @@ public:
 class TESIdleForm : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Idle };
+
 	void				* unk14;	// 14 - linked list
 	UInt8				unk18;		// 18
 	UInt8				unk19;		// 19
@@ -1673,6 +1811,8 @@ public:
 class TESImageSpace : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_ImageSpace };
+
 	// 50
 	struct Data14
 	{
@@ -1706,6 +1846,8 @@ public:
 class TESImageSpaceModifier : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_ImageSpaceMod };
+
 	// 0F4
 	struct Data014
 	{
@@ -1768,6 +1910,8 @@ STATIC_ASSERT(sizeof(TESImageSpaceModifier) == 0x72C);
 class TESLandTexture : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_LandTexture };
+
 	struct Data24
 	{
 		UInt32	unk0;	// 0
@@ -1788,6 +1932,8 @@ public:
 class TESLoadScreen : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_LoadScreen };
+
 	void				* unk14;	// 14 - linked list
 	TESObjectSTAT		* object;	// 18
 	StringCache::Ref	unk1C;		// 1C
@@ -1797,6 +1943,8 @@ public:
 class TESObjectANIO : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_ANIO };
+
 	TESModelTextureSwap	textureSwap;	// 14
 	StringCache::Ref	unk30;			// 30
 	StringCache::Ref	unk34;			// 34
@@ -1806,6 +1954,8 @@ public:
 class TESObjectCELL : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Cell };
+
 	// parents
 	TESFullName					fullName;	// 14
 
@@ -1847,6 +1997,8 @@ STATIC_ASSERT(offsetof(TESObjectCELL, objectList) == 0x4C);
 class TESObjectLAND : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Land };
+
 	// parents
 	TESChildCell	childCell;	// 14
 
@@ -1861,6 +2013,8 @@ public:
 class TESPackage : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Package };
+
 	virtual bool	Unk_39(UInt32 arg0, UInt32 arg1, UInt32 arg2, UInt32 arg3);
 	virtual bool	Unk_3A(UInt32 arg0, UInt32 arg1, UInt32 arg2, UInt32 arg3, UInt32 arg4);
 	virtual bool	Unk_3B(UInt32 arg0, UInt32 arg1);
@@ -2040,6 +2194,8 @@ public:
 class TESRace : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Race };
+
 	// parents
 	TESFullName			fullName;		// 14
 	TESDescription		description;	// 1C
@@ -2125,6 +2281,8 @@ STATIC_ASSERT(sizeof(TESRace) == 0x29C);
 class TESRegion : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Region };
+
 	virtual bool	Unk_39(void);
 
 	// C
@@ -2162,6 +2320,8 @@ public:
 class TESShout : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Shout };
+
 	// parents
 	TESFullName				fullName;		// 14
 	BGSMenuDisplayObject	menuDispObject;	// 1C
@@ -2185,6 +2345,8 @@ public:
 class TESTopic : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Topic };
+
 	// parents
 	TESFullName			fullName;	// 14
 
@@ -2202,6 +2364,8 @@ public:
 class TESTopicInfo : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_TopicInfo };
+
 	struct Data28
 	{
 		UInt32	unk0;	// 0
@@ -2221,6 +2385,8 @@ public:
 class TESWaterForm : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Water };
+
 	// parents
 	TESFullName			fullName;		// 14
 	TESAttackDamageForm	attackDamage;	// 1C
@@ -2353,6 +2519,8 @@ STATIC_ASSERT(sizeof(TESWaterForm) == 0x1D4);
 class TESWeather : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Weather };
+
 	// 110
 	struct Data58C
 	{
@@ -2428,6 +2596,8 @@ STATIC_ASSERT(sizeof(TESWeather) == 0x760);
 class TESWordOfPower : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_WordOfPower };
+
 	// parents
 	TESFullName			fullName;	// 14
 
@@ -2439,6 +2609,8 @@ public:
 class TESWorldSpace : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_WorldSpace };
+
 	// parents
 	TESFullName		fullName;	// 14
 	TESTexture		texture;	// 1C

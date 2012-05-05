@@ -8,6 +8,8 @@ class TESObjectSTAT;
 class BGSSoundDescriptorForm;
 class BGSKeyword;
 class TESForm;
+class SpellItem;
+class TESShout;
 
 //// root
 
@@ -357,6 +359,35 @@ public:
 
 	Entry	** entries;	// 04
 	UInt32	numEntries;	// 08
+
+	template <class Op>
+	UInt32 CountIf(Op& op) const
+	{
+		UInt32 count = 0;
+		for (UInt32 n = 0; n < numEntries; n++) {
+			Entry* pEntry = entries[n];
+			if (pEntry && op.Accept(pEntry))
+				count++;
+		}
+		return count;
+	}
+
+	template <class Op>
+	Entry* Find(Op& op) const
+	{
+		bool bFound = false;
+		UInt32 n = 0;
+		Entry* pEntry = NULL;
+		for (UInt32 n = 0; n < numEntries && !bFound; n++) {
+			pEntry = entries[n];
+			if (pEntry) {
+				bFound = op.Accept(pEntry);
+			}
+		}
+		return (bFound && pEntry) ? pEntry : NULL;
+	}
+
+
 };
 
 // 0C
@@ -504,9 +535,12 @@ class TESSpellList : public BaseFormComponent
 public:
 	struct Data
 	{
-		void	* unk0;	// SpellItem**  (null terminated array of spells)
+		SpellItem**	spells;	// SpellItem**  (null terminated array of spells)
 		void	* unk4;
-		void	* unk8;
+		TESShout**	unk8;
+		UInt32		numSpells;
+		UInt32		numUnk4;
+		UInt32		numShouts;
 	};
 
 	Data	* unk04;	// 04

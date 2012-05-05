@@ -50,7 +50,7 @@ namespace papyrusForm
 			pWeight->weight = nuWeight;
 	}
 
-	UInt16 GetBaseDamage(TESForm* thisForm)
+	UInt32 GetBaseDamage(TESForm* thisForm)
 	{
 		if (!thisForm)
 			return 0;
@@ -70,7 +70,7 @@ namespace papyrusForm
 		return 0;
 	}
 
-	void SetValue(TESForm* thisForm, UInt32 value)
+	void SetGoldValue(TESForm* thisForm, UInt32 value)
 	{
 		if (!thisForm)
 			return;
@@ -100,4 +100,28 @@ namespace papyrusForm
 		return NULL;
 	}
 
+}
+
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
+
+void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, UInt32> ("GetType", "Form", papyrusForm::GetType, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, float> ("GetWeight", "Form", papyrusForm::GetWeight, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, float> ("SetWeight", "Form", papyrusForm::SetWeight, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, UInt32> ("SetGoldValue", "Form", papyrusForm::SetGoldValue, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, UInt32> ("GetNumKeywords", "Form", papyrusForm::GetNumKeywords, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, BGSKeyword *, UInt32> ("GetNthKeyword", "Form", papyrusForm::GetNthKeyword, registry));
 }

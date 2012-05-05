@@ -362,7 +362,7 @@ static bool DoInjectDLLThread(PROCESS_INFORMATION * info, const char * dllPath, 
 			{
 				if(sync)
 				{
-					switch(WaitForSingleObject(thread, 1000 * 60))	// timeout = one minute
+					switch(WaitForSingleObject(thread, g_options.m_noTimeout ? INFINITE : 1000 * 60))	// timeout = one minute
 					{
 						case WAIT_OBJECT_0:
 							_MESSAGE("hook thread complete");

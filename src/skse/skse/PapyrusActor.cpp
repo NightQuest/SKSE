@@ -63,3 +63,34 @@ namespace papyrusActor
 
 
 }
+
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
+
+void papyrusActor::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, TESCombatStyle*>("GetCombatStyle", "Actor", papyrusActor::GetCombatStyle, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, void, TESCombatStyle*>("SetCombatStyle", "Actor", papyrusActor::SetCombatStyle, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, BGSOutfit*>("GetDefaultOutfit", "Actor", papyrusActor::GetDefaultOutfit, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, void, BGSOutfit*>("SetDefaultOutfit", "Actor", papyrusActor::SetDefaultOutfit, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, BGSOutfit*>("GetSleepOutfit", "Actor", papyrusActor::GetSleepOutfit, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, void, BGSOutfit*>("SetSleepOutfit", "Actor", papyrusActor::SetSleepOutfit, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, TESClass*>("Getclass", "Actor", papyrusActor::GetClass, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, void, TESClass*>("SetClass", "Actor", papyrusActor::SetClass, registry));
+
+}

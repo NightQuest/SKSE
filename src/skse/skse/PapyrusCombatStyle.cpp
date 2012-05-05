@@ -385,3 +385,180 @@ void SetAllowDuelWielding(TESCombatStyle* thisCombatStyle, bool bAllow)
 }
 
 }
+
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
+
+void papyrusCombatStyle::RegisterFuncs(VMClassRegistry* registry)
+{
+	// get general tab
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetOffensiveMult", "CombatStyle", papyrusCombatStyle::GetOffensiveMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetDefensiveMult", "CombatStyle", papyrusCombatStyle::GetDefensiveMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetGroupOffensiveMult", "CombatStyle", papyrusCombatStyle::GetGroupOffensiveMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetAvoidThreadChance", "CombatStyle", papyrusCombatStyle::GetAvoidThreatChance, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetMeleeMult", "CombatStyle", papyrusCombatStyle::GetMeleeMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetRangedMult", "CombatStyle", papyrusCombatStyle::GetRangedMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetMagicMult", "CombatStyle", papyrusCombatStyle::GetMagicMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetShoutMult", "CombatStyle", papyrusCombatStyle::GetShoutMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetStaffMult", "CombatStyle", papyrusCombatStyle::GetStaffMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetUnarmedMult", "CombatStyle", papyrusCombatStyle::GetUnarmedMult, registry));
+
+	// set general tab values
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetOffensiveMult", "CombatStyle", papyrusCombatStyle::SetOffensiveMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetDefensiveMult", "CombatStyle", papyrusCombatStyle::SetDefensiveMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetGroupOffensiveMult", "CombatStyle", papyrusCombatStyle::SetGroupOffensiveMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetAvoidThreadChance", "CombatStyle", papyrusCombatStyle::SetAvoidThreatChance, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetMeleeMult", "CombatStyle", papyrusCombatStyle::SetMeleeMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetRangedMult", "CombatStyle", papyrusCombatStyle::SetRangedMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetMagicMult", "CombatStyle", papyrusCombatStyle::SetMagicMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetShoutMult", "CombatStyle", papyrusCombatStyle::SetShoutMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetStaffMult", "CombatStyle", papyrusCombatStyle::SetStaffMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetUnarmedMult", "CombatStyle", papyrusCombatStyle::SetUnarmedMult, registry));
+
+	// get melee tab values
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetMeleeAttackStaggeredMult", "CombatStyle", papyrusCombatStyle::GetMeleeAttackStaggeredMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetMeleePowerAttackStaggeredMult", "CombatStyle", papyrusCombatStyle::GetMeleePowerAttackStaggeredMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetMeleePowerAttackBlockingMult", "CombatStyle", papyrusCombatStyle::GetMeleePowerAttackBlockingMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetMeleeBashMult", "CombatStyle", papyrusCombatStyle::GetMeleeBashMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetMeleeBashRecoiledMult", "CombatStyle", papyrusCombatStyle::GetMeleeBashRecoiledMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetMeleeBashAttackMult", "CombatStyle", papyrusCombatStyle::GetMeleeBashAttackMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetMeleeBashPowerAttackMult", "CombatStyle", papyrusCombatStyle::GetMeleeBashPowerAttackMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetMeleeSpecialAttackMult", "CombatStyle", papyrusCombatStyle::GetMeleeSpecialAttackMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, bool>("GetAllowDuelWielding", "CombatStyle", papyrusCombatStyle::GetAllowDuelWielding, registry));
+
+	// set melee tab values
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetMeleeAttackStaggeredMult", "CombatStyle", papyrusCombatStyle::SetMeleeAttackStaggeredMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetMeleePowerAttackStaggeredMult", "CombatStyle", papyrusCombatStyle::SetMeleePowerAttackStaggeredMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetMeleePowerAttackBlockingMult", "CombatStyle", papyrusCombatStyle::SetMeleePowerAttackBlockingMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetMeleeBashMult", "CombatStyle", papyrusCombatStyle::SetMeleeBashMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetMeleeBashRecoiledMult", "CombatStyle", papyrusCombatStyle::SetMeleeBashRecoiledMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetMeleeBashAttackMult", "CombatStyle", papyrusCombatStyle::SetMeleeBashAttackMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetMeleeBashPowerAttackMult", "CombatStyle", papyrusCombatStyle::SetMeleeBashPowerAttackMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetMeleeSpecialAttackMult", "CombatStyle", papyrusCombatStyle::SetMeleeSpecialAttackMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, bool>("SetAllowDuelWielding", "CombatStyle", papyrusCombatStyle::SetAllowDuelWielding, registry));
+
+	// get Close Range tab values
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetCloseRangeDuelingCircleMult", "CombatStyle", papyrusCombatStyle::GetCloseRangeDuelingCircleMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetCloseRangeDuelingFallbackMult", "CombatStyle", papyrusCombatStyle::GetCloseRangeDuelingFallbackMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetCloseRangeFlankingFlankDistance", "CombatStyle", papyrusCombatStyle::GetCloseRangeFlankingFlankDistance, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetCloseRangeFlankingStalkTime", "CombatStyle", papyrusCombatStyle::GetCloseRangeFlankingStalkTime, registry));
+
+	// set Close Range tab values
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetCloseRangeDuelingCircleMult", "CombatStyle", papyrusCombatStyle::SetCloseRangeDuelingCircleMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetCloseRangeDuelingFallbackMult", "CombatStyle", papyrusCombatStyle::SetCloseRangeDuelingFallbackMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetCloseRangeFlankingFlankDistance", "CombatStyle", papyrusCombatStyle::SetCloseRangeFlankingFlankDistance, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetCloseRangeFlankingStalkTime", "CombatStyle", papyrusCombatStyle::SetCloseRangeFlankingStalkTime, registry));
+
+	// get/set long range tab values
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetLongRangeStrafeMult", "CombatStyle", papyrusCombatStyle::GetLongRangeStrafeMult, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetLongRangeStrafeMult", "CombatStyle", papyrusCombatStyle::SetLongRangeStrafeMult, registry));
+
+	// get flight tab values
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetFlightHoverChance", "CombatStyle", papyrusCombatStyle::GetFlightHoverChance, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetFlightDiveBombChance", "CombatStyle", papyrusCombatStyle::GetFlightDiveBombChance, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESCombatStyle, float>("GetFlightFlyingAttackChance", "CombatStyle", papyrusCombatStyle::GetFlightFlyingAttackChance, registry));
+
+	// set flight tab values
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetFlightHoverChance", "CombatStyle", papyrusCombatStyle::SetFlightHoverChance, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetFlightDiveBombChance", "CombatStyle", papyrusCombatStyle::SetFlightDiveBombChance, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESCombatStyle, void, float>("SetFlightFlyingAttackChance", "CombatStyle", papyrusCombatStyle::SetFlightFlyingAttackChance, registry));
+}

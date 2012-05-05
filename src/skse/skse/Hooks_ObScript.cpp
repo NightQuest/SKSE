@@ -219,22 +219,29 @@ bool Cmd_GetSKSERelease_Execute(COMMAND_ARGS)
 #include "GameReferences.h"
 #include "GameForms.h"
 #include "GameRTTI.h"
-
+#include "GameExtraData.h"
 bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 {
 	PlayerCharacter *pPC = (*g_thePlayer);
-	TESContainer* pContainer = DYNAMIC_CAST(pPC->baseForm, TESForm, TESContainer);
-	if (pContainer) {
-		for (UInt32 n = 0; n < pContainer->numEntries; n++) {
-			TESContainer::Entry* pEntry = pContainer->entries[n];
-			_MESSAGE("%d>FormID: %0x Count: %d", n, pEntry->form ? pEntry->form->formID : 0,
-				pEntry->count);
+
+	TESForm* pForm = LookupFormByID(0xAD247);
+	BGSOutfit* pOutfit = DYNAMIC_CAST(pForm, TESForm, BGSOutfit);
+	if (pOutfit)
+		DumpClass(pOutfit);
+
+
+	//pForm = LookupFormByID(0x1CE1E);
+	//TESClass* pClass = DYNAMIC_CAST(pForm, TESForm, TESClass);
+	//if (pClass)
+	//	DumpClass(pClass);
+
+	if (thisObj) {
+		TESProduceForm* pProduce = DYNAMIC_CAST(thisObj->baseForm, TESForm, TESProduceForm);
+		if (pProduce) {
+			UInt32 unk4 = pProduce->unk04;
+			DumpClass(pProduce);
 		}
 	}
-
-	TESSpellList* pSpellList = DYNAMIC_CAST(pPC->baseForm, TESForm, TESSpellList);
-	if (pSpellList)
-		DumpClass(pSpellList, 32);
 
 	return true;	
 }

@@ -1,3 +1,7 @@
+1.5.1:
+- loader is now compatible with the windows 8 exe loader
+- papyrus support!
+
 1.4.15:
 - support for runtime 1.5.26.0
 

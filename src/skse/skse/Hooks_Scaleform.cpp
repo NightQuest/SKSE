@@ -28,14 +28,43 @@ void RegisterNumber(GFxValue * dst, const char * name, double value)
 	dst->SetMember(name, &fxValue);
 }
 
-void RegisterBool(GFxValue* dst, const char* name, bool value)
+void RegisterBool(GFxValue * dst, const char * name, bool value)
 {
 	GFxValue fxValue;
 	fxValue.SetBool(value);
 	dst->SetMember(name, &fxValue);
 }
 
-double round(const double& r)
+void RegisterKeywords(GFxValue * pFxVal, BGSKeywordForm * keywordForm)
+{
+	// ### disabled pending better design
+	// ### if we can get the GFxMovieView, just add an object
+	// ### adding to the root is no good
+
+#if 0
+	// Add all keywords as boolean properties with value true
+
+	UInt32 count = keywordForm->numKeywords;
+	BGSKeyword ** keywords = keywordForm->keywords;
+	if(!keywords)
+		return;
+
+	for(int i = 0; i < count; i++)
+	{
+		BGSKeyword * pKey = keywords[i];
+		if(pKey)
+		{
+			const char * keyString = pKey->keyword.Get();
+			if(keyString)
+			{
+				RegisterBool(pFxVal, keyString, true);
+			}
+		}
+	}
+#endif
+}
+
+double round(double r)
 {
 	return (r >= 0.0) ? floor(r + 0.5) : ceil(r - 0.5);
 }
@@ -305,6 +334,9 @@ StandardItemData * StandardItemData::ctor_Hook(void ** callbacks, PlayerCharacte
 	{
 		ExtendCommonItemData(&result->fxValue, objDesc->form);
 		ExtendStandardItemData(&result->fxValue, objDesc);
+		// Calling this to set scrolls, potions, ingredients
+		// as this function is called for inventory, barter, container
+		ExtendMagicItemData(&result->fxValue, objDesc->form);
 	}
 
 	return result;
@@ -341,6 +373,7 @@ void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDes
 				RegisterNumber(pFxVal, "armor", armorValue);
 				RegisterNumber(pFxVal, "partMask", pArmor->bipedObject.data.parts);
 				RegisterNumber(pFxVal, "weightClass", pArmor->bipedObject.data.weightClass);
+				RegisterKeywords(pFxVal, &pArmor->keyword);
 			}
 		}
 		break;
@@ -356,6 +389,7 @@ void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDes
 
 				RegisterNumber(pFxVal, "subType", weaponType);
 				RegisterNumber(pFxVal, "damage", damage);
+				RegisterKeywords(pFxVal, &pWeapon->keyword);
 			}
 		}
 		break;
@@ -382,7 +416,37 @@ void ExtendStandardItemData(GFxValue * pFxVal, PlayerCharacter::ObjDesc * objDes
 			}
 		}
 		break;
+		
+		case kFormType_Potion:
+		{
+			AlchemyItem * pAlchemy = DYNAMIC_CAST(pForm, TESForm, AlchemyItem);
+			if(pAlchemy)
+			{
+				RegisterNumber(pFxVal, "flags", pAlchemy->unkA4.unk00.flags);
+			}
+		}
+		break;
+	
+		case kFormType_Book:
+		{
+			TESObjectBOOK * pBook = DYNAMIC_CAST(pForm, TESForm, TESObjectBOOK);
+			if(pBook)
+			{
+				RegisterKeywords(pFxVal, &pBook->keyword);
+			}
+		}
+		break;
 
+		case kFormType_Misc:
+		{
+			TESObjectMISC * pMisc = DYNAMIC_CAST(pForm, TESForm, TESObjectMISC);
+			if(pMisc)
+			{
+				RegisterKeywords(pFxVal, &pMisc->keyword);
+			}
+		}
+		break;
+		
 		default:
 			break;
 	}
@@ -437,14 +501,21 @@ void ExtendMagicItemData(GFxValue * pFxVal, TESForm * pForm)
 		case kFormType_Potion:
 		{
 			MagicItem * pMagicItem = DYNAMIC_CAST(pForm, TESForm, MagicItem);
-			MagicItem::EffectItem * pEffect = CALL_MEMBER_FN(pMagicItem, GetCostliestEffectItem)(5, false);
-			if(pEffect && pEffect->mgef)
+			if(pMagicItem)
 			{
-				UInt32 school = pEffect->mgef->school();
-				UInt32 skillLevel = pEffect->mgef->level();
+				MagicItem::EffectItem * pEffect = CALL_MEMBER_FN(pMagicItem, GetCostliestEffectItem)(5, false);
+				if(pEffect && pEffect->mgef)
+				{
+					UInt32 school = pEffect->mgef->school();
+					UInt32 skillLevel = pEffect->mgef->level();
 
-				RegisterNumber(pFxVal, "subType", (double)school);
-				RegisterNumber(pFxVal, "skillLevel", (double)skillLevel);
+					RegisterNumber(pFxVal, "subType", pEffect->mgef->school());
+					RegisterNumber(pFxVal, "skillLevel", pEffect->mgef->level());
+					RegisterNumber(pFxVal, "magnitude", pEffect->magnitude);
+					RegisterNumber(pFxVal, "duration", pEffect->duration);
+					RegisterNumber(pFxVal, "actorValue", pEffect->mgef->unk38.actorValue);
+					RegisterNumber(pFxVal, "magicType", pEffect->mgef->unk38.type);
+				}
 			}
 		}
 		break;

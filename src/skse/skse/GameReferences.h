@@ -3,6 +3,7 @@
 #include "skse/GameFormComponents.h"
 #include "skse/GameForms.h"
 #include "skse/NiObjects.h"
+#include "GameBSExtraData.h"
 
 class BSAnimationGraphEvent;
 
@@ -52,36 +53,12 @@ public:
 };
 STATIC_ASSERT(sizeof(IPostAnimationChannelUpdateFunctor) == 0x128);
 
-class BSExtraData
-{
-public:
-	BSExtraData();
-	virtual ~BSExtraData();
-
-	BSExtraData* next;
-	UInt8 type;
-	UInt8 padding[3];
-};
-
-class BaseExtraList
-{
-public:
-	BaseExtraList();
-
-	struct PresenceBitfield
-	{
-		UInt8	bits[0x18];
-	};
-
-	// vtable
-	BSExtraData* head;
-	PresenceBitfield* presence;
-};
-
 // 54
 class TESObjectREFR : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_Reference };
+
 	// currently none of these have been analyzed
 	virtual void	Unk_39(void);
 	virtual void	Unk_3A(void);
@@ -255,7 +232,7 @@ STATIC_ASSERT(sizeof(Actor) == 0x1B0);
 // Character + 98 = process?
 class Character : public Actor
 {
-	//
+	enum { kTypeID = kFormType_Character };
 };
 
 // 718
@@ -304,7 +281,7 @@ class ChainExplosion : public Explosion
 // 88
 class Hazard : public TESObjectREFR
 {
-	//
+	enum { kTypeID = kFormType_Hazard };
 };
 
 // 140+
@@ -316,41 +293,41 @@ class Projectile : public TESObjectREFR
 // 150
 class BarrierProjectile : public Projectile
 {
-	//
+	enum { kTypeID = kFormType_BarrierProj };
 };
 
 // 174
 class BeamProjectile : public Projectile
 {
-	//
+	enum { kTypeID = kFormType_BeamProj };
 };
 
 // 16C
 class ConeProjectile : public Projectile
 {
-	//
+	enum { kTypeID = kFormType_ConeProj };
 };
 
 // 148
 class FlameProjectile : public Projectile
 {
-	//
+	enum { kTypeID = kFormType_FlameProj };
 };
 
 // 148
 class GrenadeProjectile : public Projectile
 {
-	//
+	enum { kTypeID = kFormType_Grenade };
 };
 
 // 148
 class MissileProjectile : public Projectile
 {
-	//
+	enum { kTypeID = kFormType_Missile };
 };
 
 // 150
 class ArrowProjectile : public MissileProjectile
 {
-	//
+	enum { kTypeID = kFormType_Arrow };
 };

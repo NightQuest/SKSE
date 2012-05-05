@@ -1,0 +1,227 @@
+#include "PapyrusContainer.h"
+
+#include "GameFormComponents.h"
+#include "GameForms.h"
+#include "GameRTTI.h"
+#include "GameObjects.h"
+#include "GameExtraData.h"
+
+#include <vector>
+#include <map>
+
+typedef std::vector<ExtraContainerChanges::EntryData*> ExtraDataVec;
+typedef std::map<TESForm*, UInt32> ExtraContainerMap;
+
+class ExtraContainerInfo
+{
+	ExtraDataVec	m_vec;
+	ExtraContainerMap m_map;
+public:
+	ExtraContainerInfo(ExtraContainerChanges::EntryDataList * entryList) : m_map(), m_vec()
+	{
+		m_vec.reserve(128);
+		if (entryList) {
+			entryList->Visit(*this);
+		}
+	}
+
+	bool Accept(ExtraContainerChanges::EntryData* data) 
+	{
+		if (data) {
+			m_vec.push_back(data);
+			m_map[data->type] = m_vec.size()-1;
+		}
+		return true;
+	}
+
+	bool IsValidEntry(TESContainer::Entry* pEntry, SInt32& numObjects)
+	{
+		if (pEntry) {
+			numObjects = pEntry->count;
+			TESForm* pForm = pEntry->form;
+
+			if (DYNAMIC_CAST(pForm, TESForm, TESLevItem))
+				return false;
+
+			ExtraContainerMap::iterator it = m_map.find(pForm);
+			ExtraContainerMap::iterator itEnd = m_map.end();
+			if (it != itEnd) {
+				UInt32 index = it->second;
+				ExtraContainerChanges::EntryData* pXData = m_vec[index];
+				if (pXData) {
+					numObjects += pXData->countDelta;
+				}
+				// clear the object from the vector so we don't bother to look for it
+				// in the second step
+				m_vec[index] = NULL;
+			}
+
+			if (numObjects > 0) {
+				//if (IsConsoleMode()) {
+				//	PrintItemType(pForm);
+				//}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// returns the count of items left in the vector
+	UInt32 CountItems() {
+		UInt32 count = 0;
+		ExtraDataVec::iterator itEnd = m_vec.end();
+		ExtraDataVec::iterator it = m_vec.begin();
+		while (it != itEnd) {
+			ExtraContainerChanges::EntryData* extraData = (*it);
+			if (extraData && (extraData->countDelta > 0)) {
+				count++;
+				//if (IsConsoleMode()) {
+				//	PrintItemType(extraData->type);
+				//}
+			}
+			++it;
+		}
+		return count;
+	}
+
+	ExtraContainerChanges::EntryData* GetNth(UInt32 n, UInt32 count) {
+		ExtraDataVec::iterator itEnd = m_vec.end();
+		ExtraDataVec::iterator it = m_vec.begin();
+		while (it != itEnd) {
+			ExtraContainerChanges::EntryData* extraData = (*it);
+			if (extraData && (extraData->countDelta > 0)) {
+				if(count == n)
+				{
+					return extraData;
+				}
+				count++;
+			}
+			++it;
+		}
+		return NULL;
+	}
+
+};
+
+
+class ContainerCountIf
+{
+	ExtraContainerInfo& m_info;
+public:
+	ContainerCountIf(ExtraContainerInfo& info) : m_info(info) { }
+
+	bool Accept(TESContainer::Entry* pEntry) const
+	{
+		SInt32 numObjects = 0; // not needed in this count
+		return m_info.IsValidEntry(pEntry, numObjects);
+	}
+};
+
+class ContainerFindNth
+{
+	ExtraContainerInfo& m_info;
+	UInt32 m_findIndex;
+	UInt32 m_curIndex;
+public:
+	ContainerFindNth(ExtraContainerInfo& info, UInt32 findIndex) : m_info(info), m_findIndex(findIndex), m_curIndex(0) { }
+
+	bool Accept(TESContainer::Entry* pEntry)
+	{
+		SInt32 numObjects = 0;
+		if (m_info.IsValidEntry(pEntry, numObjects)) {
+			if (m_curIndex == m_findIndex) {
+				return true;
+			}
+			m_curIndex++;
+		}
+		return false;
+	}
+
+	UInt32 GetCurIdx() { return m_curIndex; }
+};
+
+namespace papyrusContainer
+{
+
+	UInt32 GetNumItems(TESObjectREFR* pContainerRef)
+	{
+		if (!pContainerRef)
+			return 0;
+
+		TESContainer* pContainer = NULL;
+		TESForm* pBaseForm = pContainerRef->baseForm;
+		if (pBaseForm) {
+			pContainer = DYNAMIC_CAST(pBaseForm, TESForm, TESContainer);
+		}
+		if (!pContainer)
+			return 0;
+
+		UInt32 count = 0;
+			
+		ExtraContainerChanges* pXContainerChanges = static_cast<ExtraContainerChanges*>(pContainerRef->extraData.GetByType(kExtraData_ContainerChanges));
+		ExtraContainerInfo info(pXContainerChanges ? pXContainerChanges->data->objList : NULL);
+
+
+		// first walk the base container
+		if (pContainer) {
+			ContainerCountIf counter(info);
+			count = pContainer->CountIf(counter);
+		}
+
+		// now count the remaining items
+		count += info.CountItems();
+
+		return count;
+	}
+	
+
+	TESForm* GetNthForm(TESObjectREFR* pContainerRef, UInt32 n)
+	{
+		if (!pContainerRef)
+			return NULL;
+
+		TESContainer* pContainer = NULL;
+		TESForm* pBaseForm = pContainerRef->baseForm;
+		if (pBaseForm) {
+			pContainer = DYNAMIC_CAST(pBaseForm, TESForm, TESContainer);
+		}
+		if (!pContainer)
+			return NULL;
+		
+		UInt32 count = 0;
+
+		ExtraContainerChanges* pXContainerChanges = static_cast<ExtraContainerChanges*>(pContainerRef->extraData.GetByType(kExtraData_ContainerChanges));
+		ExtraContainerInfo info(pXContainerChanges ? pXContainerChanges->data->objList : NULL);
+
+		// first look in the base container
+		if (pContainer) {
+			ContainerFindNth finder(info, n);
+			TESContainer::Entry* pFound = pContainer->Find(finder);
+			if (pFound) {
+				return pFound->form;
+			} else {
+				count = finder.GetCurIdx();
+			}
+		}
+
+		// now walk the remaining items in the map
+		ExtraContainerChanges::EntryData* pEntryData = info.GetNth(n, count);
+		if (pEntryData) {
+			return pEntryData->type;
+		}
+		return NULL;
+	}
+};
+
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
+
+void papyrusContainer::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectREFR, UInt32>("GetNumItems", "ObjectReference", papyrusContainer::GetNumItems, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<TESObjectREFR, TESForm*, UInt32>("GetNthForm", "ObjectReference", papyrusContainer::GetNthForm, registry));
+
+}

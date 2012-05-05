@@ -1,11 +1,16 @@
 #pragma once
 
+struct StaticFunctionTag;
+class VMClassRegistry;
+
 namespace papyrusMath 
 {
-	UInt32 LeftShift(UInt32 value, UInt32 shiftBy);
-	UInt32 RightShift(UInt32 value, UInt32 shiftBy);
-	UInt32 LogicalAnd(UInt32 arg1, UInt32 arg2);
-	UInt32 LogicalOr(UInt32 arg1, UInt32 arg2);
-	UInt32 LogicalXor(UInt32 arg1, UInt32 arg2);
-	UInt32 LogicalNot(UInt32 arg1);
+	void RegisterFuncs(VMClassRegistry* registry);
+
+	UInt32 LeftShift(StaticFunctionTag* base, UInt32 value, UInt32 shiftBy);
+	UInt32 RightShift(StaticFunctionTag* base, UInt32 value, UInt32 shiftBy);
+	UInt32 LogicalAnd(StaticFunctionTag* base, UInt32 arg1, UInt32 arg2);
+	UInt32 LogicalOr(StaticFunctionTag* base, UInt32 arg1, UInt32 arg2);
+	UInt32 LogicalXor(StaticFunctionTag* base, UInt32 arg1, UInt32 arg2);
+	UInt32 LogicalNot(StaticFunctionTag* base, UInt32 arg1);
 }

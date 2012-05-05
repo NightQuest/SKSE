@@ -234,6 +234,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusContainer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusContainer.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusForm.cpp"
 					>
 				</File>
@@ -323,11 +331,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GameBSExtraData.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GameData.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\GameData.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GameExtraData.h"
 				>
 			</File>
 			<File

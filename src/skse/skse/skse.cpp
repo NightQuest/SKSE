@@ -87,7 +87,7 @@ void SKSE_Initialize(void)
 		Hooks_Gameplay_Commit();
 		Hooks_ObScript_Commit();
 		Hooks_Papyrus_Commit();
-//		Hooks_DirectInput_Commit();
+		Hooks_DirectInput_Commit();
 
 		FlushInstructionCache(GetCurrentProcess(), NULL, 0);
 

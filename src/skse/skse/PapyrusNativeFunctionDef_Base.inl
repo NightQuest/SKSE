@@ -89,21 +89,91 @@ public:
 #else
 		T_Result
 #endif
-		(* CallbackType)(T_Base * base);
+		(* CallbackType)(T_Base * base
+#if NUM_PARAMS >= 1
+		, T_Arg0 arg0
+#endif
+#if NUM_PARAMS >= 2
+		, T_Arg1 arg1
+#endif
+#if NUM_PARAMS >= 3
+		, T_Arg2 arg2
+#endif
+#if NUM_PARAMS >= 4
+		, T_Arg3 arg3
+#endif
+#if NUM_PARAMS >= 5
+		, T_Arg4 arg4
+#endif
+#if NUM_PARAMS >= 6
+		, T_Arg5 arg5
+#endif
+#if NUM_PARAMS >= 7
+		, T_Arg6 arg6
+#endif
+#if NUM_PARAMS >= 8
+		, T_Arg7 arg7
+#endif
+#if NUM_PARAMS >= 9
+		, T_Arg8 arg8
+#endif
+#if NUM_PARAMS >= 10
+		, T_Arg9 arg9
+#endif
+		);
 
-	CLASS_NAME(const char * fnName, const char * className, CallbackType callback)
-		:NativeFunction(fnName, className, 0, NUM_PARAMS)
+	CLASS_NAME(const char * fnName, const char * className, CallbackType callback, VMClassRegistry * registry)
+		:NativeFunction(fnName, className, IsStaticType <T_Base>::value, NUM_PARAMS)
 	{
 		// store callback
 		m_callback = (void *)callback;
 
-		// ### set up argument list/result
+#if NUM_PARAMS >= 1
+		m_params.data[0].type = GetTypeID <T_Arg0>(registry);
+#endif
+#if NUM_PARAMS >= 2
+		m_params.data[1].type = GetTypeID <T_Arg1>(registry);
+#endif
+#if NUM_PARAMS >= 3
+		m_params.data[2].type = GetTypeID <T_Arg2>(registry);
+#endif
+#if NUM_PARAMS >= 4
+		m_params.data[3].type = GetTypeID <T_Arg3>(registry);
+#endif
+#if NUM_PARAMS >= 5
+		m_params.data[4].type = GetTypeID <T_Arg4>(registry);
+#endif
+#if NUM_PARAMS >= 6
+		m_params.data[5].type = GetTypeID <T_Arg5>(registry);
+#endif
+#if NUM_PARAMS >= 7
+		m_params.data[6].type = GetTypeID <T_Arg6>(registry);
+#endif
+#if NUM_PARAMS >= 8
+		m_params.data[7].type = GetTypeID <T_Arg7>(registry);
+#endif
+#if NUM_PARAMS >= 9
+		m_params.data[8].type = GetTypeID <T_Arg8>(registry);
+#endif
+#if NUM_PARAMS >= 10
+		m_params.data[9].type = GetTypeID <T_Arg9>(registry);
+#endif
+
+#if VOID_SPEC
+		m_retnType = GetTypeID <void>(registry);
+#else
+		m_retnType = GetTypeID <T_Result>(registry);
+#endif
 	}
 
 	virtual ~CLASS_NAME()	{ }
 
-	virtual bool	Run(VMValue * baseValue, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state)
+	virtual bool	Run(VMValue * baseValue, VMClassRegistry * registry, UInt32 unk2, VMValue * resultValue, VMState * state)
 	{
+#if _DEBUG
+		DebugRunHook(baseValue, registry, unk2, resultValue, state);
+#endif
+
 		// get argument list
 		UInt32	argOffset = CALL_MEMBER_FN(state->argList, GetOffset)(state);
 
@@ -196,7 +266,7 @@ public:
 #if VOID_SPEC
 		resultValue->SetNone();
 #else
-		PackValue(resultValue, &result);
+		PackValue(resultValue, &result, registry);
 #endif
 
 		return true;

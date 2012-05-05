@@ -1,9 +1,12 @@
 #pragma once
 
 class TESCombatStyle;
+class VMClassRegistry;
 
 namespace papyrusCombatStyle
 {
+	void RegisterFuncs(VMClassRegistry* registry);
+
 	float GetOffensiveMult(TESCombatStyle* thisCombatStyle);
 	void SetOffensiveMult(TESCombatStyle* thisCombatStyle, float nuVal);
 	float GetDefensiveMult(TESCombatStyle* thisCombatStyle);

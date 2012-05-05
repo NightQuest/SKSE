@@ -13,6 +13,7 @@ Options::Options()
 ,m_moduleInfo(false)
 ,m_skipLauncher(true)
 ,m_launchSteam(false)
+,m_noTimeout(false)
 ,m_fpsLimit(0)
 {
 	//
@@ -170,6 +171,10 @@ bool Options::Read(int argc, char ** argv)
 				else if(!_stricmp(arg, "launchsteam"))
 				{
 					m_launchSteam = true;
+				}
+				else if(!_stricmp(arg, "notimeout"))
+				{
+					m_noTimeout = true;
 				}
 				else
 				{

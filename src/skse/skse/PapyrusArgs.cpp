@@ -1,41 +1,113 @@
 #include "PapyrusArgs.h"
 #include "PapyrusNativeFunctions.h"
+#include "PapyrusVM.h"
 
 //// type -> VMValue
 
-template <> void PackValue <void>(VMValue * dst, void * src)
+template <> void PackValue <void>(VMValue * dst, void * src, VMClassRegistry * registry)
 {
 	dst->SetNone();
 }
 
-template <> void PackValue <UInt32>(VMValue * dst, UInt32 * src)
+template <> void PackValue <UInt32>(VMValue * dst, UInt32 * src, VMClassRegistry * registry)
 {
 	dst->SetInt(*src);
 }
 
-template <> void PackValue <SInt32>(VMValue * dst, SInt32 * src)
+template <> void PackValue <SInt32>(VMValue * dst, SInt32 * src, VMClassRegistry * registry)
 {
 	dst->SetInt(*src);
 }
 
-template <> void PackValue <float>(VMValue * dst, float * src)
+template <> void PackValue <float>(VMValue * dst, float * src, VMClassRegistry * registry)
 {
 	dst->SetFloat(*src);
 }
 
-template <> void PackValue <bool>(VMValue * dst, bool * src)
+template <> void PackValue <bool>(VMValue * dst, bool * src, VMClassRegistry * registry)
 {
 	dst->SetBool(*src);
 }
 
-//// VMValue -> type
-
-template <> void UnpackValue <StaticFunctionTag *>(StaticFunctionTag ** dst, VMValue * src, PapyrusClassRegistry * registry)
+void BindID(VMIdentifier ** identifier, void * srcData, VMClassRegistry * registry, IObjectHandlePolicy * handlePolicy, UInt32 typeID)
 {
-	*dst = NULL;
+	UInt32	unk = 0;
+
+	VMClassInfo	* classInfo = (*identifier)->m_type;
+	if(classInfo)
+		classInfo->AddRef();
+
+	if(registry->Unk_0D(&classInfo->name, &unk))
+	{
+		UInt64	handle = handlePolicy->Create(typeID, srcData);
+
+		if(	handlePolicy->IsType(unk, handle) ||
+			(handle == handlePolicy->GetInvalidHandle()))
+		{
+			CALL_MEMBER_FN(registry->GetObjectBindPolicy(), BindObject)(identifier, handle);
+		}
+	}
+
+	if(classInfo)
+		classInfo->Release();
 }
 
-template <> void UnpackValue <float>(float * dst, VMValue * src, PapyrusClassRegistry * registry)
+void PackHandle(VMValue * dst, void * src, UInt32 typeID, VMClassRegistry * registry)
+{
+	dst->SetNone();
+
+	if(!src) return;
+
+	VMClassInfo	* classInfo = NULL;
+
+	// get class info
+	if(registry->GetFormClass(typeID, &classInfo))
+		if(classInfo)
+			classInfo->Release();
+
+	if(!classInfo) return;
+
+	IObjectHandlePolicy	* handlePolicy = registry->GetHandlePolicy();
+
+	UInt64			handle = handlePolicy->Create(typeID, src);
+	VMIdentifier	* identifier = NULL;
+
+	// find existing identifier
+	if(!registry->Unk_1A(handle, classInfo->name.data, &identifier))
+	{
+		if(registry->Unk_13(&classInfo->name, &identifier))
+		{
+			if(identifier)
+			{
+				BindID(&identifier, src, registry, handlePolicy, typeID);
+			}
+		}
+	}
+
+	// copy the identifier out
+	if(identifier)
+	{
+		VMValue	tempValue;
+
+		tempValue.SetIdentifier(classInfo);
+
+		CALL_MEMBER_FN(dst, Set)(&tempValue);
+		dst->SetIdentifier(&identifier);
+	}
+
+	// release our reference
+	if(identifier)
+	{
+		if(!identifier->DecrementLock())
+		{
+			identifier->Destroy();
+		}
+	}
+}
+
+//// VMValue -> type
+
+template <> void UnpackValue <float>(float * dst, VMValue * src, VMClassRegistry * registry)
 {
 	switch(src->type)
 	{
@@ -57,7 +129,7 @@ template <> void UnpackValue <float>(float * dst, VMValue * src, PapyrusClassReg
 	}
 }
 
-template <> void UnpackValue <UInt32>(UInt32 * dst, VMValue * src, PapyrusClassRegistry * registry)
+template <> void UnpackValue <UInt32>(UInt32 * dst, VMValue * src, VMClassRegistry * registry)
 {
 	switch(src->type)
 	{
@@ -79,7 +151,7 @@ template <> void UnpackValue <UInt32>(UInt32 * dst, VMValue * src, PapyrusClassR
 	}
 }
 
-template <> void UnpackValue <SInt32>(SInt32 * dst, VMValue * src, PapyrusClassRegistry * registry)
+template <> void UnpackValue <SInt32>(SInt32 * dst, VMValue * src, VMClassRegistry * registry)
 {
 	switch(src->type)
 	{
@@ -101,7 +173,7 @@ template <> void UnpackValue <SInt32>(SInt32 * dst, VMValue * src, PapyrusClassR
 	}
 }
 
-template <> void UnpackValue <bool>(bool * dst, VMValue * src, PapyrusClassRegistry * registry)
+template <> void UnpackValue <bool>(bool * dst, VMValue * src, VMClassRegistry * registry)
 {
 	switch(src->type)
 	{
@@ -121,4 +193,66 @@ template <> void UnpackValue <bool>(bool * dst, VMValue * src, PapyrusClassRegis
 		*dst = 0;
 		break;
 	}
+}
+
+void * UnpackHandle(VMValue * src, VMClassRegistry * registry, UInt32 typeID)
+{
+	if(!src->IsIdentifier()) return NULL;
+
+	UInt64	handle = src->data.id->GetHandle();
+
+	if(!(*g_objectHandlePolicy)->IsType(typeID, handle)) return NULL;
+	if(!(*g_objectHandlePolicy)->Unk_02(handle)) return NULL;
+
+	return (*g_objectHandlePolicy)->Resolve(typeID, handle);
+}
+
+//// type -> type ID
+
+template <> UInt32 GetTypeID <void>(VMClassRegistry * registry)
+{
+	return VMValue::kType_None;
+}
+
+template <> UInt32 GetTypeID <UInt32>(VMClassRegistry * registry)
+{
+	return VMValue::kType_Int;
+}
+
+template <> UInt32 GetTypeID <SInt32>(VMClassRegistry * registry)
+{
+	return VMValue::kType_Int;
+}
+
+template <> UInt32 GetTypeID <int>(VMClassRegistry * registry)
+{
+	return VMValue::kType_Int;
+}
+
+template <> UInt32 GetTypeID <float>(VMClassRegistry * registry)
+{
+	return VMValue::kType_Float;
+}
+
+template <> UInt32 GetTypeID <bool>(VMClassRegistry * registry)
+{
+	return VMValue::kType_Bool;
+}
+
+UInt32 GetTypeIDFromFormTypeID(UInt32 formTypeID, VMClassRegistry * registry)
+{
+	UInt32		result = 0;
+	VMClassInfo	* info = NULL;
+
+	if(registry->GetFormClass(formTypeID, &info))
+	{
+		if(info)
+		{
+			result = (UInt32)info;
+
+			info->Release();	// yes, really
+		}
+	}
+
+	return result;
 }

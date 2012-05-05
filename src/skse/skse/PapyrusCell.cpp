@@ -53,3 +53,15 @@ namespace papyrusCell
 		return NULL;
 	}
 }
+
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
+
+void papyrusCell::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectCELL, UInt32, UInt32>("GetNumRefs", "Cell", papyrusCell::GetNumRefs, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <TESObjectCELL, TESObjectREFR*, UInt32, UInt32>("GetNthRef", "Cell", papyrusCell::GetNthRef, registry));
+}

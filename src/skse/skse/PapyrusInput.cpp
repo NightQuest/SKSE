@@ -4,53 +4,83 @@
 
 namespace papyrusInput
 {
-	bool IsKeyPressed(Input* thisInput, UInt32 dxKeycode)
+	bool IsKeyPressed(StaticFunctionTag* thisInput, UInt32 dxKeycode)
 	{
 		return DIHookControl::GetSingleton().IsKeyPressed(dxKeycode);
 	}
 
-	void TapKey(Input* thisInput, UInt32 dxKeycode)
+	void TapKey(StaticFunctionTag* thisInput, UInt32 dxKeycode)
 	{
 		DIHookControl::GetSingleton().TapKey(dxKeycode);
 	}
 
-	void HoldKey(Input* thisInput, UInt32 dxKeycode)
+	void HoldKey(StaticFunctionTag* thisInput, UInt32 dxKeycode)
 	{
 		DIHookControl::GetSingleton().SetKeyHeldState(dxKeycode, true);
 	}
 
-	void ReleaseKey(Input* thisInput, UInt32 dxKeycode)
+	void ReleaseKey(StaticFunctionTag* thisInput, UInt32 dxKeycode)
 	{
 		DIHookControl::GetSingleton().SetKeyHeldState(dxKeycode, false);
 	}
 
-	bool IsKeyHeld(Input* thisInput, UInt32 dxKeycode)
+	bool IsKeyHeld(StaticFunctionTag* thisInput, UInt32 dxKeycode)
 	{
 		return DIHookControl::GetSingleton().IsKeyHeld(dxKeycode);
 	}
 
-	void DisableKey(Input* thisInput, UInt32 dxKeycode)
+	void DisableKey(StaticFunctionTag* thisInput, UInt32 dxKeycode)
 	{
 		DIHookControl::GetSingleton().SetKeyDisableState(dxKeycode, true, 0);
 	}
 
-	void EnableKey(Input* thisInput, UInt32 dxKeycode)
+	void EnableKey(StaticFunctionTag* thisInput, UInt32 dxKeycode)
 	{
 		DIHookControl::GetSingleton().SetKeyDisableState(dxKeycode, false, 0);
 	}
 	
-	bool IsKeyDisabled(Input* thisInput, UInt32 dxKeycode)
+	bool IsKeyDisabled(StaticFunctionTag* thisInput, UInt32 dxKeycode)
 	{
 		return DIHookControl::GetSingleton().IsKeyDisabled(dxKeycode);
 	}
 
-	//UInt32 GetNumKeysPressed(Input* thisInput);
-	//UInt32 GetKeyPressed(Input* thisInput, UInt32 which);
+	//UInt32 GetNumKeysPressed(StaticFunctionTag* thisInput);
+	//UInt32 GetKeyPressed(StaticFunctionTag* thisInput, UInt32 which);
 
-	//UInt32 GetNumMouseButtonsPressed(Input* thisInput);
-	//UInt32 GetMouseButtonPressed(Input* thisInput, UInt32 which);
+	//UInt32 GetNumMouseButtonsPressed(StaticFunctionTag* thisInput);
+	//UInt32 GetMouseButtonPressed(StaticFunctionTag* thisInput, UInt32 which);
 
-	//void DisableMouse(Input* thisInput);
-	//void EnableMouse(Input* thisInput);
-	//bool IsMouseDisabled(Input* thisInput);
+	//void DisableMouse(StaticFunctionTag* thisInput);
+	//void EnableMouse(StaticFunctionTag* thisInput);
+	//bool IsMouseDisabled(StaticFunctionTag* thisInput);
+}
+
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
+
+void papyrusInput::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, bool, UInt32> ("IsKeyPressed", "Input", papyrusInput::IsKeyPressed, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, void, UInt32> ("TapKey", "Input", papyrusInput::TapKey, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, void, UInt32> ("HoldKey", "Input", papyrusInput::HoldKey, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, void, UInt32> ("ReleaseKey", "Input", papyrusInput::ReleaseKey, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, bool, UInt32> ("IsKeyHeld", "Input", papyrusInput::IsKeyHeld, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, bool, UInt32> ("IsKeyDisabeld", "Input", papyrusInput::IsKeyDisabled, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, void, UInt32> ("DisableKey", "Input", papyrusInput::DisableKey, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, void, UInt32> ("EnableKey", "Input", papyrusInput::EnableKey, registry));
 }

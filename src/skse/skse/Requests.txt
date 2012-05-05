@@ -1,0 +1,38 @@
+SKSE Requests
+
+OnGameLoaded/OnGameStarted
+OnKeyDown/OnKeyUp
+IsKeyPressed
+GetFirstRef/GetNextRef
+GetCrosshairRef
+AddKeyword
+ScriptEffect access Magnitude and Duration
+Bitwise math ops
+String contains functions
+GetName/SetName
+IsControl
+OnControlPressed
+Get/SetWeight
+SEtGameSettingInt
+SetGameSettingFloat
+SetContantValue
+GetEncounterZone
+InventoryWalking
+GEtEquippedItem(slot)
+GetEquippedItemType(slot)
+Get/SetSex
+Get/SetWeapon values
+Actor.GetBoundingBox/EditorScale
+Actor.GetMass
+IsAttacking/IsBlocking/IsSwimming etc
+Actors.AddPerk (may not work as perhaps only the character has the perk slots)
+IsFormValid
+IsSoundPlaying
+GetHighActors
+
+
+SetCombatStyle
+con_PCB
+OnWeaponHits
+OnWeaponDrawn/Sheathed
+DamageActorValuePercent

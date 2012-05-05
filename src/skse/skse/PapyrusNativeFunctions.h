@@ -10,7 +10,10 @@
 // all of this is originally in namespace BSScript
 
 // use this for T_Base when there is no base
-struct StaticFunctionTag { };
+struct StaticFunctionTag
+{
+	enum { kTypeID = 0 };
+};
 
 // stack frame?
 class VMState
@@ -37,11 +40,11 @@ public:
 	virtual StringCache::Ref *	GetName(void) = 0;
 	virtual StringCache::Ref *	GetClassName(void) = 0;
 	virtual StringCache::Ref *	GetStr10(void) = 0;
-	virtual void				GetReturnType(UInt32 * dst) = 0;
+	virtual UInt32 *			GetReturnType(UInt32 * dst) = 0;
 	virtual UInt32				GetNumParams(void) = 0;
-	virtual void				GetParam(UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut) = 0;
+	virtual UInt32 *			GetParam(UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut) = 0;
 	virtual UInt32				GetNumParams2(void) = 0;
-	virtual bool				Unk_08(void) = 0;
+	virtual bool				IsNative(void) = 0;
 	virtual UInt8				GetUnk20(void) = 0;
 	virtual bool				Unk_0A(void) = 0;
 	virtual UInt32				Unk_0B(void) = 0;
@@ -55,7 +58,7 @@ public:
 	virtual UInt8				GetUnk21(void) = 0;
 	virtual void				SetUnk21(UInt8 arg) = 0;
 	virtual bool				HasCallback(void) = 0;
-	virtual bool				Run(VMValue * baseValue, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;	// unique to each type combination
+	virtual bool				Run(VMValue * baseValue, VMClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;	// unique to each type combination
 };
 
 // BSScript::NF_util::NativeFunctionBase
@@ -73,7 +76,12 @@ public:
 		struct Entry
 		{
 			StringCache::Ref	name;	// 00
-			UInt32				type;	// 04
+
+			union
+			{
+				UInt32			type;		// 04 - shared with VMValue::type
+				VMClassInfo		* typePtr;	// 04
+			};
 		};
 
 		Entry	* data;		// 00 length = numParams + unk06
@@ -84,14 +92,14 @@ public:
 	virtual StringCache::Ref *	GetName(void)				{ return &m_fnName; }
 	virtual StringCache::Ref *	GetClassName(void)			{ return &m_className; }
 	virtual StringCache::Ref *	GetStr10(void)				{ return &unk10; }
-	virtual void				GetReturnType(UInt32 * dst)	{ *dst = m_retnType; }
+	virtual UInt32 *			GetReturnType(UInt32 * dst)	{ *dst = m_retnType; return dst; }
 	virtual UInt32				GetNumParams(void)			{ return m_params.unk06; }
-	virtual void				GetParam(UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut)
-															{ CALL_MEMBER_FN(this, Impl_GetParam)(idx, nameOut, typeOut); }
+	virtual UInt32 *			GetParam(UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut)
+															{ return CALL_MEMBER_FN(this, Impl_GetParam)(idx, nameOut, typeOut); }
 	virtual UInt32				GetNumParams2(void)			{ return m_params.unk06; }
-	virtual bool				Unk_08(void)				{ return true; }
+	virtual bool				IsNative(void)				{ return true; }
 	virtual UInt8				GetUnk20(void)				{ return unk20; }
-	virtual bool				Unk_0A(void)				{ return true; }
+	virtual bool				Unk_0A(void)				{ return false; }
 	virtual UInt32				Unk_0B(void)				{ return 0; }
 	virtual UInt32				GetUnk24(void)				{ return unk24; }
 	virtual StringCache::Ref *	GetStr28(void)				{ return &unk28; }
@@ -106,11 +114,11 @@ public:
 	virtual UInt8				GetUnk21(void)				{ return unk21; }
 	virtual void				SetUnk21(UInt8 arg)			{ unk21 = arg; }
 	virtual bool				HasCallback(void) = 0;
-	virtual bool				Run(VMValue * baseValue, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
+	virtual bool				Run(VMValue * baseValue, VMClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
 
 	MEMBER_FN_PREFIX(NativeFunctionBase);
 	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C2BC20);
-	DEFINE_MEMBER_FN(Impl_GetParam, void, 0x00C2C0A0, UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut);
+	DEFINE_MEMBER_FN(Impl_GetParam, UInt32 *, 0x00C2C0A0, UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut);
 	DEFINE_MEMBER_FN(Impl_Invoke, UInt32, 0x00C2BE00, UInt32 unk0, UInt32 unk1, UInt32 unk2, UInt32 unk3);
 	DEFINE_MEMBER_FN(Impl_Fn10, StringCache::Ref *, 0x00C2BC60);
 	DEFINE_MEMBER_FN(Impl_Fn12, bool, 0x00C2C0B0, UInt32 idx, UInt32 out);
@@ -166,17 +174,19 @@ protected:
 class NativeFunction : public NativeFunctionBase
 {
 public:
-	NativeFunction(const char * fnName, const char * className, UInt32 unk0, UInt32 numParams)
-								{ CALL_MEMBER_FN(this, Impl_ctor)(fnName, className, unk0, numParams); }
+	NativeFunction(const char * fnName, const char * className, UInt8 isStatic, UInt32 numParams)
+								{ CALL_MEMBER_FN(this, Impl_ctor)(fnName, className, isStatic, numParams); }
 	// lower class destructors are invoked by this call
 	virtual ~NativeFunction()	{ CALL_MEMBER_FN(this, Impl_dtor)(); }
 
 	virtual bool				HasCallback(void)	{ return m_callback != 0; }
-	virtual bool				Run(VMValue * baseValue, PapyrusClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
+	virtual bool				Run(VMValue * baseValue, VMClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
 
 	MEMBER_FN_PREFIX(NativeFunction);
 	DEFINE_MEMBER_FN(Impl_ctor, NativeFunction *, 0x00C2BD50, const char * fnName, const char * className, UInt32 unk0, UInt32 numParams);
 	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C2BC20);
+
+	void	DebugRunHook(VMValue * baseValue, VMClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state);
 
 protected:
 	void	* m_callback;	// 2C

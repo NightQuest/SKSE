@@ -360,6 +360,10 @@ void ExtendStandardItemData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerC
 
 	PlayerCharacter	* pPC = *g_thePlayer;
 
+	BGSKeywordForm	* keywords = DYNAMIC_CAST(pForm, TESForm, BGSKeywordForm);
+	if(keywords)
+		RegisterKeywords(pFxVal, movieView, keywords);
+
 	switch(pForm->GetFormType())
 	{
 		case kFormType_Armor:
@@ -372,7 +376,6 @@ void ExtendStandardItemData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerC
 				RegisterNumber(pFxVal, "armor", armorValue);
 				RegisterNumber(pFxVal, "partMask", pArmor->bipedObject.data.parts);
 				RegisterNumber(pFxVal, "weightClass", pArmor->bipedObject.data.weightClass);
-				RegisterKeywords(pFxVal, movieView, &pArmor->keyword);
 			}
 		}
 		break;
@@ -388,7 +391,6 @@ void ExtendStandardItemData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerC
 
 				RegisterNumber(pFxVal, "subType", weaponType);
 				RegisterNumber(pFxVal, "damage", damage);
-				RegisterKeywords(pFxVal, movieView, &pWeapon->keyword);
 			}
 		}
 		break;
@@ -431,7 +433,24 @@ void ExtendStandardItemData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerC
 			TESObjectBOOK * pBook = DYNAMIC_CAST(pForm, TESForm, TESObjectBOOK);
 			if(pBook)
 			{
-				RegisterKeywords(pFxVal, movieView, &pBook->keyword);
+				RegisterNumber(pFxVal, "bookType", pBook->data.type);
+				switch(pBook->data.GetSanitizedType())
+				{
+					case TESObjectBOOK::Data::kType_Skill:
+						RegisterNumber(pFxVal, "teachesSkill", pBook->data.teaches.skill);
+						break;
+
+					case TESObjectBOOK::Data::kType_Spell:
+					{
+						double formID = -1;
+
+						if(pBook->data.teaches.spell)
+							formID = pBook->data.teaches.spell->formID;
+
+						RegisterNumber(pFxVal, "teachesSpell", formID);
+					}
+					break;
+				}
 			}
 		}
 		break;
@@ -441,7 +460,7 @@ void ExtendStandardItemData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerC
 			TESObjectMISC * pMisc = DYNAMIC_CAST(pForm, TESForm, TESObjectMISC);
 			if(pMisc)
 			{
-				RegisterKeywords(pFxVal, movieView, &pMisc->keyword);
+				//
 			}
 		}
 		break;

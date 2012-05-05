@@ -39,6 +39,25 @@ void Hooks_Gameplay_EnableForceContainerCategorization(bool enable)
 	g_forceContainerCategorization = enable ? 1 : 0;
 }
 
+UInt32 g_invalidateKeywordCache = 0;
+static UInt32 kHook_BGSKeyword_Base = 0x005484C0;
+static UInt32 kHook_BGSKeyword_Create_Return = kHook_BGSKeyword_Base + 5;
+
+static void __declspec(naked) Hook_BGSKeyword_Create(void)
+{
+	__asm
+	{
+		mov		g_invalidateKeywordCache, 1
+
+		// original code
+		push	esi
+		push	0
+		push	0
+
+		jmp		[kHook_BGSKeyword_Create_Return]
+	}
+}
+
 void Hooks_Gameplay_Commit(void)
 {
 	// optionally force containers in to "npc" mode, showing categories
@@ -54,4 +73,6 @@ void Hooks_Gameplay_Commit(void)
 			g_forceContainerCategorization = 1;
 		}
 	}
+
+	WriteRelJump(kHook_BGSKeyword_Base, (UInt32)Hook_BGSKeyword_Create);
 }

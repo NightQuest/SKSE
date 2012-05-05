@@ -20,8 +20,8 @@ namespace papyrusInput
 	void EnableKey(StaticFunctionTag* thisInput, UInt32 dxKeycode);
 	bool IsKeyDisabled(StaticFunctionTag* thisInput, UInt32 dxKeycode);
 
-	//UInt32 GetNumKeysPressed(Input* thisInput);
-	//UInt32 GetKeyPressed(Input* thisInput, UInt32 which);
+	UInt32 GetNumKeysPressed(StaticFunctionTag* thisInput);
+	SInt32 GetNthKeyPressed(StaticFunctionTag* thisInput, UInt32 which);
 
 	//UInt32 GetNumMouseButtonsPressed(Input* thisInput);
 	//UInt32 GetMouseButtonPressed(Input* thisInput, UInt32 which);

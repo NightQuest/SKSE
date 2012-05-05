@@ -47,8 +47,15 @@ namespace papyrusInput
 		return DIHookControl::GetSingleton().IsKeyDisabled(dxKeycode);
 	}
 
-	//UInt32 GetNumKeysPressed(StaticFunctionTag* thisInput);
-	//UInt32 GetKeyPressed(StaticFunctionTag* thisInput, UInt32 which);
+	UInt32 GetNumKeysPressed(StaticFunctionTag* thisInput)
+	{
+		return DIHookControl::GetSingleton().GetNumKeysPressed();
+	}
+
+	SInt32 GetNthKeyPressed(StaticFunctionTag* thisInput, UInt32 which)
+	{
+		return DIHookControl::GetSingleton().GetNthKeyPressed(which);
+	}
 
 	//UInt32 GetNumMouseButtonsPressed(StaticFunctionTag* thisInput);
 	//UInt32 GetMouseButtonPressed(StaticFunctionTag* thisInput, UInt32 which);
@@ -75,15 +82,15 @@ void papyrusInput::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, void, UInt32> ("ReleaseKey", "Input", papyrusInput::ReleaseKey, registry));
 
-	registry->RegisterFunction(
-		new NativeFunction1 <StaticFunctionTag, bool, UInt32> ("IsKeyHeld", "Input", papyrusInput::IsKeyHeld, registry));
+	//registry->RegisterFunction(
+	//	new NativeFunction1 <StaticFunctionTag, bool, UInt32> ("IsKeyHeld", "Input", papyrusInput::IsKeyHeld, registry));
 
-	registry->RegisterFunction(
-		new NativeFunction1 <StaticFunctionTag, bool, UInt32> ("IsKeyDisabeld", "Input", papyrusInput::IsKeyDisabled, registry));
+	//registry->RegisterFunction(
+	//	new NativeFunction1 <StaticFunctionTag, bool, UInt32> ("IsKeyDisabeld", "Input", papyrusInput::IsKeyDisabled, registry));
 
-	registry->RegisterFunction(
-		new NativeFunction1 <StaticFunctionTag, void, UInt32> ("DisableKey", "Input", papyrusInput::DisableKey, registry));
+	//registry->RegisterFunction(
+	//	new NativeFunction1 <StaticFunctionTag, void, UInt32> ("DisableKey", "Input", papyrusInput::DisableKey, registry));
 
-	registry->RegisterFunction(
-		new NativeFunction1 <StaticFunctionTag, void, UInt32> ("EnableKey", "Input", papyrusInput::EnableKey, registry));
+	//registry->RegisterFunction(
+	//	new NativeFunction1 <StaticFunctionTag, void, UInt32> ("EnableKey", "Input", papyrusInput::EnableKey, registry));
 }

@@ -1,7 +1,7 @@
-Skyrim Script Extender v1.5.4
+Skyrim Script Extender v1.5.5
 by Ian Patterson and Stephen Abel
 (ianpatt and behippo)
-Thanks to: Paul Connelly (scruggsywuggsy the ferret), gibbed
+Thanks to: Paul Connelly (scruggsywuggsy the ferret), gibbed, Purple Lunchbox
 
 The Skyrim Script Extender, or SKSE for short, is a modder's resource that expands the scripting capabilities of Skyrim. It does so without modifying the executable files on disk, so there are no permanent side effects.
 

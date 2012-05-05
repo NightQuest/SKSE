@@ -15,6 +15,7 @@ class BGSArtObject;
 class BGSImpactDataSet;
 class TESSound;
 class TESObjectREFR;
+class BGSListForm;
 
 typedef TESForm * (* _LookupFormByID)(UInt32 id);
 extern const _LookupFormByID LookupFormByID;
@@ -527,15 +528,15 @@ public:
 class BGSConstructibleObject : public TESForm
 {
 public:
-	enum { kTypeID = kFormType_ConstructibleObject };
+    enum { kTypeID = kFormType_ConstructibleObject };
 
-	// members
-	TESContainer	container;	// 14 - not inherited
-	UInt32			unk20;		// 20 - linked list
-	UInt32			unk24;		// 24
-	UInt32			unk28;		// 28
-	UInt16			unk2C;		// 2C
-	UInt8			pad2E[2];	// 2E
+    // members
+	TESContainer	container;		// 14 - not inherited
+	UInt32			unk20;			// 20 - linked list
+    TESForm*		createdObject;	// 24
+    BGSKeyword*		wbKeyword;		// 28
+    UInt16			quantity;		// 2C
+    UInt8			pad2E[2];		// 2E
 };
 
 // 20
@@ -640,12 +641,21 @@ public:
 	// members
 	UInt8		unk38;		// 38
 	UInt8		pad39[3];	// 39
-	UInt32		unk3C;		// 3C
+	enum {
+		kTypeMisc = 0,
+		kTypeFace,
+		kTypeEyes,
+		kTypeHair,
+		kTypeFacialHair,
+		kTypeScar,
+		kTypeBrows
+	};
+	UInt32		type;		// 3C
 	Data		unk40;		// 40
 	UInt32		unk4C;		// 4C
 	TESModelTri	unk50[3];	// 50
 	UInt32		unk8C;		// 8C
-	UInt32		unk90;		// 90
+	BGSListForm * extraParts;	// 90
 	StringCache::Ref	unk94;	// 94
 };
 
@@ -1680,7 +1690,7 @@ public:
 	CloseRange	closeRange;		// 5C - CSCR
 	LongRange	longRange;		// 6C - CSLR
 	Flight	flight;		// 70 - CSFL
-	UInt8	allowDuelWielding;		// 90 - DATA
+	UInt8	allowDualWielding;		// 90 - DATA
 	UInt8	pad91[3];	// 91
 };
 
@@ -2211,41 +2221,46 @@ public:
 
 	// members
 
-	// 80
-	struct Data84
+	// 84
+	struct Data
 	{
-		UInt8	unk00[0x0E];		// 00
+		struct SkillBonus
+		{
+			UInt8 skill;
+			UInt8 bonus;
+		};
+		SkillBonus skillBonus[7];
 		UInt8	pad0E[2];			// 0E
-		float	unk10[2];			// 10
-		float	unk18[2];			// 18
+		float	height[2];			// 10
+		float	weight[2];			// 18
 		UInt32	unk20;				// 20 - not init'd
 		float	health;				// 24
 		float	magicka;			// 28
 		float	stamina;			// 2C
-		UInt32	unk30;				// 30 - not init'd
+		float	carryweight;		// 30
 		float	mass;				// 34
-		float	unk38;				// 38 - init'd to 1
-		float	unk3C;				// 3C - init'd to 1
-		UInt32	unk40;				// 40 - init'd to 1
+		float	accelRate;			// 38
+		float	deaccelRate;		// 3C
+		UInt32	unk40;				// 40 - init'd to 1 - Flags?
 		UInt32	unk44;				// 44 - init'd to FFFFFFFF
-		UInt32	unk48;				// 48 - init'd to FFFFFFFF
+		UInt32	unk48;				// 48 - init'd to FFFFFFFF - Flags?
 		UInt32	unk4C;				// 4C - not init'd
-		UInt32	unk50;				// 50 - init'd to FFFFFFFF
-		UInt32	unk54;				// 54
-		UInt32	unk58;				// 58
-		UInt32	unk5C;				// 5C
-		UInt32	unk60;				// 60 - init'd to 0
+		float	injuredHealthPct;	// 50 - init'd to FFFFFFFF
+		float	healthRegen;		// 54
+		float	manaRegen;			// 58
+		float	staminaRegen;		// 5C
+		float	unarmedDamage;		// 60
 		float	handReach;			// 64
-		UInt32	unk68;				// 68 - init'd to FFFFFFFF
-		UInt32	unk6C;				// 6C - init'd to 0
+		UInt32	unk68;				// 68 - init'd to FFFFFFFF - Flags?
+		float	aimAngleTolerance;	// 6C
 		UInt32	unk70;				// 70 - init'd to 0
-		float	unk74;				// 74 - init'd to 0
+		float	angleAcceleration;	// 74
 		float	angleTolerance;		// 78
-		float	angleTolerance2;	// 7C
+		UInt32	unk7C;			// 7C
 	};
 
 	TESModel					models[2];			// 5C
-	Data84						unk84;				// 84
+	Data						data;				// 84
 	UInt32						unk104;				// 104
 	UInt32						unk108;				// 108
 	BGSTextureModel				textureModel[2];	// 10C

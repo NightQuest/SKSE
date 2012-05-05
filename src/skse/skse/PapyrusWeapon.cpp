@@ -18,11 +18,25 @@ namespace papyrusWeapon
 		}
 	}
 
+	UInt32 GetCritDamage(TESObjectWEAP* thisWeapon)
+	{
+		if (!thisWeapon)
+			return 0;
+		return thisWeapon->critDamage();
+	}
+
+	void SetCritDamage(TESObjectWEAP* thisWeapon, UInt32 critDamage)
+	{
+		if (thisWeapon) {
+			thisWeapon->unk0F8.critDamage = critDamage;
+		}
+	}
+
 	float GetReach(TESObjectWEAP* thisWeapon)
 	{
 		if (!thisWeapon)
 			return 0.0;
-		return thisWeapon->unk0C4.reach;
+		return thisWeapon->reach();
 	}
 
 	void SetReach(TESObjectWEAP* thisWeapon, float nuReach)
@@ -36,7 +50,7 @@ namespace papyrusWeapon
 	{
 		if (!thisWeapon)
 			return 0.0;
-		return thisWeapon->unk0C4.speed;
+		return thisWeapon->speed();
 	}
 
 	void SetSpeed(TESObjectWEAP* thisWeapon, float speed)
@@ -50,7 +64,7 @@ namespace papyrusWeapon
 	{
 		if (!thisWeapon)
 			return 0.0;
-		return thisWeapon->unk0C4.stagger;
+		return thisWeapon->stagger();
 	}
 
 	void SetStagger(TESObjectWEAP* thisWeapon, float stagger)
@@ -60,7 +74,33 @@ namespace papyrusWeapon
 		}
 	}
 
+	float GetMinRange(TESObjectWEAP* thisWeapon)
+	{
+		if (!thisWeapon)
+			return 0.0;
+		return thisWeapon->minRange();
+	}
 
+	void SetMinRange(TESObjectWEAP* thisWeapon, float minRange)
+	{
+		if (thisWeapon) {
+			thisWeapon->unk0C4.minRange = minRange;
+		}
+	}
+
+	float GetMaxRange(TESObjectWEAP* thisWeapon)
+	{
+		if (!thisWeapon)
+			return 0.0;
+		return thisWeapon->maxRange();
+	}
+
+	void SetMaxRange(TESObjectWEAP* thisWeapon, float maxRange)
+	{
+		if (thisWeapon) {
+			thisWeapon->unk0C4.maxRange = maxRange;
+		}
+	}
 
 	UInt32 GetWeaponType(TESObjectWEAP* thisWeapon)
 	{
@@ -138,10 +178,28 @@ void papyrusWeapon::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <TESObjectWEAP, void, UInt32>("SetBaseDamage", "Weapon", papyrusWeapon::SetBaseDamage, registry));
 
 	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, UInt32>("GetCritDamage", "Weapon", papyrusWeapon::GetCritDamage, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, UInt32>("SetCritDamage", "Weapon", papyrusWeapon::SetCritDamage, registry));
+
+	registry->RegisterFunction(
 		new NativeFunction0 <TESObjectWEAP, float>("GetReach", "Weapon", papyrusWeapon::GetReach, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESObjectWEAP, void, float>("SetReach", "Weapon", papyrusWeapon::SetReach, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, float>("GetMinRange", "Weapon", papyrusWeapon::GetMinRange, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, float>("SetMinRange", "Weapon", papyrusWeapon::SetMinRange, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, float>("GetMaxRange", "Weapon", papyrusWeapon::GetMaxRange, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, float>("SetMaxRange", "Weapon", papyrusWeapon::SetMaxRange, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0 <TESObjectWEAP, float>("GetSpeed", "Weapon", papyrusWeapon::GetSpeed, registry));

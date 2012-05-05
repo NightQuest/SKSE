@@ -127,6 +127,7 @@ public:
 };
 
 typedef tArray<UInt32> UnkArray;
+typedef tArray<TESForm*> UnkFormArray;
 
 enum {
 	eListCount = -3,

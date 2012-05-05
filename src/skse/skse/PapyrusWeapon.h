@@ -11,6 +11,8 @@ namespace papyrusWeapon
 
 	UInt32 GetBaseDamage(TESObjectWEAP* thisWeapon);
 	void SetBaseDamage(TESObjectWEAP* thisWeapon, UInt32 nuDamage);
+	UInt32 GetCritDamage(TESObjectWEAP* thisWeapon);
+	void SetCritDamage(TESObjectWEAP* thisWeapon, UInt32 critDamage);
 	float GetReach(TESObjectWEAP* thisWeapon);
 	void SetReach(TESObjectWEAP* thisWeapon, float nuReach);
 	UInt32 GetWeaponType(TESObjectWEAP* thisWeapon);
@@ -19,6 +21,10 @@ namespace papyrusWeapon
 	void SetSpeed(TESObjectWEAP* thisWeapon, float speed);
 	float GetStagger(TESObjectWEAP* thisWeapon);
 	void SetStagger(TESObjectWEAP* thisWeapon, float stagger);
+	float GetMinRange(TESObjectWEAP* thisWeapon);
+	void SetMinRange(TESObjectWEAP* thisWeapon, float minRange);
+	float GetMaxRange(TESObjectWEAP* thisWeapon);
+	void SetMaxRange(TESObjectWEAP* thisWeapon, float maxRange);
 
 	BSFixedString GetModelPath(TESObjectWEAP* thisWeapon);
 	void SetModelPath(TESObjectWEAP* thisWeapon, BSFixedString nuPath);

@@ -210,11 +210,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusActorBase.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusActorBase.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusArmor.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\PapyrusArmor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusBook.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusBook.h"
 					>
 				</File>
 				<File
@@ -234,6 +250,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusConstructibleObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusConstructibleObject.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusEnchantment.cpp"
 					>
 				</File>
@@ -250,6 +274,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusGame.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusGame.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusIngredient.cpp"
 					>
 				</File>
@@ -263,6 +295,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusInput.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusKeyword.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusKeyword.h"
 					>
 				</File>
 				<File

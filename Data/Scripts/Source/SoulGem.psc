@@ -1,7 +1,7 @@
 Scriptname SoulGem extends MiscObject Hidden
 
 
-; SKSE additions built 2012-04-26 19:53:17.541000 UTC
+; SKSE additions built 2012-05-03 06:58:27.122000 UTC
 
 int Function GetSoulSize() native
 int Function GetGemSize() native

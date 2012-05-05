@@ -370,17 +370,17 @@ void SetFlightFlyingAttackChance(TESCombatStyle* thisCombatStyle, float nuVal)
 	}
 }
 
-bool GetAllowDuelWielding(TESCombatStyle* thisCombatStyle)
+bool GetAllowDualWielding(TESCombatStyle* thisCombatStyle)
 {
 	if (!thisCombatStyle)
 		return false;
-	return thisCombatStyle->allowDuelWielding ? true : false;
+	return thisCombatStyle->allowDualWielding ? true : false;
 }
 
-void SetAllowDuelWielding(TESCombatStyle* thisCombatStyle, bool bAllow)
+void SetAllowDualWielding(TESCombatStyle* thisCombatStyle, bool bAllow)
 {
 	if (thisCombatStyle) {
-		thisCombatStyle->allowDuelWielding = (bAllow) ? 1 : 0;
+		thisCombatStyle->allowDualWielding = (bAllow) ? 1 : 0;
 	}
 }
 
@@ -404,7 +404,7 @@ void papyrusCombatStyle::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction0 <TESCombatStyle, float>("GetGroupOffensiveMult", "CombatStyle", papyrusCombatStyle::GetGroupOffensiveMult, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction0 <TESCombatStyle, float>("GetAvoidThreadChance", "CombatStyle", papyrusCombatStyle::GetAvoidThreatChance, registry));
+		new NativeFunction0 <TESCombatStyle, float>("GetAvoidThreatChance", "CombatStyle", papyrusCombatStyle::GetAvoidThreatChance, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0 <TESCombatStyle, float>("GetMeleeMult", "CombatStyle", papyrusCombatStyle::GetMeleeMult, registry));
@@ -435,7 +435,7 @@ void papyrusCombatStyle::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <TESCombatStyle, void, float>("SetGroupOffensiveMult", "CombatStyle", papyrusCombatStyle::SetGroupOffensiveMult, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1 <TESCombatStyle, void, float>("SetAvoidThreadChance", "CombatStyle", papyrusCombatStyle::SetAvoidThreatChance, registry));
+		new NativeFunction1 <TESCombatStyle, void, float>("SetAvoidThreatChance", "CombatStyle", papyrusCombatStyle::SetAvoidThreatChance, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESCombatStyle, void, float>("SetMeleeMult", "CombatStyle", papyrusCombatStyle::SetMeleeMult, registry));
@@ -481,7 +481,7 @@ void papyrusCombatStyle::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction0 <TESCombatStyle, float>("GetMeleeSpecialAttackMult", "CombatStyle", papyrusCombatStyle::GetMeleeSpecialAttackMult, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction0 <TESCombatStyle, bool>("GetAllowDuelWielding", "CombatStyle", papyrusCombatStyle::GetAllowDuelWielding, registry));
+		new NativeFunction0 <TESCombatStyle, bool>("GetAllowDualWielding", "CombatStyle", papyrusCombatStyle::GetAllowDualWielding, registry));
 
 	// set melee tab values
 	registry->RegisterFunction(
@@ -509,7 +509,7 @@ void papyrusCombatStyle::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <TESCombatStyle, void, float>("SetMeleeSpecialAttackMult", "CombatStyle", papyrusCombatStyle::SetMeleeSpecialAttackMult, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1 <TESCombatStyle, void, bool>("SetAllowDuelWielding", "CombatStyle", papyrusCombatStyle::SetAllowDuelWielding, registry));
+		new NativeFunction1 <TESCombatStyle, void, bool>("SetAllowDualWielding", "CombatStyle", papyrusCombatStyle::SetAllowDualWielding, registry));
 
 	// get Close Range tab values
 	registry->RegisterFunction(

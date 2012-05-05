@@ -1,6 +1,9 @@
 #pragma once
 
 #include "GameTypes.h"
+#include "GameForms.h"
+#include "GameObjects.h"
+#include "GameReferences.h"
 
 class DataHandler
 {
@@ -8,4 +11,143 @@ public:
 	static DataHandler* GetSingleton();
 
 	// loads of tArrays of object types, at least a good number in formType order
+	UInt32						unk000;
+	UInt32						unk004;
+	UnkFormArray				unk008;
+	UnkFormArray				unk014;
+	UnkFormArray				unk020;
+	UnkFormArray				unk02C;
+	tArray<BGSKeyword*>			keywords;
+	tArray<BGSLocationRefType*>	locRefTypes;
+	tArray<BGSAction*>			actions;
+	tArray<BGSTextureSet*>		textureSets;
+	tArray<BGSMenuIcon*>			menuIcons;
+	tArray<TESGlobal*>			globals;
+	tArray<TESClass*>			classes;
+	tArray<TESFaction*>			factions;
+	tArray<BGSHeadPart*>			headParts;
+	tArray<TESEyes*>				eyes;
+	tArray<TESRace*>				races;
+	tArray<TESSound*>			sounds;
+	tArray<BGSAcousticSpace*>	acousticSpaces;
+	UnkFormArray				unkSkills;
+	tArray<EffectSetting*>		magicEffects;
+	tArray<Script*>				scripts;
+	tArray<TESLandTexture*>		landTextures;
+	tArray<EnchantmentItem*>	enchantments;
+	tArray<SpellItem*>			spellItems;
+	tArray<ScrollItem*>			scrolls;
+	tArray<TESObjectACTI*>		activators;
+	tArray<BGSTalkingActivator*>	talkingActivators;
+	tArray<TESObjectARMO*>		armors;
+	tArray<TESObjectBOOK*>		books;
+	tArray<TESObjectCONT*>		containers;
+	tArray<TESObjectDOOR*>		doors;
+	tArray<IngredientItem*>		ingredients;
+	tArray<TESObjectLIGH*>		lights;
+	tArray<TESObjectMISC*>		miscObjects;
+	tArray<BGSApparatus*>		apparatuses;
+	tArray<TESObjectSTAT*>		statics;
+	tArray<BGSStaticCollection*>	staticCollections;
+	tArray<BGSMovableStatic*>	movableStatics;
+	tArray<TESGrass*>			grasses;
+	tArray<TESObjectTREE*>		trees;
+	tArray<TESFlora*>			flora;
+	tArray<TESFurniture*>		furniture;
+	tArray<TESObjectWEAP*>		weapons;
+	tArray<TESAmmo*>				ammo;
+	tArray<TESNPC*>				npcs;
+	tArray<TESLevCharacter*>		levCharacters;
+	tArray<TESKey*>				keys;
+	tArray<AlchemyItem*>			potions;
+	tArray<BGSIdleMarker*>		idleMarkers;
+	tArray<BGSNote*>				notes;
+	tArray<BGSConstructibleObject*> constructibles;
+	tArray<BGSProjectile*>		projectiles;
+	tArray<BGSHazard*>			bgsHazards;
+	tArray<TESSoulGem*>			soulGems;
+	tArray<TESLevItem*>			levItems;
+	tArray<TESWeather*>			weather;
+	tArray<TESClimate*>			climates;
+	tArray<BGSShaderParticleGeometryData*>	shaderParticleGeometryData;
+	tArray<BGSReferenceEffect*>	referenceEffects;
+	tArray<TESRegion*>			regions;
+	tArray<NavMeshInfoMap*>		navMeshInfoMaps;
+	tArray<TESObjectCELL*>		cells;
+	tArray<TESObjectREFR*>		refs;	// could be actors
+	tArray<Character*>			characters;
+	tArray<MissileProjectile*>	missleProjs;
+	tArray<ArrowProjectile*>		arrowProjs;
+	tArray<GrenadeProjectile*>	grenadeProjs;
+	tArray<BeamProjectile*>		beamProjs;
+	tArray<FlameProjectile*>		flameProjs;
+	tArray<ConeProjectile*>		coneProjs;
+	tArray<BarrierProjectile*>	barrierProjs;
+	tArray<Hazard*>				hazards;
+	tArray<TESWorldSpace*>		worldSpaces;
+	tArray<TESObjectLAND*>		lands;
+	tArray<NavMesh*>				navMeshes;
+	UnkFormArray				unkTLOD;
+	tArray<TESTopic*>			topics;
+	tArray<TESTopicInfo*>		topicInfos;
+	tArray<TESQuest*>			quests;
+	tArray<TESIdleForm*>			idleForms;
+	tArray<TESPackage*>			packages;
+	tArray<TESCombatStyle*>		combatStyles;
+	tArray<TESLoadScreen*>		loadScreens;
+	tArray<TESLevSpell*>			levSpells;
+	tArray<TESObjectANIO*>		anios;
+	tArray<TESWaterForm*>		waterForms;
+	tArray<TESEffectShader*>		effectShaders;
+	UnkFormArray				unkTOFTs;
+	tArray<BGSExplosion*>		explosions;
+	tArray<BGSDebris*>			debris;
+	tArray<TESImageSpace*>		imageSpaces;
+	tArray<TESImageSpaceModifier*>	imageSpaceModifiers;
+	tArray<BGSListForm*>			listForms;
+	tArray<BGSPerk*>				perks;
+	tArray<BGSBodyPartData*>		bodyPartData;
+	tArray<BGSAddonNode*>		addonNodes;
+	tArray<ActorValueInfo*>		actorValueInfos;
+	tArray<BGSCameraShot*>		cameraShots;
+	tArray<BGSCameraPath*>		cameraPaths;
+	tArray<BGSVoiceType*>		voiceTypes;
+	tArray<BGSMaterialType*>		materialTypes;
+	tArray<BGSImpactData*>		impactData;
+	tArray<BGSImpactDataSet*>	impactDataSets;
+	tArray<TESObjectARMA*>		armorAddons;
+	tArray<BGSEncounterZone*>	encounterZones;
+	tArray<BGSLocation*>			locations;
+	tArray<BGSMessage*>			messages;
+	tArray<BGSRagdoll*>			ragdolls;
+	UnkFormArray				unkDOBJs;
+	tArray<BGSLightingTemplate*>	lightingTemplates;
+	tArray<BGSMusicType*>		musicTypes;
+	tArray<BGSFootstep*>			footsteps;
+	tArray<BGSFootstepSet*>		footstepSets;
+	tArray<BGSStoryManagerBranchNode*>	branchNodes;
+	tArray<BGSStoryManagerQuestNode*>	questNodes;
+	tArray<BGSStoryManagerEventNode*>	eventNodes;
+	tArray<BGSDialogueBranch*>	dialogBranches;
+	tArray<BGSMusicTrackFormWrapper*>	musicTrackFormWrappers;
+	UnkFormArray				unkDLVWs;
+	tArray<TESWordOfPower*>		wordOfPowers;
+	tArray<TESShout*>			shouts;
+	tArray<BGSEquipSlot*>			equipSlots;
+	tArray<BGSRelationship*>		relationships;
+	tArray<BGSScene*>			scenes;
+	tArray<BGSAssociationType*>	associationTypes;
+	tArray<BGSOutfit*>			outfits;
+	tArray<BGSArtObject*>		artObjects;
+	tArray<BGSMaterialObject*>	materialObjects;
+	tArray<BGSMovementType*>		movementTypes;
+	tArray<BGSSoundDescriptorForm*>	soundDescriptors;
+	tArray<BGSDualCastData*>		dualCastData;
+	tArray<BGSSoundCategory*>	soundCategories;
+	tArray<BGSSoundOutput*>		soundOutputs;
+	tArray<BGSCollisionLayer*>	collisonLayers;
+	tArray<BGSColorForm*>		colors;
+	tArray<BGSReverbParameters*>	reverbParams;
+	UInt32 unks[512];		// who knows right now.
+
 };

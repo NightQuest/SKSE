@@ -244,17 +244,10 @@ DIHookControl::DIHookControl()
 	memset(&m_keys, 0, sizeof(m_keys));
 }
 
-bool DIHookControl::IsKeyPressed(UInt32 keycode, UInt32 flags)
+bool DIHookControl::_IsKeyPressed(KeyInfo* info, UInt32 flags)
 {
-	if(keycode >= kMaxMacros) return false;
-
-	// default mode
-	if(!flags) flags = kFlag_DefaultBackCompat;
-
-	KeyInfo	* info = &m_keys[keycode];
-
 	bool	result = false;
-	bool	isMouseButton = keycode >= kMacro_MouseButtonOffset;
+	//bool	isMouseButton = keycode >= kMacro_MouseButtonOffset;
 
 	// data sources
 	if(flags & kFlag_GameState)		result |= info->gameState;
@@ -273,6 +266,45 @@ bool DIHookControl::IsKeyPressed(UInt32 keycode, UInt32 flags)
 	if(disable)	result = false;
 
 	return result;
+}
+
+bool DIHookControl::IsKeyPressed(UInt32 keycode, UInt32 flags)
+{
+	if(keycode >= kMaxMacros) return false;
+
+	// default mode
+	if(!flags) flags = kFlag_DefaultBackCompat;
+
+	KeyInfo	* info = &m_keys[keycode];
+	return _IsKeyPressed(info, flags);
+}
+
+UInt32 DIHookControl::GetNumKeysPressed()
+{
+	UInt32 keysPressed = 0;
+
+	for (UInt32 keycode = 0; keycode < kMaxMacros; keycode++)
+	{
+		KeyInfo* info = &m_keys[keycode];
+		if (_IsKeyPressed(info, 0))
+			keysPressed++;
+	}
+	return keysPressed;
+}
+
+SInt32 DIHookControl::GetNthKeyPressed(UInt32 n)
+{
+	UInt32 index = 0;
+	for (UInt32 keycode = 0; keycode < kMaxMacros; keycode++) {
+		KeyInfo* info = &m_keys[keycode];
+		if (_IsKeyPressed(info, 0)) {
+			if (index == n) {
+				return keycode;
+			} else
+				index++;
+		}
+	}
+	return -1;
 }
 
 bool DIHookControl::IsKeyDisabled(UInt32 keycode)

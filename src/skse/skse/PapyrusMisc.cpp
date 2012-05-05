@@ -86,17 +86,3 @@ namespace papyrusOutfit
 			new NativeFunction1 <BGSOutfit, TESForm*, UInt32> ("GetNthPart", "Outfit", papyrusOutfit::GetNthPart, registry));
 	}
 }
-
-namespace papyrusKeyword
-{
-	BSFixedString GetString(BGSKeyword* thisKeyword)
-	{
-		return (thisKeyword) ? thisKeyword->keyword.Get() : NULL;
-	}
-
-	void RegisterFuncs(VMClassRegistry* registry)
-	{
-		registry->RegisterFunction(
-			new NativeFunction0 <BGSKeyword, BSFixedString> ("GetString", "Keyword", papyrusKeyword::GetString, registry));
-	}
-}

@@ -21,7 +21,7 @@ namespace papyrusCell
 		{
 			TESObjectREFR* pRef = NULL;
 			thisCell->objectList.GetNthItem(n, pRef);
-			if (pRef && pRef->baseForm->formType == formType)
+			if (pRef && (pRef->formType == formType || pRef->baseForm->formType == formType))
 				numMatching++;
 		}
 		return numMatching;
@@ -44,7 +44,7 @@ namespace papyrusCell
 		UInt32 numRefs = thisCell->objectList.count;
 		for (UInt32 n = 0; n < numRefs; ++n) {
 			thisCell->objectList.GetNthItem(n, pRef);
-			if (pRef && pRef->baseForm->formType == formType) {
+			if (pRef && (pRef->formType == formType ||pRef->baseForm->formType == formType)) {
 				if (numMatching++ == index) {
 					return pRef;
 				}

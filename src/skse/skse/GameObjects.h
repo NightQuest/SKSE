@@ -611,6 +611,7 @@ public:
 
 	UInt16		unk10A;			// 10A
 	TESClass*	npcClass;		// 10C
+
 	void		* unk110;		// 110
 	UInt32		unk114;			// 114
 	TESCombatStyle*	combatStyle;// 118
@@ -618,7 +619,7 @@ public:
 	UInt32		unk120;			// 120
 	UInt32		unk124;			// 124
 	float		unk128;			// 128
-	float		unk12C;			// 12C
+	float		weight;			// 12C
 
 	UInt32		pad130;			// 130
 	
@@ -628,8 +629,8 @@ public:
 	BGSOutfit*	sleepOutfit;		// 140
 	UInt32		unk144;			// 144
 	TESFaction*	faction;		// 148
-	UInt32		unk14C;			// 14C
-	UInt8		unk150;			// 150
+	BGSHeadPart ** headparts;	// 14C
+	UInt8		numHeadParts;	// 150
 	UInt8		unk151;			// 151
 	UInt8		unk152;			// 152
 	UInt8		unk153;			// 153
@@ -637,8 +638,13 @@ public:
 	UInt8		unk155;			// 155
 	UInt8		unk156;			// 156
 	UInt8		pad157;			// 157
-	UInt32		unk158;			// 158
-	void		* unk15C;		// 15C
+	UInt32		unk158;			// 158 // Relationships?
+
+	struct FaceMorphs {
+		float option[19];
+		UInt32 presets[4];
+	};
+	FaceMorphs		* faceMorph;		// 15C
 	UInt32		unk160;			// 160
 };
 
@@ -944,15 +950,32 @@ public:
 	BGSKeywordForm				keyword;		// 88
 
 	// members
-	struct Data94
+	struct Data
 	{
-		UInt32	unk0;	// 0
-		UInt32	unk4;	// 4
+		enum	// type - these are technically flags but are mutually exclusive
+		{
+			kType_None =	0,
+			kType_Skill =	1 << 0,
+			kType_Spell =	1 << 2,	// takes priority over skill
+		};
+
+		UInt32	type;		// 0
+		union
+		{
+			UInt32		skill;
+			SpellItem	* spell;
+		} teaches;			// 4
+
+		// make some sense of the flags field so we know what's in the union
+		UInt32	GetSanitizedType(void);
 	};
 
-	Data94	unk94;	// 94
-	UInt32	unk9C;	// 9C
+	Data			data;			// 94
+	TESObjectSTAT	* bookStat;		// 9C
+	TESDescription	description2;	// A0
 };
+
+STATIC_ASSERT(sizeof(TESObjectBOOK) == 0xAC);
 
 // 88
 class TESObjectMISC : public TESBoundObject
@@ -1130,8 +1153,8 @@ public:
 		UInt32	unk00;	// 00
 		float	speed;	// 04
 		float	reach;	// 08
-		float	unk0C;	// 0C
-		float	unk10;	// 10
+		float	minRange;	// 0C
+		float	maxRange;	// 10
 		float	unk14;	// 14
 		float	unk18;	// 18
 		float	stagger;// 1C
@@ -1152,7 +1175,7 @@ public:
 	{
 		float	unk00;			// 00
 		TESForm	* spellItem;	// 04
-		UInt16	unk08;			// 08
+		UInt16	critDamage;		// 08
 		UInt8	unk0A;			// 0A
 		UInt8	pad0B;			// 0B
 	};
@@ -1173,7 +1196,13 @@ public:
 	UInt32	unk130;				// 130
 	UInt32	pad134;				// 134
 
+	float speed() { return unk0C4.speed; }
+	float reach() { return unk0C4.reach; }
+	float stagger() { return unk0C4.stagger; }
+	float minRange() { return unk0C4.minRange; }
+	float maxRange() { return unk0C4.maxRange; }
 	UInt8 type() { return unk0C4.type; }
+	UInt16 critDamage() { return unk0F8.critDamage; }
 };
 
 STATIC_ASSERT(sizeof(TESObjectWEAP) == 0x138);

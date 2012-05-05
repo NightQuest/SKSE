@@ -212,6 +212,23 @@ namespace papyrusObjectReference
 		return NULL;
 	}
 
+	float GetTotalItemWeight(TESObjectREFR* pContainerRef)
+	{
+		if (!pContainerRef)
+			return 0;
+		ExtraContainerChanges* pXContainerChanges = static_cast<ExtraContainerChanges*>(pContainerRef->extraData.GetByType(kExtraData_ContainerChanges));
+		return (pXContainerChanges) ? pXContainerChanges->data->totalWeight : 0.0;
+	}
+
+	float GetTotalArmorWeight(TESObjectREFR* pContainerRef)
+	{
+		if (!pContainerRef)
+			return 0;
+		ExtraContainerChanges* pXContainerChanges = static_cast<ExtraContainerChanges*>(pContainerRef->extraData.GetByType(kExtraData_ContainerChanges));
+		return (pXContainerChanges) ? pXContainerChanges->data->armorWeight : 0.0;
+	}
+
+
 	bool IsHarvested(TESObjectREFR* pProduceRef)
 	{
 		UInt8 formType = pProduceRef->baseForm->formType;
@@ -233,6 +250,12 @@ void papyrusObjectReference::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1<TESObjectREFR, TESForm*, UInt32>("GetNthForm", "ObjectReference", papyrusObjectReference::GetNthForm, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectREFR, float>("GetTotalItemWeight", "ObjectReference", papyrusObjectReference::GetTotalItemWeight, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectREFR, float>("GetTotalArmorWeight", "ObjectReference", papyrusObjectReference::GetTotalArmorWeight, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0<TESObjectREFR, bool>("IsHarvested", "ObjectReference", papyrusObjectReference::IsHarvested, registry));

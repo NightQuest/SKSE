@@ -60,7 +60,7 @@ dynamic intrinsic class skse
 	//	var extended : Boolean;		// always set to true
 	//	var formType : Number;		// object type (see GameForms.h for a list)
 	//	var formId : Number;		// form's ID number
-	// if an object can have keywords: (currently armor, weapon, book, misc)
+	// if an object can have keywords:
 	//	var keywords : Object;		// object containing a boolean set to true, named after each keyword
 	// data for armor:
 	//	var armor : Number;			// armor value
@@ -83,6 +83,10 @@ dynamic intrinsic class skse
 	//	var gemSize : Number;		// gem capacity (1 = petty, 5 = grand)
 	// data for potions:
 	//	var flags : Number;			// flags (see AlchemyItem)
+	// data for books:
+	//  var bookType : Number;		// 0 - none, 1 - skill, 4 - spell
+	//  var teachesSkill : Number;	// present on skill books, index of the skill the book teaches
+	//  var teachesSpell : Number;	// present on spell books, form ID of the spell the book teaches, or -1 on error
 	function ExtendData(enable : Boolean) : Void;
 	
 	// forces containers to show categories like NPCs

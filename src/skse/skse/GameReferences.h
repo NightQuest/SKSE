@@ -49,9 +49,7 @@ class IPostAnimationChannelUpdateFunctor
 public:
 	virtual ~IPostAnimationChannelUpdateFunctor();
 //	void	** _vtbl;
-	UInt32	unk_04[73];
 };
-STATIC_ASSERT(sizeof(IPostAnimationChannelUpdateFunctor) == 0x128);
 
 // 54
 class TESObjectREFR : public TESForm
@@ -222,6 +220,7 @@ public:
 	BSTEventSink<void*> transformDeltaEvent;		// 078 .?AV?$BSTEventSink@VBSTransformDeltaEvent@@@@
 	BSTEventSink<void*>	characterMoveFinishEvent;	// 07C .?AV?$BSTEventSink@VbhkCharacterMoveFinishEvent@@@@
 	IPostAnimationChannelUpdateFunctor	unk_080;	// 080 IPostAnimationChannelUpdateFunctor
+	UInt32	unk_04[73];								// 084
 	BSTEventSink<void*>	 menuOpenCloseEvent;		// 1A8	.?AV?$BSTEventSink@VMenuOpenCloseEvent@@@@
 	BSTEventSink<void*>	 menuModeChangeEvent;		// 1AC .?AV?$BSTEventSink@VMenuModeChangeEvent@@@@
 };

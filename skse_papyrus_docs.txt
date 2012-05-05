@@ -1,10 +1,17 @@
-SKSE 1.5.4 Papyrus Functions
+SKSE 1.5.5 Papyrus Functions
 
 Actor.psc
+ - GetWornForm
+
+ ActorBase.psc
  - Get/SetCombatStyle
  - GetOutfit
- - Get/SetClass
- - GetWornForm
+ - SetClass
+ - Get/SetWeight
+ - GetNumHeadParts
+ - Get/SetNthHeadPart
+ - Get/SetFaceMorph
+ - Get/SetFacePreset
  
 Apparatus.psc
  - Get/SetQuality
@@ -15,6 +22,9 @@ Armor.psc
  - AddTo/RemoveFromSlotMask
  - GetMaskForSlot
  - Slot properties
+
+Book.psc
+ - GetSkill/Spell
  
 Cell.psc
  - GetNumRefs
@@ -47,6 +57,14 @@ CombatStyle.psc
  - Get/SetFlightHoverChance
  - Get/SetFlightDiveBombChance
  - Get/SetFlightFlyingAttackChance
+
+ConstructibleObject.psc
+ - Get/SetResult
+ - Get/SetResultQuantity
+ - GetNumIngredients
+ - Get/SetNthIngredient
+ - Get/SetNthIngredientQuantity
+ - Get/SetWorkbenchKeyword
  
 Enchantment.psc
  - GetNumEffects
@@ -67,6 +85,9 @@ Form.psc
 FormType.psc
  - properties listing Form.GetType return values.  Currently unusable.
  
+Game.psc
+ - Get/Set/ModPerkPoints 
+ 
 Ingredient.psc
  - GetNumEffects
  - GetNthEffectMagnitude
@@ -80,9 +101,12 @@ Input.psc
  - TapKey
  - HoldKey
  - ReleaseKey
+ - GetNumKeysPressed
+ - GetNthKeyPressed
 
 Keyword.psc
  - GetString
+ - GetKeyword
  
 Math.psc
  - Left/RightShift
@@ -92,6 +116,8 @@ ObjectReference.psc
  - GetNumItems
  - GetNthForm
  - IsHarvested
+ - GetTotalItemWeight
+ - GetTotalArmorWeight
  
 Outfit
  - GetNumParts
@@ -143,5 +169,7 @@ Weapon.psc
  - Get/SetModelPath
  - Get/SetIconPath
  - Get/SetMessageIconPath 
+ - Get/SetCritDamage
+ - Get/SetMin/MaxRange
  
 

@@ -757,18 +757,7 @@ Function ForceTargetAngle(float afXAngle = 0.0, float afYAngle = 0.0, float afZA
 Function ClearForcedMovement() native
 
 
-; SKSE additions built 2012-04-26 19:53:17.541000 UTC
-; get/set the CombatStyle of the actor
-CombatStyle Function GetCombatStyle() native
-Function SetCombatStyle(CombatStyle cs) native
-
-; Get the Outfit of the actor
-Outfit Function GetOutfit(bool bSleepOutfit = false) native
-
-; get/set the Class of the actor
-Class Function GetClass() native
-Function SetClass(Class c) native
-
+; SKSE additions built 2012-05-03 06:58:27.122000 UTC
 ; returns the form for the item worn at the specified slotMask
 ; use Armor.GetMaskForSlot() to generate appropriate slotMask
 Form Function GetWornForm(int slotMask) native

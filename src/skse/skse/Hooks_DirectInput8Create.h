@@ -52,6 +52,9 @@ public:
 	bool	IsKeyDisabled(UInt32 keycode);
 	bool	IsKeyHeld(UInt32 keycode);
 	bool	IsKeyTapped(UInt32 keycode);
+	
+	UInt32	GetNumKeysPressed();
+	SInt32	GetNthKeyPressed(UInt32 n);
 
 	void	SetKeyDisableState(UInt32 keycode, bool bDisable, UInt32 mask);
 	void	SetKeyHeldState(UInt32 keycode, bool bHold);
@@ -80,6 +83,7 @@ private:
 
 		bool	Process(bool keyDown, UInt32 idx);
 	};
+	bool	_IsKeyPressed(KeyInfo* info, UInt32 flags);
 
 	KeyInfo	m_keys[kMaxMacros];
 

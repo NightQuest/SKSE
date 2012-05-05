@@ -214,35 +214,55 @@ bool Cmd_GetSKSERelease_Execute(COMMAND_ARGS)
 	return Cmd_GetSKSERelease_Eval(thisObj, 0, 0, result);
 }
 
+#include "GameData.h"
 #include "GameObjects.h"
 #include "GameAPI.h"
 #include "GameReferences.h"
 #include "GameForms.h"
 #include "GameRTTI.h"
 #include "GameExtraData.h"
+
+#include "PapyrusKeyword.h"
+
 bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 {
-	PlayerCharacter *pPC = (*g_thePlayer);
+	DataHandler* handler = DataHandler::GetSingleton();
+	
+	//UInt32 keywords = handler->keywords.count;
+	//for (UInt32 k = 0; k < keywords; k++) {
+	//	BGSKeyword* pKeyword = NULL;
+	//	handler->keywords.GetNthItem(k, pKeyword);
+	//	if (pKeyword) {
+	//		_MESSAGE("%d: %s\n", k, pKeyword->keyword.Get());
+	//	}
+	//}
+
+	BSFixedString weapTypeSword("WeapTypeSword");
+	BGSKeyword* pKeyword = papyrusKeyword::GetKeyword(NULL, weapTypeSword);
+	const char* key = pKeyword->keyword.Get();
 
 
-	TESForm* pForm = LookupFormByID(0x2F2F4);
-	TESObjectWEAP* pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
+	//PlayerCharacter *pPC = (*g_thePlayer);
 
-	pForm = LookupFormByID(0x58F5E);
-	pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
-	DumpClass(pWeap, 1024);
 
-	pForm = LookupFormByID(0x73F4C);
-	AlchemyItem* pPotion = DYNAMIC_CAST(pForm, TESForm, AlchemyItem);
-	ASSERT(pPotion->IsFood() == false);
+	//TESForm* pForm = LookupFormByID(0x2F2F4);
+	//TESObjectWEAP* pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
 
-	TESForm* pForm2 = LookupFormByID(0x3AC2E);
-	AlchemyItem* pPotion2 = DYNAMIC_CAST(pForm2, TESForm, AlchemyItem);
-	ASSERT(pPotion2->IsFood() == false);
+	//pForm = LookupFormByID(0x58F5E);
+	//pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
+	//DumpClass(pWeap, 1024);
 
-	TESForm* pForm3 = LookupFormByID(0x65C99);
-	AlchemyItem* pPotion3 = DYNAMIC_CAST(pForm3, TESForm, AlchemyItem);
-	ASSERT(pPotion3->IsFood() == true);
+	//pForm = LookupFormByID(0x73F4C);
+	//AlchemyItem* pPotion = DYNAMIC_CAST(pForm, TESForm, AlchemyItem);
+	//ASSERT(pPotion->IsFood() == false);
+
+	//TESForm* pForm2 = LookupFormByID(0x3AC2E);
+	//AlchemyItem* pPotion2 = DYNAMIC_CAST(pForm2, TESForm, AlchemyItem);
+	//ASSERT(pPotion2->IsFood() == false);
+
+	//TESForm* pForm3 = LookupFormByID(0x65C99);
+	//AlchemyItem* pPotion3 = DYNAMIC_CAST(pForm3, TESForm, AlchemyItem);
+	//ASSERT(pPotion3->IsFood() == true);
 
 	//pForm = LookupFormByID(0x1CE1E);
 	//TESClass* pClass = DYNAMIC_CAST(pForm, TESForm, TESClass);

@@ -58,6 +58,56 @@ namespace papyrusArmor
 		return (1 << (slot - 30));
 	}
 
+	BSFixedString GetModelPath(TESObjectARMO* thisArmor, bool bFemale)
+	{
+		return (thisArmor) ? thisArmor->bipedModel.textureSwap[bFemale ? 1 : 0].GetModelName() : NULL;
+	}
+
+	void SetModelPath(TESObjectARMO* thisArmor, BSFixedString nuPath, bool bFemale)
+	{
+		if (!thisArmor)
+			return;
+
+		thisArmor->bipedModel.textureSwap[bFemale ? 1 : 0].SetModelName(nuPath.data);
+	}
+
+	BSFixedString GetIconPath(TESObjectARMO* thisArmor, bool bFemale)
+	{
+		return (thisArmor) ? thisArmor->bipedModel.icon[bFemale ? 1 : 0].str : NULL;
+	}
+
+	void SetIconPath(TESObjectARMO* thisArmor, BSFixedString nuPath, bool bFemale)
+	{
+		if (!thisArmor)
+			return;
+
+		thisArmor->bipedModel.icon[bFemale ? 1 : 0].str = nuPath.data;
+	}
+
+	BSFixedString GetMessageIconPath(TESObjectARMO* thisArmor, bool bFemale)
+	{
+		return (thisArmor) ? thisArmor->bipedModel.messageIcon[bFemale ? 1 : 0].icon.str : NULL;
+	}
+
+	void SetMessageIconPath(TESObjectARMO* thisArmor, BSFixedString nuPath, bool bFemale)
+	{
+		if (!thisArmor)
+			return;
+
+		thisArmor->bipedModel.messageIcon[bFemale ? 1 : 0].icon.str = nuPath.data;
+	}
+
+	UInt32 GetWeightClass(TESObjectARMO* thisArmor)
+	{
+		return (thisArmor) ? thisArmor->bipedObject.data.weightClass : BGSBipedObjectForm::kWeight_None;
+	}
+
+	void SetWeightClass(TESObjectARMO* thisArmor, UInt32 nuWeightClass)
+	{
+		if (thisArmor && nuWeightClass <=2)
+			thisArmor->bipedObject.data.weightClass = nuWeightClass;
+	}
+
 }
 
 #include "PapyrusVM.h"
@@ -88,5 +138,29 @@ void papyrusArmor::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, UInt32, UInt32> ("GetMaskForSlot", "Armor", papyrusArmor::GetMaskForSlot, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectARMO, BSFixedString, bool>("GetModelPath", "Armor", papyrusArmor::GetModelPath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <TESObjectARMO, void, BSFixedString, bool>("SetModelPath", "Armor", papyrusArmor::SetModelPath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectARMO, BSFixedString, bool>("GetIconPath", "Armor", papyrusArmor::GetIconPath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <TESObjectARMO, void, BSFixedString, bool>("SetIconPath", "Armor", papyrusArmor::SetIconPath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectARMO, BSFixedString, bool>("GetMessageIconPath", "Armor", papyrusArmor::GetMessageIconPath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <TESObjectARMO, void, BSFixedString, bool>("SetMessageIconPath", "Armor", papyrusArmor::SetMessageIconPath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectARMO, UInt32>("GetWeightClass", "Armor", papyrusArmor::GetWeightClass, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectARMO, void, UInt32>("SetWeightClass", "Armor", papyrusArmor::SetWeightClass, registry));
 
 }

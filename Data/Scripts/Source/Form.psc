@@ -119,7 +119,7 @@ Event OnUpdateGameTime()
 EndEvent
 
 
-; SKSE additions built 2012-05-03 06:58:27.122000 UTC
+; SKSE additions built 2012-05-05 05:40:01.985000 UTC
 
 ; Returns the typecode for this form object
 Int Function GetType() native
@@ -144,6 +144,11 @@ int Function GetNumKeywords() native
 
 ; returns the keyword at the specified index
 Keyword Function GetNthKeyword(int index) native
+
+bool Function HasKeywordString(string s)
+	Keyword k = Keyword.GetKeyword(s)
+	return HasKeyword(k)
+endFunction
 
 ; upcoming support to register for OnKeyDown input events
 ;Function RegisterForKey(int idx) native

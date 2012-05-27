@@ -1,4 +1,4 @@
-SKSE 1.5.5 Papyrus Functions
+SKSE 1.5.6 Papyrus Functions
 
 Actor.psc
  - GetWornForm
@@ -19,12 +19,17 @@ Apparatus.psc
 Armor.psc
  - Get/Set/ModArmorRating
  - Get/SetSlotMask
- - AddTo/RemoveFromSlotMask
+ - AddSlotTo/RemoveSlotFromMask
  - GetMaskForSlot
  - Slot properties
+ - IsBoots/Cuirass/Gauntlets/Helmet/Shield
+ - IsLightArmor/HeavyArmor/Clothing/Jewelry
+ - IsClothingBody/Head/Feet/Hands/Ring/Rich/Poor
+ - GetWeightClass
+ - Get/Set/ModelPath/IconPath/MessageIconPath
 
 Book.psc
- - GetSkill/Spell
+ - GetSpell
  
 Cell.psc
  - GetNumRefs
@@ -81,6 +86,7 @@ Form.psc
  - SetGoldValue
  - GetNumKeywords
  - GetNthKeyword
+ - HasKeywordString
 
 FormType.psc
  - properties listing Form.GetType return values.  Currently unusable.
@@ -171,5 +177,7 @@ Weapon.psc
  - Get/SetMessageIconPath 
  - Get/SetCritDamage
  - Get/SetMin/MaxRange
+ - IsBattleaxe/Bow/Dagger/Greatsword/Mace/Sword/Warhammer/Waraxe
+ 
  
 

@@ -24,8 +24,8 @@ namespace papyrusBook
 
 	void RegisterFuncs(VMClassRegistry* registry)
 	{
-		registry->RegisterFunction(
-			new NativeFunction0<TESObjectBOOK, UInt32>("GetSkill", "Book", papyrusBook::GetSkill, registry));
+		//registry->RegisterFunction(
+		//	new NativeFunction0<TESObjectBOOK, UInt32>("GetSkill", "Book", papyrusBook::GetSkill, registry));
 
 		registry->RegisterFunction(
 			new NativeFunction0<TESObjectBOOK, SpellItem *>("GetSpell", "Book", papyrusBook::GetSpell, registry));

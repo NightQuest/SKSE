@@ -23,5 +23,10 @@ int Function GetNumKeywords() native
 ; returns the keyword at the specified index
 Keyword Function GetNthKeyword(int index) native
 
+bool Function HasKeywordString(string s)
+	Keyword k = Keyword.GetKeyword(s)
+	return HasKeyword(k)
+endFunction
+
 ; upcoming support to register for OnKeyDown input events
 ;Function RegisterForKey(int idx) native

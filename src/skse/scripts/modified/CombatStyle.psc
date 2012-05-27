@@ -42,7 +42,7 @@ Function SetMeleeBashRecoiledMult(float mult) native
 Function SetMeleeBashAttackMult(float mult) native
 Function SetMeleeBashPowerAttackMult(float mult) native
 Function SetMeleeSpecialAttackMult(float mult) native
-Function SetAllowDuelWielding(bool allow) native
+Function SetAllowDualWielding(bool allow) native
 
 ; functions related to the Close Range tab values
 float Function GetCloseRangeDuelingCircleMult() native
@@ -53,7 +53,7 @@ float Function GetCloseRangeFlankingStalkTime() native
 Function SetCloseRangeDuelingCircleMult(float mult) native
 Function SetCloseRangeDuelingFallbackMult(float mult) native
 Function SetCloseRangeFlankingFlankDistance(float mult) native
-Function AetCloseRangeFlankingStalkTime(float mult) native
+Function SetCloseRangeFlankingStalkTime(float mult) native
 
 ; functions related to the LongRange tab values
 float Function GetLongRangeStrafeMult() native

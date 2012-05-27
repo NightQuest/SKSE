@@ -1,8 +1,10 @@
 #pragma once
 
+#include "GameTypes.h"
 class TESObjectARMO;
 struct StaticFunctionTag;
 class VMClassRegistry;
+
 
 namespace papyrusArmor
 {
@@ -18,4 +20,16 @@ namespace papyrusArmor
 	UInt32 RemoveFromSlotMask(TESObjectARMO* thisArmor, UInt32 slotMask);
 
 	UInt32 GetMaskForSlot(StaticFunctionTag*, UInt32 slot);
+
+	BSFixedString GetModelPath(TESObjectARMO* thisArmor, bool bFemale);
+	void SetModelPath(TESObjectARMO* thisArmor, BSFixedString nuPath, bool bFemale);
+
+	BSFixedString GetIconPath(TESObjectARMO* thisArmor, bool bFemale);
+	void SetIconPath(TESObjectARMO* thisArmor, BSFixedString nuPath, bool bFemale);
+
+	BSFixedString GetMessageIconPath(TESObjectARMO* thisArmor,  bool bFemale);
+	void SetMessageIconPath(TESObjectARMO* thisArmor, BSFixedString nuPath, bool bFemale);
+
+	UInt32 GetWeightClass(TESObjectARMO* thisArmor);
+	void SetWeightClass(TESObjectARMO* thisArmor, UInt32 nuWeightClass);
 }

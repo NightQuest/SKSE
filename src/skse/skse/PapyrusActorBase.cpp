@@ -75,12 +75,12 @@ namespace papyrusActorBase
 
 	float GetFaceMorph(TESNPC* thisNPC, UInt32 index)
 	{
-		return (thisNPC && index < 19) ? thisNPC->faceMorph->option[index] : 0.0;
+		return (thisNPC && index < TESNPC::FaceMorphs::kNumOptions) ? thisNPC->faceMorph->option[index] : 0.0;
 	}
 
 	void SetFaceMorph(TESNPC* thisNPC, float value, UInt32 index)
 	{
-		if (thisNPC && index < 19) {
+		if (thisNPC && index < TESNPC::FaceMorphs::kNumOptions) {
 			thisNPC->faceMorph->option[index] = value;
 			// Invoke Actor Member that updates FaceGen (SetNPCWeight should have it)
 			// Alternatively there is probably a member that already does this as the race menu needs a way to do the same thing
@@ -89,12 +89,12 @@ namespace papyrusActorBase
 
 	UInt32 GetFacePreset(TESNPC* thisNPC, UInt32 index)
 	{
-		return (thisNPC && index < 4) ? thisNPC->faceMorph->presets[index] : 0;
+		return (thisNPC && index < TESNPC::FaceMorphs::kNumPresets) ? thisNPC->faceMorph->presets[index] : 0;
 	}
 
 	void SetFacePreset(TESNPC* thisNPC, UInt32 value, UInt32 index)
 	{
-		if (thisNPC && index < 4) {
+		if (thisNPC && index < TESNPC::FaceMorphs::kNumPresets) {
 			thisNPC->faceMorph->presets[index] = value;
 			// Invoke Actor Member that updates FaceGen for presets
 			// Alternatively there is probably a member that already does this as the race menu needs a way to do the same thing

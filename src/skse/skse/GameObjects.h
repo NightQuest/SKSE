@@ -598,6 +598,18 @@ class TESNPC : public TESActorBase
 public:
 	enum { kTypeID = kFormType_NPC };
 
+	struct FaceMorphs
+	{
+		enum
+		{
+			kNumOptions =	19,
+			kNumPresets =	4,
+		};
+		
+		float	option[kNumOptions];
+		UInt32	presets[kNumPresets];
+	};
+
 	// parents
 	TESRaceForm		race;	// 0C0
 	BGSOverridePackCollection	overridePacks;	// 0C8
@@ -640,11 +652,7 @@ public:
 	UInt8		pad157;			// 157
 	UInt32		unk158;			// 158 // Relationships?
 
-	struct FaceMorphs {
-		float option[19];
-		UInt32 presets[4];
-	};
-	FaceMorphs		* faceMorph;		// 15C
+	FaceMorphs	* faceMorph;	// 15C
 	UInt32		unk160;			// 160
 };
 

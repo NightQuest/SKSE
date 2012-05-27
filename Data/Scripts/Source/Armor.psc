@@ -1,6 +1,6 @@
 Scriptname Armor extends Form Hidden
 
-; SKSE additions built 2012-05-03 06:58:27.122000 UTC
+; SKSE additions built 2012-05-05 05:40:01.985000 UTC
 int Function GetArmorRating() native
 int Function GetAR()
 	return GetArmorRating()
@@ -16,6 +16,91 @@ Function ModAR(int modBy)
 	return ModArmorRating(modBy)
 endFunction
 
+; works on the path to the nif file representing the in-game model of the weapon
+string Function GetModelPath(bool bFemalePath) native
+Function SetModelPath(string path, bool bFemalePath) native
+
+; works on the path to the nif file representing the icon for the weapon in the inventory
+string Function GetIconPath(bool bFemalePath) native
+Function SetIconPath(string path, bool bFemalePath) native
+
+; works on the path to the file representing the message icon for the weapon
+string Function GetMessageIconPath(bool bFemalePath) native
+Function SetMessageIconPath(string path, bool bFemalePath) native
+
+; Weight Class
+; 0 = Light Armor
+; 1 = Heavy Armor
+; 2 = None
+int Function GetWeightClass() native
+Function SetWeightClass(int weightClass) native
+
+; Armor info by keyword
+bool Function IsLightArmor()
+	return HasKeywordString("ArmorLight")
+endFunction
+
+bool Function IsHeavyArmor()
+	return HasKeywordString("ArmorHeavy")
+endFunction
+
+bool Function IsClothing()
+	return HasKeywordString("ArmorClothing")
+endFunction
+
+bool Function IsBoots()
+	return HasKeywordString("ArmorBoots")
+endFunction
+
+bool Function IsCuirass()
+	return HasKeywordString("ArmorCuirass")
+endFunction
+
+bool Function IsGauntlets()
+	return HasKeywordString("ArmorGauntlets")
+endFunction
+
+bool Function IsHelmet()
+	return HasKeywordString("ArmorHelmet")
+endFunction
+
+bool Function IsShield()
+	return HasKeywordString("ArmorShield")
+endFunction
+
+bool Function IsJewelry()
+	return HasKeywordString("ArmorJewelry")
+endFunction
+
+bool Function IsClothingHead()
+	return HasKeywordString("ClothingHead")
+endFunction
+
+bool Function IsClothingBody()
+	return HasKeywordString("ClothingBody")
+endFunction
+
+bool Function IsClothingFeet()
+	return HasKeywordString("ClothingFeet")
+endFunction
+
+bool Function IsClothingHands()
+	return HasKeywordString("ClothingHands")
+endFunction
+
+bool Function IsClothingRing()
+	return HasKeywordString("ClothingRing")
+endFunction
+
+bool Function IsClothingRich()
+	return HasKeywordString("ClothingRich")
+endFunction
+
+bool Function IsClothingPoor()
+	return HasKeywordString("ClothingPoor")
+endFunction
+
+
 ; Functions and Flags dealing the BipedObject slot values from the CK
 ; These are the equivalent of 1 << (SlotMask-30).  Basically
 ; these are a flags where 30 is the first bit, and 61 is the 31st bit.
@@ -25,9 +110,9 @@ int Function GetSlotMask() native
 ; sets the slot mask for the armor
 Function SetSlotMask(int slotMask) native
 ; adds the specified slotMask to the armor
-int Function AddToSlotMask(int slotMask) native
+int Function AddSlotToMask(int slotMask) native
 ; removes the specified slot masks from the armor
-int Function RemoveFromSlotMask(int slotMask) native
+int Function RemoveSlotFromMask(int slotMask) native
 
 ; calculates the equivalent value for the properties below
 int Function GetMaskForSlot(int slot) global native

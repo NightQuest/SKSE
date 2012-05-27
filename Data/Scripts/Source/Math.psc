@@ -40,7 +40,7 @@ float Function sqrt(float afValue) global native
 float Function tan(float afValue) global native
 
 
-; SKSE additions built 2012-05-03 06:58:27.122000 UTC
+; SKSE additions built 2012-05-05 05:40:01.985000 UTC
 int Function LeftShift(int value, int shiftBy) global native
 int Function RightShift(int value, int shiftBy) global native
 int Function LogicalAnd(int arg1, int arg2) global native

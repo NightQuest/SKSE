@@ -1,3 +1,11 @@
+1.5.6:
+- Add Form.HasKeywordString(string)
+- Add Weapon IsBattleaxe and similar functions
+- Add Armor: IsCuirass, IsLight/HeavyArmor, IsClothing, IsClothingBody and similar functions
+- Add Armor: Get/Set Model/Icon/MessageIcon paths
+- Properly hook up Armor functions
+- Fix sundry typos and bugs
+
 1.5.5:
 - Add Book functions (thanks PurpleLunchbox)
 - Add Input: GetNumKeysPressed, GetNthKeyPressed

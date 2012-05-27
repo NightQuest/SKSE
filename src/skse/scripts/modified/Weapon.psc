@@ -36,44 +36,33 @@ string Function GetMessageIconPath() native
 Function SetMessageIconPath(string path) native
 
 bool Function IsBattleaxe()
-	Keyword WeapTypeBattleaxe = Keyword.GetKeyword("WeapTypeBattleaxe");
-	return HasKeyword(WeapTypeBattleaxe)
+	return HasKeywordString("WeapTypeBattleaxe")
 endFunction
 
 bool Function IsBow()
-	Keyword WeapTypeBow = Keyword.GetKeyword("WeapTypeBow");
-	return HasKeyword(WeapTypeBow)
+	return HasKeywordString("WeapTypeBow")
 endFunction
 
 bool Function IsDagger()
-	Keyword WeapTypeDagger = Keyword.GetKeyword("WeapTypeDagger");
-	return HasKeyword(WeapTypeDagger)
+	return HasKeywordString("WeapTypeDagger")
 endFunction
 
 bool Function IsGreatsword()
-	Keyword WeapTypeGreatsword = Keyword.GetKeyword("WeapTypeGreatsword");
-	return HasKeyword(WeapTypeGreatsword)
+	return HasKeywordString("WeapTypeGreatsword")
 endFunction
 
 bool Function IsMace()
-	Keyword WeapTypeMace = Keyword.GetKeyword("WeapTypeMace");
-	return HasKeyword(WeapTypeMace)
+	return HasKeywordString("WeapTypeMace")
 endFunction
 
 bool Function IsSword()
-	Keyword WeapTypeSword = Keyword.GetKeyword("WeapTypeSword");
-	return HasKeyword(WeapTypeSword)
+	return HasKeywordString("WeapTypeSword")
 endFunction
 
 bool Function IsWarhammer()
-	Keyword WeapTypeWarhammer = Keyword.GetKeyword("WeapTypeWarhammer");
-	return HasKeyword(WeapTypeWarhammer)
+	return HasKeywordString("WeapTypeWarhammer")
 endFunction
 
 bool Function IsWarAxe()
-	Keyword WeapTypeWarAxe = Keyword.GetKeyword("WeapTypeWarAxe");
-	return HasKeyword(WeapTypeWarAxe)
+	return HasKeywordString("WeapTypeWarAxe")
 endFunction
-
-
-

@@ -1,4 +1,4 @@
 ; Get/Set Perk Points
-int Function GetPerkPoints() native
-Function SetPerkPoints(int perkPoints) native
-Function ModPerkPoints(int perkPoints) native
+int Function GetPerkPoints() global native
+Function SetPerkPoints(int perkPoints) global native
+Function ModPerkPoints(int perkPoints) global native

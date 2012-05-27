@@ -19,8 +19,6 @@ namespace papyrusForm
 		if (!thisForm)
 			return NULL;
 		
-		const char* pName = thisForm->GetName();
-
 		TESFullName* pFullName = DYNAMIC_CAST(thisForm, TESForm, TESFullName);
 		if (pFullName)
 			return pFullName->name.data;
@@ -29,8 +27,11 @@ namespace papyrusForm
 
 	void SetName(TESForm* thisForm, BSFixedString nuName)
 	{
-		if (thisForm)
-			thisForm->SetName(nuName.data);
+		TESFullName* pFullName = DYNAMIC_CAST(thisForm, TESForm, TESFullName);
+		// is a const string, so have to just reassign it.
+		if (pFullName) {
+			pFullName->name = nuName;
+		}
 	}
 
 	float GetWeight(TESForm* thisForm)

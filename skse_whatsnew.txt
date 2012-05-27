@@ -1,3 +1,7 @@
+1.5.7:
+- Fix bugs with SetName and really hook up Input.GetNumKeysPressed and GetNthKeyPressed
+- support for runtime 1.6.87.0
+
 1.5.6:
 - Add Form.HasKeywordString(string)
 - Add Weapon IsBattleaxe and similar functions

@@ -36,7 +36,7 @@ Function SetPublic(bool abPublic = true) native
 
 
 
-; SKSE additions built 2012-05-05 05:40:01.985000 UTC
+; SKSE additions built 2012-05-25 05:14:25.770000 UTC
 ; Returns the number of refs in the cell
 int Function GetNumRefs(int formTypeFilter = 0) native
 

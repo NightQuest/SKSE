@@ -1,8 +1,8 @@
 #include "PapyrusVM.h"
 #include "GameAPI.h"
 
-IObjectHandlePolicy	** g_objectHandlePolicy = (IObjectHandlePolicy **)0x013FB538;
-SkyrimVM			** g_skyrimVM = (SkyrimVM **)0x012BABA8;
+IObjectHandlePolicy	** g_objectHandlePolicy = (IObjectHandlePolicy **)0x0141CA38;
+SkyrimVM			** g_skyrimVM = (SkyrimVM **)0x012DAF1C;
 
 void VMClassInfo::AddRef(void)
 {

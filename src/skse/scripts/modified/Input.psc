@@ -12,14 +12,8 @@ Function HoldKey(Int dxKeycode) global native
 ; releases the specified key
 Function ReleaseKey(Int dxKeycode) global native
 
-; returns whether a key is held
-;bool Function IsKeyHeld(Int dxKeycode) global native
+; how many keys are pressed
+int Function GetNumKeysPressed() global native
 
-; disables the specified key until enabled again
-;Function DisableKey(Int dxKeycode) global native
-
-; enables a disabled key
-;Function EnableKey(Int dxKeycode) global native
-
-; returns whether a key is disabled
-;bool Function IsKeyEnabled(Int dxKeycode) global native
+; for walking over the pressed keys
+int Function GetNthKeyPressed(int n) global native

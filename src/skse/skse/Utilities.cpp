@@ -196,3 +196,55 @@ const std::string & GetOSInfoStr(void)
 
 	return result;
 }
+
+
+Tokenizer::Tokenizer(const char* src, const char* delims)
+: m_offset(0), m_delims(delims), m_data(src)
+{
+	//
+}
+
+Tokenizer::~Tokenizer()
+{
+	//
+}
+
+UInt32 Tokenizer::NextToken(std::string& outStr)
+{
+	if (m_offset == m_data.length())
+		return -1;
+
+	size_t start = m_data.find_first_not_of(m_delims, m_offset);
+	if (start != -1)
+	{
+		size_t end = m_data.find_first_of(m_delims, start);
+		if (end == -1)
+			end = m_data.length();
+
+		m_offset = end;
+		outStr = m_data.substr(start, end - start);
+		return start;
+	}
+
+	return -1;
+}
+
+UInt32 Tokenizer::PrevToken(std::string& outStr)
+{
+	if (m_offset == 0)
+		return -1;
+
+	size_t searchStart = m_data.find_last_of(m_delims, m_offset - 1);
+	if (searchStart == -1)
+		return -1;
+
+	size_t end = m_data.find_last_not_of(m_delims, searchStart);
+	if (end == -1)
+		return -1;
+
+	size_t start = m_data.find_last_of(m_delims, end);	// okay if start == -1 here
+
+	m_offset = end + 1;
+	outStr = m_data.substr(start + 1, end - start);
+	return start + 1;
+}

@@ -213,6 +213,13 @@ class Actor : public TESObjectREFR
 public:
 	virtual ~Actor();
 
+	struct SpellArray
+	{
+		UInt32 allocatedCount;
+		SpellItem** spells;
+		UInt32 spellCount;
+	};
+
 	MagicTarget		magicTarget;					// 054
 	ActorValueOwner	actorValueOwner;				// 060
 	UInt32			align64;						// 064
@@ -220,11 +227,16 @@ public:
 	BSTEventSink<void*> transformDeltaEvent;		// 078 .?AV?$BSTEventSink@VBSTransformDeltaEvent@@@@
 	BSTEventSink<void*>	characterMoveFinishEvent;	// 07C .?AV?$BSTEventSink@VbhkCharacterMoveFinishEvent@@@@
 	IPostAnimationChannelUpdateFunctor	unk_080;	// 080 IPostAnimationChannelUpdateFunctor
-	UInt32	unk_04[73];								// 084
+	UInt32	unk_84[32];								// 084
+	SpellArray	addedSpells;						// 104
+	UInt32	unk_110[38];							// 110
+	// these last two may be on character instead
 	BSTEventSink<void*>	 menuOpenCloseEvent;		// 1A8	.?AV?$BSTEventSink@VMenuOpenCloseEvent@@@@
 	BSTEventSink<void*>	 menuModeChangeEvent;		// 1AC .?AV?$BSTEventSink@VMenuModeChangeEvent@@@@
 };
 STATIC_ASSERT(offsetof(Actor, actorState) == 0x68);
+STATIC_ASSERT(offsetof(Actor, addedSpells) == 0x104);
+STATIC_ASSERT(offsetof(Actor, menuOpenCloseEvent) == 0x1A8);
 STATIC_ASSERT(sizeof(Actor) == 0x1B0);
 
 // 1B0
@@ -232,6 +244,9 @@ STATIC_ASSERT(sizeof(Actor) == 0x1B0);
 class Character : public Actor
 {
 	enum { kTypeID = kFormType_Character };
+public:
+	MEMBER_FN_PREFIX(Character);
+	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x0072EC00, bool);
 };
 
 // 718
@@ -258,8 +273,8 @@ public:
 	};
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
-	DEFINE_MEMBER_FN(GetDamage, double, 0x007276A0, ObjDesc * pForm);
-	DEFINE_MEMBER_FN(GetArmorValue, double, 0x00727670, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x0072E530, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x0072E500, ObjDesc * pForm);
 };
 
 STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1B0);

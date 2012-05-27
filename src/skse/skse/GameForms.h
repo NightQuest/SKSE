@@ -16,6 +16,7 @@ class BGSImpactDataSet;
 class TESSound;
 class TESObjectREFR;
 class BGSListForm;
+class TESQuest;
 
 typedef TESForm * (* _LookupFormByID)(UInt32 id);
 extern const _LookupFormByID LookupFormByID;
@@ -168,7 +169,11 @@ extern const _LookupFormByID LookupFormByID;
  *	86	84	COLL	BGSCollisionLayer
  *	87	85	CLFM	BGSColorForm
  *	88	86	REVB	BGSReverbParameters
- *	
+ *		87			Unknown
+ *		88			Alias
+ *		89			ReferenceAlias
+ *		8A			LocAlias
+ *		8B			ActiveMagicEffect
  */
 
 enum FormType {
@@ -307,6 +312,11 @@ kFormType_ConstructibleObject,	//	COBJ	BGSConstructibleObject
 	kFormType_CollisionLayer,	//	COLL	BGSCollisionLayer
 	kFormType_ColorForm,		//	CLFM	BGSColorForm
 	kFormType_ReverbParam,		//	REVB	BGSReverbParameters
+	kFormType_Unk87,
+	kFormType_Alias,			//			BGSBaseAlias
+	kFormType_ReferenceAlias,	//			BGSRefAlias
+	kFormType_LocationAlias,	//			BGSLocAlias
+	kFormType_ActiveMagicEffect	//			ActiveMagicEffect
 };
 
 // 14
@@ -517,11 +527,15 @@ public:
 	enum { kTypeID = kFormType_ColorForm };
 
 	// parents
-	TESFullName	fullName;	// 14
+	TESFullName     fullName;       // 14
 
-	// members
-	UInt32		unk1C;	// 1C
-	UInt32		unk20;	// 20
+	union {
+		struct Color {
+			UInt8   red, green, blue, alpha; // The alpha isn't actually used here so its usually zero
+		} color;
+		UInt32 abgr;    // 1C
+	};
+	UInt32  unk20;  // 20
 };
 
 // 30
@@ -627,20 +641,14 @@ class BGSHeadPart : public TESForm
 public:
 	enum { kTypeID = kFormType_HeadPart };
 
-	// 0C
-	struct Data
-	{
-		void	* unk00;	// 00
-		UInt32	unk04;		// 04
-	};
 
 	// parents
-	TESFullName			fullName;	// 14
-	TESModelTextureSwap	model;		// 1C
+	TESFullName				fullName;       // 14
+	TESModelTextureSwap		model;          // 1C
 
 	// members
-	UInt8		unk38;		// 38
-	UInt8		pad39[3];	// 39
+	UInt8					unk38;          // 38 // Flag Inconsistencies (Is Extra Part?) (Use Solid Tint?)
+	UInt8					pad39[3];       // 39
 	enum {
 		kTypeMisc = 0,
 		kTypeFace,
@@ -650,13 +658,13 @@ public:
 		kTypeScar,
 		kTypeBrows
 	};
-	UInt32		type;		// 3C
-	Data		unk40;		// 40
-	UInt32		unk4C;		// 4C
-	TESModelTri	unk50[3];	// 50
-	UInt32		unk8C;		// 8C
-	BGSListForm * extraParts;	// 90
-	StringCache::Ref	unk94;	// 94
+	UInt32					type;           // 3C
+	tArray<BGSHeadPart*>	extraParts; // 40
+	void *					textureSet;             // 4C
+	TESModelTri				unk50[3];       // 50
+	UInt32					unk8C;          // 8C
+	BGSListForm *			validRaces;       // 90
+	StringCache::Ref		unk94;  // 94
 };
 
 // 78
@@ -1272,13 +1280,40 @@ public:
 	};
 
 	UnkArray	unk2C;	// 2C
-	Data38						unk38;	// 38
-	Data58						unk58;	// 58
-	UInt32						unk78;	// 78
+	Data38		unk38;	// 38
+	Data58		unk58;	// 58
+	UInt32		unk78;	// 78
 	UnkArray	unk7C;	// 7C
 };
 
 STATIC_ASSERT(sizeof(BGSStoryManagerQuestNode) == 0x88);
+
+class BGSBaseAlias : public BaseFormComponent // Not actually a form, but its used like one in Papyrus
+{
+public:
+	enum { kTypeID = kFormType_Alias };
+
+	StringCache::Ref name;	// 04
+	TESQuest * owner;		// 08
+	UInt32 aliasId;			// 0C
+	UInt32 flags;			// 10
+};
+
+class BGSRefAlias : public BGSBaseAlias
+{
+public:
+	enum { kTypeID = kFormType_ReferenceAlias };
+
+	UInt32 unk14[0x04]; // One of these is the filltype/filltype filter
+};
+
+class BGSLocAlias : public BGSBaseAlias
+{
+public:
+	enum { kTypeID = kFormType_LocationAlias };
+
+	UInt32 unk14[0x08];
+};
 
 // 158
 class TESQuest : public BGSStoryManagerTreeForm
@@ -1307,9 +1342,9 @@ public:
 	struct Data07C
 	{
 		UInt32	unk0;
-		UInt16	unk4;
-		UInt8	unk6;
-		UInt8	unk7;
+		UInt16	flags;
+		UInt8	priority;
+		UInt8	type;
 	};
 
 	// 8
@@ -1327,7 +1362,7 @@ public:
 
 	UnkArray	unk020;		// 020
 	UInt32		unk02C;		// 02C
-	UnkArray	unk030;		// 030
+	tArray<BGSBaseAlias*>	aliases;		// 030
 	Data03C		unk03C;		// 03C
 	Data05C		unk05C;		// 05C
 	Data07C		unk07C;		// 07C
@@ -1343,7 +1378,7 @@ public:
 	UInt16		unk138;		// 138
 	UInt8		unk13A;		// 13A
 	UInt8		pad13B;		// 13B
-	BSString	unk13C;		// 13C
+	BSString	questID;	// 13C
 	UInt32		unk144;		// 144
 	UInt32		unk148;		// 148
 	UnkArray	unk14C;		// 14C

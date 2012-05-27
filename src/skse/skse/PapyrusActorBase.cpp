@@ -55,7 +55,7 @@ namespace papyrusActorBase
 
 	TESForm* GetNthHeadPart(TESNPC* thisNPC, UInt32 n)
 	{
-		if (!thisNPC || n < thisNPC->numHeadParts)
+		if (!thisNPC || n >= thisNPC->numHeadParts)
 			return NULL;
 
 		return thisNPC->headparts[n];
@@ -100,6 +100,30 @@ namespace papyrusActorBase
 			// Alternatively there is probably a member that already does this as the race menu needs a way to do the same thing
 		}
 	}
+
+	// Hair Color
+	BGSColorForm* GetHairColor(TESNPC* thisNPC)
+	{
+		return thisNPC->headData->hairColor;
+	}
+
+	void SetHairColor(TESNPC* thisNPC, BGSColorForm* colorForm)
+	{
+		if(colorForm) {
+			thisNPC->headData->hairColor = colorForm;
+		}
+	}
+
+	UInt32 GetSpellCount(TESNPC* thisNPC)
+	{
+		return (thisNPC)? thisNPC->spellList.GetSpellCount() : 0;
+	}
+
+	SpellItem* GetNthSpell(TESNPC* thisNPC, UInt32 n)
+	{
+		return (thisNPC) ? thisNPC->spellList.GetNthSpell(n) : NULL;
+	}
+
 }
 
 #include "PapyrusVM.h"
@@ -147,4 +171,17 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction2 <TESNPC, void, UInt32, UInt32>("SetFacePreset", "ActorBase", papyrusActorBase::SetFacePreset, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, BGSColorForm*>("GetHairColor", "ActorBase", papyrusActorBase::GetHairColor, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, void, BGSColorForm*>("SetHairColor", "ActorBase", papyrusActorBase::SetHairColor, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, UInt32>("GetSpellCount", "ActorBase", papyrusActorBase::GetSpellCount, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, SpellItem*, UInt32>("GetNthSpell", "ActorBase", papyrusActorBase::GetNthSpell, registry));
+
 }

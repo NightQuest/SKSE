@@ -316,7 +316,7 @@ public:
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00834090, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x0083C9D0, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 
 	StandardItemData * ctor_Hook(GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 };
@@ -484,7 +484,7 @@ public:
 	GFxValue		fxValue;	// 10
 
 	MEMBER_FN_PREFIX(MagicItemData);
-	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x008637C0, GFxMovieView ** movieView, TESForm * pForm, int unk);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x0086E3B0, GFxMovieView ** movieView, TESForm * pForm, int unk);
 
 	MagicItemData * ctor_Hook(GFxMovieView ** movieView, TESForm * pForm, int unk);
 };
@@ -552,7 +552,7 @@ public:
 	GFxValue	* fxValue;	// 08
 
 	MEMBER_FN_PREFIX(FavItemDataHook);
-	DEFINE_MEMBER_FN(Hooked, int, 0x0084C520, TESForm * pForm);
+	DEFINE_MEMBER_FN(Hooked, int, 0x00855C50, TESForm * pForm);
 
 	int Hook(TESForm * pForm);
 };
@@ -628,7 +628,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	globals.SetMember("skse", &skse);
 }
 
-static const UInt32 kInstallHooks_Base = 0x00A48D40;
+static const UInt32 kInstallHooks_Base = 0x00A59650;
 static const UInt32 kInstallHooks_Entry_retn = kInstallHooks_Base + 0xBE;
 
 __declspec(naked) void InstallHooks_Entry(void)
@@ -655,7 +655,7 @@ void Hooks_Scaleform_Commit(void)
 	WriteRelJump(kInstallHooks_Base + 0xB8, (UInt32)InstallHooks_Entry);
 
 	// item card data creation hook
-	WriteRelCall(0x00834939, GetFnAddr(&StandardItemData::ctor_Hook));
-	WriteRelCall(0x00863D79, GetFnAddr(&MagicItemData::ctor_Hook));
-	WriteRelCall(0x0084D3CF, GetFnAddr(&FavItemDataHook::Hook));
+	WriteRelCall(0x0083D519, GetFnAddr(&StandardItemData::ctor_Hook));
+	WriteRelCall(0x0086E969, GetFnAddr(&MagicItemData::ctor_Hook));
+	WriteRelCall(0x00856F7F, GetFnAddr(&FavItemDataHook::Hook));
 }

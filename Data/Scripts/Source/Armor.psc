@@ -1,6 +1,6 @@
 Scriptname Armor extends Form Hidden
 
-; SKSE additions built 2012-05-05 05:40:01.985000 UTC
+; SKSE additions built 2012-05-25 05:14:25.770000 UTC
 int Function GetArmorRating() native
 int Function GetAR()
 	return GetArmorRating()
@@ -34,6 +34,10 @@ Function SetMessageIconPath(string path, bool bFemalePath) native
 ; 2 = None
 int Function GetWeightClass() native
 Function SetWeightClass(int weightClass) native
+
+; works on the enchantment associated with the armor
+Enchantment Function GetEnchantment() native
+Function SetEnchantment(Enchantment e) native
 
 ; Armor info by keyword
 bool Function IsLightArmor()

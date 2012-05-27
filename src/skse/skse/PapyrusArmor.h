@@ -4,6 +4,7 @@
 class TESObjectARMO;
 struct StaticFunctionTag;
 class VMClassRegistry;
+class EnchantmentItem;
 
 
 namespace papyrusArmor
@@ -32,4 +33,7 @@ namespace papyrusArmor
 
 	UInt32 GetWeightClass(TESObjectARMO* thisArmor);
 	void SetWeightClass(TESObjectARMO* thisArmor, UInt32 nuWeightClass);
+
+	EnchantmentItem* GetEnchantment(TESObjectARMO* thisArmor);
+	void SetEnchantment(TESObjectARMO* thisArmor, EnchantmentItem* enchantment);
 }

@@ -9,6 +9,7 @@
 
 #include "PapyrusActor.h"
 #include "PapyrusActorBase.h"
+#include "PapyrusAlias.h"
 #include "PapyrusArmor.h"
 #include "PapyrusBook.h"
 #include "PapyrusCell.h"
@@ -24,13 +25,15 @@
 #include "PapyrusMisc.h"
 #include "PapyrusObjectReference.h"
 #include "PapyrusPotion.h"
+#include "PapyrusQuest.h"
 #include "PapyrusSKSE.h"
 #include "PapyrusSpell.h"
 #include "PapyrusStringUtil.h"
+#include "PapyrusUI.h"
 #include "PapyrusWeapon.h"
 
 typedef void (* _RegisterPapyrusFunctions)(VMClassRegistry ** registry);
-_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008E2DE0;
+_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F2F10;
 
 void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 {
@@ -38,7 +41,6 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	RegisterPapyrusFunctions(registryPtr);
 
 	VMClassRegistry * registry = *registryPtr;
-
 
 	// SKSE
 	papyrusSKSE::RegisterFuncs(registry);
@@ -108,6 +110,15 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 
 	// Game
 	papyrusGame::RegisterFuncs(registry);
+
+	// UI
+	papyrusUI::RegisterFuncs(registry);
+
+	// Alias
+	papyrusAlias::RegisterFuncs(registry);
+
+	// Quest
+	papyrusQuest::RegisterFuncs(registry);
 }
 
 void Hooks_Papyrus_Init(void)
@@ -117,5 +128,5 @@ void Hooks_Papyrus_Init(void)
 
 void Hooks_Papyrus_Commit(void)
 {
-	WriteRelCall(0x008C3A71, (UInt32)RegisterPapyrusFunctions_Hook);
+	WriteRelCall(0x008D1E3B, (UInt32)RegisterPapyrusFunctions_Hook);
 }

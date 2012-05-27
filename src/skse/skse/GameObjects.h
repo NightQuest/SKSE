@@ -377,10 +377,7 @@ public:
 	UInt32	unk4C;	// 4C
 
 	MEMBER_FN_PREFIX(MagicItem);
-	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407970, int arg1, bool arg2);
-	
-
-
+	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407BE0, int arg1, bool arg2);
 };
 
 STATIC_ASSERT(sizeof(MagicItem) == 0x50);
@@ -610,6 +607,12 @@ public:
 		UInt32	presets[kNumPresets];
 	};
 
+	struct HeadData {
+		BGSColorForm * hairColor;
+		BGSTextureSet * headTexture;	// Only seems to apply to the player
+	};
+
+
 	// parents
 	TESRaceForm		race;	// 0C0
 	BGSOverridePackCollection	overridePacks;	// 0C8
@@ -624,7 +627,7 @@ public:
 	UInt16		unk10A;			// 10A
 	TESClass*	npcClass;		// 10C
 
-	void		* unk110;		// 110
+	HeadData	* headData;		// 110
 	UInt32		unk114;			// 114
 	TESCombatStyle*	combatStyle;// 118
 	UInt32		unk11C;			// 11C

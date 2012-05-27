@@ -156,6 +156,17 @@ namespace papyrusWeapon
 		thisWeapon->messageIcon.icon.str = nuPath.data;
 	}
 
+	EnchantmentItem* GetEnchantment(TESObjectWEAP* thisWeapon)
+	{
+		return (thisWeapon) ? thisWeapon->enchantable.enchantment : NULL;
+	}
+
+	void SetEnchantment(TESObjectWEAP* thisWeapon, EnchantmentItem* enchantment)
+	{
+		if (thisWeapon) {
+			thisWeapon->enchantable.enchantment = enchantment;
+		}
+	}
 
 }
 
@@ -230,4 +241,11 @@ void papyrusWeapon::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESObjectWEAP, void, BSFixedString>("SetMessageIconPath", "Weapon", papyrusWeapon::SetMessageIconPath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectWEAP, EnchantmentItem*>("GetEnchantment", "Weapon", papyrusWeapon::GetEnchantment, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectWEAP, void, EnchantmentItem*>("SetEnchantment", "Weapon", papyrusWeapon::SetEnchantment, registry));
+
 }

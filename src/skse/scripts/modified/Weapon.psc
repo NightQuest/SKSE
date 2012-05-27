@@ -35,6 +35,10 @@ Function SetIconPath(string path) native
 string Function GetMessageIconPath() native
 Function SetMessageIconPath(string path) native
 
+; works on the enchantment associated with the weapon
+Enchantment Function GetEnchantment() native
+Function SetEnchantment(Enchantment e) native
+
 bool Function IsBattleaxe()
 	return HasKeywordString("WeapTypeBattleaxe")
 endFunction
@@ -53,6 +57,10 @@ endFunction
 
 bool Function IsMace()
 	return HasKeywordString("WeapTypeMace")
+endFunction
+
+bool Function IsStaff()
+	return HasKeywordString("WeapTypeStaff")
 endFunction
 
 bool Function IsSword()

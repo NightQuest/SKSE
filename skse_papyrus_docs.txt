@@ -1,9 +1,11 @@
-SKSE 1.5.6 Papyrus Functions
+SKSE 1.5.7 Papyrus Functions
 
 Actor.psc
  - GetWornForm
+ - GetSpellCount
+ - GetNthSpell
 
- ActorBase.psc
+ActorBase.psc
  - Get/SetCombatStyle
  - GetOutfit
  - SetClass
@@ -12,6 +14,13 @@ Actor.psc
  - Get/SetNthHeadPart
  - Get/SetFaceMorph
  - Get/SetFacePreset
+ - Get/SetHairColor
+ - GetSpellCount
+ - GetNthSpell
+
+Alias.psc
+- GetName
+- GetID
  
 Apparatus.psc
  - Get/SetQuality
@@ -27,6 +36,7 @@ Armor.psc
  - IsClothingBody/Head/Feet/Hands/Ring/Rich/Poor
  - GetWeightClass
  - Get/Set/ModelPath/IconPath/MessageIconPath
+ - Get/SetEnchantment
 
 Book.psc
  - GetSpell
@@ -34,6 +44,10 @@ Book.psc
 Cell.psc
  - GetNumRefs
  - GetNthRef
+
+ColorForm.psc
+- GetRed/Green/Blue
+- GetHue/Saturation/Luminosity
  
 CombatStyle.psc
  - Get/SetOffensiveMult 
@@ -93,6 +107,15 @@ FormType.psc
  
 Game.psc
  - Get/Set/ModPerkPoints 
+
+ HeadPart.psc
+- GetType
+- GetNumExtraParts
+- GetNthExtraPart
+- HasExtraPart
+- GetIndexOfExtraPart
+- GetValidRaces
+- SetValidRaces
  
 Ingredient.psc
  - GetNumEffects
@@ -138,6 +161,24 @@ Potion.psc
  - GetNthEffectMagicEffect
  - GetCostliestEffectIndex
 
+Quest.psc
+- GetQuest
+- GetID
+- GetPriority
+- GetNumAliases
+- GetNthAlias
+- GetAliasByName
+ 
+Scroll.psc
+ - GetCastTime
+ - GetPerk
+ - GetNumEffects
+ - GetNthEffectMagnitude
+ - GetNthEffectArea
+ - GetNthEffectDuration
+ - GetNthEffectMagicEffect
+ - GetCostliestEffectIndex
+
 SKSE.psc
  - GetVersion
  - GetVersionMinor
@@ -165,7 +206,13 @@ StringUtl.psc
  - Find
  - Substring
  - AsOrd/Char
+ 
+UI.psc
+ - IsMenuOpen
 
+Utility.psc
+- GetINIFloat/Int/Bool/String
+ 
 Weapon.psc
  - Get/SetBaseDamage
  - Get/SetReach
@@ -178,6 +225,7 @@ Weapon.psc
  - Get/SetCritDamage
  - Get/SetMin/MaxRange
  - IsBattleaxe/Bow/Dagger/Greatsword/Mace/Sword/Warhammer/Waraxe
+ - Get/SetEnchantment
  
  
 

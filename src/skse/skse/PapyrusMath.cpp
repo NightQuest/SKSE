@@ -58,4 +58,3 @@ void papyrusMath::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <StaticFunctionTag, UInt32, UInt32>("LogicalNot", "Math", papyrusMath::LogicalNot, registry));
 
 }
-

@@ -5,6 +5,7 @@ class TESNPC;
 class TESCombatStyle;
 class BGSOutfit;
 class TESClass;
+class SpellItem;
 class VMClassRegistry;
 
 namespace papyrusActorBase {
@@ -24,4 +25,6 @@ namespace papyrusActorBase {
 	void SetNthHeadPart(TESNPC* thisNPC, TESForm* form, UInt32 n );
 	float GetFaceMorph(TESNPC* thisNPC, UInt32 index);
 	void SetFaceMorph(TESNPC* thisNPC, float value, UInt32 index);
+	UInt32 GetSpellCount(TESNPC* thisNPC);
+	SpellItem* GetNthSpell(TESNPC* thisNPC, UInt32 n);
 };

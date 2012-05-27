@@ -5,12 +5,12 @@
 
 CommandTable	g_commandTable;
 
-const CommandInfo	* g_blockTypeStart =		(CommandInfo *)0x01221158;
-const CommandInfo	* g_blockTypeEnd =			(CommandInfo *)0x012216D0;
-const CommandInfo	* g_consoleCommandsStart =	(CommandInfo *)0x012216F8;
-const CommandInfo	* g_consoleCommandsEnd =	(CommandInfo *)0x012246F0;
-const CommandInfo	* g_scriptCommandsStart =	(CommandInfo *)0x01224718;
-const CommandInfo	* g_scriptCommandsEnd =		(CommandInfo *)0x0122B8B0;
+const CommandInfo	* g_blockTypeStart =		(CommandInfo *)0x01240388;
+const CommandInfo	* g_blockTypeEnd =			(CommandInfo *)0x01240900;
+const CommandInfo	* g_consoleCommandsStart =	(CommandInfo *)0x01240928;
+const CommandInfo	* g_consoleCommandsEnd =	(CommandInfo *)0x01243A38;
+const CommandInfo	* g_scriptCommandsStart =	(CommandInfo *)0x01243A60;
+const CommandInfo	* g_scriptCommandsEnd =		(CommandInfo *)0x0124ACC0;
 
 static bool IsEmptyStr(const char * data)
 {
@@ -51,7 +51,7 @@ void DumpCommands(const CommandInfo * start, const CommandInfo * end)
 			}
 		}
 
-		_MESSAGE("%04X %s", iter->opcode, line.c_str());
+		_MESSAGE("%04X %04X %s", iter->opcode, iter->execute, line.c_str());
 
 		if(!IsEmptyStr(iter->helpText))
 		{
@@ -72,70 +72,70 @@ void ObScript_DumpCommands(void)
 	DumpCommands(g_scriptCommandsStart, g_scriptCommandsEnd);
 }
 
-// 1.5.26.0 runtime
+// 1.6.87.0 runtime
 static const CommandTable::PatchLocation kPatch_ScriptCommands_Start[] =
 {
-	{	0x005114DB, 0x00 },
-	{	0x005116A4, 0x04 },
-	{	0x0051173D, 0x08 },
-	{	0x00512727, 0x00 },
-	{	0x00515CDF, 0x00 },
-	{	0x0053CBF9, 0x0C },
-	{	0x0053CC11, 0x00 },
-	{	0x0053CC29, 0x04 },
-	{	0x0053CC45, 0x0C },
-	{	0x0053CC5F, 0x04 },
-	{	0x0053CC7D, 0x00 },
-	{	0x0053CC9F, 0x00 },
-	{	0x0053CCBD, 0x04 },
-	{	0x0053CCE3, 0x00 },
-	{	0x0053CCFA, 0x00 },
-	{	0x005E54A9, 0x20 },
-	{	0x005E54B5, 0x10 },
-	{	0x005E557E, 0x12 },
-	{	0x005E55C1, 0x12 },
-	{	0x005E55CD, 0x14 },
-	{	0x005E5608, 0x12 },
-	{	0x005E5615, 0x14 },
-	{	0x005E5676, 0x12 },
-	{	0x005E5682, 0x14 },
-	{	0x005E56B0, 0x12 },
-	{	0x005E5721, 0x12 },
-	{	0x005E5753, 0x12 },
-	{	0x005E575F, 0x14 },
-	{	0x005E57B5, 0x12 },
-	{	0x005E57F3, 0x12 },
-	{	0x005E57FF, 0x14 },
-	{	0x005E58A8, 0x12 },
-	{	0x005E58D7, 0x14 },
-	{	0x005E59B4, 0x12 },
-	{	0x005E59D6, 0x14 },
-	{	0x005E5AEE, 0x12 },
-	{	0x005E5B38, 0x12 },
-	{	0x005E5B48, 0x14 },
-	{	0x005E5BE1, 0x14 },
-	{	0x0069BBBC, 0x12 },
-	{	0x0069BBE9, 0x14 },
+	{	0x0051414B, 0x00 },
+	{	0x00514314, 0x04 },
+	{	0x005143AD, 0x08 },
+	{	0x00515397, 0x00 },
+	{	0x0051894F, 0x00 },
+	{	0x0053FAC9, 0x0C },
+	{	0x0053FAE1, 0x00 },
+	{	0x0053FAF9, 0x04 },
+	{	0x0053FB15, 0x0C },
+	{	0x0053FB2F, 0x04 },
+	{	0x0053FB4D, 0x00 },
+	{	0x0053FB6F, 0x00 },
+	{	0x0053FB8D, 0x04 },
+	{	0x0053FBB3, 0x00 },
+	{	0x0053FBCA, 0x00 },
+	{	0x005E9309, 0x20 },
+	{	0x005E9315, 0x10 },
+	{	0x005E93DE, 0x12 },
+	{	0x005E9421, 0x12 },
+	{	0x005E942D, 0x14 },
+	{	0x005E9468, 0x12 },
+	{	0x005E9475, 0x14 },
+	{	0x005E94D6, 0x12 },
+	{	0x005E94E2, 0x14 },
+	{	0x005E9510, 0x12 },
+	{	0x005E9581, 0x12 },
+	{	0x005E95B3, 0x12 },
+	{	0x005E95BF, 0x14 },
+	{	0x005E9615, 0x12 },
+	{	0x005E9653, 0x12 },
+	{	0x005E965F, 0x14 },
+	{	0x005E9708, 0x12 },
+	{	0x005E9737, 0x14 },
+	{	0x005E9814, 0x12 },
+	{	0x005E9836, 0x14 },
+	{	0x005E994E, 0x12 },
+	{	0x005E9998, 0x12 },
+	{	0x005E99A8, 0x14 },
+	{	0x005E9A41, 0x14 },
+	{	0x006A1C6C, 0x12 },
+	{	0x006A1C99, 0x14 },
 	{	0 },
 };
 
 static const CommandTable::PatchLocation kPatch_ScriptCommands_End[] =
 {
-	{	0x005115E2, 0x08 },
-	{	0x005116CF, 0x04 },
+	{	0x00514252, 0x08 },
+	{	0x0051433F, 0x04 },
 	{	0 },
 };
 
 static const CommandTable::PatchLocation kPatch_ScriptCommands_MaxIdx[] =
 {
-	{	0x004FD8D0 + 0x0087 + 1,	0 },
-	{	0x005114A0 + 0x0029 + 2,	(UInt32)(-0x1001) },
-	{	0x005115E0 + 0x0000 + 6,	0 },
-	{	0x005125C0 + 0x0156 + 1,	(UInt32)(-0x1001) },
-	{	0x00515580 + 0x0751 + 2,	(UInt32)(-0x1001) },
-	{	0x005E48F0 + 0x000D + 2,	(UInt32)(-0x1001) },
-	{	0x005E48F0 + 0x001D + 1,	(UInt32)(-0x1001) },
-	{	0x005E48F0 + 0x0029 + 2,	(UInt32)(-0x1001) },
+	{	0x00500480 + 0x0087 + 1,	0 },
+	{	0x00514110 + 0x0029 + 2,	(UInt32)(-0x1001) },
+	{	0x00514250 + 0x0000 + 6,	0 },
+	{	0x00515230 + 0x0156 + 1,	(UInt32)(-0x1001) },
+	{	0x005181F0 + 0x0751 + 2,	(UInt32)(-0x1001) },
+	{	0x005E8750 + 0x000D + 2,	(UInt32)(-0x1001) },
+	{	0x005E8750 + 0x001D + 1,	(UInt32)(-0x1001) },
+	{	0x005E8750 + 0x0029 + 2,	(UInt32)(-0x1001) },
 
 	{	0 },
 };
@@ -223,10 +223,27 @@ bool Cmd_GetSKSERelease_Execute(COMMAND_ARGS)
 #include "GameExtraData.h"
 
 #include "PapyrusKeyword.h"
+#include "PapyrusForm.h"
 
 bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 {
-	DataHandler* handler = DataHandler::GetSingleton();
+
+	PlayerCharacter* pPC = *(g_thePlayer);
+	TESForm* pPlayerForm = pPC->baseForm;
+	
+
+	for (UInt32 n = 0; n < pPC->addedSpells.spellCount; n++)
+	{
+		SpellItem* pSpell = pPC->addedSpells.spells[n];
+		_MESSAGE("%d> %s", n, pSpell->fullName.name.data);
+	}
+
+	//const char* oldName = papyrusForm::GetName(pPlayerForm).data;
+	//papyrusForm::SetName(pPlayerForm, BSFixedString("Bob"));
+	//const char* nuName = papyrusForm::GetName(pPlayerForm).data;
+	//Console_Print("OldName: %s NuName: %s", oldName, nuName);
+
+	//DataHandler* handler = DataHandler::GetSingleton();
 	
 	//UInt32 keywords = handler->keywords.count;
 	//for (UInt32 k = 0; k < keywords; k++) {
@@ -237,10 +254,18 @@ bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 	//	}
 	//}
 
-	BSFixedString weapTypeSword("WeapTypeSword");
-	BGSKeyword* pKeyword = papyrusKeyword::GetKeyword(NULL, weapTypeSword);
-	const char* key = pKeyword->keyword.Get();
+	//const char* wts = "WeapTypeSword";
+	//BSFixedString weapTypeSword("WeapTypeSword");
+	//const char* bsf = weapTypeSword.data;
+	//BSFixedString bfsWTS(wts);
+	//const char* bsf2 = bfsWTS.data;
+	//BGSKeyword* pKeyword = papyrusKeyword::GetKeyword(NULL, weapTypeSword);
+	//const char* key = pKeyword->keyword.Get();
+	//
+	//BGSKeyword* pKeywordMissing = papyrusKeyword::GetKeyword(NULL, "BobsYourUncle");
 
+	//Console_Print("wts: %X (%s) bsf: %X (%s) bsf2: %X (%s)", wts, wts, bsf, bsf, bsf2, bsf2); 
+	//Console_Print("pKeyword: %X pKeywordMissing: %X", pKeyword, pKeywordMissing);
 
 	//PlayerCharacter *pPC = (*g_thePlayer);
 

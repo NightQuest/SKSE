@@ -128,11 +128,11 @@ namespace papyrusStringUtil
 		registry->RegisterFunction(
 			new NativeFunction2 <StaticFunctionTag, BSFixedString, BSFixedString, UInt32> ("GetNthChar", "StringUtil", papyrusStringUtil::GetNthChar, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsUppercase", "StringUtil", papyrusStringUtil::IsUppercase, registry));
+		//registry->RegisterFunction(
+		//	new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsUppercase", "StringUtil", papyrusStringUtil::IsUppercase, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsLowercase", "StringUtil", papyrusStringUtil::IsLowercase, registry));
+		//registry->RegisterFunction(
+		//	new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsLowercase", "StringUtil", papyrusStringUtil::IsLowercase, registry));
 
 		registry->RegisterFunction(
 			new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsLetter", "StringUtil", papyrusStringUtil::IsLetter, registry));
@@ -146,11 +146,11 @@ namespace papyrusStringUtil
 		registry->RegisterFunction(
 			new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsPrintable", "StringUtil", papyrusStringUtil::IsPrintable, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, BSFixedString, BSFixedString> ("ToUpper", "StringUtil", papyrusStringUtil::ToUpper, registry));
+		//registry->RegisterFunction(
+		//	new NativeFunction1 <StaticFunctionTag, BSFixedString, BSFixedString> ("ToUpper", "StringUtil", papyrusStringUtil::ToUpper, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, BSFixedString, BSFixedString> ("ToLower", "StringUtil", papyrusStringUtil::ToLower, registry));
+		//registry->RegisterFunction(
+		//	new NativeFunction1 <StaticFunctionTag, BSFixedString, BSFixedString> ("ToLower", "StringUtil", papyrusStringUtil::ToLower, registry));
 
 		registry->RegisterFunction(
 			new NativeFunction3 <StaticFunctionTag, SInt32, BSFixedString, BSFixedString, UInt32> ("Find", "StringUtil", papyrusStringUtil::Find, registry));

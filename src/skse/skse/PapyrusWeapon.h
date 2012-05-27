@@ -2,6 +2,7 @@
 
 class TESObjectWEAP;
 class VMClassRegistry;
+class EnchantmentItem;
 
 #include "GameTypes.h"
 
@@ -34,4 +35,7 @@ namespace papyrusWeapon
 
 	BSFixedString GetMessageIconPath(TESObjectWEAP* thisWeapon);
 	void SetMessageIconPath(TESObjectWEAP* thisWeapon, BSFixedString nuPath);
+
+	EnchantmentItem* GetEnchantment(TESObjectWEAP* thisWeapon);
+	void SetEnchantment(TESObjectWEAP* thisWeapon, EnchantmentItem* enchantment);
 }

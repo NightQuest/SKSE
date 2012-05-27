@@ -108,6 +108,18 @@ namespace papyrusArmor
 			thisArmor->bipedObject.data.weightClass = nuWeightClass;
 	}
 
+	EnchantmentItem* GetEnchantment(TESObjectARMO* thisArmor)
+	{
+		return (thisArmor) ? thisArmor->enchantable.enchantment : NULL;
+	}
+
+	void SetEnchantment(TESObjectARMO* thisArmor, EnchantmentItem* enchantment)
+	{
+		if (thisArmor) {
+			thisArmor->enchantable.enchantment = enchantment;
+		}
+	}
+
 }
 
 #include "PapyrusVM.h"
@@ -162,5 +174,12 @@ void papyrusArmor::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESObjectARMO, void, UInt32>("SetWeightClass", "Armor", papyrusArmor::SetWeightClass, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectARMO, EnchantmentItem*>("GetEnchantment", "Armor", papyrusArmor::GetEnchantment, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectARMO, void, EnchantmentItem*>("SetEnchantment", "Armor", papyrusArmor::SetEnchantment, registry));
+
 
 }

@@ -3,10 +3,10 @@
 #include "Utilities.h"
 
 static UInt32 g_forceContainerCategorization = 0;
-static const UInt32 kHook_ContainerMode_Base = 0x0083CD90;
+static const UInt32 kHook_ContainerMode_Base = 0x00845D60;
 static const UInt32 kHook_ContainerMode_Categories = kHook_ContainerMode_Base + 0x4E;
 static const UInt32 kHook_ContainerMode_NoCategories = kHook_ContainerMode_Base + 0x63;
-static UInt32 ** g_containerMode = (UInt32 **)0x01393884;
+static UInt32 ** g_containerMode = (UInt32 **)0x013B407C;
 
 static void __declspec(naked) Hook_ContainerMode(void)
 {
@@ -40,7 +40,7 @@ void Hooks_Gameplay_EnableForceContainerCategorization(bool enable)
 }
 
 UInt32 g_invalidateKeywordCache = 0;
-static UInt32 kHook_BGSKeyword_Base = 0x005484C0;
+static UInt32 kHook_BGSKeyword_Base = 0x0054B300;
 static UInt32 kHook_BGSKeyword_Create_Return = kHook_BGSKeyword_Base + 5;
 
 static void __declspec(naked) Hook_BGSKeyword_Create(void)

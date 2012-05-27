@@ -6,35 +6,25 @@
 
 #include "PapyrusVM.h"
 #include "PapyrusNativeFunctions.h"
-#include <set>
+
+#include "common/ICriticalSection.h"
 
 extern UInt32 g_invalidateKeywordCache;
 
-struct compKeyword
-{
-	bool operator()(BGSKeyword*rhs, BGSKeyword*lhs)
-	{
-		return strcmp(rhs->keyword.Get(), lhs->keyword.Get()) < 0;
-	}
-};
-
-struct compFixedString
-{
-	bool operator()(BSFixedString rhs, BSFixedString lhs) const
-	{
-		return strcmp(rhs.data, lhs.data) < 0;
-	}
-};
-
 namespace papyrusKeyword
 {
+	typedef std::map <BSFixedString, BGSKeyword *> KeywordCache;
+
+	static ICriticalSection	s_keywordCacheLock;
+	static KeywordCache s_keywordCache;
+
 	BGSKeyword* GetKeyword(StaticFunctionTag*, BSFixedString keyword)
 	{
-		typedef std::map<BSFixedString, BGSKeyword*,compFixedString> KeywordCache;
-		static KeywordCache s_keywordCache;
+		s_keywordCacheLock.Enter();
 		
 		if(g_invalidateKeywordCache == 1) {
 			s_keywordCache.clear();
+			g_invalidateKeywordCache = 0;
 		}
 
 		if (s_keywordCache.empty()) {
@@ -44,13 +34,15 @@ namespace papyrusKeyword
 				BGSKeyword* pKeyword = NULL;
 				keywords.GetNthItem(n, pKeyword);
 				if (pKeyword) {
-					BSFixedString key(pKeyword->keyword.Get());
-					s_keywordCache.insert(KeywordCache::value_type(key, pKeyword));
+					s_keywordCache.insert(KeywordCache::value_type(BSFixedString(pKeyword->keyword.Get()), pKeyword));
 				}
 			}
 		}
 
-		BGSKeyword* pKeyword = s_keywordCache[keyword.data];
+		s_keywordCacheLock.Leave();
+		
+		KeywordCache::iterator it = s_keywordCache.find(keyword);
+		BGSKeyword* pKeyword = (it != s_keywordCache.end()) ? it->second : NULL;
 		return pKeyword;
 	}
 

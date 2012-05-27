@@ -76,3 +76,20 @@ class FormMatcher
 public:
 	virtual bool Matches(TESForm* pForm) const = 0;
 };
+
+// alternative to strtok; doesn't modify src string, supports forward/backward iteration
+class Tokenizer
+{
+public:
+	Tokenizer(const char* src, const char* delims);
+	~Tokenizer();
+
+	// these return the offset of token in src, or -1 if no token
+	UInt32 NextToken(std::string& outStr);
+	UInt32 PrevToken(std::string& outStr);
+
+private:
+	std::string m_delims;
+	size_t		m_offset;
+	std::string m_data;
+};

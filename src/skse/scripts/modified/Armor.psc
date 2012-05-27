@@ -32,6 +32,10 @@ Function SetMessageIconPath(string path, bool bFemalePath) native
 int Function GetWeightClass() native
 Function SetWeightClass(int weightClass) native
 
+; works on the enchantment associated with the armor
+Enchantment Function GetEnchantment() native
+Function SetEnchantment(Enchantment e) native
+
 ; Armor info by keyword
 bool Function IsLightArmor()
 	return HasKeywordString("ArmorLight")

@@ -22,7 +22,7 @@ public:
 	virtual void	Unk_05(UInt32 arg0, UInt32 arg1);	// CurrentTime
 	virtual void	Unk_06(void);
 
-	void			* unk08;	// 08 - init'd to 0, a class, virtual fn 0x114 called in dtor
+	GFxMovieView	* view;	// 08 - init'd to 0, a class, virtual fn 0x114 called in dtor
 	UInt8			unk0C;		// 0C - init'd to 3
 	UInt8			pad0D[3];	// 0D
 	UInt32			unk10;		// 10 - init'd to 0
@@ -169,11 +169,11 @@ public:
 	// this takes ownership of the message ptr
 //	DEFINE_MEMBER_FN(AddMessage, void, 0x004500C0, UIMessage * msg);	// old 1.1 implementation
 	// 1.3 uses a little non-thread-safe pool of UIMessages to wrap around the nicely thread-safe BSTMessageQueue it gets added to
-	DEFINE_MEMBER_FN(AddMessage, void, 0x00432380, StringCache::Ref * strData, UInt32 msgID, void * objData);
+	DEFINE_MEMBER_FN(AddMessage, void, 0x00431DF0, StringCache::Ref * strData, UInt32 msgID, void * objData);
 
 	static UIManager *	GetSingleton(void)
 	{
-		return *((UIManager **)0x012B8B34);
+		return *((UIManager **)0x012D8E74);
 	}
 };
 
@@ -251,7 +251,7 @@ public:
 
 	static UIStringHolder *	GetSingleton(void)
 	{
-		return *((UIStringHolder **)0x012B8B30);
+		return *((UIStringHolder **)0x012D8E70);
 	}
 };
 
@@ -265,4 +265,43 @@ public:
 	UInt32			pad04[(0x34 - 0x04) / 4];	// 04
 	TESObjectREFR	* object;	// 34
 	// ...
+};
+
+class MenuManager
+{
+	struct Result
+	{
+		IMenu *		menu; // 00
+		UInt32		unk004; // 04
+		Result() : menu(0), unk004(0) {};
+	};
+
+	struct List
+	{
+		UInt32		unk074;		// 00
+		UInt32		unk078;		// 04
+		UInt32		unk07C;		// 08
+		UInt32		unk080;		// 0C
+		char		hash[8];	// 10 end of list? hash?
+		UInt32		* data;		// 18 - pointer to list data, passed to GetMenu
+
+		MEMBER_FN_PREFIX(List);
+		DEFINE_MEMBER_FN(GetMenu, bool, 0x00A565D0, void * arg1, UInt32 hash, BSFixedString * name, Result * arg4);
+	};
+
+public:
+	UInt32		pad00[(0xA4 - 0x00) >> 2];	// 000
+	List		list;			// 0A4
+	UInt32		* unk090;		// 090 - threadId?
+
+	MEMBER_FN_PREFIX(MenuManager);
+	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A55250, BSFixedString * menuName);
+	//DEFINE_MEMBER_FN(Register, void, 0x00A55660, const char * name, void * func);
+
+	static MenuManager *	GetSingleton(void)
+	{
+		return *((MenuManager **)0x012D8DD8);
+	}
+
+	GFxMovieView *	GetMovieView(BSFixedString * menuName);
 };

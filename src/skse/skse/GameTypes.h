@@ -38,12 +38,15 @@ public:
 		const char	* data;
 
 		MEMBER_FN_PREFIX(Ref);
-		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A38C90, const char * buf);
-		DEFINE_MEMBER_FN(Set, Ref *, 0x00A38CE0, const char * buf);
-		DEFINE_MEMBER_FN(Release, void, 0x00A38C80);
+		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A49570, const char * buf);
+		DEFINE_MEMBER_FN(Set, Ref *, 0x00A495C0, const char * buf);
+		DEFINE_MEMBER_FN(Release, void, 0x00A49560);
 
 		Ref() :data(NULL) { }
 		Ref(const char * buf);
+
+		bool operator==(const Ref& lhs) const { return data == lhs.data; }
+		bool operator<(const Ref& lhs) const { return data < lhs.data; }
 	};
 
 	struct Lock
@@ -433,3 +436,6 @@ public:
 };
 
 STATIC_ASSERT(sizeof(tList<void *>) == 0x8);
+
+typedef void (__cdecl * _CRC32_Calc4)(UInt32 * out, UInt32 data);
+extern const _CRC32_Calc4 CRC32_Calc4;

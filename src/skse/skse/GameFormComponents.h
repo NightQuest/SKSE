@@ -406,7 +406,7 @@ public:
 	UInt32	unk08;	// 08 - init'd to FFFFFFFF
 };
 
-// 10
+// C
 class TESEnchantableForm : public BaseFormComponent
 {
 public:
@@ -414,8 +414,6 @@ public:
 
 	EnchantmentItem*	enchantment;		// 04 - init'd to 0
 	UInt32	unk08;		// 08 - init'd to 3
-	UInt16	unk0C;		// 0C - init'd to 0
-	UInt8	unk0E[2];	// 0E
 };
 
 // 08

@@ -1,4 +1,4 @@
-SKSE 1.5.7 Papyrus Functions
+SKSE 1.5.8 Papyrus Functions
 
 Actor.psc
  - GetWornForm

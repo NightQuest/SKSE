@@ -7,6 +7,7 @@ class BGSOutfit;
 class TESClass;
 class SpellItem;
 class VMClassRegistry;
+class BGSHeadPart;
 
 namespace papyrusActorBase {
 	void RegisterFuncs(VMClassRegistry* registry);
@@ -21,8 +22,8 @@ namespace papyrusActorBase {
 	float GetWeight(TESNPC* thisNPC);
 	void SetWeight(TESNPC* thisNPC, float weight);
 	UInt32 GetNumHeadParts(TESNPC* thisNPC);
-	TESForm* GetNthHeadPart(TESNPC* thisNPC, UInt32 n);
-	void SetNthHeadPart(TESNPC* thisNPC, TESForm* form, UInt32 n );
+	BGSHeadPart* GetNthHeadPart(TESNPC* thisNPC, UInt32 n);
+	void SetNthHeadPart(TESNPC* thisNPC, BGSHeadPart* headPart, UInt32 n );
 	float GetFaceMorph(TESNPC* thisNPC, UInt32 index);
 	void SetFaceMorph(TESNPC* thisNPC, float value, UInt32 index);
 	UInt32 GetSpellCount(TESNPC* thisNPC);

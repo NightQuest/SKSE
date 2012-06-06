@@ -82,6 +82,13 @@ void papyrusInput::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, void, UInt32> ("ReleaseKey", "Input", papyrusInput::ReleaseKey, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction0 <StaticFunctionTag, UInt32> ("GetNumKeysPressed", "Input", papyrusInput::GetNumKeysPressed, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, SInt32, UInt32> ("GetNthKeyPressed", "Input", papyrusInput::GetNthKeyPressed, registry));
+
+
 	//registry->RegisterFunction(
 	//	new NativeFunction1 <StaticFunctionTag, bool, UInt32> ("IsKeyHeld", "Input", papyrusInput::IsKeyHeld, registry));
 
@@ -93,4 +100,6 @@ void papyrusInput::RegisterFuncs(VMClassRegistry* registry)
 
 	//registry->RegisterFunction(
 	//	new NativeFunction1 <StaticFunctionTag, void, UInt32> ("EnableKey", "Input", papyrusInput::EnableKey, registry));
+
+
 }

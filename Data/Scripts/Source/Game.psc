@@ -238,8 +238,17 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2012-05-25 05:14:25.770000 UTC
+; SKSE additions built 2012-05-27 07:43:18.932000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native
 Function ModPerkPoints(int perkPoints) global native
+
+; functions added by BGS in 1.6.87
+float Function GetSunPositionX() global native
+float Function GetSunPositionY() global native
+float Function GetSunPositionZ() global native
+Form Function GetFormFromFile(int aiFormID, string asFilename) global native
+Function ShowLimitedRaceMenu() global native
+Function SetSunGazeImageSpaceModifier(ImageSpaceModifier apImod) global native
+bool Function IsPlayerSungazing() global native

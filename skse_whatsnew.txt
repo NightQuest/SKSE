@@ -1,3 +1,8 @@
+1.5.8:
+- Fix size of enchantable class so that Weapon and Armor functions work again.
+- Fix other various bugs in previous version.
+- Temporarily add missing native function definitions in Actor.psc, ObjectReference.psc, Spell.psc and Game.psc.
+
 1.5.7:
 - Fix bugs with SetName and really hook up Input.GetNumKeysPressed and GetNthKeyPressed
 - support for runtime 1.6.87.0

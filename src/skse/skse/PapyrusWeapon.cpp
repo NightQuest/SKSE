@@ -28,7 +28,7 @@ namespace papyrusWeapon
 	void SetCritDamage(TESObjectWEAP* thisWeapon, UInt32 critDamage)
 	{
 		if (thisWeapon) {
-			thisWeapon->unk0F8.critDamage = critDamage;
+			thisWeapon->unk0F4.critDamage = critDamage;
 		}
 	}
 
@@ -43,7 +43,7 @@ namespace papyrusWeapon
 	{
 		if (!thisWeapon)
 			return;
-		thisWeapon->unk0C4.reach = nuReach;
+		thisWeapon->unk0C0.reach = nuReach;
 	}
 
 	float GetSpeed(TESObjectWEAP* thisWeapon)
@@ -56,7 +56,7 @@ namespace papyrusWeapon
 	void SetSpeed(TESObjectWEAP* thisWeapon, float speed)
 	{
 		if (thisWeapon) {
-			thisWeapon->unk0C4.speed = speed;
+			thisWeapon->unk0C0.speed = speed;
 		}
 	}
 
@@ -70,7 +70,7 @@ namespace papyrusWeapon
 	void SetStagger(TESObjectWEAP* thisWeapon, float stagger)
 	{
 		if (thisWeapon) {
-			thisWeapon->unk0C4.stagger = stagger;
+			thisWeapon->unk0C0.stagger = stagger;
 		}
 	}
 
@@ -84,7 +84,7 @@ namespace papyrusWeapon
 	void SetMinRange(TESObjectWEAP* thisWeapon, float minRange)
 	{
 		if (thisWeapon) {
-			thisWeapon->unk0C4.minRange = minRange;
+			thisWeapon->unk0C0.minRange = minRange;
 		}
 	}
 
@@ -98,7 +98,7 @@ namespace papyrusWeapon
 	void SetMaxRange(TESObjectWEAP* thisWeapon, float maxRange)
 	{
 		if (thisWeapon) {
-			thisWeapon->unk0C4.maxRange = maxRange;
+			thisWeapon->unk0C0.maxRange = maxRange;
 		}
 	}
 
@@ -113,7 +113,7 @@ namespace papyrusWeapon
 	{
 		if (!thisWeapon)
 			return;
-		thisWeapon->unk0C4.type = nuType;
+		thisWeapon->unk0C0.type = nuType;
 	}
 
 

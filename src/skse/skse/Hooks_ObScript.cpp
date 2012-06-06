@@ -270,12 +270,12 @@ bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 	//PlayerCharacter *pPC = (*g_thePlayer);
 
 
-	//TESForm* pForm = LookupFormByID(0x2F2F4);
-	//TESObjectWEAP* pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
+	TESForm* pForm = LookupFormByID(0x2F2F4);
+	TESObjectWEAP* pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
 
-	//pForm = LookupFormByID(0x58F5E);
-	//pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
-	//DumpClass(pWeap, 1024);
+	pForm = LookupFormByID(0x58F5E);
+	pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
+	DumpClass(pWeap, 1024);
 
 	//pForm = LookupFormByID(0x73F4C);
 	//AlchemyItem* pPotion = DYNAMIC_CAST(pForm, TESForm, AlchemyItem);

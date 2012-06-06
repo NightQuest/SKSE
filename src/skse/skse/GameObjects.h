@@ -915,7 +915,7 @@ public:
 	TESLeveledList	leveledList;	// 20
 };
 
-// 12C
+// 128
 class TESObjectARMO : public TESBoundObject
 {
 public:
@@ -925,22 +925,23 @@ public:
 	TESFullName					fullName;		// 020
 	TESRaceForm					race;			// 028
 	TESEnchantableForm			enchantable;	// 030
-	TESValueForm				value;			// 040
-	TESWeightForm				weight;			// 048
-	BGSDestructibleObjectForm	destructible;	// 050
-	BGSPickupPutdownSounds		pickupSounds;	// 058
-	TESBipedModelForm			bipedModel;		// 064
-	BGSEquipType				equipType;		// 0DC
-	BGSBipedObjectForm			bipedObject;	// 0E4
-	BGSBlockBashData			blockBash;		// 0F4
-	BGSKeywordForm				keyword;		// 100
-	TESDescription				description;	// 10C
+	TESValueForm				value;			// 038
+	TESWeightForm				weight;			// 044
+	BGSDestructibleObjectForm	destructible;	// 04C
+	BGSPickupPutdownSounds		pickupSounds;	// 054
+	TESBipedModelForm			bipedModel;		// 060
+	BGSEquipType				equipType;		// 0D8
+	BGSBipedObjectForm			bipedObject;	// 0E0
+	BGSBlockBashData			blockBash;		// 0F0
+	BGSKeywordForm				keyword;		// 0FC
+	TESDescription				description;	// 108
 
 	// members
-	UInt32	armorValTimes100;	// 118
-	UnkArray	unk11C;	// 11C
-	UInt32	unk128;	// 128 - enchantment related?
+	UInt32	armorValTimes100;	// 114
+	UnkArray	unk118;	// 118
+	UInt32	unk124;	// 124 - enchantment related?
 };
+STATIC_ASSERT(sizeof(TESObjectARMO) == 0x128);
 
 // AC
 class TESObjectBOOK : public TESBoundObject
@@ -1111,7 +1112,7 @@ public:
 	Data4C	unk4C;	// 4C
 };
 
-// 138
+// 134
 class TESObjectWEAP : public TESBoundObject
 {
 public:
@@ -1122,17 +1123,17 @@ public:
 	TESModelTextureSwap			texSwap;		// 028
 	TESIcon						icon;			// 044
 	TESEnchantableForm			enchantable;	// 04C
-	TESValueForm				value;			// 05C
-	TESWeightForm				weight;			// 064
-	TESAttackDamageForm			damage;			// 06C
-	BGSDestructibleObjectForm	destructible;	// 074
-	BGSEquipType				equipType;		// 07C
-	BGSPreloadable				preloadable;	// 084
-	BGSMessageIcon				messageIcon;	// 088
-	BGSPickupPutdownSounds		pickupSounds;	// 094
-	BGSBlockBashData			blockBash;		// 0A0
-	BGSKeywordForm				keyword;		// 0AC
-	TESDescription				description;	// 0B8
+	TESValueForm				value;			// 058
+	TESWeightForm				weight;			// 060
+	TESAttackDamageForm			damage;			// 068
+	BGSDestructibleObjectForm	destructible;	// 070
+	BGSEquipType				equipType;		// 078
+	BGSPreloadable				preloadable;	// 080
+	BGSMessageIcon				messageIcon;	// 084
+	BGSPickupPutdownSounds		pickupSounds;	// 090
+	BGSBlockBashData			blockBash;		// 09C
+	BGSKeywordForm				keyword;		// 0A8
+	TESDescription				description;	// 0B4
 
 	// members
 
@@ -1191,32 +1192,32 @@ public:
 		UInt8	pad0B;			// 0B
 	};
 
-	DataC4	unk0C4;	// 0C4
-	DataF8	unk0F8;	// 0F8
-	TESForm	* scopeEffect;		// 104
-	TESForm	* attackSound;		// 108
-	TESForm	* attackSound2D;	// 10C
-	TESForm	* attackLoopSound;	// 110
-	TESForm	* attackFailSound;	// 114
-	TESForm	* idleSound;		// 118
-	TESForm	* equipSound;		// 11C
-	TESForm	* unequipSound;		// 120
-	TESForm	* impactDataSet;	// 124
-	TESForm	* firstPersonModel;	// 128
-	TESForm	* templateForm;		// 12C
-	UInt32	unk130;				// 130
-	UInt32	pad134;				// 134
+	DataC4	unk0C0;	// 0C0
+	DataF8	unk0F4;	// 0F4
+	TESForm	* scopeEffect;		// 100
+	TESForm	* attackSound;		// 104
+	TESForm	* attackSound2D;	// 108
+	TESForm	* attackLoopSound;	// 10C
+	TESForm	* attackFailSound;	// 110
+	TESForm	* idleSound;		// 114
+	TESForm	* equipSound;		// 118
+	TESForm	* unequipSound;		// 11C
+	TESForm	* impactDataSet;	// 120
+	TESForm	* firstPersonModel;	// 124
+	TESForm	* templateForm;		// 128
+	UInt32	unk12C;				// 12C
+	UInt32	pad130;				// 130
 
-	float speed() { return unk0C4.speed; }
-	float reach() { return unk0C4.reach; }
-	float stagger() { return unk0C4.stagger; }
-	float minRange() { return unk0C4.minRange; }
-	float maxRange() { return unk0C4.maxRange; }
-	UInt8 type() { return unk0C4.type; }
-	UInt16 critDamage() { return unk0F8.critDamage; }
+	float speed() { return unk0C0.speed; }
+	float reach() { return unk0C0.reach; }
+	float stagger() { return unk0C0.stagger; }
+	float minRange() { return unk0C0.minRange; }
+	float maxRange() { return unk0C0.maxRange; }
+	UInt8 type() { return unk0C0.type; }
+	UInt16 critDamage() { return unk0F4.critDamage; }
 };
 
-STATIC_ASSERT(sizeof(TESObjectWEAP) == 0x138);
+STATIC_ASSERT(sizeof(TESObjectWEAP) == 0x134);
 
 // CC
 class TESObjectARMA : public TESObject

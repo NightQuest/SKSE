@@ -21,3 +21,7 @@ MagicEffect Function GetNthEffectMagicEffect(int index) native
 
 ; return the index of the costliest effect
 int Function GetCostliestEffectIndex() native
+
+; functions added by BGS in 1.6.87
+Function Unload() native
+Function Preload() native

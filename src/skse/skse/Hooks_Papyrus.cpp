@@ -13,11 +13,13 @@
 #include "PapyrusArmor.h"
 #include "PapyrusBook.h"
 #include "PapyrusCell.h"
+#include "PapyrusColorForm.h"
 #include "PapyrusCombatStyle.h"
 #include "PapyrusConstructibleObject.h"
 #include "PapyrusEnchantment.h"
 #include "PapyrusForm.h"
 #include "PapyrusGame.h"
+#include "PapyrusHeadPart.h"
 #include "PapyrusIngredient.h"
 #include "PapyrusInput.h"
 #include "PapyrusKeyword.h"
@@ -47,6 +49,12 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 
 	// TESForm
 	papyrusForm::RegisterFuncs(registry);
+
+	// ColorForm
+	papyrusColorForm::RegisterFuncs(registry);
+
+	// HeadPart
+	papyrusHeadPart::RegisterFuncs(registry);
 
 	// TESObjectCELL
 	papyrusCell::RegisterFuncs(registry);

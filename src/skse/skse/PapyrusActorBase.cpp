@@ -53,7 +53,7 @@ namespace papyrusActorBase
 		return thisNPC ? thisNPC->numHeadParts : 0;
 	}
 
-	TESForm* GetNthHeadPart(TESNPC* thisNPC, UInt32 n)
+	BGSHeadPart* GetNthHeadPart(TESNPC* thisNPC, UInt32 n)
 	{
 		if (!thisNPC || n >= thisNPC->numHeadParts)
 			return NULL;
@@ -61,10 +61,9 @@ namespace papyrusActorBase
 		return thisNPC->headparts[n];
 	}
 
-	void SetNthHeadPart(TESNPC* thisNPC, TESForm* form, UInt32 n )
+	void SetNthHeadPart(TESNPC* thisNPC, BGSHeadPart* headPart, UInt32 n )
 	{
 		if (thisNPC  && n < thisNPC->numHeadParts) {
-			BGSHeadPart* headPart = DYNAMIC_CAST(form, TESForm, BGSHeadPart);
 			if (headPart) {
 				thisNPC->headparts[n] = headPart;
 				// Invoke Actor Member that updates FaceGen for head parts
@@ -155,10 +154,10 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction0 <TESNPC, UInt32>("GetNumHeadParts", "ActorBase", papyrusActorBase::GetNumHeadParts, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1 <TESNPC, TESForm*, UInt32>("GetNthHeadPart", "ActorBase", papyrusActorBase::GetNthHeadPart, registry));
+		new NativeFunction1 <TESNPC, BGSHeadPart*, UInt32>("GetNthHeadPart", "ActorBase", papyrusActorBase::GetNthHeadPart, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <TESNPC, void, TESForm*, UInt32>("SetNthHeadPart", "ActorBase", papyrusActorBase::SetNthHeadPart, registry));
+		new NativeFunction2 <TESNPC, void, BGSHeadPart*, UInt32>("SetNthHeadPart", "ActorBase", papyrusActorBase::SetNthHeadPart, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESNPC, float, UInt32>("GetFaceMorph", "ActorBase", papyrusActorBase::GetFaceMorph, registry));

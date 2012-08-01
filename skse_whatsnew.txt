@@ -1,3 +1,13 @@
+1.5.10
+- show SKSE version in system menu
+- SKSE version/runtime/release idx table added to skse_docs.txt
+- add more weapon data to Scaleform
+- add race flag functions
+- add ModInfo functions to Game.psc
+- add SetGameSettingFloat/Int/Bool/String
+- log files written to <My Documents>\My Games\Skyrim\SKSE\
+- support for runtime 1.7.7.0
+
 1.5.9
 - hook up Race functions.
 - support for runtime 1.6.89.0

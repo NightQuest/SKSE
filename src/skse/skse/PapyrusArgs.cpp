@@ -112,7 +112,7 @@ void PackHandle(VMValue * dst, void * src, UInt32 typeID, VMClassRegistry * regi
 
 //// VMValue -> type
 
-template <> void UnpackValue <float>(float * dst, VMValue * src, VMClassRegistry * registry)
+template <> void UnpackValue <float>(float * dst, VMValue * src)
 {
 	switch(src->type)
 	{
@@ -134,7 +134,7 @@ template <> void UnpackValue <float>(float * dst, VMValue * src, VMClassRegistry
 	}
 }
 
-template <> void UnpackValue <UInt32>(UInt32 * dst, VMValue * src, VMClassRegistry * registry)
+template <> void UnpackValue <UInt32>(UInt32 * dst, VMValue * src)
 {
 	switch(src->type)
 	{
@@ -156,7 +156,7 @@ template <> void UnpackValue <UInt32>(UInt32 * dst, VMValue * src, VMClassRegist
 	}
 }
 
-template <> void UnpackValue <SInt32>(SInt32 * dst, VMValue * src, VMClassRegistry * registry)
+template <> void UnpackValue <SInt32>(SInt32 * dst, VMValue * src)
 {
 	switch(src->type)
 	{
@@ -178,7 +178,7 @@ template <> void UnpackValue <SInt32>(SInt32 * dst, VMValue * src, VMClassRegist
 	}
 }
 
-template <> void UnpackValue <bool>(bool * dst, VMValue * src, VMClassRegistry * registry)
+template <> void UnpackValue <bool>(bool * dst, VMValue * src)
 {
 	switch(src->type)
 	{
@@ -200,7 +200,7 @@ template <> void UnpackValue <bool>(bool * dst, VMValue * src, VMClassRegistry *
 	}
 }
 
-template <> void UnpackValue <BSFixedString>(BSFixedString * dst, VMValue * src, VMClassRegistry * registry)
+template <> void UnpackValue <BSFixedString>(BSFixedString * dst, VMValue * src)
 {
 	const char	* data = NULL;
 
@@ -210,7 +210,32 @@ template <> void UnpackValue <BSFixedString>(BSFixedString * dst, VMValue * src,
 	CALL_MEMBER_FN(dst, Set)(data);
 }
 
-void * UnpackHandle(VMValue * src, VMClassRegistry * registry, UInt32 typeID)
+template <> void UnpackValue <VMArray<UInt32>>(VMArray<UInt32> * dst, VMValue * src)
+{
+	UnpackArray(dst, src, VMValue::kType_IntArray);
+}
+
+template <> void UnpackValue <VMArray<SInt32>>(VMArray<SInt32> * dst, VMValue * src)
+{
+	UnpackArray(dst, src, VMValue::kType_IntArray);
+}
+
+template <> void UnpackValue <VMArray<float>>(VMArray<float> * dst, VMValue * src)
+{
+	UnpackArray(dst, src, VMValue::kType_FloatArray);
+}
+
+template <> void UnpackValue <VMArray<bool>>(VMArray<bool> * dst, VMValue * src)
+{
+	UnpackArray(dst, src, VMValue::kType_BoolArray);
+}
+
+template <> void UnpackValue <VMArray<BSFixedString>>(VMArray<BSFixedString> * dst, VMValue * src)
+{
+	UnpackArray(dst, src, VMValue::kType_StringArray);
+}
+
+void * UnpackHandle(VMValue * src, UInt32 typeID)
 {
 	if(!src->IsIdentifier()) return NULL;
 
@@ -224,40 +249,22 @@ void * UnpackHandle(VMValue * src, VMClassRegistry * registry, UInt32 typeID)
 
 //// type -> type ID
 
-template <> UInt32 GetTypeID <void>(VMClassRegistry * registry)
-{
-	return VMValue::kType_None;
-}
+template <> UInt32 GetTypeID <void>(VMClassRegistry * registry)						{ return VMValue::kType_None; }
+template <> UInt32 GetTypeID <UInt32>(VMClassRegistry * registry)					{ return VMValue::kType_Int; }
+template <> UInt32 GetTypeID <SInt32>(VMClassRegistry * registry)					{ return VMValue::kType_Int; }
+template <> UInt32 GetTypeID <int>(VMClassRegistry * registry)						{ return VMValue::kType_Int; }
+template <> UInt32 GetTypeID <float>(VMClassRegistry * registry)					{ return VMValue::kType_Float; }
+template <> UInt32 GetTypeID <bool>(VMClassRegistry * registry)						{ return VMValue::kType_Bool; }
+template <> UInt32 GetTypeID <BSFixedString>(VMClassRegistry * registry)			{ return VMValue::kType_String; }
 
-template <> UInt32 GetTypeID <UInt32>(VMClassRegistry * registry)
-{
-	return VMValue::kType_Int;
-}
+template <> UInt32 GetTypeID <VMArray<UInt32>>(VMClassRegistry * registry)			{ return VMValue::kType_IntArray; }
+template <> UInt32 GetTypeID <VMArray<SInt32>>(VMClassRegistry * registry)			{ return VMValue::kType_IntArray; }
+template <> UInt32 GetTypeID <VMArray<int>>(VMClassRegistry * registry)				{ return VMValue::kType_IntArray; }
+template <> UInt32 GetTypeID <VMArray<float>>(VMClassRegistry * registry)			{ return VMValue::kType_FloatArray; }
+template <> UInt32 GetTypeID <VMArray<bool>>(VMClassRegistry * registry)			{ return VMValue::kType_BoolArray; }
+template <> UInt32 GetTypeID <VMArray<BSFixedString>>(VMClassRegistry * registry)	{ return VMValue::kType_StringArray; }
 
-template <> UInt32 GetTypeID <SInt32>(VMClassRegistry * registry)
-{
-	return VMValue::kType_Int;
-}
 
-template <> UInt32 GetTypeID <int>(VMClassRegistry * registry)
-{
-	return VMValue::kType_Int;
-}
-
-template <> UInt32 GetTypeID <float>(VMClassRegistry * registry)
-{
-	return VMValue::kType_Float;
-}
-
-template <> UInt32 GetTypeID <bool>(VMClassRegistry * registry)
-{
-	return VMValue::kType_Bool;
-}
-
-template <> UInt32 GetTypeID <BSFixedString>(VMClassRegistry * registry)
-{
-	return VMValue::kType_String;
-}
 
 UInt32 GetTypeIDFromFormTypeID(UInt32 formTypeID, VMClassRegistry * registry)
 {

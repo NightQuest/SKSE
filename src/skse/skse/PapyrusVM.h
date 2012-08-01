@@ -53,7 +53,7 @@ public:
 //	void	** _vtbl;	// 00
 
 	MEMBER_FN_PREFIX(ObjectBindPolicy);
-	DEFINE_MEMBER_FN(BindObject, void, 0x00C24680, VMIdentifier ** identifier, UInt64 handle);
+	DEFINE_MEMBER_FN(BindObject, void, 0x00BFBFC0, VMIdentifier ** identifier, UInt64 handle);
 };
 
 // 10
@@ -69,7 +69,7 @@ public:
 	void	Release(void);
 
 	MEMBER_FN_PREFIX(VMClassInfo);
-	DEFINE_MEMBER_FN(Destroy, void, 0x00C2DAD0);
+	DEFINE_MEMBER_FN(Destroy, void, 0x00C05290);
 };
 
 // 4B04
@@ -116,7 +116,7 @@ public:
 	virtual void	Unk_1F(void);
 	virtual void	Unk_20(void);
 	virtual void	Unk_21(void);
-	virtual void	QueueEvent(UInt64 handle, StringCache::Ref * eventName, IFunctionArguments * args);
+	virtual void	QueueEvent(UInt64 handle, const StringCache::Ref * eventName, IFunctionArguments * args);
 	virtual void	Unk_23(void);
 	virtual void	Unk_24(void);
 	virtual void	Unk_25(void);
@@ -158,6 +158,13 @@ public:
 	VMClassRegistry	* m_classRegistry;	// 0100
 
 	VMClassRegistry	* GetClassRegistry(void)	{ return m_classRegistry; }
+
+	MEMBER_FN_PREFIX(SkyrimVM);
+	DEFINE_MEMBER_FN(UnregisterForSleep_Internal, void, 0x008CC1D0, UInt64 handle);
+	DEFINE_MEMBER_FN(RevertGlobalData_Internal, bool, 0x008CD480);
+
+	void OnFormDelete_Hook(UInt64 handle);
+	void RevertGlobalData_Hook(void);
 };
 
 extern SkyrimVM	** g_skyrimVM;
@@ -191,7 +198,7 @@ public:
 	void	Destroy(void);
 
 	MEMBER_FN_PREFIX(VMIdentifier);
-	DEFINE_MEMBER_FN(Destroy_Internal, void, 0x00C29AB0);
+	DEFINE_MEMBER_FN(Destroy_Internal, void, 0x00C01220);
 };
 
 // 08
@@ -214,6 +221,11 @@ public:
 		kType_Bool =		5,
 
 		kType_Unk0B =		0x0B,
+
+		kType_StringArray =	12,
+		kType_IntArray =	13,
+		kType_FloatArray =	14,
+		kType_BoolArray =	15
 	};
 
 	// 14+
@@ -246,8 +258,8 @@ public:
 	} data;			// 04
 
 	MEMBER_FN_PREFIX(VMValue);
-	DEFINE_MEMBER_FN(Set, void, 0x00C2B5B0, VMValue * src);
-	DEFINE_MEMBER_FN(Destroy, void, 0x00C2B4B0);
+	DEFINE_MEMBER_FN(Set, void, 0x00C02D70, VMValue * src);
+	DEFINE_MEMBER_FN(Destroy, void, 0x00C02C70);
 
 	void	SetNone(void)
 	{
@@ -335,7 +347,7 @@ public:
 		VMValue	* Get(UInt32 idx)	{ return (idx < m_size) ? &m_data[idx] : NULL; }
 
 		MEMBER_FN_PREFIX(Output);
-		DEFINE_MEMBER_FN(Resize, bool, 0x008BB830, UInt32 len);
+		DEFINE_MEMBER_FN(Resize, bool, 0x008B9B40, UInt32 len);
 	};
 
 	virtual bool	Copy(Output * dst) = 0;

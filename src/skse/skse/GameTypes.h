@@ -1,6 +1,7 @@
 #pragma once
 
 #include "skse/Utilities.h"
+#include "GameAPI.h"
 
 // core library types (lists, strings, vectors)
 // preferably only the ones that bethesda created (non-netimmerse)
@@ -22,10 +23,21 @@ public:
 
 class SimpleLock
 {
-private:
-	volatile UInt32	threadID;
-	UInt32			lockCount;
+	enum
+	{
+		kFastSpinThreshold = 10000
+	};
+
+	volatile SInt32	threadID;	// 00
+	UInt32			lockCount;	// 04
+
+public:
+	SimpleLock() : threadID(0), lockCount(0) {}
+
+	void Lock(void);
+	void Release(void);
 };
+STATIC_ASSERT(sizeof(SimpleLock) == 0x8);
 
 // refcounted threadsafe string storage
 // use StringCache::Ref to access everything, other internals are for documentation only
@@ -38,9 +50,9 @@ public:
 		const char	* data;
 
 		MEMBER_FN_PREFIX(Ref);
-		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A48D00, const char * buf);
-		DEFINE_MEMBER_FN(Set, Ref *, 0x00A48D50, const char * buf);
-		DEFINE_MEMBER_FN(Release, void, 0x00A48CF0);
+		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A48100, const char * buf);
+		DEFINE_MEMBER_FN(Set, Ref *, 0x00A48150, const char * buf);
+		DEFINE_MEMBER_FN(Release, void, 0x00A480F0);
 
 		Ref() :data(NULL) { }
 		Ref(const char * buf);
@@ -97,17 +109,22 @@ private:
 	UInt16	m_bufLen;	// 06
 };
 
+// 0C
 template <class T>
 class tArray
 {
 public:
 	struct Array {
 		T* entries;
-		UInt32 unk4;
+		UInt32	capacity;
+
+		Array() : entries(NULL), capacity(0) {};
 	};
 
-	Array arr;
-	UInt32 count;
+	Array arr;		// 00
+	UInt32 count;	// 08
+
+	tArray() : count(0) {};
 	
 	bool GetNthItem(UInt32 index, T& pT)
 	{
@@ -433,9 +450,382 @@ public:
 			return -1;
 	}
 
+	class AcceptEqual {
+	public:
+		Item * item;
+
+		AcceptEqual(Item * a_item) : item(a_item) {}
+
+		bool Accept(Item * a_item) {
+			return *item == *a_item;
+		}
+	};
+
+	bool Contains(Item * item) const
+	{
+		return Find(AcceptEqual(item)) != NULL;
+	}
 };
 
 STATIC_ASSERT(sizeof(tList<void *>) == 0x8);
 
+
 typedef void (__cdecl * _CRC32_Calc4)(UInt32 * out, UInt32 data);
 extern const _CRC32_Calc4 CRC32_Calc4;
+
+typedef void (__cdecl * _CRC32_Calc8)(UInt32 * out, UInt64 data);
+extern const _CRC32_Calc8 CRC32_Calc8;
+
+template <typename T> UInt32 GetHash(T* key);
+template <> UInt32 GetHash<UInt32> (UInt32 * key);
+template <> UInt32 GetHash<UInt64> (UInt64 * key);
+template <> UInt32 GetHash<BSFixedString> (BSFixedString * key);
+
+// 01C
+// How to default/copy-construct in insert/grow still needs some work for items that have an overloaded assignment operator (like STL-types)
+template <typename Item, typename Key = Item>
+class tHashSet
+{
+	struct _Entry
+	{
+		Item	item;
+		_Entry	* next;
+
+		bool		IsFree() const	{ return next == NULL; }
+		void		Free()			{ next = NULL; }
+
+		void Dump(void)
+		{
+			_MESSAGE("\t\titem: %d", (Key)item);
+			_MESSAGE("\t\tnext: %08X", next);
+		}
+	};
+
+	static _Entry sentinel;
+
+	UInt32		unk_000;		// 000
+	UInt32		m_size;			// 004
+	UInt32		m_freeCount;	// 008
+	UInt32		m_freeOffset;	// 00C
+	_Entry 		* m_eolPtr;		// 010
+	UInt32		unk_014;		// 014
+	_Entry		* m_entries;	// 018
+
+
+	_Entry * GetEntry(UInt32 hash) const
+	{
+		return (_Entry*) (((UInt32) m_entries) + sizeof(_Entry) * (hash & (m_size - 1)));
+	}
+
+	_Entry * NextFreeEntry(void)
+	{
+		_Entry * result = NULL;
+
+		if (m_freeCount == 0)
+			return NULL;
+
+		do
+		{
+			m_freeOffset = (m_size - 1) & (m_freeOffset - 1);
+			_Entry * entry = (_Entry*) (((UInt32) m_entries) + sizeof(_Entry) * m_freeOffset);
+
+			if (entry->IsFree())
+				result = entry;
+		}
+		while (!result);
+
+		m_freeCount--;
+
+		return result;
+	}
+
+	// 0: Out of space, -1: Already included, 1: Success
+	SInt32 Insert(Item * item)
+	{
+		if (! m_entries)
+			return 0;
+
+		Key k = (Key)*item;
+		_Entry * targetEntry = GetEntry(GetHash<Key>(&k));
+
+		// Case 1: Target entry is free
+		if (!targetEntry->next)
+		{
+			targetEntry->item = *item;
+			targetEntry->next = m_eolPtr;
+			--m_freeCount;
+
+			return 1;
+		}
+
+		// -- Target entry is already in use
+
+		// Case 2: Item already included
+		_Entry * p = targetEntry;
+		do
+		{
+			if (p->item == *item)
+				return -1;
+			p = p->next;
+		}
+		while (p != m_eolPtr);
+
+		// -- Either hash collision or bucket overlap
+
+		_Entry * freeEntry = NextFreeEntry();
+		// No more space?
+		if (!freeEntry)
+			return 0;
+
+		k = (Key)targetEntry->item;
+		p = GetEntry(GetHash<Key>(&k));
+
+		// Case 3a: Hash collision - insert new entry between target entry and successor
+        if (targetEntry == p)
+        {
+			freeEntry->item = *item;
+			freeEntry->next = targetEntry->next;
+			targetEntry->next = freeEntry;
+
+			return 1;
+        }
+		// Case 3b: Bucket overlap
+		while (p->next != targetEntry)
+			p = p->next;
+
+        memcpy_s(freeEntry, sizeof(_Entry), targetEntry, sizeof(_Entry));
+        p->next = freeEntry;
+		targetEntry->item = *item;
+		targetEntry->next = m_eolPtr;
+
+		return 1;
+	}
+
+	// Should this rather use memcpy?
+	bool CopyEntry(_Entry * sourceEntry)
+	{
+		if (! m_entries)
+			return false;
+
+		Key k = (Key)sourceEntry->item;
+		_Entry * targetEntry = GetEntry(GetHash<Key>(&k));
+
+		// Case 1: Target location is unused
+		if (!targetEntry->next)
+		{
+			targetEntry->item = sourceEntry->item;
+			targetEntry->next = m_eolPtr;
+			--m_freeCount;
+
+			return true;
+		}
+
+		// Target location is in use. Either hash collision or bucket overlap.
+
+		_Entry * freeEntry = NextFreeEntry();
+		k = (Key)targetEntry->item;
+		_Entry * p = GetEntry(GetHash<Key>(&k));
+
+		// Case 2a: Hash collision - insert new entry between target entry and successor
+		if (targetEntry == p)
+		{
+			freeEntry->item = sourceEntry->item;
+			freeEntry->next = targetEntry->next;
+			targetEntry->next = freeEntry;
+
+			return true;
+		}
+
+		// Case 2b: Bucket overlap - forward until hash collision is found, then insert
+		while (p->next != targetEntry)
+			p = p->next;
+
+		// Source entry takes position of target entry - not completely understood yet
+		freeEntry->item = targetEntry->item;
+		freeEntry->next = targetEntry->next;
+		p->next = freeEntry;
+		targetEntry->item = sourceEntry->item;
+		targetEntry->next = m_eolPtr;
+
+		return true;
+	}
+
+	void Grow(void)
+	{
+		UInt32 oldSize = m_size;
+		UInt32 newSize = oldSize ? 2*oldSize : 8;
+
+		_Entry * oldEntries = m_entries;
+		_Entry * newEntries = (_Entry*)FormHeap_Allocate(newSize * sizeof(_Entry));
+		
+		m_entries = newEntries;
+		m_size = m_freeCount = m_freeOffset = newSize;
+
+		// Initialize new table data (clear next pointers)
+		if (newEntries)
+		{
+			_Entry * p = newEntries;
+			for (UInt32 i = 0; i < newSize; i++, p++)
+				p->next = NULL;
+		}
+
+		// Copy old entries, free old table data
+		if (oldEntries)
+		{
+			_Entry * p = oldEntries;
+			for (UInt32 i = 0; i < oldSize; i++, p++)
+				if (p->next)
+					CopyEntry(p);
+			FormHeap_Free(oldEntries);
+		}
+	}
+
+public:
+
+	tHashSet() : m_size(0), m_freeCount(0), m_freeOffset(0), m_entries(NULL), m_eolPtr(&sentinel) { }
+
+	UInt32	Size() const		{ return m_size; }
+	UInt32	FreeCount() const	{ return m_freeCount; }
+	UInt32	FillCount() const	{ return m_size - m_freeCount; }
+
+	Item * Find(Key * key) const
+	{
+		if (!m_entries)
+			return NULL;
+
+		_Entry * entry = GetEntry(GetHash<Key>(key));
+		if (! entry->next)
+			return NULL;
+
+		while (!(entry->item == *key))
+		{
+			entry = entry->next;
+			if (entry == m_eolPtr)
+				return NULL;
+		}
+
+		return &entry->item;
+	}
+
+	bool Add(Item * item)
+	{
+		UInt32 status = 0;
+
+		for (status = Insert(item); !status; status = Insert(item))
+			Grow();
+
+		return status == 1;
+	}
+
+	bool Remove(Key * key)
+	{
+		if ( !m_entries)
+			return false;
+
+		_Entry * entry = GetEntry(GetHash<Key>(key));
+		if (! entry->next)
+			return NULL;
+
+		_Entry * prevEntry = NULL;
+		while (! (entry->item == *key))
+		{
+			prevEntry = entry;
+			entry = entry->next;
+			if (entry == m_eolPtr)
+				return false;
+		}
+
+		// Remove tail?
+		_Entry * nextEntry = entry->next;
+		if (nextEntry == m_eolPtr)
+		{
+			if (prevEntry)
+				prevEntry->next = m_eolPtr;
+			entry->next = 0;
+		}
+		else
+		{
+			entry->item = nextEntry->item;
+			entry->next = nextEntry->next;
+			nextEntry->next = NULL;
+		}
+
+		++m_freeCount;
+		return true;
+	}
+
+	void Clear(void)
+	{
+		if (m_entries)
+		{
+			_Entry * p = m_entries;
+			for (UInt32 i = 0; i < m_size; i++, p++)
+				p->next = NULL;
+		}
+		else
+		{
+			m_size = 0;
+		}
+		m_freeCount = m_freeOffset = m_size;
+	}
+
+	template <typename T>
+	void ForEach(T& functor)
+	{
+		if (!m_entries)
+			return;
+
+		_Entry * cur	= m_entries;
+		_Entry * end	= (_Entry*) (((UInt32) m_entries) + sizeof(_Entry) * m_size);
+
+		if (cur == end)
+			return;
+
+		if (cur->IsFree())
+		{
+			do cur++; while (cur != end && cur->IsFree());
+		}
+
+		do
+		{
+			if (! functor(&cur->item))
+				return;
+
+			do cur++; while (cur != end && cur->IsFree());
+		} while (cur != end);
+		
+	}
+
+	void Dump(void)
+	{
+		_MESSAGE("tHashSet:");
+		_MESSAGE("> size: %d", Size());
+		_MESSAGE("> free: %d", FreeCount());
+		_MESSAGE("> filled: %d", FillCount());
+		if (m_entries)
+		{
+			_Entry * p = m_entries;
+			for (UInt32 i = 0; i < m_size; i++, p++) {
+				_MESSAGE("* %d %s:", i, p->IsFree()?"(free)" : "");
+				p->Dump();
+			}
+		}
+	}
+};
+STATIC_ASSERT(sizeof(tHashSet<void*,void*>) == 0x1C);
+
+template <typename Key, typename Item>
+typename tHashSet<Key,Item>::_Entry tHashSet<Key,Item>::sentinel = tHashSet<Key,Item>::_Entry();
+
+// Don't know if this really is a native type or if sometimes locks are just placed before data structures.
+template <typename T>
+class SafeDataHolder
+{
+protected:
+	SimpleLock	m_lock;
+public:
+	T			m_data;
+
+	void	Lock(void) { m_lock.Lock(); }
+	void	Release(void) { m_lock.Release(); }
+};

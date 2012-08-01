@@ -38,6 +38,17 @@ static const SKSEScaleformInterface g_SKSEScaleformInterface =
 	RegisterScaleformPlugin
 };
 
+#ifdef _PPAPI
+#include "Hooks_Papyrus.h"
+#include "PapyrusVM.h"
+
+static const SKSEPapyrusInterface g_SKSEPapyrusInterface =
+{
+	SKSEPapyrusInterface::kInterfaceVersion,
+	RegisterPapyrusPlugin
+};
+
+#endif
 #endif
 
 PluginManager::PluginManager()
@@ -122,6 +133,11 @@ void * PluginManager::QueryInterface(UInt32 id)
 	case kInterface_Scaleform:
 		result = (void *)&g_SKSEScaleformInterface;
 		break;
+#ifdef _PPAPI
+	case kInterface_Papyrus:
+		result = (void *)&g_SKSEPapyrusInterface;
+		break;
+#endif
 
 	default:
 		_WARNING("unknown QueryInterface %08X", id);

@@ -15,15 +15,25 @@ public:
 	~VMArgList();
 
 	MEMBER_FN_PREFIX(VMArgList);
-	DEFINE_MEMBER_FN(GetOffset, UInt32, 0x00C331B0, VMState * state);
-	DEFINE_MEMBER_FN(Get, VMValue *, 0x00C337D0, VMState * state, UInt32 idx, UInt32 offset);
+	DEFINE_MEMBER_FN(GetOffset, UInt32, 0x00C0ABF0, VMState * state);
+	DEFINE_MEMBER_FN(Get, VMValue *, 0x00C0B210, VMState * state, UInt32 idx, UInt32 offset);
+};
+
+
+template <typename T>
+class VMArray
+{
+public:
+	VMValue::ArrayData	* arr;
+	UInt32 Length() const				{ return arr ? arr->len : 0; }
+	void Get(T * dst, const UInt32 idx)	{ UnpackValue<T>(dst, arr->GetData()+idx); }
 };
 
 template <typename T>
 void PackValue(VMValue * dst, T * src, VMClassRegistry * registry);
 
 template <typename T>
-void UnpackValue(T * dst, VMValue * src, VMClassRegistry * registry);
+void UnpackValue(T * dst, VMValue * src);
 
 template <typename T>
 UInt32 GetTypeID(VMClassRegistry * registry);
@@ -44,18 +54,38 @@ void PackValue(VMValue * dst, T ** src, VMClassRegistry * registry)
 	PackHandle(dst, *src, BaseType::kTypeID, registry);
 }
 
-template <> void UnpackValue <float>(float * dst, VMValue * src, VMClassRegistry * registry);
-template <> void UnpackValue <UInt32>(UInt32 * dst, VMValue * src, VMClassRegistry * registry);
-template <> void UnpackValue <SInt32>(SInt32 * dst, VMValue * src, VMClassRegistry * registry);
-template <> void UnpackValue <bool>(bool * dst, VMValue * src, VMClassRegistry * registry);
-template <> void UnpackValue <BSFixedString>(BSFixedString * dst, VMValue * src, VMClassRegistry * registry);
+template <> void UnpackValue <float>(float * dst, VMValue * src);
+template <> void UnpackValue <UInt32>(UInt32 * dst, VMValue * src);
+template <> void UnpackValue <SInt32>(SInt32 * dst, VMValue * src);
+template <> void UnpackValue <bool>(bool * dst, VMValue * src);
+template <> void UnpackValue <BSFixedString>(BSFixedString * dst, VMValue * src);
 
-void * UnpackHandle(VMValue * src, VMClassRegistry * registry, UInt32 typeID);
+template <> void UnpackValue <VMArray<float>>(VMArray<float> * dst, VMValue * src);
+template <> void UnpackValue <VMArray<UInt32>>(VMArray<UInt32> * dst, VMValue * src);
+template <> void UnpackValue <VMArray<SInt32>>(VMArray<SInt32> * dst, VMValue * src);
+template <> void UnpackValue <VMArray<bool>>(VMArray<bool> * dst, VMValue * src);
+template <> void UnpackValue <VMArray<BSFixedString>>(VMArray<BSFixedString> * dst, VMValue * src);
+
+void * UnpackHandle(VMValue * src, UInt32 typeID);
 
 template <typename T>
-void UnpackValue(T ** dst, VMValue * src, VMClassRegistry * registry)
+void UnpackValue(T ** dst, VMValue * src)
 {
-	*dst = (T *)UnpackHandle(src, registry, T::kTypeID);
+	*dst = (T *)UnpackHandle(src, T::kTypeID);
+}
+
+template <typename T>
+void UnpackArray(VMArray<T> * dst, VMValue * src, const UInt32 type)
+{
+	VMValue::ArrayData * arrData;
+
+	if (src->type != type || (arrData = src->data.arr, !arrData))
+	{
+		dst->arr = NULL;
+		return;
+	}
+
+	dst->arr = arrData;
 }
 
 UInt32 GetTypeIDFromFormTypeID(UInt32 formTypeID, VMClassRegistry * registry);
@@ -67,6 +97,14 @@ template <> UInt32 GetTypeID <int>(VMClassRegistry * registry);
 template <> UInt32 GetTypeID <float>(VMClassRegistry * registry);
 template <> UInt32 GetTypeID <bool>(VMClassRegistry * registry);
 template <> UInt32 GetTypeID <BSFixedString>(VMClassRegistry * registry);
+
+template <> UInt32 GetTypeID <VMArray<UInt32>>(VMClassRegistry * registry);
+template <> UInt32 GetTypeID <VMArray<SInt32>>(VMClassRegistry * registry);
+template <> UInt32 GetTypeID <VMArray<int>>(VMClassRegistry * registry);
+template <> UInt32 GetTypeID <VMArray<float>>(VMClassRegistry * registry);
+template <> UInt32 GetTypeID <VMArray<bool>>(VMClassRegistry * registry);
+template <> UInt32 GetTypeID <VMArray<BSFixedString>>(VMClassRegistry * registry);
+
 
 template <typename T>
 UInt32 GetTypeID <T *>(VMClassRegistry * registry)

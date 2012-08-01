@@ -2,6 +2,7 @@
 
 #include "skse/NiObjects.h"
 #include "skse/GameForms.h"
+#include "skse/GameEvents.h"
 
 // TESObject and children
 
@@ -314,10 +315,14 @@ public:
 		UInt32	unk08;	// 08
 	};
 
-	TESTexture		unk28[8];	// 28
-	UInt32			unk68;		// 68
-	UInt32			unk6C;		// 6C
-	Data			unk70[8];	// 70	
+	enum {
+		kNumTextures = 8
+	};
+
+	TESTexture		texturePaths[kNumTextures];	// 28
+	UInt32			unk68;						// 68
+	UInt32			unk6C;						// 6C
+	Data			unk70[kNumTextures];		// 70	
 };
 
 STATIC_ASSERT(sizeof(BGSTextureSet) == 0xD0);
@@ -371,13 +376,13 @@ public:
 	};
 
 	tArray<EffectItem*> effectItemList;	// 34
-	UInt32	unk40;	// 40
-	UInt32	unk44;	// 44
-	UInt32	unk48;	// 48
-	UInt32	unk4C;	// 4C
+	UInt32				unk40;	// 40
+	EffectSetting*		unk44;	// 44
+	UInt32				unk48;	// 48
+	UInt32				unk4C;	// 4C
 
 	MEMBER_FN_PREFIX(MagicItem);
-	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407A20, int arg1, bool arg2);
+	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407720, int arg1, bool arg2);
 };
 
 STATIC_ASSERT(sizeof(MagicItem) == 0x50);
@@ -513,6 +518,8 @@ public:
 	};
 
 	Data	data;	// 6C
+
+	UInt32 GetMagickaCost() { return data.unk00.cost; }
 };
 
 // D0
@@ -915,6 +922,8 @@ public:
 	TESLeveledList	leveledList;	// 20
 };
 
+class TESObjectARMA;
+
 // 128
 class TESObjectARMO : public TESBoundObject
 {
@@ -937,10 +946,11 @@ public:
 	TESDescription				description;	// 108
 
 	// members
-	UInt32	armorValTimes100;	// 114
-	UnkArray	unk118;	// 118
-	UInt32	unk124;	// 124 - enchantment related?
+	UInt32						armorValTimes100;	// 114
+	tArray<TESObjectARMA*>		armorAddons;		// 118
+	UInt32						unk124;				// 124 - enchantment related?
 };
+
 STATIC_ASSERT(sizeof(TESObjectARMO) == 0x128);
 
 // AC
@@ -1234,27 +1244,417 @@ public:
 	// 0C
 	struct Data2C
 	{
-		UInt8	unk00;	// 00
-		UInt8	unk01;	// 01
-		UInt8	unk02;	// 02
-		UInt8	unk03;	// 03
-		UInt8	unk04;	// 04
-		UInt8	unk05;	// 05
-		UInt8	unk06;	// 06
-		UInt8	pad07;	// 07
-		UInt32	unk08;	// 08
+		UInt8	priority[2];	// 00
+		UInt8	unk02;			// 02
+		UInt8	unk03;			// 03
+		UInt8	unk04;			// 04
+		UInt8	unk05;			// 05
+		UInt8	unk06;			// 06
+		UInt8	pad07;			// 07
+		UInt32	unk08;			// 08
 	};
 
-	Data2C						unk2C;		// 2C
-	TESModelTextureSwap			unk38[2];	// 38
-	TESModelTextureSwap			unk70[2];	// 70
-	UInt32						unkA8;		// A8
-	UInt32						unkAC;		// AC
-	UInt32						unkB0;		// B0
-	UInt32						unkB4;		// B4
-	UnkArray	unkB8;		// B8
-	UInt32						unkC4;		// C4
-	UInt32						unkC8;		// C8
+	Data2C						unk2C;					// 2C
+	TESModelTextureSwap			models[2][2];			// 38
+	UInt32						unkA8;					// A8
+	UInt32						unkAC;					// AC
+	UInt32						unkB0;					// B0
+	UInt32						unkB4;					// B4
+	tArray<TESRace*>			additionalRaces;		// B8
+	BGSFootstepSet				* footstepSet;			// C4
+	UInt32						unkC8;					// C8
 };
 
 STATIC_ASSERT(sizeof(TESObjectARMA) == 0xCC);
+
+class ActiveEffect;
+
+class ActiveEffectReferenceEffectController
+{
+public:
+	virtual ~ActiveEffectReferenceEffectController();
+
+//	void			** _vtbl;	// 00
+	ActiveEffect	* effect;	// 04
+	// possibly more
+};
+
+class ActiveEffect
+{
+public:
+	enum { kTypeID = kFormType_ActiveMagicEffect };
+
+	virtual ~ActiveEffect();
+
+//	void					** _vtbl;		// 00
+	ActiveEffectReferenceEffectController	controller;	// 04
+	UInt32					unk0C[9];		// 0C
+	MagicItem				* item;			// 30
+	MagicItem::EffectItem	* effect;		// 34
+	TESObjectREFR			* reference;	// 38
+	UInt32					unk3C;			// 3C
+	UInt32					unk40;			// 40
+	UInt32					unk44;			// 44
+	float					elapsed;		// 48
+	float					duration;		// 4C
+	float					unk50;			// 50
+	UInt32					unk54;			// 54
+	UInt32					unk58;			// 58
+	UInt32					effectNum;		// 5C - Somekind of counter used to determine whether the ActiveMagicEffect handle is valid
+	UInt32					unk60;			// 60
+	UInt32					unk64;			// 64 - Only seems to appear on value modifiers
+	UInt32					unk68;			// 68
+	UInt32					unk6C;			// 6C
+};
+
+class ScriptEffect : public ActiveEffect
+{
+public:
+	virtual ~ScriptEffect();
+
+	// ??
+};
+
+class ScriptedRefEffect : public ScriptEffect
+{
+public:
+	virtual ~ScriptedRefEffect();
+
+	// ??
+};
+
+class SlowTimeEffect : public ScriptEffect
+{
+public:
+	virtual ~SlowTimeEffect();
+
+	// ??
+};
+
+class ValueModifierEffect : public ActiveEffect
+{
+public:
+	virtual ~ValueModifierEffect();
+
+	// ??
+};
+
+class BoundItemEffect : public ActiveEffect
+{
+public:
+	virtual ~BoundItemEffect();
+
+	// ??
+};
+
+class CloakEffect : public ActiveEffect
+{
+public:
+	virtual ~CloakEffect();
+
+	// ??
+};
+
+class CommandEffect : public ActiveEffect
+{
+public:
+	virtual ~CommandEffect();
+
+	// ??
+};
+
+class ReanimateEffect : public CommandEffect
+{
+public:
+	virtual ~ReanimateEffect();
+
+	// ??
+};
+
+class CommandSummonedEffect : public ActiveEffect
+{
+public:
+	virtual ~CommandSummonedEffect();
+
+	// ??
+};
+
+class SummonCreatureEffect : public ActiveEffect
+{
+public:
+	virtual ~SummonCreatureEffect();
+
+	// ??
+};
+
+class CureEffect : public ActiveEffect
+{
+public:
+	virtual ~CureEffect();
+
+	// ??
+};
+
+class DetectLifeEffect : public ActiveEffect
+{
+public:
+	virtual ~DetectLifeEffect();
+
+	// ??
+};
+
+class StaggerEffect : public ActiveEffect
+{
+public:
+	virtual ~StaggerEffect();
+
+	// ??
+};
+
+class DisarmEffect : public StaggerEffect
+{
+public:
+	virtual ~DisarmEffect();
+
+	// ??
+};
+
+class DisguiseEffect : public ActiveEffect
+{
+public:
+	virtual ~DisguiseEffect();
+
+	// ??
+};
+
+class DispelEffect : public ActiveEffect
+{
+public:
+	virtual ~DispelEffect();
+
+	// ??
+};
+
+class EtherealizationEffect : public ActiveEffect
+{
+public:
+	virtual ~EtherealizationEffect();
+
+	// ??
+};
+
+class GuideEffect : public ActiveEffect
+{
+public:
+	virtual ~GuideEffect();
+
+	// ??
+};
+
+class LightEffect : public ActiveEffect
+{
+public:
+	virtual ~LightEffect();
+
+	// ??
+};
+
+class LockEffect : public ActiveEffect
+{
+public:
+	virtual ~LockEffect();
+
+	// ??
+};
+
+class OpenEffect : public ActiveEffect
+{
+public:
+	virtual ~OpenEffect();
+
+	// ??
+};
+
+class SoulTrapEffect : public ActiveEffect
+{
+public:
+	virtual ~SoulTrapEffect();
+
+	// ??
+};
+
+class TelekinesisEffect : public ActiveEffect
+{
+public:
+	virtual ~TelekinesisEffect();
+
+	// ??
+};
+
+class VampireLordEffect : public ActiveEffect
+{
+public:
+	virtual ~VampireLordEffect();
+
+	// ??
+};
+
+class WerewolfEffect : public ActiveEffect
+{
+public:
+	virtual ~WerewolfEffect();
+
+	// ??
+};
+
+class WerewolfFeedEffect : public ActiveEffect
+{
+public:
+	virtual ~WerewolfFeedEffect();
+
+	// ??
+};
+
+class SpawnHazardEffect : public ActiveEffect
+{
+public:
+	virtual ~SpawnHazardEffect();
+
+	// ??
+};
+
+class PeakValueModifierEffect : public ValueModifierEffect
+{
+public:
+	virtual ~PeakValueModifierEffect();
+
+	// ??
+};
+
+class DualValueModifierEffect : public ValueModifierEffect
+{
+public:
+	virtual ~DualValueModifierEffect();
+
+	// ??
+};
+
+class EnhanceWeaponEffect : public DualValueModifierEffect
+{
+public:
+	virtual ~EnhanceWeaponEffect();
+
+	// ??
+};
+
+class AccumulatingValueModifierEffect : public ValueModifierEffect
+{
+public:
+	virtual ~AccumulatingValueModifierEffect();
+
+	// ??
+};
+
+class InvisibilityEffect : public ValueModifierEffect
+{
+public:
+	virtual ~InvisibilityEffect();
+
+	// ??
+};
+
+class NightEyeEffect : public ValueModifierEffect
+{
+public:
+	virtual ~NightEyeEffect();
+
+	// ??
+};
+
+class ParalysisEffect : public ValueModifierEffect
+{
+public:
+	virtual ~ParalysisEffect();
+
+	// ??
+};
+
+class DarknessEffect : public ValueModifierEffect
+{
+public:
+	virtual ~DarknessEffect();
+
+	// ??
+};
+
+class AbsorbEffect : public ValueModifierEffect
+{
+public:
+	virtual ~AbsorbEffect();
+
+	// ??
+};
+
+class ValueAndConditionsEffect : public ValueModifierEffect
+{
+public:
+	virtual ~ValueAndConditionsEffect();
+
+	// ??
+};
+
+class TargetValueModifierEffect : public ValueModifierEffect
+{
+public:
+	virtual ~TargetValueModifierEffect();
+
+	// ??
+};
+
+class RallyEffect : public TargetValueModifierEffect
+{
+public:
+	virtual ~RallyEffect();
+
+	// ??
+};
+
+class DemoralizeEffect : public TargetValueModifierEffect
+{
+public:
+	virtual ~DemoralizeEffect();
+
+	// ??
+};
+
+class CalmEffect : public TargetValueModifierEffect
+{
+public:
+	virtual ~CalmEffect();
+
+	// ??
+};
+
+class FrenzyEffect : public TargetValueModifierEffect
+{
+public:
+	virtual ~FrenzyEffect();
+
+	// ??
+};
+
+class TurnUndeadEffect : public DemoralizeEffect
+{
+public:
+	virtual ~TurnUndeadEffect();
+
+	// ??
+};
+
+class BanishEffect : public DemoralizeEffect
+{
+public:
+	virtual ~BanishEffect();
+
+	// ??
+};

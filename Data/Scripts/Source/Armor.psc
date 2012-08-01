@@ -1,6 +1,6 @@
 Scriptname Armor extends Form Hidden
 
-; SKSE additions built 2012-06-06 02:49:46.290000 UTC
+; SKSE additions built 2012-07-24 00:32:19.171000 UTC
 int Function GetArmorRating() native
 int Function GetAR()
 	return GetArmorRating()
@@ -120,6 +120,12 @@ int Function RemoveSlotFromMask(int slotMask) native
 
 ; calculates the equivalent value for the properties below
 int Function GetMaskForSlot(int slot) global native
+
+; returns the number of armor addons for this armor
+int Function GetNumArmorAddons() native
+
+; returns the nth armor addon for this armor
+ArmorAddon Function GetNthArmorAddon(int n) native
 
 ; returns the SlotMask for a single slot from the CK
 ; can be used with the non-global SlotMask functions above

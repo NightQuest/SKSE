@@ -3,12 +3,15 @@
 #include "SafeWrite.h"
 #include "PluginManager.h"
 #include "Utilities.h"
+#include <shlobj.h>
+
+IDebugLog	gLog;
 
 #if RUNTIME
 
-IDebugLog	gLog("skse.log");
+const char * kLogPath = "\\My Games\\Skyrim\\SKSE\\skse.log";
 
-STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_6_89_0);
+STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_7_7_0);
 
 #include "Hooks_Scaleform.h"
 #include "Hooks_Gameplay.h"
@@ -18,7 +21,7 @@ STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_6_89_0);
 
 #else
 
-IDebugLog	gLog("skse_editor.log");
+const char * kLogPath = "\\My Games\\Skyrim\\SKSE\\skse_editor.log";
 
 #endif
 
@@ -30,8 +33,8 @@ void ApplyPatch(UInt32 base, UInt8 * buf, UInt32 len)
 
 void FixCoopLevel(void)
 {
-	SafeWrite8(0x00A61EC0 + 0x71 + 1, 0x06);
-	SafeWrite8(0x00A62FE0 + 0x4C + 1, 0x16);
+	SafeWrite8(0x00A60E50 + 0x71 + 1, 0x06);
+	SafeWrite8(0x00A61F70 + 0x4C + 1, 0x16);
 }
 
 void WaitForDebugger(void)
@@ -50,6 +53,8 @@ void SKSE_Initialize(void)
 {
 	if(isInit) return;
 	isInit = true;
+
+	gLog.OpenRelative(CSIDL_MYDOCUMENTS, kLogPath);
 
 #ifndef _DEBUG
 	__try {
@@ -73,7 +78,7 @@ void SKSE_Initialize(void)
 		SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
 
 		FixCoopLevel();
-		//WaitForDebugger();
+		WaitForDebugger();
 #endif
 
 //		Commands_Dump();

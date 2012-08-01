@@ -1,4 +1,4 @@
-SKSE 1.5.9 Papyrus Functions
+SKSE 1.5.10 Papyrus Functions
 
 Actor.psc
  - GetWornForm
@@ -107,6 +107,11 @@ FormType.psc
  
 Game.psc
  - Get/Set/ModPerkPoints 
+ - GetModCount
+ - GetModByName
+ - GetModName/Author/Description
+ - GetModDependencyCount
+ - GetNthModDependency
 
  HeadPart.psc
 - GetType
@@ -172,7 +177,11 @@ Quest.psc
 Race.psc
 - GetSpellCount
 - GetNthSpell
- 
+- IsRaceFlagSet, Set/ClearRaceFlag
+- Various RaceFlag properties
+- Various alias functions for info about specific race flags
+
+
 Scroll.psc
  - GetCastTime
  - GetPerk

@@ -13,7 +13,9 @@ enum
 {
 	kInterface_Invalid = 0,
 	kInterface_Scaleform,
-
+#ifdef _PPAPI
+	kInterface_Papyrus,
+#endif
 	kInterface_Max,
 };
 
@@ -50,6 +52,21 @@ struct SKSEScaleformInterface
 	// is registered until the game exits.
 	bool	(* Register)(const char * name, RegisterCallback callback);
 };
+
+#ifdef _PPAPI
+class VMClassRegistry;
+
+struct SKSEPapyrusInterface
+{
+	enum
+	{
+		kInterfaceVersion = 1
+	};
+	UInt32	interfaceVersion;
+	typedef bool (* RegisterFunctions)(VMClassRegistry * registry);
+	bool	(* Register)(RegisterFunctions callback);
+};
+#endif
 
 struct PluginInfo
 {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utilities.h"
+#include "NiTypes.h"
 
 // C
 class Setting
@@ -37,13 +38,15 @@ public:
 
 	bool	GetDouble(double * out) const;
 	bool	SetDouble(double value);
+
+	bool	SetString(const char * value);
 };
 
 // 114
-class GameSettingCollection
+class SettingCollectionList
 {
 public:
-	virtual ~GameSettingCollection();
+	virtual ~SettingCollectionList();
 
 	struct Entry
 	{
@@ -55,13 +58,27 @@ public:
 	UInt32	pad004[(0x10C - 0x004) / 4];
 	Entry	items;	// 10C
 
-	MEMBER_FN_PREFIX(GameSettingCollection);
-	DEFINE_MEMBER_FN(Get_Internal, bool, 0x005232A0, const char * name, Setting ** out);
+	MEMBER_FN_PREFIX(SettingCollectionList);
+	DEFINE_MEMBER_FN(Get_Internal, bool, 0x005235E0, const char * name, Setting ** out);
 
-	Setting	* Get(const char * name);
+	Setting	*	Get(const char * name);
+};
+
+// 120
+class SettingCollectionMap
+{
+public:
+	virtual ~SettingCollectionMap();
+
+	Setting *	Get(const char * name);
+
+//	void	** _vtbl;	// 000
+	UInt32	pad004[(0x10C - 0x004) / 4];
+	NiTMap <char const *, Setting *>	items;	// 10C - actually BSTCaseInsensitiveStringMap but that only changes the virtual functions
 };
 
 Setting * GetINISetting(const char * name);
 
-extern GameSettingCollection	** g_iniSettingCollection;
-extern GameSettingCollection	** g_iniPrefSettingCollection;
+extern SettingCollectionList	** g_iniSettingCollection;
+extern SettingCollectionList	** g_iniPrefSettingCollection;
+extern SettingCollectionMap		** g_gameSettingCollection;

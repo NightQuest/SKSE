@@ -17,6 +17,25 @@ namespace papyrusRace
 		return (thisRace) ? thisRace->spellList.GetNthSpell(n) : NULL;
 	}
 
+	bool IsRaceFlagSet(TESRace* thisRace, UInt32 flag)
+	{
+		return (thisRace) ? (thisRace->data.raceFlags & flag) == flag : false;
+	}
+
+	void SetRaceFlag(TESRace* thisRace, UInt32 flag)
+	{
+		if (thisRace) {
+			thisRace->data.raceFlags |= flag;
+		}
+	}
+
+	void ClearRaceFlag(TESRace* thisRace, UInt32 flag)
+	{
+		if (thisRace) {
+			thisRace->data.raceFlags &= ~flag;
+		}
+	}
+
 }
 
 #include "PapyrusVM.h"
@@ -30,5 +49,14 @@ void papyrusRace::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESRace, SpellItem*, UInt32>("GetNthSpell", "Race", papyrusRace::GetNthSpell, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESRace, bool, UInt32>("IsRaceFlagSet", "Race", papyrusRace::IsRaceFlagSet, registry));
+	
+	registry->RegisterFunction(
+		new NativeFunction1 <TESRace, void, UInt32>("SetRaceFlag", "Race", papyrusRace::SetRaceFlag, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESRace, void, UInt32>("ClearRaceFlag", "Race", papyrusRace::ClearRaceFlag, registry));
 
 }

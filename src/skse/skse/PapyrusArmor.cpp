@@ -120,6 +120,23 @@ namespace papyrusArmor
 		}
 	}
 
+	UInt32 GetNumArmorAddons(TESObjectARMO* thisArmor)
+	{
+		return (thisArmor) ? thisArmor->armorAddons.count : 0;
+	}
+
+	TESObjectARMA* GetNthArmorAddon(TESObjectARMO* thisArmor, UInt32 n)
+	{
+		if(!thisArmor)
+			return NULL;
+
+		if(n < 0 || n > thisArmor->armorAddons.count)
+			return NULL;
+			
+		TESObjectARMA* addon = NULL;
+		thisArmor->armorAddons.GetNthItem(n, addon);
+		return (addon) ? addon : NULL;
+	}
 }
 
 #include "PapyrusVM.h"
@@ -127,6 +144,7 @@ namespace papyrusArmor
 
 void papyrusArmor::RegisterFuncs(VMClassRegistry* registry)
 {
+	// Armor Rating
 	registry->RegisterFunction(
 		new NativeFunction0 <TESObjectARMO, UInt32>("GetArmorRating", "Armor", papyrusArmor::GetArmorRating, registry));
 
@@ -136,6 +154,7 @@ void papyrusArmor::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <TESObjectARMO, void, SInt32>("ModArmorRating", "Armor", papyrusArmor::ModArmorRating, registry));
 
+	// Slot Mask
 	registry->RegisterFunction(
 		new NativeFunction0 <TESObjectARMO, UInt32>("GetSlotMask", "Armor", papyrusArmor::GetSlotMask, registry));
 
@@ -151,12 +170,14 @@ void papyrusArmor::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, UInt32, UInt32> ("GetMaskForSlot", "Armor", papyrusArmor::GetMaskForSlot, registry));
 
+	// World Model
 	registry->RegisterFunction(
 		new NativeFunction1 <TESObjectARMO, BSFixedString, bool>("GetModelPath", "Armor", papyrusArmor::GetModelPath, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction2 <TESObjectARMO, void, BSFixedString, bool>("SetModelPath", "Armor", papyrusArmor::SetModelPath, registry));
 
+	// Icon
 	registry->RegisterFunction(
 		new NativeFunction1 <TESObjectARMO, BSFixedString, bool>("GetIconPath", "Armor", papyrusArmor::GetIconPath, registry));
 
@@ -169,17 +190,24 @@ void papyrusArmor::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction2 <TESObjectARMO, void, BSFixedString, bool>("SetMessageIconPath", "Armor", papyrusArmor::SetMessageIconPath, registry));
 
+	// Weight Class
 	registry->RegisterFunction(
 		new NativeFunction0 <TESObjectARMO, UInt32>("GetWeightClass", "Armor", papyrusArmor::GetWeightClass, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESObjectARMO, void, UInt32>("SetWeightClass", "Armor", papyrusArmor::SetWeightClass, registry));
 
+	// Enchantments
 	registry->RegisterFunction(
 		new NativeFunction0 <TESObjectARMO, EnchantmentItem*>("GetEnchantment", "Armor", papyrusArmor::GetEnchantment, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESObjectARMO, void, EnchantmentItem*>("SetEnchantment", "Armor", papyrusArmor::SetEnchantment, registry));
 
+	// Armor Addons
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectARMO, UInt32>("GetNumArmorAddons", "Armor", papyrusArmor::GetNumArmorAddons, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectARMO, TESObjectARMA*, UInt32>("GetNthArmorAddon", "Armor", papyrusArmor::GetNthArmorAddon, registry));
 }

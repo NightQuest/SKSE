@@ -177,50 +177,55 @@ public:
 		// get argument list
 		UInt32	argOffset = CALL_MEMBER_FN(state->argList, GetOffset)(state);
 
-		// extract base object pointer
 		T_Base	* base = NULL;
-		UnpackValue(&base, baseValue, registry);
+
+		// extract base object pointer for non-static types
+		if (! IsStaticType <T_Base>::value)
+		{
+			UnpackValue(&base, baseValue);
+			if (!base) return false;
+		}
 
 		// extract parameters
 #if NUM_PARAMS >= 1
 		T_Arg0	arg0;
-		UnpackValue(&arg0, CALL_MEMBER_FN(state->argList, Get)(state, 0, argOffset), registry);
+		UnpackValue(&arg0, CALL_MEMBER_FN(state->argList, Get)(state, 0, argOffset));
 #endif
 #if NUM_PARAMS >= 2
 		T_Arg1	arg1;
-		UnpackValue(&arg1, CALL_MEMBER_FN(state->argList, Get)(state, 1, argOffset), registry);
+		UnpackValue(&arg1, CALL_MEMBER_FN(state->argList, Get)(state, 1, argOffset));
 #endif
 #if NUM_PARAMS >= 3
 		T_Arg2	arg2;
-		UnpackValue(&arg2, CALL_MEMBER_FN(state->argList, Get)(state, 2, argOffset), registry);
+		UnpackValue(&arg2, CALL_MEMBER_FN(state->argList, Get)(state, 2, argOffset));
 #endif
 #if NUM_PARAMS >= 4
 		T_Arg3	arg3;
-		UnpackValue(&arg3, CALL_MEMBER_FN(state->argList, Get)(state, 3, argOffset), registry);
+		UnpackValue(&arg3, CALL_MEMBER_FN(state->argList, Get)(state, 3, argOffset));
 #endif
 #if NUM_PARAMS >= 5
 		T_Arg4	arg4;
-		UnpackValue(&arg4, CALL_MEMBER_FN(state->argList, Get)(state, 4, argOffset), registry);
+		UnpackValue(&arg4, CALL_MEMBER_FN(state->argList, Get)(state, 4, argOffset));
 #endif
 #if NUM_PARAMS >= 6
 		T_Arg5	arg5;
-		UnpackValue(&arg5, CALL_MEMBER_FN(state->argList, Get)(state, 5, argOffset), registry);
+		UnpackValue(&arg5, CALL_MEMBER_FN(state->argList, Get)(state, 5, argOffset));
 #endif
 #if NUM_PARAMS >= 7
 		T_Arg6	arg6;
-		UnpackValue(&arg6, CALL_MEMBER_FN(state->argList, Get)(state, 6, argOffset), registry);
+		UnpackValue(&arg6, CALL_MEMBER_FN(state->argList, Get)(state, 6, argOffset));
 #endif
 #if NUM_PARAMS >= 8
 		T_Arg7	arg7;
-		UnpackValue(&arg7, CALL_MEMBER_FN(state->argList, Get)(state, 7, argOffset), registry);
+		UnpackValue(&arg7, CALL_MEMBER_FN(state->argList, Get)(state, 7, argOffset));
 #endif
 #if NUM_PARAMS >= 9
 		T_Arg8	arg8;
-		UnpackValue(&arg8, CALL_MEMBER_FN(state->argList, Get)(state, 8, argOffset), registry);
+		UnpackValue(&arg8, CALL_MEMBER_FN(state->argList, Get)(state, 8, argOffset));
 #endif
 #if NUM_PARAMS >= 10
 		T_Arg9	arg9;
-		UnpackValue(&arg9, CALL_MEMBER_FN(state->argList, Get)(state, 9, argOffset), registry);
+		UnpackValue(&arg9, CALL_MEMBER_FN(state->argList, Get)(state, 9, argOffset));
 #endif
 
 		// call the callback

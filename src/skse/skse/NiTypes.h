@@ -54,8 +54,23 @@ public:
 		T_data		data;
 	};
 
-	virtual UInt32	GetBucket(UInt32 hash);					// return hash % numBuckets;
-	virtual bool	CompareHash(UInt32 lhs, UInt32 rhs);	// return lhs == rhs;
+	T_data	Get(T_key key)
+	{
+		UInt32	bucket = GetBucket(key);
+
+		for(NiTMapItem * iter = buckets[bucket]; iter; iter = iter->next)
+		{
+			if(Compare(iter->key, key))
+			{
+				return iter->data;
+			}
+		}
+
+		return T_data();
+	}
+
+	virtual UInt32	GetBucket(T_key key);					// return hash % numBuckets;
+	virtual bool	Compare(T_key lhs, T_key rhs);			// return lhs == rhs;
 	virtual void	FillItem(NiTMapItem * item, T_key key, T_data data);
 															// item->key = key; item->data = data;
 	virtual void	Fn_04(UInt32 arg);	// nop

@@ -306,6 +306,8 @@ public:
 	UInt8	pad06[2];		// 06
 };
 
+class BGSTextureSet;
+
 // 14
 class TESModel : public BaseFormComponent
 {
@@ -316,19 +318,19 @@ public:
 
 	StringCache::Ref	name;	// 04
 
-	UInt32		unk08;	// 08
-	UInt32		unk0C;	// 0C
-	UInt16		unk10;	// 10
-	UInt8		unk12;	// 12
-	UInt8		unk13;	// 13
+	UInt32				unk08;	// 08
+	UInt32				unk0C;	// 0C
+	UInt16				unk10;	// 10
+	UInt8				unk12;	// 12
+	UInt8				unk13;	// 13
 };
 
 // 1C
 class TESModelTextureSwap : public TESModel
 {
 public:
-	UInt32	unk14;	// 14
-	UInt32	unk18;	// 18
+	BGSTextureSet	** textureSets;	// 14
+	UInt32			count;			// 18
 };
 
 // 14
@@ -395,6 +397,16 @@ public:
 		return (bFound && pEntry) ? pEntry : NULL;
 	}
 
+	template <class Op>
+	void Visit(Op& op) const {
+		bool bContinue = true;
+		for (UInt32 n = 0; n < numEntries && bContinue; n++) {
+			pEntry = entries[n];
+			if (pEntry) {
+				bContinue = op.Accept(pEntry);
+			}
+		}
+	}
 
 };
 
@@ -410,10 +422,11 @@ public:
 class TESEnchantableForm : public BaseFormComponent
 {
 public:
-	virtual UInt32	Unk_04(void);	// return unk08
+	virtual UInt16	Unk_04(void);	// return unk08
 
 	EnchantmentItem*	enchantment;		// 04 - init'd to 0
-	UInt32	unk08;		// 08 - init'd to 3
+	UInt16				unk08;		// 08 - init'd to 3
+	UInt16				maxCharge;
 };
 
 // 08
@@ -644,6 +657,8 @@ public:
 //	void	** _vtbl;	// 00
 };
 
+STATIC_ASSERT(sizeof(ActorValueOwner) == 0x4);
+
 // 08
 class BSIMusicTrack
 {
@@ -763,31 +778,6 @@ public:
 };
 
 // 04
-template <typename T>
-class BSTEventSink
-{
-public:
-	virtual ~BSTEventSink();
-
-	virtual	UInt32	TriggerEvent(UInt32 arg);	// pure
-
-//	void	** _vtbl;	// 00
-};
-
-// 30
-template <typename T>
-class BSTEventSource
-{
-public:
-	virtual ~BSTEventSource();
-
-//	void	** _vtbl;	// 00
-	UInt32 unk04[11];	// 04
-};
-
-STATIC_ASSERT(sizeof(BSTEventSource<void*>) == 0x30);
-
-// 04
 class BGSOpenCloseForm
 {
 public:
@@ -796,11 +786,25 @@ public:
 //	void	** _vtbl;	// 00
 };
 
+class ActiveEffect;
+class Character;
 // C
 class MagicTarget
 {
 public:
 	virtual ~MagicTarget();
+
+	virtual UInt8					Unk_01(int);
+	virtual Character				* Unk_02(void);
+	virtual UInt8					Unk_03(void);
+	virtual bool					Unk_04(void);
+	virtual int						Unk_05(int);
+	virtual bool					Unk_06(void); // pure   018
+	virtual tList<ActiveEffect>		* GetActiveEffects(void); // pure     01C
+	virtual int						Unk_08(int);
+	virtual void					Unk_09(int);
+	virtual double					Unk_0A(int, int, int);
+	virtual UInt8					Unk_0B(int, int, int);
 
 //	void	** _vtbl;	// 00
 	UInt32 unk04;		// 04
@@ -808,3 +812,5 @@ public:
 };
 
 STATIC_ASSERT(sizeof(MagicTarget) == 0xC);
+
+

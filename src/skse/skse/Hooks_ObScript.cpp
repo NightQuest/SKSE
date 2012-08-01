@@ -5,12 +5,12 @@
 
 CommandTable	g_commandTable;
 
-const CommandInfo	* g_blockTypeStart =		(CommandInfo *)0x01240388;
-const CommandInfo	* g_blockTypeEnd =			(CommandInfo *)0x01240900;
-const CommandInfo	* g_consoleCommandsStart =	(CommandInfo *)0x01240928;
-const CommandInfo	* g_consoleCommandsEnd =	(CommandInfo *)0x01243A38;
-const CommandInfo	* g_scriptCommandsStart =	(CommandInfo *)0x01243A60;
-const CommandInfo	* g_scriptCommandsEnd =		(CommandInfo *)0x0124ACC0;
+const CommandInfo	* g_blockTypeStart =		(CommandInfo *)0x011F3268;
+const CommandInfo	* g_blockTypeEnd =			(CommandInfo *)0x011F37E0;
+const CommandInfo	* g_consoleCommandsStart =	(CommandInfo *)0x011F3808;
+const CommandInfo	* g_consoleCommandsEnd =	(CommandInfo *)0x011F6918;
+const CommandInfo	* g_scriptCommandsStart =	(CommandInfo *)0x011F6940;
+const CommandInfo	* g_scriptCommandsEnd =		(CommandInfo *)0x011FDBA0;
 
 static bool IsEmptyStr(const char * data)
 {
@@ -74,67 +74,67 @@ void ObScript_DumpCommands(void)
 
 static const CommandTable::PatchLocation kPatch_ScriptCommands_Start[] =
 {
-	{	0x00513A9B, 0x00 },
-	{	0x00513C64, 0x04 },
-	{	0x00513CFD, 0x08 },
-	{	0x00514CE7, 0x00 },
-	{	0x0051829F, 0x00 },
-	{	0x0053F3C9, 0x0C },
-	{	0x0053F3E1, 0x00 },
-	{	0x0053F3F9, 0x04 },
-	{	0x0053F415, 0x0C },
-	{	0x0053F42F, 0x04 },
-	{	0x0053F44D, 0x00 },
-	{	0x0053F46F, 0x00 },
-	{	0x0053F48D, 0x04 },
-	{	0x0053F4B3, 0x00 },
-	{	0x0053F4CA, 0x00 },
-	{	0x005E87A9, 0x20 },
-	{	0x005E87B5, 0x10 },
-	{	0x005E887E, 0x12 },
-	{	0x005E88C1, 0x12 },
-	{	0x005E88CD, 0x14 },
+	{	0x00513D9B, 0x00 },
+	{	0x00513F64, 0x04 },
+	{	0x00513FFD, 0x08 },
+	{	0x00514FE7, 0x00 },
+	{	0x0051859F, 0x00 },
+	{	0x0053F809, 0x0C },
+	{	0x0053F821, 0x00 },
+	{	0x0053F839, 0x04 },
+	{	0x0053F855, 0x0C },
+	{	0x0053F86F, 0x04 },
+	{	0x0053F88D, 0x00 },
+	{	0x0053F8AF, 0x00 },
+	{	0x0053F8CD, 0x04 },
+	{	0x0053F8F3, 0x00 },
+	{	0x0053F90A, 0x00 },
+	{	0x005E8279, 0x20 },
+	{	0x005E8285, 0x10 },
+	{	0x005E834E, 0x12 },
+	{	0x005E8391, 0x12 },
+	{	0x005E839D, 0x14 },
+	{	0x005E83D8, 0x12 },
+	{	0x005E83E5, 0x14 },
+	{	0x005E8446, 0x12 },
+	{	0x005E8452, 0x14 },
+	{	0x005E8480, 0x12 },
+	{	0x005E84F1, 0x12 },
+	{	0x005E8523, 0x12 },
+	{	0x005E852F, 0x14 },
+	{	0x005E8585, 0x12 },
+	{	0x005E85C3, 0x12 },
+	{	0x005E85CF, 0x14 },
+	{	0x005E8678, 0x12 },
+	{	0x005E86A7, 0x14 },
+	{	0x005E8784, 0x12 },
+	{	0x005E87A6, 0x14 },
+	{	0x005E88BE, 0x12 },
 	{	0x005E8908, 0x12 },
-	{	0x005E8915, 0x14 },
-	{	0x005E8976, 0x12 },
-	{	0x005E8982, 0x14 },
-	{	0x005E89B0, 0x12 },
-	{	0x005E8A21, 0x12 },
-	{	0x005E8A53, 0x12 },
-	{	0x005E8A5F, 0x14 },
-	{	0x005E8AB5, 0x12 },
-	{	0x005E8AF3, 0x12 },
-	{	0x005E8AFF, 0x14 },
-	{	0x005E8BA8, 0x12 },
-	{	0x005E8BD7, 0x14 },
-	{	0x005E8CB4, 0x12 },
-	{	0x005E8CD6, 0x14 },
-	{	0x005E8DEE, 0x12 },
-	{	0x005E8E38, 0x12 },
-	{	0x005E8E48, 0x14 },
-	{	0x005E8EE1, 0x14 },
-	{	0x006A173C, 0x12 },
-	{	0x006A1769, 0x14 },
+	{	0x005E8918, 0x14 },
+	{	0x005E89B1, 0x14 },
+	{	0x0069FA0C, 0x12 },
+	{	0x0069FA39, 0x14 },
 	{	0 },
 };
 
 static const CommandTable::PatchLocation kPatch_ScriptCommands_End[] =
 {
-	{	0x00513BA2, 0x08 },
-	{	0x00513C8F, 0x04 },
+	{	0x00513EA2, 0x08 },
+	{	0x00513F8F, 0x04 },
 	{	0 },
 };
 
 static const CommandTable::PatchLocation kPatch_ScriptCommands_MaxIdx[] =
 {
-	{	0x004FFE30 + 0x0087 + 1,	0 },
-	{	0x00513A60 + 0x0029 + 2,	(UInt32)(-0x1001) },
-	{	0x00513BA0 + 0x0000 + 6,	0 },
-	{	0x00514B80 + 0x0156 + 1,	(UInt32)(-0x1001) },
-	{	0x00517B40 + 0x0751 + 2,	(UInt32)(-0x1001) },
-	{	0x005E7BF0 + 0x000D + 2,	(UInt32)(-0x1001) },
-	{	0x005E7BF0 + 0x001D + 1,	(UInt32)(-0x1001) },
-	{	0x005E7BF0 + 0x0029 + 2,	(UInt32)(-0x1001) },
+	{	0x00500140 + 0x0087 + 1,	0 },
+	{	0x00513D60 + 0x0029 + 2,	(UInt32)(-0x1001) },
+	{	0x00513EA0 + 0x0000 + 6,	0 },
+	{	0x00514E80 + 0x0156 + 1,	(UInt32)(-0x1001) },
+	{	0x00517E40 + 0x0751 + 2,	(UInt32)(-0x1001) },
+	{	0x005E76C0 + 0x000D + 2,	(UInt32)(-0x1001) },
+	{	0x005E76C0 + 0x001D + 1,	(UInt32)(-0x1001) },
+	{	0x005E76C0 + 0x0029 + 2,	(UInt32)(-0x1001) },
 
 	{	0 },
 };
@@ -224,51 +224,84 @@ bool Cmd_GetSKSERelease_Execute(COMMAND_ARGS)
 #include "PapyrusKeyword.h"
 #include "PapyrusForm.h"
 #include "PapyrusObjectReference.h"
+#include "PapyrusStringUtil.h"
 
 bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 {
 
-	PlayerCharacter* pPC = *(g_thePlayer);
-	DumpClass(pPC);
-	TESForm* pPlayerForm = pPC->baseForm;
+	if(thisObj) {
+		Actor* actor = DYNAMIC_CAST(thisObj, TESObjectREFR, Actor);
+		if(actor) {
+			tList<ActiveEffect> * effects = actor->magicTarget.GetActiveEffects();
+			for(int i = 0; i < effects->Count(); i++)
+			{
+				ActiveEffect* effect = effects->GetNthItem(i);
+				_MESSAGE("%s", effect->item->fullName.name);
+				DumpClass(effect, 50);
+			}
+		}
+		/*Console_Print("%f", papyrusObjectReference::GetCharge(thisObj));
 
-	//UInt32 numItems = papyrusObjectReference::GetNumItems(pPC);
-	//TESForm* pItem = papyrusObjectReference::GetNthForm(pPC, 0);
-
-	UInt8 perkPoints = pPC->numPerkPoints;
-	_MESSAGE("PerkPoints: %d", perkPoints);
-
-	//Actor* pActor = DYNAMIC_CAST(thisObj, TESObjectREFR, Actor);
-	//if (pActor)
-	//	DumpClass(pActor);
-
-	for (UInt32 n = 0; n < pPC->addedSpells.spellCount; n++)
-	{
-		SpellItem* pSpell = pPC->addedSpells.spells[n];
-		_MESSAGE("%d> %s", n, pSpell->fullName.name.data);
-		//for (UInt32 x = 0; x < pSpell->effectItemList.count; x++) {
-		//	MagicItem::EffectItem* pEI = NULL;
-		//	pSpell->effectItemList.GetNthItem(x, pEI);
-		//	if (pEI)
-		//		DumpClass(pEI->mgef);
-		//}
+		if(TESObjectWEAP* weapon = DYNAMIC_CAST(thisObj->baseForm, TESForm, TESObjectWEAP)) {
+			EnchantmentItem* item = weapon->enchantable.enchantment;
+			ExtraEnchantment* extraEnch = static_cast<ExtraEnchantment*>(thisObj->extraData.GetByType(kExtraData_Enchantment));
+			if(!item && extraEnch) {
+				item = extraEnch->enchant;
+			}
+			if(item) {
+				DumpClass(item);
+				Console_Print("%f", papyrusObjectReference::GetMaximumCharge(thisObj));
+			}
+		}*/
 	}
+//	PlayerCharacter* pPC = *(g_thePlayer);
+////	DumpClass(pPC);
+//	TESForm* pPlayerForm = pPC->baseForm;
+//
+//	//UInt32 numItems = papyrusObjectReference::GetNumItems(pPC);
+//	//TESForm* pItem = papyrusObjectReference::GetNthForm(pPC, 0);
+//
+//	UInt8 perkPoints = pPC->numPerkPoints;
+//	_MESSAGE("PerkPoints: %d", perkPoints);
+//
+//	BSFixedString sGold("Gold");
+//	BSFixedString sGoldOreVein("Gold Ore Vein");
+//
+//	_MESSAGE("sGold: %s sGoldOreVein: %s", sGold.data, sGoldOreVein.data);
+//	SInt32 pos = papyrusStringUtil::Find(NULL, sGoldOreVein, sGold);
+//
+//	//Actor* pActor = DYNAMIC_CAST(thisObj, TESObjectREFR, Actor);
+//	//if (pActor)
+//	//	DumpClass(pActor);
+//
+//	for (UInt32 n = 0; n < pPC->addedSpells.spellCount; n++)
+//	{
+//		SpellItem* pSpell = pPC->addedSpells.spells[n];
+//		_MESSAGE("%d> %s", n, pSpell->fullName.name.data);
+//		//for (UInt32 x = 0; x < pSpell->effectItemList.count; x++) {
+//		//	MagicItem::EffectItem* pEI = NULL;
+//		//	pSpell->effectItemList.GetNthItem(x, pEI);
+//		//	if (pEI)
+//		//		DumpClass(pEI->mgef);
+//		//}
+//		//DumpClass(pSpell);
+//	}
 
 	//const char* oldName = papyrusForm::GetName(pPlayerForm).data;
 	//papyrusForm::SetName(pPlayerForm, BSFixedString("Bob"));
 	//const char* nuName = papyrusForm::GetName(pPlayerForm).data;
 	//Console_Print("OldName: %s NuName: %s", oldName, nuName);
 
-	DataHandler* handler = DataHandler::GetSingleton();
-	
-	UInt32 keywords = handler->keywords.count;
-	for (UInt32 k = 0; k < keywords; k++) {
-		BGSKeyword* pKeyword = NULL;
-		handler->keywords.GetNthItem(k, pKeyword);
-		if (pKeyword) {
-			_MESSAGE("%d: %s\n", k, pKeyword->keyword.Get());
-		}
-	}
+	//DataHandler* handler = DataHandler::GetSingleton();
+	//
+	//UInt32 keywords = handler->keywords.count;
+	//for (UInt32 k = 0; k < keywords; k++) {
+	//	BGSKeyword* pKeyword = NULL;
+	//	handler->keywords.GetNthItem(k, pKeyword);
+	//	if (pKeyword) {
+	//		_MESSAGE("%d: %s\n", k, pKeyword->keyword.Get());
+	//	}
+	//}
 
 	//const char* wts = "WeapTypeSword";
 	//BSFixedString weapTypeSword("WeapTypeSword");
@@ -286,11 +319,19 @@ bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 	//PlayerCharacter *pPC = (*g_thePlayer);
 
 
-	TESForm* pForm = LookupFormByID(0x0010fdd4);
+	/*TESForm* pForm = LookupFormByID(0x0010fdd4);
 	EffectSetting* pME = DYNAMIC_CAST(pForm, TESForm, EffectSetting);
 
 
-	TESForm* pForm1 = LookupFormByID(0x2F2F4);
+	TESForm* pForm1 = LookupFormByID(0xe52);
+	SpellItem* pSpellF = DYNAMIC_CAST(pForm1, TESForm, SpellItem);
+	if (pSpellF) {
+		MagicItem::EffectItem* pEI = NULL;
+		pSpellF->effectItemList.GetNthItem(0, pEI);
+		UInt32 cost = pSpellF->GetMagickaCost();
+	}*/
+
+
 	//TESObjectWEAP* pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
 
 	//pForm = LookupFormByID(0x58F5E);

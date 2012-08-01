@@ -76,7 +76,37 @@ namespace papyrusActor
 		else return NULL;
 	}
 
+#ifdef _AEFFECTS
+	UInt32 GetNumActiveEffects(Actor* thisActor)
+	{
+		if(thisActor)
+		{
+			tList<ActiveEffect> * effects = thisActor->magicTarget.GetActiveEffects();
+			if(effects) {
+				UInt32 count = effects->Count();
+				_MESSAGE("Total Effects: %d", count);
+				return count;
+			}
+		}
+		return 0;
+	}
 
+	ActiveEffect* GetNthActiveEffect(Actor* thisActor, UInt32 n)
+	{
+		if(thisActor) {
+			tList<ActiveEffect> * effects = thisActor->magicTarget.GetActiveEffects();
+			if(effects) {
+				UInt32 count = effects->Count();
+				ActiveEffect * effect = effects->GetNthItem(n);
+				_MESSAGE("Dumping n: %d Total: %d", n, count); // Test
+				DumpClass(effect, 20);
+				return (effects && n < count) ? effect : NULL;
+			}
+		}
+		
+		return NULL;
+	}
+#endif
 }
 
 #include "PapyrusVM.h"
@@ -95,4 +125,13 @@ void papyrusActor::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <Actor, SpellItem*, UInt32>("GetNthSpell", "Actor", papyrusActor::GetNthSpell, registry));
+
+#ifdef _AEFFECTS
+	registry->RegisterFunction(
+		new NativeFunction0 <Actor, UInt32>("GetNumActiveEffects", "Actor", papyrusActor::GetNumActiveEffects, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <Actor, ActiveEffect*, UInt32>("GetNthActiveEffect", "Actor", papyrusActor::GetNthActiveEffect, registry));
+#endif
+		
 }

@@ -1,13 +1,13 @@
-Skyrim Script Extender v1.5.9
+Skyrim Script Extender v1.5.10
 by Ian Patterson and Stephen Abel
 (ianpatt and behippo)
-Thanks to: Paul Connelly (scruggsywuggsy the ferret), gibbed, Purple Lunchbox, schlangster
+Thanks to: Paul Connelly (scruggsywuggsy the ferret), gibbed, Purple Lunchbox, snakster
 
 The Skyrim Script Extender, or SKSE for short, is a modder's resource that expands the scripting capabilities of Skyrim. It does so without modifying the executable files on disk, so there are no permanent side effects.
 
 Compatibility:
 
-SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.6.89.0). When a new version is released, we will update as soon as possible; please be patient. The editor does not appear to need modification, however a custom set of .pex/psc files must be installed.
+SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.7.7.0). When a new version is released, we will update as soon as possible; please be patient. The editor does not appear to need modification, however a custom set of .pex/psc files must be installed.
 
 [ Installation ]
 
@@ -30,7 +30,7 @@ If your mod requires SKSE, please provide a link to the main SKSE website <http:
 * Crashes or strange behavior:
  - Let us know how you made it crash, and we'll look into fixing it.
 
-* XBox 360 or PS3 version?
+* 360 or PS3 version?
  - No.
 
 * My virus scanner complains about skse_loader!
@@ -60,9 +60,12 @@ If your mod requires SKSE, please provide a link to the main SKSE website <http:
 * Do I need to keep old SKSE DLLs around for backwards compatibility?
  - No, they are only needed if you want to run old versions of the runtime with the last version of SKSE released for that version. Feel free to delete any skse_*.dll files that are not included with the main archive.
 
+* Where did the log files go?
+ - To support users on machines that don't have write access to the Program Files folder, they have been moved to the <My Documents>\My Games\Skyrim\SKSE\ folder.
+
 [ Contact the SKSE Team ]
 
-Before contacting us, make sure that your game launches properly without SKSE first. If SKSE doesn't appear to be working, follow the steps in the FAQ first, then send us skse.log, skse_loader.log, and skse_steam_loader.log as attachments.
+Before contacting us, make sure that your game launches properly without SKSE first. If SKSE doesn't appear to be working, follow the steps in the FAQ first, then send us skse.log, skse_loader.log, and skse_steam_loader.log as attachments. These files may be found in <My Documents>\My Games\Skyrim\SKSE\.
 
 Entire Team
 Send email to team [at] skse [dot] silverlock [dot] org

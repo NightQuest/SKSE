@@ -5,6 +5,7 @@ class TESObjectARMO;
 struct StaticFunctionTag;
 class VMClassRegistry;
 class EnchantmentItem;
+class TESObjectARMA;
 
 
 namespace papyrusArmor
@@ -36,4 +37,7 @@ namespace papyrusArmor
 
 	EnchantmentItem* GetEnchantment(TESObjectARMO* thisArmor);
 	void SetEnchantment(TESObjectARMO* thisArmor, EnchantmentItem* enchantment);
+
+	UInt32 GetNumArmorAddons(TESObjectARMO* thisArmor);
+	TESObjectARMA* GetNthArmorAddon(TESObjectARMO* thisArmor, UInt32 n);
 }

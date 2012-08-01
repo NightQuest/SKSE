@@ -3,9 +3,9 @@
 #include "GameForms.h"
 #include "GameRTTI.h"
 #include "PapyrusVM.h"
+#include "PapyrusEvents.h"
+#include "GameMenus.h"
 
-#include <map>
-#include <set>
 
 namespace papyrusForm
 {
@@ -105,47 +105,29 @@ namespace papyrusForm
 		return NULL;
 	}
 
-	typedef std::set <UInt64>				HandleList;
-	typedef std::map <UInt32, HandleList>	RegisteredKeyMap;
-
-	// ### TODO: clear this on unload
-	RegisteredKeyMap	g_regKeyMap;
-
 	void RegisterForKey(TESForm * thisForm, UInt32 key)
 	{
-		VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
-		IObjectHandlePolicy	* policy =		registry->GetHandlePolicy();
-
-		UInt64	handle = policy->Create(thisForm->formType, (void *)thisForm);
-
-		g_regKeyMap[key].insert(handle);
+		g_inputEventRegs.Register(thisForm, key);
 	}
 
-	class OneIntArg : public IFunctionArguments
+	void UnregisterFromKey(TESForm * thisForm, UInt32 key)
 	{
-	public:
-		OneIntArg(UInt32 _data) :data(_data) { }
+		g_inputEventRegs.Unregister(thisForm, key);
+	}
 
-		virtual bool	Copy(Output * dst)
-		{
-			dst->Resize(1);
-			dst->Get(0)->SetInt(data);
-
-			return true;
-		}
-
-	private:
-		UInt32	data;
-	};
+	void UnregisterFromAllKeys(TESForm * thisForm)
+	{
+		g_inputEventRegs.UnregisterFromAll(thisForm);
+	}
 
 	void UpdateKeys(UInt8 * data)
 	{
-		static UInt8	oldState[0x100] = { 0 };
+		/*static UInt8	oldState[0x100] = { 0 };
 
 		if(!*g_skyrimVM) return;
 
 		// ### this is off because it's a super temp hack
-#if 0
+
 		BSFixedString		eventName("OnKeyDown");
 		VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
 
@@ -166,8 +148,71 @@ namespace papyrusForm
 			}
 
 			oldState[i] = data[i];
-		}
-#endif
+		}*/
+	}
+
+	void RegisterForMenu(TESForm * thisForm, BSFixedString menuName)
+	{
+		if (!menuName.data)
+			return;
+
+		// Will only be added once. TODO move this somewhere else.
+		MenuManager * mm = MenuManager::GetSingleton();
+		if (mm)
+			mm->MenuOpenCloseEventDispatcher()->AddEventSink(&g_skseEventHandler);
+		if (*g_inputEventDispatcher)
+			(*g_inputEventDispatcher)->AddEventSink(&g_skseEventHandler);
+		
+		g_menuOpenCloseRegs.Register(thisForm, menuName);
+	}
+
+	void UnregisterFromMenu(TESForm * thisForm, BSFixedString menuName)
+	{
+		if (!menuName.data)
+			return;
+
+		g_menuOpenCloseRegs.Unregister(thisForm, menuName);
+	}
+
+	void UnregisterFromAllMenus(TESForm * thisForm)
+	{
+		g_menuOpenCloseRegs.UnregisterFromAll(thisForm);
+	}
+
+	void RegisterForModEvent(TESForm * thisForm, BSFixedString eventName, BSFixedString callbackName)
+	{
+		if (!eventName.data || !callbackName.data)
+			return;
+
+		// TODO
+		g_modCallbackEventDispatcher.AddEventSink(&g_skseEventHandler);
+
+		ModCallbackParameters params;
+		params.callbackName = callbackName;
+
+		g_modCallbackRegs.Register(thisForm, eventName, &params);
+	}
+
+	void UnregisterFromModEvent(TESForm * thisForm, BSFixedString eventName)
+	{
+		if (!eventName.data)
+			return;
+
+		g_modCallbackRegs.Unregister(thisForm, eventName);
+	}
+
+	void UnregisterFromAllModEvents(TESForm * thisForm)
+	{
+		g_modCallbackRegs.UnregisterFromAll(thisForm);
+	}
+
+	void SendModEvent(TESForm * thisForm, BSFixedString eventName, BSFixedString strArg, float numArg)
+	{
+		if (!eventName.data)
+			return;
+
+		SKSEModCallbackEvent evn(eventName, strArg, numArg, thisForm);
+		g_modCallbackEventDispatcher.SendEvent(&evn);
 	}
 }
 
@@ -200,6 +245,33 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <TESForm, BGSKeyword *, UInt32> ("GetNthKeyword", "Form", papyrusForm::GetNthKeyword, registry));
 
-	//registry->RegisterFunction(
-	//	new NativeFunction1 <TESForm, void, UInt32> ("RegisterForKey", "Form", papyrusForm::RegisterForKey, registry));
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, UInt32> ("RegisterForKey", "Form", papyrusForm::RegisterForKey, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, UInt32> ("UnregisterFromKey", "Form", papyrusForm::UnregisterFromKey, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, void> ("UnregisterFromAllKeys", "Form", papyrusForm::UnregisterFromAllKeys, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, BSFixedString> ("RegisterForMenu", "Form", papyrusForm::RegisterForMenu, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, BSFixedString> ("UnregisterFromMenu", "Form", papyrusForm::UnregisterFromMenu, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, void> ("UnregisterFromAllMenus", "Form", papyrusForm::UnregisterFromAllMenus, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <TESForm, void, BSFixedString, BSFixedString> ("RegisterForModEvent", "Form", papyrusForm::RegisterForModEvent, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction3 <TESForm, void, BSFixedString, BSFixedString, float> ("SendModEvent", "Form", papyrusForm::SendModEvent, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, BSFixedString> ("UnregisterFromModEvent", "Form", papyrusForm::UnregisterFromModEvent, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, void> ("UnregisterFromAllModEvents", "Form", papyrusForm::UnregisterFromAllModEvents, registry));
 }

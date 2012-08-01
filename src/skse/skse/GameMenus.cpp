@@ -2,19 +2,22 @@
 
 GFxMovieView * MenuManager::GetMovieView(BSFixedString * menuName)
 {
-	Result result;
-	UInt32	hash;
-
-	CRC32_Calc4(&hash, (UInt32)menuName->data);
-
-	CALL_MEMBER_FN(&list, GetMenu)(list.data, hash, menuName, &result);
-	IMenu * menu = result.menu;
-
-	if(!menu)
+	if (!menuName->data)
 		return NULL;
 
+	MenuTableItem * item = menuTable.Find(menuName);
+
+	if (!item)
+		return NULL;
+
+	IMenu * menu = item->menuInstance;
+	if (!menu)
+		return NULL;
+
+	// Necessary #2?
+	//menu->AddRef();
 	GFxMovieView * view = menu->view;
-	menu->Release();
+	//menu->Release();
 
 	return view;
 }

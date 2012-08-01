@@ -69,6 +69,12 @@ dynamic intrinsic class skse
 	// data for weapons:
 	//	var subType : Number;		// specific weapon type (see TESObjectWEAP::DataC4 in GameObjects.h)
 	//	var damage : Number;		// damage
+	//	var speed : Number;			// speed
+	//	var reach : Number;			// reach
+	//	var stagger : Number;		// stagger
+	//	var critDamage : Number;	// crit damage
+	//	var	minRange : Number;		// min range
+	//	var	maxRange : Number;		// max range
 	// data for ammo:
 	//	var damage : Number;		// damage
 	// data for spells/scrolls/ingredients/potions:
@@ -100,3 +106,37 @@ dynamic intrinsic class skse
 		var	releaseIdx : Number;	// SKSE release index
 	};
 };
+
+//	release history
+//	
+//	skse	runtime		release
+//	1.1.0	1.1.21.0	none
+//	1.2.0	1.2.12.0	none
+//	1.2.1	1.2.12.0	none
+//	1.3.0	1.3.7.0		0
+//	1.4.0	1.3.7.0		1
+//	1.4.1	1.3.7.0		2
+//	1.4.2	1.3.10.0	3
+//	1.4.3	1.3.10.0	4
+//	1.4.4	1.3.10.0	5
+//	1.4.5	1.3.10.0	6
+//	1.4.6	1.4.15.0	7
+//	1.4.7	1.4.20.0	8
+//	1.4.8	1.4.21.0	9
+//	1.4.9	1.4.21.0	10
+//	1.4.10	1.4.21.0	11
+//	1.4.11	1.4.26.0	12
+//	1.4.12	1.4.27.0	13
+//	1.4.13	1.4.27.0	14
+//	1.4.14	1.5.24.0	15
+//	1.4.15	1.5.26.0	16
+//	1.5.1	1.5.26.0	17
+//	1.5.2	1.5.26.0	18
+//	1.5.3	1.5.26.0	19
+//	1.5.4	1.5.26.0	20
+//	1.5.5	1.5.26.0	21
+//	1.5.6	1.5.26.0	22
+//	1.5.7	1.5.26.0	23
+//	1.5.8	1.6.87.0	24
+//	1.5.9	1.6.89.0	25
+//	1.5.10	1.7.7.0		26

@@ -2,6 +2,7 @@
 
 #include "GameBSExtraData.h"
 #include "GameReferences.h"
+#include "GameAPI.h"
 
 	//ExtraHavok
  //	ExtraCell3D
@@ -13,7 +14,14 @@
  //	ExtraCellSkyRegion
  //	ExtraProcessMiddleLow
  //	ExtraDetachTime
- //	ExtraPersistentCell
+class ExtraPersistentCell : public BSExtraData
+{
+public:
+	ExtraPersistentCell();
+	~ExtraPersistentCell();
+
+	TESObjectCELL* cell;
+};
  //	ExtraAction
  //	ExtraStartingPosition
  //	ExtraAnimGraphManager
@@ -73,24 +81,64 @@ public:
  //	ExtraTresPassPackage
  //	ExtraRunOncePacks
  //	ExtraReferenceHandle
- //	ExtraFollower
+class ExtraFollower : public BSExtraData
+{
+public:
+	ExtraFollower();
+	~ExtraFollower();
+
+	UInt32	unk08;		// 08
+	UInt32	unk0C;		// 0C
+	UInt32	followers;	// 10
+};
  //	ExtraLevCreaModifier
  //	ExtraGhost
  //	ExtraOriginalReference
- //	ExtraOwnership
+class ExtraOwnership : public BSExtraData
+{
+public:
+	ExtraOwnership();
+	~ExtraOwnership();
+
+	TESForm* owner;
+};
  //	ExtraGlobal
  //	ExtraRank
 class ExtraCount : public BSExtraData
 {
 public:
 	ExtraCount();
-	~ExtraCount();
+	virtual ~ExtraCount();
 
 	UInt32 count;
+
+	static ExtraCount* Create();
 };
- //	ExtraHealth
+class ExtraHealth : public BSExtraData // Tempered
+{
+public:
+	ExtraHealth();
+	virtual ~ExtraHealth();
+
+	enum { // Multiplier
+		kHealthBase = 1
+	};
+
+	float health;
+
+	static ExtraHealth* Create();
+};
  //	ExtraTimeLeft
- //	ExtraCharge
+class ExtraCharge : public BSExtraData
+{
+public:
+	ExtraCharge();
+	virtual ~ExtraCharge();
+
+	float charge;
+
+	static ExtraCharge* Create();
+};
  //	ExtraLight
  //	ExtraLock
  //	ExtraTeleport
@@ -133,7 +181,21 @@ public:
  //	ExtraNavMeshPortal
  //	ExtraModelSwap
  //	ExtraRadius
- //	ExtraFactionChanges
+struct ExtraFactionChanges : public BSExtraData
+{
+public:
+	ExtraFactionChanges();
+	~ExtraFactionChanges();
+
+	struct FactionInfo
+	{
+		TESFaction* faction;
+		UInt32 rank;
+	};
+
+	UInt32	unk08;
+	tArray<FactionInfo> factions;
+};
  //	ExtraDismemberedLimbs
  //	ExtraActorCause
  //	ExtraMultiBound
@@ -153,7 +215,14 @@ public:
  //	ExtraOcclusionShape
  //	ExtraCollisionData
  //	ExtraSayTopicInfoOnceADay
- //	ExtraEncounterZone
+struct ExtraEncounterZone : public BSExtraData
+{
+public:
+	ExtraEncounterZone();
+	~ExtraEncounterZone();
+
+	BGSEncounterZone* encounterZone;
+};
  //	ExtraSayTopicInfo
  //	ExtraOcclusionPlaneRefData
  //	ExtraPortalRefData
@@ -173,12 +242,52 @@ public:
  //	ExtraActivateLoopSound
  //	ExtraPatrolRefInUseData
  //	ExtraAshPileRef
- //	ExtraFollowerSwimBreadcrumbs
- //	ExtraAliasInstanceArray
- //	ExtraLocation
+class ExtraFollowerSwimBreadcrumbs : public BSExtraData
+{
+public:
+	ExtraFollowerSwimBreadcrumbs();
+	~ExtraFollowerSwimBreadcrumbs();
+
+	UInt32	unk08;
+	float	unk0C; // Looks like a position?
+	float	unk10;
+	float	unk14;
+};
+
+class ExtraAliasInstanceArray : public BSExtraData
+{
+public:
+	ExtraAliasInstanceArray();
+	~ExtraAliasInstanceArray();
+
+	struct AliasInfo
+	{
+		TESQuest		* quest;
+		BGSBaseAlias	* alias;
+		tArray<TESPackage*>	* packages;
+	};
+
+	tArray<AliasInfo*> aliases;
+};
+
+class ExtraLocation : public BSExtraData
+{
+public:
+	ExtraLocation(); // Related to protected/essential
+	~ExtraLocation();
+
+	BGSLocation* location;
+};
  //	ExtraLitWaterRefs
  //	ExtraLocationRefType
- //	ExtraPromotedRef
+class ExtraPromotedRef : public BSExtraData
+{
+public:
+	ExtraPromotedRef();
+	~ExtraPromotedRef();
+
+	tArray<TESForm*> unk08;
+};
  //	ExtraOutfitItem
  //	ExtraLeveledItemBase
  //	ExtraLightData
@@ -189,13 +298,53 @@ public:
  //	ExtraShouldWear
  //	ExtraFavorCost
  //	ExtraAttachedArrows3D
- //	ExtraTextDisplayData
+class ExtraTextDisplayData : public BSExtraData
+{
+public:
+	ExtraTextDisplayData();
+	virtual ~ExtraTextDisplayData();
+
+	BSFixedString	name;
+	BGSMessage		* message;
+	TESQuest		* owner;
+	UInt32			unk14;
+	float			unk18;
+
+	static ExtraTextDisplayData* Create();
+};
  //	ExtraAlphaCutoff
- //	ExtraEnchantment
- //	ExtraSoul
+class ExtraEnchantment : public BSExtraData
+{
+public:
+	ExtraEnchantment();
+	virtual ~ExtraEnchantment();
+
+	EnchantmentItem*	enchant;
+	UInt32				maxCharge;
+
+	//static ExtraEnchantment* Create();
+};
+
+class ExtraSoul : public BSExtraData
+{
+public:
+	ExtraSoul();
+	virtual ~ExtraSoul();
+
+	UInt32 count;
+
+	static ExtraSoul* Create();
+};
  //	ExtraForcedTarget
  //	ExtraUniqueID
  //	ExtraFlags
+class ExtraFlags : public BSExtraData
+{
+	ExtraFlags();
+	~ExtraFlags();
+
+	UInt32 flags;
+};
  //	ExtraRefrPath
  //	ExtraDecalGroup
  //	ExtraLockList

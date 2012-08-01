@@ -22,4 +22,13 @@ namespace papyrusForm
 	BGSKeyword* GetNthKeyword(TESForm* thisForm, UInt32 index);
 
 	void UpdateKeys(UInt8 * data);
+
+	void RegisterForMenu(TESForm * thisForm, BSFixedString menuName);
+	void UnregisterFromMenu(TESForm * thisForm, BSFixedString menuName);
+	void UnregisterFromAllMenus(TESForm * thisForm);
+
+	void RegisterForModEvent(TESForm * thisForm, BSFixedString eventName, BSFixedString callbackName);
+	void UnregisterFromModEvent(TESForm * thisForm, BSFixedString eventName);
+	void UnregisterFromAllModEvents(TESForm * thisForm);
+	void SendModEvent(TESForm * thisForm, BSFixedString eventName, BSFixedString strArg, float numArg);
 }

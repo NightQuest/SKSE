@@ -2,6 +2,7 @@
 
 #include "skse/GameFormComponents.h"
 #include "skse/GameForms.h"
+#include "skse/GameEvents.h"
 #include "skse/NiObjects.h"
 #include "GameBSExtraData.h"
 
@@ -195,96 +196,103 @@ public:
 	virtual ~IMovementState();
 };
 
-// 10 - 8 byte alignment
+// 0C
 class ActorState : public IMovementState
 {
 public:
 	virtual ~ActorState();
 
-	//UInt32 align04;	// 04
-	//UInt64 flags;	// 08
-	UInt32 flags04;
-	UInt32 flags08;
+//	void	** _vtbl;	// 00
+
+	// older versions of this class stored flags in a UInt64
+	// this forced the addition of 4 useless padding bytes
+	// current and future versions store flags as two UInt32s
+
+	UInt32	flags04;
+	UInt32	flags08;
 };
 
 //STATIC_ASSERT(sizeof(ActorState) == 0x10);
 
-// 1B0
+// 19C
 class Actor : public TESObjectREFR
 {
 public:
 	virtual ~Actor();
 
+	// 0C
 	struct SpellArray
 	{
-		UInt32 allocatedCount;
-		SpellItem** spells;
-		UInt32 spellCount;
+		UInt32		allocatedCount;	// 00
+		SpellItem	** spells;		// 04
+		UInt32		spellCount;		// 08
 	};
 
 	MagicTarget		magicTarget;					// 054
 	ActorValueOwner	actorValueOwner;				// 060
-	//UInt32			align64;						// 064
-	ActorState		actorState;						// 068
-	BSTEventSink<void*> transformDeltaEvent;		// 078 .?AV?$BSTEventSink@VBSTransformDeltaEvent@@@@
-	BSTEventSink<void*>	characterMoveFinishEvent;	// 07C .?AV?$BSTEventSink@VbhkCharacterMoveFinishEvent@@@@
-	IPostAnimationChannelUpdateFunctor	unk_080;	// 080 IPostAnimationChannelUpdateFunctor
-	UInt32	unk_84[32];								// 084
-	SpellArray	addedSpells;						// 104
-	UInt32	unk_110[38];							// 110
-	// these last two may be on character instead
-	BSTEventSink<void*>	 menuOpenCloseEvent;		// 1A8	.?AV?$BSTEventSink@VMenuOpenCloseEvent@@@@
-	BSTEventSink<void*>	 menuModeChangeEvent;		// 1AC .?AV?$BSTEventSink@VMenuModeChangeEvent@@@@
+	ActorState		actorState;						// 064
+	BSTEventSink<void*>	transformDeltaEvent;		// 070 .?AV?$BSTEventSink@VBSTransformDeltaEvent@@@@
+	BSTEventSink<void*>	characterMoveFinishEvent;	// 074 .?AV?$BSTEventSink@VbhkCharacterMoveFinishEvent@@@@
+	IPostAnimationChannelUpdateFunctor	unk078;		// 078 IPostAnimationChannelUpdateFunctor
+	UInt32	unk07C[(0x0FC - 0x07C) >> 2];			// 07C
+	SpellArray	addedSpells;						// 0FC
+	UInt32	unk108[(0x19C - 0x108) >> 2];			// 108
 };
+
 STATIC_ASSERT(offsetof(Actor, magicTarget) == 0x54);
 STATIC_ASSERT(offsetof(Actor, actorValueOwner) == 0x60);
-STATIC_ASSERT(sizeof(ActorValueOwner) == 0x4);
 STATIC_ASSERT(offsetof(Actor, actorState) == 0x64);
 STATIC_ASSERT(offsetof(Actor, transformDeltaEvent) == 0x70);
 STATIC_ASSERT(offsetof(Actor, addedSpells) == 0xFC);
-STATIC_ASSERT(offsetof(Actor, menuOpenCloseEvent) == 0x1A0);
-STATIC_ASSERT(sizeof(Actor) == 0x1A8);
+STATIC_ASSERT(sizeof(Actor) == 0x19C);
 
-// 1B0
-// Character + 98 = process?
+// 19C
 class Character : public Actor
 {
 	enum { kTypeID = kFormType_Character };
+
 public:
 	MEMBER_FN_PREFIX(Character);
-	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x0072E660, bool);
+	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x0072CD80, bool);
 };
 
-// 718
+STATIC_ASSERT(sizeof(Character) == 0x19C);
+
+// 720
 class PlayerCharacter : public Character
 {
 public:
 	virtual ~PlayerCharacter();
 
 	// parents
-	BSTEventSink <void *>	userEventEnabledEvent;		// 1A8 .?AV?$BSTEventSink@VUserEventEnabledEvent@@@@
-	BSTEventSource <void *>	actorCellEventSource;		// 1AC .?AV?$BSTEventSource@UBGSActorCellEvent@@@@
-	BSTEventSource <void *>	actorDeathEventSource;		// 1DC .?AV?$BSTEventSource@UBGSActorDeathEvent@@@@
-	BSTEventSource <void *>	positionPlayerEventSource;	// 20C .?AV?$BSTEventSource@UPositionPlayerEvent@@@@
+	BSTEventSink <void*>	menuOpenCloseEvent;			// 19C .?AV?$BSTEventSink@VMenuOpenCloseEvent@@@@
+	BSTEventSink <void*>	menuModeChangeEvent;		// 1A0 .?AV?$BSTEventSink@VMenuModeChangeEvent@@@@
+	BSTEventSink <void *>	userEventEnabledEvent;		// 1A4 .?AV?$BSTEventSink@VUserEventEnabledEvent@@@@
+	BSTEventSource <void *>	actorCellEventSource;		// 1A8 .?AV?$BSTEventSource@UBGSActorCellEvent@@@@
+	BSTEventSource <void *>	actorDeathEventSource;		// 1D8 .?AV?$BSTEventSource@UBGSActorDeathEvent@@@@
+	BSTEventSource <void *>	positionPlayerEventSource;	// 208 .?AV?$BSTEventSource@UPositionPlayerEvent@@@@
 
-	UInt32	pad23C[(0x6D4 - 0x23C) >> 2];	// 23C
-	UInt8   pad6D4;							// 6D4
+	UInt32	pad238[(0x6D4 - 0x238) >> 2];	// 238
+	UInt8   unk6D4;							// 6D4
 	UInt8	numPerkPoints;					// 6D5
+	UInt8   unk6D6;							// 6D6
 
-	// ### todo: confirm
+	// Confirmed - Same as ExtraContainerChanges::EntryData
+	// This type is used by scaleform to extend data
+	// It can be used to extend more of the "ExtraData"
 	struct ObjDesc
 	{
-		TESForm	* form;
-		void	* extraData;
+		TESForm					* form;
+		tList<BaseExtraList>	* extraData;
+		SInt32					countDelta;
 	};
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
-	DEFINE_MEMBER_FN(GetDamage, double, 0x0072DF90, ObjDesc * pForm);
-	DEFINE_MEMBER_FN(GetArmorValue, double, 0x0072DF60, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x0072C6B0, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x0072C680, ObjDesc * pForm);
 };
 
-STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1A8);
-STATIC_ASSERT(offsetof(PlayerCharacter, pad23C) == 0x23C);
+STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1A4);
 STATIC_ASSERT(offsetof(PlayerCharacter, numPerkPoints) == 0x6D5);
 
 // D8

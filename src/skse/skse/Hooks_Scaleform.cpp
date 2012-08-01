@@ -16,6 +16,7 @@
 #include "GameRTTI.h"
 #include <new>
 #include <list>
+#include "PapyrusEvents.h"
 
 //// helpers
 
@@ -278,6 +279,35 @@ public:
 	}
 };
 
+
+class SKSEScaleform_SendModEvent : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args* args)
+	{
+		ASSERT(args->numArgs >= 1);
+
+		const char	* eventName = args->args[0].GetString();
+		const char	* strArg = NULL;
+		float		numArg = 0.0;
+
+		if (args->numArgs >= 2)
+			strArg = args->args[1].GetString();
+
+		if (args->numArgs >= 3)
+			numArg = args->args[2].GetNumber();
+
+#if _DEBUG
+		_MESSAGE("scaleform: send mod event (%s, %s, %d)", eventName, strArg, numArg);
+#endif
+
+		BSFixedString aEventName(eventName);
+		BSFixedString aStrArg(strArg);
+		SKSEModCallbackEvent evn(aEventName, aStrArg, numArg, NULL);
+		g_modCallbackEventDispatcher.SendEvent(&evn);
+	}
+};
+
 //// item card extensions
 
 class StandardItemData;
@@ -307,7 +337,9 @@ public:
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x0083C150, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x0083A760, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
+
+	enum { kCtorHookAddress = 0x0083BAC9 };
 
 	StandardItemData * ctor_Hook(GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 };
@@ -382,6 +414,12 @@ void ExtendStandardItemData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerC
 
 				RegisterNumber(pFxVal, "subType", weaponType);
 				RegisterNumber(pFxVal, "damage", damage);
+				RegisterNumber(pFxVal, "speed", pWeapon->speed());
+				RegisterNumber(pFxVal, "reach", pWeapon->reach());
+				RegisterNumber(pFxVal, "stagger", pWeapon->stagger());
+				RegisterNumber(pFxVal, "critDamage", pWeapon->critDamage());
+				RegisterNumber(pFxVal, "minRange", pWeapon->minRange());
+				RegisterNumber(pFxVal, "maxRange", pWeapon->maxRange());
 			}
 		}
 		break;
@@ -475,7 +513,9 @@ public:
 	GFxValue		fxValue;	// 10
 
 	MEMBER_FN_PREFIX(MagicItemData);
-	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x0086DB60, GFxMovieView ** movieView, TESForm * pForm, int unk);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x0086BF70, GFxMovieView ** movieView, TESForm * pForm, int unk);
+
+	enum { kCtorHookAddress = 0x0086C529 };
 
 	MagicItemData * ctor_Hook(GFxMovieView ** movieView, TESForm * pForm, int unk);
 };
@@ -522,8 +562,8 @@ void ExtendMagicItemData(GFxValue * pFxVal, TESForm * pForm)
 					RegisterNumber(pFxVal, "skillLevel", pEffect->mgef->level());
 					RegisterNumber(pFxVal, "magnitude", pEffect->magnitude);
 					RegisterNumber(pFxVal, "duration", pEffect->duration);
-					RegisterNumber(pFxVal, "actorValue", pEffect->mgef->unk38.actorValue);
-					RegisterNumber(pFxVal, "magicType", pEffect->mgef->unk38.type);
+					RegisterNumber(pFxVal, "actorValue", pEffect->mgef->properties.primaryValue);
+					RegisterNumber(pFxVal, "magicType", pEffect->mgef->properties.resistance);
 				}
 			}
 		}
@@ -543,7 +583,9 @@ public:
 	GFxValue	* fxValue;	// 08
 
 	MEMBER_FN_PREFIX(FavItemDataHook);
-	DEFINE_MEMBER_FN(Hooked, int, 0x008556F0, TESForm * pForm);
+	DEFINE_MEMBER_FN(Hooked, int, 0x008544F0, TESForm * pForm);
+
+	enum { kCtorHookAddress = 0x00854EDF };
 
 	int Hook(TESForm * pForm);
 };
@@ -588,6 +630,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	RegisterFunction <SKSEScaleform_CloseMenu>(&skse, view, "CloseMenu");
 	RegisterFunction <SKSEScaleform_ExtendData>(&skse, view, "ExtendData");
 	RegisterFunction <SKSEScaleform_ForceContainerCategorization>(&skse, view, "ForceContainerCategorization");
+	RegisterFunction <SKSEScaleform_SendModEvent>(&skse, view, "SendModEvent");
 
 	// version
 	GFxValue	version;
@@ -619,7 +662,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	globals.SetMember("skse", &skse);
 }
 
-static const UInt32 kInstallHooks_Base = 0x00A58EB0;
+static const UInt32 kInstallHooks_Base = 0x00A57E10;
 static const UInt32 kInstallHooks_Entry_retn = kInstallHooks_Base + 0xBE;
 
 __declspec(naked) void InstallHooks_Entry(void)
@@ -646,7 +689,7 @@ void Hooks_Scaleform_Commit(void)
 	WriteRelJump(kInstallHooks_Base + 0xB8, (UInt32)InstallHooks_Entry);
 
 	// item card data creation hook
-	WriteRelCall(0x0083CCB9, GetFnAddr(&StandardItemData::ctor_Hook));
-	WriteRelCall(0x0086E119, GetFnAddr(&MagicItemData::ctor_Hook));
-	WriteRelCall(0x00856A1F, GetFnAddr(&FavItemDataHook::Hook));
+	WriteRelCall(StandardItemData::kCtorHookAddress, GetFnAddr(&StandardItemData::ctor_Hook));
+	WriteRelCall(MagicItemData::kCtorHookAddress, GetFnAddr(&MagicItemData::ctor_Hook));
+	WriteRelCall(FavItemDataHook::kCtorHookAddress, GetFnAddr(&FavItemDataHook::Hook));
 }

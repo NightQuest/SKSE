@@ -25,3 +25,6 @@ int Function GetCostliestEffectIndex() native
 ; functions added by BGS in 1.6.87
 Function Unload() native
 Function Preload() native
+
+; return the magicka cost of the spell
+int Function GetMagickaCost() native

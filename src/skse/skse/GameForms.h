@@ -17,6 +17,10 @@ class TESSound;
 class TESObjectREFR;
 class BGSListForm;
 class TESQuest;
+class BGSExplosion;
+class BGSDualCastData;
+class TESImageSpaceModifier;
+class TESWordOfPower;
 
 typedef TESForm * (* _LookupFormByID)(UInt32 id);
 extern const _LookupFormByID LookupFormByID;
@@ -1409,77 +1413,154 @@ public:
 	BGSKeywordForm			keywordForm;		// 24
 
 	// members
-	
-	// 98
-	struct Data38
-	{
-		UInt32	flags;		// 00 - init'd to 0
-		float	baseCost;		// 04 - init'd to 0
-		UInt32	unk08;		// 08 - init'd to 0
-		UInt32	school;		// 0C - init'd to FFFFFFFF
-		UInt32	type;		// 10 - init'd to FFFFFFFF
-		UInt16	unk14;		// 14 - init'd to 0 
-		UInt8	pad16[2];	// 16
-		TESObjectLIGH*	light;		// 18 - init'd to 0
-		float	unk1C;		// 1C - init'd to 0
-		TESEffectShader*	shader1;		// 20 - init'd to 0
-		UInt32	unk24;		// 24 - init'd to 0
-		UInt32	level;		// 28 - init'd to 0
-		UInt32	unk2C;		// 2C - init'd to 0
-		UInt32	unk30;		// 30 - init'd to 0
-		UInt32	unk34;		// 34 - init'd to 0
-		UInt32	unk38;		// 38 - init'd to 0
-		UInt32	unk3C;		// 3C - init'd to 0 float 
-		UInt32	unk40;		// 40 - init'd to 0
-		UInt32	actorValue;	// 44 - init'd to FFFFFFFF
-		BGSProjectile*	projectile;		// 48 - init'd to 0
-		UInt32	unk4C;		// 4C - init'd to 0
-		UInt32	unk50;		// 50 - init'd to 3 cast type?
-		UInt32	unk54;		// 54 - init'd to 5 cast type?
-		BGSArtObject*	artObject1;		// 58 - init'd to FFFFFFFF
-		BGSArtObject*	artObject2;		// 5C - init'd to 0
-		UInt32	unk60;		// 60 - init'd to 0
-		BGSImpactDataSet*	impactSet1;		// 64 - init'd to 0
-		float	effectPlayRate1;		// 68 - init'd to 0
-		BGSImpactDataSet*	impactSet2;		// 6C - init'd to 0
-		float	effectPlayRate2;		// 70 - init'd to 1
-		UInt32	unk74;		// 74 - init'd to 0
-		UInt32	unk78;		// 78 - init'd to 0
-		UInt32	unk7C;		// 7C - init'd to 0
-		UInt32	unk80;		// 80 - init'd to 0
-		UInt32	unk84;		// 84 - init'd to 0
-		BGSPerk* perk;		// 88 - init'd to 0
-		UInt32	unk8C;		// 8C - init'd to 1
-		UInt32	unk90;		// 90 - init'd to 0
-		UInt32	unk94;		// 94 - init'd to 0
-	};
 
-	// 8
-	struct DataD0
+	// 98
+	struct Properties
 	{
-		UInt32	unk0;
-		UInt32	unk4;
+		enum {
+			kEffectType_Hostile	=			0x00000001,
+			kEffectType_Recover =			0x00000002,
+			kEffectType_Detrimental =		0x00000004,
+			kEffectType_NoHitEvent =		0x00000010,
+			kEffectType_DispelKeywords =	0x00000100,
+			kEffectType_NoDuration =		0x00000200,
+			kEffectType_NoMagnitude =		0x00000400,
+			kEffectType_NoArea =			0x00000800,
+			kEffectType_FXPersist =			0x00001000,
+			kEffectType_GloryVisuals =		0x00004000,
+			kEffectType_HideInUI =			0x00008000,
+			kEffectType_NoRecast =			0x00020000,
+			kEffectType_Magnitude =			0x00200000,
+			kEffectType_Duration =			0x00400000,
+			kEffectType_Painless =			0x04000000,
+			kEffectType_NoHitEffect =		0x08000000,
+			kEffectType_NoDeathDispel =		0x10000000
+		};
+
+		enum {
+			kArchetype_ValueMod = 0,
+			kArchetype_Script,
+			kArchetype_Dispel,
+			kArchetype_CureDisease,
+			kArchetype_Absorb,
+			kArchetype_DualValueMod,
+			kArchetype_Calm,
+			kArchetype_Demoralize,
+			kArchetype_Frenzy,
+			kArchetype_Disarm,
+			kArchetype_CommandSummoned,
+			kArchetype_Invisibility,
+			kArchetype_Light,
+			kArchetype_Lock = 15,
+			kArchetype_Open,
+			kArchetype_BoundWeapon,
+			kArchetype_SummonCreature,
+			kArchetype_DetectLife,
+			kArchetype_Telekinesis,
+			kArchetype_Paralysis,
+			kArchetype_Reanimate,
+			kArchetype_SoulTrap,
+			kArchetype_TurnUndead,
+			kArchetype_Guide,
+			kArchetype_WerewolfFeed,
+			kArchetype_CureParalysis,
+			kArchetype_CureAddiction,
+			kArchetype_CurePoison,
+			kArchetype_Concussion,
+			kArchetype_ValueAndParts,
+			kArchetype_AccumulateMagnitude,
+			kArchetype_Stagger,
+			kArchetype_PeakValueMod,
+			kArchetype_Cloak,
+			kArchetype_Werewolf,
+			kArchetype_SlowTime,
+			kArchetype_Rally,
+			kArchetype_EnhanceWeapon,
+			kArchetype_SpawnHazard,
+			kArchetype_Etherealize,
+			kArchetype_Banish
+		};
+
+		enum {
+			kCastingType_ConstantEffect = 0,
+			kCastingType_FireAndForget,
+			kCastingType_Concentration
+		};
+
+		enum {
+			kDeliveryType_Self = 0,
+			kDeliveryType_Contact,
+			kDeliveryType_Aimed,
+			kDeliveryType_TargetActor,
+			kDeliveryType_TargetLocation
+		};
+
+		enum {
+			kVolume_Loud = 0,
+			kVolume_Normal,
+			kVolume_Silent,
+			kVolume_VeryLoud
+		};
+
+		UInt32					flags;				// 00 - init'd to 0
+		float					baseCost;			// 04 - init'd to 0
+		TESForm*				primaryObject;		// 08 - init'd to 0
+		UInt32					school;				// 0C - init'd to FFFFFFFF
+		UInt32					resistance;			// 10 - init'd to FFFFFFFF
+		UInt16					unk14;				// 14 - init'd to 0 
+		UInt8					pad16[2];			// 16
+		TESObjectLIGH*			light;				// 18 - init'd to 0
+		float					taperWeight;		// 1C - init'd to 0
+		TESEffectShader*		hitShader;			// 20 - init'd to 0
+		TESEffectShader*		enchantShader;		// 24 - init'd to 0
+		UInt32					level;				// 28 - init'd to 0
+		UInt32					area;				// 2C - init'd to 0
+		float					castingTime;		// 30 - init'd to 0
+		float					taperCurve;			// 34 - init'd to 0
+		float					taperDuration;		// 38 - init'd to 0
+		float					secondAVWeight;		// 3C - init'd to 0 float - Always 0
+		UInt32					archetype;			// 40 - init'd to 0
+		UInt32					primaryValue;		// 44 - init'd to FFFFFFFF
+		BGSProjectile*			projectile;			// 48 - init'd to 0
+		BGSExplosion*			explosion;			// 4C - init'd to 0
+		UInt32					castType;			// 50 - init'd to 3 cast type?
+		UInt32					deliveryType;		// 54 - init'd to 5 cast type?
+		UInt32					secondaryValue;		// 58 - init'd to FFFFFFFF
+		BGSArtObject*			castingArt;			// 5C - init'd to 0
+		BGSArtObject*			hitEffectArt;		// 60 - init'd to 0
+		BGSImpactDataSet*		impactDataSet;		// 64 - init'd to 0
+		float					skillUsageMult;		// 68 - init'd to 0
+		BGSDualCastData*		dualCastData;		// 6C - init'd to 0
+		float					dualCastingScale;	// 70 - init'd to 1
+		BGSArtObject*			enchantArt;			// 74 - init'd to 0
+		UInt32					unk78;				// 78 - init'd to 0
+		UInt32					unk7C;				// 7C - init'd to 0
+		SpellItem*				equipAbility;		// 80 - init'd to 0
+		TESImageSpaceModifier*	imageSpaceMod;		// 84 - init'd to 0
+		BGSPerk*				perk;				// 88 - init'd to 0
+		UInt32					soundVolume;		// 8C - init'd to 1
+		float					aiScore;			// 90 - init'd to 0
+		float					delayTime;			// 94 - init'd to 0
 	};
 
 	struct SoundInfo
 	{
-		UInt32 value;
-		TESSound* sound;
+		UInt32		value;
+		TESSound*	sound;
 	};
 
 	UInt32						unk30;		// 30
 	UInt32						unk34;		// 34
-	Data38						unk38;		// 38
-	DataD0						unkD0;		// D0
+	Properties					properties;		// 38
+	tList<EffectSetting>		counterEffects;
 	tArray<SoundInfo>			sounds;		// D8
-	StringCache::Ref			unkE4;		// E4
+	StringCache::Ref			description;		// E4
 	UInt32						unkE8;		// E8
 	UInt32						unkEC;		// EC
 	void						* unkF0;	// F0 - linked list
 
-	UInt32 school() { return unk38.school; }
-	UInt32 level() { return unk38.level; }
-
+	UInt32 school() { return properties.school; }
+	UInt32 level() { return properties.level; }
 };
 
 // B4
@@ -2245,6 +2326,33 @@ class TESRace : public TESForm
 public:
 	enum { kTypeID = kFormType_Race };
 
+	enum {
+		kRace_Playable						= 0x00000001,
+		kRace_FaceGenHead					= 0x00000002,
+		kRace_Child							= 0x00000004,
+		kRace_TiltFrontBack					= 0x00000008,
+		kRace_TiltLeftRight					= 0x00000010,
+		kRace_NoShadow						= 0x00000020,
+		kRace_Swims							= 0x00000040,
+		kRace_Flies							= 0x00000080,
+		kRace_Walks							= 0x00000100,
+		kRace_Immobile						= 0x00000200,
+		kRace_NotPushable					= 0x00000400,
+		kRace_NoCombatInWater				= 0x00000800,
+		kRace_NoRotatingToHeadTrack			= 0x00001000,
+		kRace_UseHeadTrackAnim				= 0x00008000,
+		kRace_SpellsAlignWithMagicNode		= 0x00010000,
+		kRace_UseWorldRaycasts				= 0x00020000,
+		kRace_AllowRagdollCollision			= 0x00040000,
+		kRace_CantOpenDoors					= 0x00100000,
+		kRace_AllowPCDialogue				= 0x00200000,
+		kRace_NoKnockdowns					= 0x00400000,
+		kRace_AllowPickpocket				= 0x00800000,
+		kRace_AlwaysUseProxyController		= 0x01000000,
+		kRace_AllowMultipleMembraneShaders	= 0x20000000,
+		kRace_AvoidsRoads					= 0x80000000,
+	};
+
 	// parents
 	TESFullName			fullName;		// 14
 	TESDescription		description;	// 1C
@@ -2268,7 +2376,7 @@ public:
 		UInt8	pad0E[2];			// 0E
 		float	height[2];			// 10
 		float	weight[2];			// 18
-		UInt32	unk20;				// 20 - not init'd
+		UInt32	raceFlags;				// 20 - not init'd
 		float	health;				// 24
 		float	magicka;			// 28
 		float	stamina;			// 2C
@@ -2292,44 +2400,52 @@ public:
 		float	angleAcceleration;	// 74
 		float	angleTolerance;		// 78
 		UInt32	unk7C;			// 7C
+		UInt32	unk80;			// 80
+		UInt32	unk84;			// 84
+		float	unk88;			// 88
+		float	unk8C;
+		float	unk90;
+		float	unk94;
+		float	unk98;
+		float	unk9C;
+		float	unk100;
+		float	unk104;
+		float	unk10C;
 	};
 
 	TESModel					models[2];			// 5C
 	Data						data;				// 84
-	UInt32						unk104;				// 104
-	UInt32						unk108;				// 108
-	BGSTextureModel				textureModel[2];	// 10C
-	BGSBehaviorGraphModel		behaviorGraph[2];	// 134
-	StringCache::Ref			unk15C[2];			// 15C
-	StringCache::Ref			unk164[2];			// 164
-	BGSVoiceType				* voiceTypes[2];	// 16C
-	UInt32						unk174;				// 174
-	UInt32						unk178;				// 178
-	UInt32						unk17C;				// 17C
-	UnkArray	unk180[2];			// 180
-	void						* unk198[4];		// 198
-	void						* unk1A8[2];		// 1A8 - refcounted ptr
-	StringCache::Ref			unk1B0;				// 1B0
-	UInt32						unk1B4;				// 1B4
-	UInt32						unk1B8;				// 1B8
-	UInt32						unk1BC;				// 1BC
-	UInt32						unk1C0;				// 1C0
-	UInt32						unk1C4;				// 1C4
-	StringCache::Ref			unk1C8[0x20];		// 1C8
-	UnkArray	unk248;				// 248
-	UInt32						unk254;				// 254
-	UInt32						unk258;				// 258
-	UInt32						unk25C;				// 25C
-	UInt32						unk260;				// 260
-	UnkArray	unk264;				// 264
-	UnkArray	unk270;				// 270
-	UInt8						unk27C[0x18];		// 27C
-	UInt32						unk294;				// 294
-	UInt32						unk298;				// 298
+	BGSTextureModel				textureModel[2];	// 130
+	BGSBehaviorGraphModel		behaviorGraph[2];	// Offsets following this are not named correctly
+	StringCache::Ref			unk15C[2];			
+	StringCache::Ref			unk164[2];
+	BGSVoiceType				* voiceTypes[2];
+	BGSBodyPartData				* bodyPartData;
+	TESForm						* decapitateArmor[2];
+	UnkArray					unk180[2];
+	void						* unk198[4];
+	void						* unk1A8[2]; // AttackAnimationArrayMap
+	StringCache::Ref			editorId;
+	BGSMaterialType				* impactMaterial;
+	BGSImpactDataSet			* meleeImpact;
+	BGSArtObject				* decapitateBloodArt;
+	BGSSoundDescriptorForm		* openCorpseSound;
+	BGSSoundDescriptorForm		* closeCorpseSound;
+	StringCache::Ref			bipedObjectNames[0x20];
+	UnkArray					unk248;
+	UInt32						unk254;
+	BGSEquipSlot				* unk258;
+	UInt32						unk25C;
+	UInt32						unk260;
+	UnkArray					unk264;
+	UnkArray					unk270;
+	UInt8						unk27C[0x18];
+	void						* unk294;
+	void						* unk298;
 };
 
-STATIC_ASSERT(offsetof(TESRace, unk1B0) == 0x1B0);
-STATIC_ASSERT(sizeof(TESRace) == 0x29C);
+//STATIC_ASSERT(offsetof(TESRace, unk1B0) == 0x1B0);
+//STATIC_ASSERT(sizeof(TESRace) == 0x29C);
 
 // 30
 class TESRegion : public TESForm
@@ -2385,14 +2501,17 @@ public:
 	// members
 
 	// C
-	struct Data38
+	struct Words
 	{
-		UInt32	unk0;
-		UInt32	unk4;
-		UInt32	unk8;
+		enum {
+			kNumWords = 3
+		};
+		TESWordOfPower *	word;
+		SpellItem *			spell;
+		float				recoverytime;
 	};
 
-	Data38	unk38[3];	// 38
+	Words	words[Words::kNumWords];	// 38
 };
 
 // 38

@@ -20,6 +20,7 @@ namespace papyrusSpell
 	UInt32 GetNthEffectDuration(SpellItem* thisMagic, UInt32 index);
 	EffectSetting* GetNthEffectMagicEffect(SpellItem* thisMagic, UInt32 index);
 	UInt32 GetCostliestEffectIndex(SpellItem* thisMagic);
+	UInt32 GetMagickaCost(SpellItem* thisMagic);
 };
 
 namespace magicItemUtils {

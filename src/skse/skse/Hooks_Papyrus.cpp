@@ -6,11 +6,16 @@
 #include "GameAPI.h"
 #include "GameObjects.h"
 #include "GameReferences.h"
+#ifdef _PPAPI
+#include <list>
+#endif
 
+#include "PapyrusActiveMagicEffect.h"
 #include "PapyrusActor.h"
 #include "PapyrusActorBase.h"
 #include "PapyrusAlias.h"
 #include "PapyrusArmor.h"
+#include "PapyrusArmorAddon.h"
 #include "PapyrusBook.h"
 #include "PapyrusCell.h"
 #include "PapyrusColorForm.h"
@@ -34,9 +39,22 @@
 #include "PapyrusStringUtil.h"
 #include "PapyrusUI.h"
 #include "PapyrusWeapon.h"
+#include "PapyrusShout.h"
+#include "PapyrusUtility.h"
 
 typedef void (* _RegisterPapyrusFunctions)(VMClassRegistry ** registry);
-_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F2340;
+_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F0C20;
+
+#ifdef _PPAPI
+typedef std::list <SKSEPapyrusInterface::RegisterFunctions> PapyrusPluginList;
+static PapyrusPluginList s_pap_plugins;
+
+bool RegisterPapyrusPlugin(SKSEPapyrusInterface::RegisterFunctions callback)
+{
+	s_pap_plugins.push_back(callback);
+	return true;
+}
+#endif
 
 void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 {
@@ -59,6 +77,9 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 
 	// TESObjectCELL
 	papyrusCell::RegisterFuncs(registry);
+
+	// ArmorAddon (TESObjectARMA)
+	papyrusArmorAddon::RegisterFuncs(registry);
 
 	// TESObjectARMO
 	papyrusArmor::RegisterFuncs(registry);
@@ -131,6 +152,23 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 
 	// Quest
 	papyrusQuest::RegisterFuncs(registry);
+
+	// Shout
+	papyrusShout::RegisterFuncs(registry);
+
+	// Utility
+	papyrusUtility::RegisterFuncs(registry);
+
+	// ActiveMagicEffect
+	papyrusActiveMagicEffect::RegisterFuncs(registry);
+
+#ifdef _PPAPI
+	// Plugins
+	for(PapyrusPluginList::iterator iter = s_pap_plugins.begin(); iter != s_pap_plugins.end(); ++iter)
+	{
+		(*iter)(registry);
+	}
+#endif
 }
 
 void Hooks_Papyrus_Init(void)
@@ -140,5 +178,5 @@ void Hooks_Papyrus_Init(void)
 
 void Hooks_Papyrus_Commit(void)
 {
-	WriteRelCall(0x008D13DB, (UInt32)RegisterPapyrusFunctions_Hook);
+	WriteRelCall(0x008CF2B0 + 0x098B, (UInt32)RegisterPapyrusFunctions_Hook);
 }

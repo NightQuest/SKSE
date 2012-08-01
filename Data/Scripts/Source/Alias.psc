@@ -109,7 +109,7 @@ EndEvent
 Event OnUpdateGameTime()
 EndEvent
 
-; SKSE additions built 2012-06-06 02:49:46.290000 UTC
+; SKSE additions built 2012-07-24 00:32:19.171000 UTC
 ; return the name of the alias
 string Function GetName() native
 

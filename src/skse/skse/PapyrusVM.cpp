@@ -1,8 +1,36 @@
 #include "PapyrusVM.h"
 #include "GameAPI.h"
+#include "PapyrusEvents.h"
 
-IObjectHandlePolicy	** g_objectHandlePolicy = (IObjectHandlePolicy **)0x0141CA38;
-SkyrimVM			** g_skyrimVM = (SkyrimVM **)0x012DAF1C;
+IObjectHandlePolicy	** g_objectHandlePolicy = (IObjectHandlePolicy **)0x01B4E608;
+SkyrimVM			** g_skyrimVM = (SkyrimVM **)0x0128CD1C;
+
+void SkyrimVM::OnFormDelete_Hook(UInt64 handle)
+{
+	CALL_MEMBER_FN(this, UnregisterForSleep_Internal)(handle);
+
+	g_menuOpenCloseRegs.UnregisterFromAll(handle);
+	g_inputEventRegs.UnregisterFromAll(handle);
+	g_modCallbackRegs.UnregisterFromAll(handle);
+
+#if _DEBUG
+	_MESSAGE("Executed SkyrimVM::OnFormDelete_Hook.");
+#endif
+}
+
+void SkyrimVM::RevertGlobalData_Hook(void)
+{
+	CALL_MEMBER_FN(this, RevertGlobalData_Internal)();
+
+	g_menuOpenCloseRegs.Clear();
+	g_inputEventRegs.Clear();
+	g_modCallbackRegs.Clear();
+
+#if _DEBUG
+	_MESSAGE("Executed SkyrimVM::RevertGlobalData_Hook.");
+#endif
+}
+
 
 void VMClassInfo::AddRef(void)
 {

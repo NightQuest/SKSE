@@ -118,6 +118,12 @@ int Function RemoveSlotFromMask(int slotMask) native
 ; calculates the equivalent value for the properties below
 int Function GetMaskForSlot(int slot) global native
 
+; returns the number of armor addons for this armor
+int Function GetNumArmorAddons() native
+
+; returns the nth armor addon for this armor
+ArmorAddon Function GetNthArmorAddon(int n) native
+
 ; returns the SlotMask for a single slot from the CK
 ; can be used with the non-global SlotMask functions above
 ; and with the Math bit shifting functions

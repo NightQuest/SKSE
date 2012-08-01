@@ -34,6 +34,10 @@ namespace papyrusSpell
 	UInt32 GetCostliestEffectIndex(SpellItem* thisMagic)
 	{ return magicItemUtils::GetCostliestEffectIndex(thisMagic); }
 
+	UInt32 GetMagickaCost(SpellItem* thisSpell)
+	{
+		return (thisSpell) ? thisSpell->GetMagickaCost() : 0;
+	}
 
 
 	void RegisterFuncs(VMClassRegistry* registry)
@@ -61,6 +65,9 @@ namespace papyrusSpell
 
 		registry->RegisterFunction(
 			new NativeFunction0<SpellItem, UInt32>("GetCostliestEffectIndex", "Spell", papyrusSpell::GetCostliestEffectIndex, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction0<SpellItem, UInt32>("GetMagickaCost", "Spell", papyrusSpell::GetMagickaCost, registry));
 
 	}
 }

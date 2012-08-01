@@ -58,13 +58,13 @@ public:
 		GFxMovieRoot	* root;
 
 		MEMBER_FN_PREFIX(ObjectInterface);
-		DEFINE_MEMBER_FN(HasMember, bool, 0x00919A50, void * obj, const char * name, bool isDisplayObj);
-		DEFINE_MEMBER_FN(SetMember, bool, 0x00919B20, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
-		DEFINE_MEMBER_FN(GetMember, bool, 0x0091C750, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
-		DEFINE_MEMBER_FN(DeleteMember, bool, 0x00919BE0, void * obj, const char * name, bool isDisplayObj);
-		DEFINE_MEMBER_FN(Invoke, bool, 0x0091BCC0, void * obj, GFxValue * result, const char * name, GFxValue * args, UInt32 numArgs, bool isDisplayObj);
+		DEFINE_MEMBER_FN(HasMember, bool, 0x00917E40, void * obj, const char * name, bool isDisplayObj);
+		DEFINE_MEMBER_FN(SetMember, bool, 0x00917F10, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
+		DEFINE_MEMBER_FN(GetMember, bool, 0x0091AB60, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
+		DEFINE_MEMBER_FN(DeleteMember, bool, 0x00917FD0, void * obj, const char * name, bool isDisplayObj);
+		DEFINE_MEMBER_FN(Invoke, bool, 0x0091A0D0, void * obj, GFxValue * result, const char * name, GFxValue * args, UInt32 numArgs, bool isDisplayObj);
 
-		DEFINE_MEMBER_FN(ReleaseManaged_Internal, void, 0x0091B460, GFxValue * value, void * obj);
+		DEFINE_MEMBER_FN(ReleaseManaged_Internal, void, 0x00919850, GFxValue * value, void * obj);
 	};
 
 	ObjectInterface	* objectInterface;	// 00
@@ -121,7 +121,7 @@ public:
 	virtual void	Invoke(Args * args) = 0;
 
 	MEMBER_FN_PREFIX(GFxFunctionHandler);
-	DEFINE_MEMBER_FN(Destroy, GFxFunctionHandler *, 0x00853550, UInt32 flags);
+	DEFINE_MEMBER_FN(Destroy, GFxFunctionHandler *, 0x00851900, UInt32 flags);
 };
 
 typedef std::map <const std::type_info *, GFxFunctionHandler *>	FunctionHandlerCache;

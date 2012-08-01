@@ -193,6 +193,7 @@ public:
 	BSExtraData* next;		// 04
 	//UInt8 type;				// 08
 	//UInt8 padding[3];		
+	static BSExtraData* Create(UInt32 size, UInt32 vtbl);
 };
 
 // 08
@@ -217,6 +218,21 @@ public:
 	bool HasType(UInt32 type) const {
 		return (m_presence) ? m_presence->HasType(type) : false;
 	}
+
+	void MarkType(UInt32 type, bool bCleared)
+	{
+		UInt32 index = (type >> 3);
+		UInt8 bitMask = 1 << (type % 8);
+		UInt8& flag = m_presence->bits[index];
+		if (bCleared) {
+			flag &= ~bitMask;
+		} else {
+			flag |= bitMask;
+		}
+	}
+
+	bool Remove(UInt8 type, BSExtraData* toRemove);
+	bool Add(UInt8 type, BSExtraData* toAdd);
 
 	BSExtraData* GetByType(UInt32 type) const;
 	BSExtraData			* m_data;		// 00

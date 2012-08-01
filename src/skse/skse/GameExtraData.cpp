@@ -1,6 +1,7 @@
 #include "GameExtraData.h"
 #include "GameBSExtraData.h"
 #include "GameRTTI.h"
+#include "GameAPI.h"
 
 
 extern const void* RTTIForExtraType[0xB4] = 
@@ -53,7 +54,7 @@ extern const void* RTTIForExtraType[0xB4] =
  	RTTI_ExtraLeveledCreature,	// 0x2D,
  	RTTI_ExtraLeveledItem,		// 0x2E,
  	RTTI_ExtraScale,			// 0x2F,
- 	RTTI_ExtraSeed,				// 0x30,
+ 	NULL,						// 0x30,	was ExtraSeed, removed in 1.7.7.0
  	NULL,						// 0x31,
  	NULL,						// 0x32,
  	NULL,						// 0x33,
@@ -100,12 +101,12 @@ extern const void* RTTIForExtraType[0xB4] =
  	RTTI_ExtraDismemberedLimbs,	// 0x5C,
  	RTTI_ExtraActorCause,		// 0x5D,
  	RTTI_ExtraMultiBound,		// 0x5E,
- 	RTTI_ExtraMultiBoundData,	// 0x5F,
+ 	NULL,						// 0x5F,	was ExtraMultiBoundData, removed in 1.7.7.0
  	RTTI_ExtraMultiBoundRef,	// 0x60,
  	RTTI_ExtraReflectedRefs,	// 0x61,
  	RTTI_ExtraReflectorRefs,	// 0x62,
  	RTTI_ExtraEmittanceSource,	// 0x63,
- 	RTTI_ExtraRadioData,		// 0x64,
+ 	NULL,						// 0x64,	was ExtraRadioData, removed in 1.7.7.0
  	RTTI_ExtraCombatStyle,		// 0x65,
 	NULL,						// 0x66,
  	RTTI_ExtraPrimitive,		// 0x67,
@@ -187,6 +188,13 @@ extern const void* RTTIForExtraType[0xB4] =
  	RTTI_ExtraMissingRefIDs,	// 0xB3
 };
 
+static const UInt32 s_ExtraHealthVtbl =				0x0102C0D8;
+static const UInt32 s_ExtraChargeVtbl =				0x0102C108;
+static const UInt32	s_ExtraCountVtbl =				0x0102C098;
+static const UInt32 s_ExtraTextDisplayVtbl =		0x0102C408;
+static const UInt32 s_ExtraSoulVtbl =				0x0102CC4C;
+static const UInt32 s_ExtraOwnershipVtbl =			0x0102C068;
+static const UInt32 s_ExtraAliasInstanceArrayVtbl = 0x0102C998;
 
 BSExtraData* BaseExtraList::GetByType(UInt32 type) const {
 	if (!HasType(type)) return NULL;
@@ -203,6 +211,86 @@ BSExtraData* BaseExtraList::GetByType(UInt32 type) const {
 	return NULL;
 }
 
+bool BaseExtraList::Remove(UInt8 type, BSExtraData* toRemove)
+{
+	if (!toRemove) return false;
+
+	if (HasType(type)) {
+		bool bRemoved = false;
+		if (m_data == toRemove) {
+			m_data = m_data->next;
+			bRemoved = true;
+		}
+
+		for (BSExtraData* traverse = m_data; traverse; traverse = traverse->next) {
+			if (traverse->next == toRemove) {
+				traverse->next = toRemove->next;
+				bRemoved = true;
+				break;
+			}
+		}
+		if (bRemoved) {
+			MarkType(type, true);
+		}
+		return true;
+	}
+
+	return false;
+}
+
+bool BaseExtraList::Add(UInt8 type, BSExtraData* toAdd)
+{
+	if (!toAdd || HasType(type)) return false;
+
+	BSExtraData* next = m_data;
+	m_data = toAdd;
+	toAdd->next = next;
+	MarkType(type, false);
+	return true;
+}
+
+BSExtraData* BSExtraData::Create(UInt32 size, UInt32 vtbl)
+{
+	void* memory = FormHeap_Allocate(size);
+	memset(memory, 0, size);
+	((UInt32*)memory)[0] = vtbl;
+	BSExtraData* xData = (BSExtraData*)memory;
+	return xData;
+}
+
+ExtraHealth* ExtraHealth::Create() 
+{
+	ExtraHealth* xHealth = (ExtraHealth*)BSExtraData::Create(sizeof(ExtraHealth), s_ExtraHealthVtbl);
+	xHealth->health = 1;
+	return xHealth;
+}
+
+ExtraCharge* ExtraCharge::Create()
+{
+	ExtraCharge* xCharge = (ExtraCharge*)BSExtraData::Create(sizeof(ExtraCharge), s_ExtraChargeVtbl);
+	xCharge->charge = 0;
+	return xCharge;
+}
+
+ExtraCount* ExtraCount::Create()
+{
+	ExtraCount* xCount = (ExtraCount*)BSExtraData::Create(sizeof(ExtraCount), s_ExtraCountVtbl);
+	return xCount;
+}
+
+ExtraSoul* ExtraSoul::Create()
+{
+	ExtraSoul* xSoul = (ExtraSoul*)BSExtraData::Create(sizeof(ExtraSoul), s_ExtraSoulVtbl);
+	return xSoul;
+}
+
+ExtraTextDisplayData* ExtraTextDisplayData::Create()
+{
+	ExtraTextDisplayData* xText = (ExtraTextDisplayData*)BSExtraData::Create(sizeof(ExtraTextDisplayData), s_ExtraTextDisplayVtbl);
+	xText->unk14 = -1;
+	xText->unk18 = 1.0;
+	return xText;
+}
 
 struct GetMatchingEquipped {
 	FormMatcher& m_matcher;

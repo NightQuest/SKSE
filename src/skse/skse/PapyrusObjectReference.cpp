@@ -1,5 +1,6 @@
 #include "PapyrusObjectReference.h"
 
+#include "GameAPI.h"
 #include "GameFormComponents.h"
 #include "GameForms.h"
 #include "GameRTTI.h"
@@ -84,6 +85,21 @@ public:
 		return count;
 	}
 
+	// returns the count of items left in the vector
+	//UInt32 GetTotalWeight() {
+	//	ExtraDataVec::iterator itEnd = m_vec.end();
+	//	ExtraDataVec::iterator it = m_vec.begin();
+	//	while (it != itEnd) {
+	//		ExtraContainerChanges::EntryData* extraData = (*it);
+	//		if (extraData && (extraData->countDelta > 0)) {
+	//			
+	//		}
+	//		++it;
+	//	}
+	//	return count;
+	//}
+
+
 	ExtraContainerChanges::EntryData* GetNth(UInt32 n, UInt32 count) {
 		ExtraDataVec::iterator itEnd = m_vec.end();
 		ExtraDataVec::iterator it = m_vec.begin();
@@ -140,9 +156,20 @@ public:
 	UInt32 GetCurIdx() { return m_curIndex; }
 };
 
+//class ContainerTotalWeight
+//{
+//	ExtraContainerInfo& m_info;
+//	float totalWeight;
+//public:
+//	ContainerTotalWeight(ExtraContainerInfo& info) : m_info(info), totalWeight(0.0) { }
+//
+//	bool Accept(TESCOntainer::Entry* pEntry)
+//
+//
+//}
+
 namespace papyrusObjectReference
 {
-
 	UInt32 GetNumItems(TESObjectREFR* pContainerRef)
 	{
 		if (!pContainerRef)
@@ -217,7 +244,15 @@ namespace papyrusObjectReference
 		if (!pContainerRef)
 			return 0;
 		ExtraContainerChanges* pXContainerChanges = static_cast<ExtraContainerChanges*>(pContainerRef->extraData.GetByType(kExtraData_ContainerChanges));
-		return (pXContainerChanges) ? pXContainerChanges->data->totalWeight : 0.0;
+		if (!pXContainerChanges)
+			return 0.0;
+		
+		// skyrim keeps track of the player's total item weight
+		if (pContainerRef == *g_thePlayer)
+			return pXContainerChanges->data->totalWeight;
+
+		// but not so much for anything else - so we need to calculate
+		return 0.0;
 	}
 
 	float GetTotalArmorWeight(TESObjectREFR* pContainerRef)
@@ -228,7 +263,6 @@ namespace papyrusObjectReference
 		return (pXContainerChanges) ? pXContainerChanges->data->armorWeight : 0.0;
 	}
 
-
 	bool IsHarvested(TESObjectREFR* pProduceRef)
 	{
 		UInt8 formType = pProduceRef->baseForm->formType;
@@ -236,6 +270,67 @@ namespace papyrusObjectReference
 			return ((pProduceRef->flags & 0x2000) == 0x2000) ? true : false;
 		}
 		return false;
+	}
+
+	void SetItemHealthPercent(TESObjectREFR* object, float value)
+	{
+		// Object must be a weapon, or armor
+		if(object) {
+			if(DYNAMIC_CAST(object->baseForm, TESForm, TESObjectWEAP) || DYNAMIC_CAST(object->baseForm, TESForm, TESObjectARMO)) {
+				ExtraHealth* xHealth = static_cast<ExtraHealth*>(object->extraData.GetByType(kExtraData_Health));
+				if(xHealth) {
+					xHealth->health = value;
+				} else  {
+					ExtraHealth* newHealth = ExtraHealth::Create();
+					newHealth->health = value;
+					object->extraData.Add(kExtraData_Health, newHealth);
+				}
+			}
+		}
+	}
+
+	float GetItemMaxCharge(TESObjectREFR* object)
+	{
+		if (!object)
+			return 0.0;
+		TESObjectWEAP * weapon = DYNAMIC_CAST(object->baseForm, TESForm, TESObjectWEAP);
+		if(!weapon) // Object is not a weapon
+			return 0.0;
+		float maxCharge = 0;
+		if(weapon->enchantable.enchantment != NULL) // Base enchant
+			maxCharge = (float)weapon->enchantable.maxCharge;
+		else if(ExtraEnchantment* extraEnchant = static_cast<ExtraEnchantment*>(object->extraData.GetByType(kExtraData_Enchantment))) // Enchanted
+			maxCharge = (float)extraEnchant->maxCharge;
+		return maxCharge;
+	}
+
+	float GetItemCharge(TESObjectREFR* object)
+	{
+		if (!object)
+			return 0.0;
+		TESObjectWEAP * weapon = DYNAMIC_CAST(object->baseForm, TESForm, TESObjectWEAP);
+		if(!weapon) // Object is not a weapon
+			return 0.0;
+		ExtraCharge* xCharge = static_cast<ExtraCharge*>(object->extraData.GetByType(kExtraData_Charge));
+		return (xCharge) ? xCharge->charge : GetItemMaxCharge(object); // When charge value is not present on an enchanted weapon, maximum charge is assumed
+	}
+
+	void SetItemCharge(TESObjectREFR* object, float value)
+	{
+		// Object must be an enchanted weapon
+		if(object) {
+			TESObjectWEAP * weapon = DYNAMIC_CAST(object->baseForm, TESForm, TESObjectWEAP);
+			if(weapon && ((object->extraData.GetByType(kExtraData_Enchantment) || weapon->enchantable.enchantment != NULL))) {
+				ExtraCharge* xCharge = static_cast<ExtraCharge*>(object->extraData.GetByType(kExtraData_Charge));
+				if(xCharge) {
+					xCharge->charge = value;
+				} else {
+					ExtraCharge* newCharge = ExtraCharge::Create();
+					newCharge->charge = value;
+					object->extraData.Add(kExtraData_Charge, newCharge);
+				}
+			}
+		}
 	}
 
 };
@@ -259,4 +354,17 @@ void papyrusObjectReference::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0<TESObjectREFR, bool>("IsHarvested", "ObjectReference", papyrusObjectReference::IsHarvested, registry));
+
+	// Item modifications, Tempering/Charges
+	registry->RegisterFunction(
+		new NativeFunction1<TESObjectREFR, void, float>("SetItemHealthPercent", "ObjectReference", papyrusObjectReference::SetItemHealthPercent, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectREFR, float>("GetItemMaxCharge", "ObjectReference", papyrusObjectReference::GetItemMaxCharge, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectREFR, float>("GetItemCharge", "ObjectReference", papyrusObjectReference::GetItemCharge, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<TESObjectREFR, void, float>("SetItemCharge", "ObjectReference", papyrusObjectReference::SetItemCharge, registry));
 }

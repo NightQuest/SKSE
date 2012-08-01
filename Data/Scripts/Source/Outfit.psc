@@ -1,7 +1,7 @@
 Scriptname Outfit extends Form Hidden
 
 
-; SKSE additions built 2012-06-06 02:49:46.290000 UTC
+; SKSE additions built 2012-07-24 00:32:19.171000 UTC
 
 int Function GetNumParts() native
 Form Function GetNthPart(int n) native

@@ -1,5 +1,6 @@
 #include <string>
 #include <direct.h>
+#include <shlobj.h>
 #include "skse/skse_version.h"
 #include "skse/SafeWrite.h"
 #include "skse/Utilities.h"
@@ -15,7 +16,7 @@
 
 #include <intrin.h>
 
-IDebugLog	gLog("skse_steam_loader.log");
+IDebugLog	gLog;
 HANDLE		g_dllHandle;
 
 static void OnAttach(void);
@@ -235,6 +236,7 @@ void * GetIATAddr(UInt8 * base, const char * searchDllName, const char * searchI
 
 static void OnAttach(void)
 {
+	gLog.OpenRelative(CSIDL_MYDOCUMENTS, "\\My Games\\Skyrim\\SKSE\\skse_steam_loader.log");
 	gLog.SetPrintLevel(IDebugLog::kLevel_Error);
 	gLog.SetLogLevel(IDebugLog::kLevel_DebugMessage);
 

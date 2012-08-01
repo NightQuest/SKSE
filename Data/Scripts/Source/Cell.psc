@@ -34,9 +34,7 @@ Function SetFogPower(float afPower) native
 ; Sets this cell as public or private
 Function SetPublic(bool abPublic = true) native
 
-
-
-; SKSE additions built 2012-06-06 02:49:46.290000 UTC
+; SKSE additions built 2012-07-24 00:32:19.171000 UTC
 ; Returns the number of refs in the cell
 int Function GetNumRefs(int formTypeFilter = 0) native
 

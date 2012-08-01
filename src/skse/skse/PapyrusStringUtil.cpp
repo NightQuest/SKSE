@@ -1,6 +1,8 @@
 #include "PapyrusStringUtil.h"
 #include "PapyrusVM.h"
 #include "PapyrusNativeFunctions.h"
+#include <algorithm>
+#include <locale>
 
 namespace papyrusStringUtil
 {
@@ -93,6 +95,8 @@ namespace papyrusStringUtil
 		return SingleCharStar(c).c_str();
 	}
 
+	
+
 	SInt32 Find(StaticFunctionTag* thisInput, BSFixedString theString, BSFixedString toFind, UInt32 startIndex)
 	{
 		if (startIndex < 0)
@@ -101,8 +105,13 @@ namespace papyrusStringUtil
 		std::string s(theString.data);
 		if (startIndex >= s.length())
 			return -1;
+		
+		std::transform(s.begin(), s.end(), s.begin(), toupper);
+		
+		std::string f(toFind.data);
+		std::transform(f.begin(), f.end(), f.begin(), toupper);
 
-		std::string::size_type pos = s.find(toFind.data, startIndex);
+		std::string::size_type pos = s.find(f, startIndex);
 		return (pos == std::string::npos) ? -1 : pos;
 	}
 

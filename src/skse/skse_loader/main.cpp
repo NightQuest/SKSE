@@ -1,5 +1,6 @@
 #include <tlhelp32.h>
 #include <direct.h>
+#include <shlobj.h>
 #include <string>
 #include "common/IFileStream.h"
 #include "loader_common/IdentifyEXE.h"
@@ -10,7 +11,7 @@
 #include "skse/Utilities.h"
 #include "skse/skse_version.h"
 
-IDebugLog	gLog("skse_loader.log");
+IDebugLog	gLog;
 
 static bool InjectDLL(PROCESS_INFORMATION * info, const char * dllPath, ProcHookInfo * hookInfo);
 static bool InjectDLLThread(PROCESS_INFORMATION * info, const char * dllPath, bool sync);
@@ -19,6 +20,7 @@ static void PrintModuleInfo(UInt32 procID);
 
 int main(int argc, char ** argv)
 {
+	gLog.OpenRelative(CSIDL_MYDOCUMENTS, "\\My Games\\Skyrim\\SKSE\\skse_loader.log");
 	gLog.SetPrintLevel(IDebugLog::kLevel_FatalError);
 	gLog.SetLogLevel(IDebugLog::kLevel_DebugMessage);
 

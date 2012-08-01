@@ -53,7 +53,7 @@ public:
 //	void	** _vtbl;	// 00
 
 	MEMBER_FN_PREFIX(ObjectBindPolicy);
-	DEFINE_MEMBER_FN(BindObject, void, 0x00C249B0, VMIdentifier ** identifier, UInt64 handle);
+	DEFINE_MEMBER_FN(BindObject, void, 0x00C24680, VMIdentifier ** identifier, UInt64 handle);
 };
 
 // 10
@@ -69,7 +69,7 @@ public:
 	void	Release(void);
 
 	MEMBER_FN_PREFIX(VMClassInfo);
-	DEFINE_MEMBER_FN(Destroy, void, 0x00C2DAE0);
+	DEFINE_MEMBER_FN(Destroy, void, 0x00C2DAD0);
 };
 
 // 4B04
@@ -191,7 +191,7 @@ public:
 	void	Destroy(void);
 
 	MEMBER_FN_PREFIX(VMIdentifier);
-	DEFINE_MEMBER_FN(Destroy_Internal, void, 0x00C29A00);
+	DEFINE_MEMBER_FN(Destroy_Internal, void, 0x00C29AB0);
 };
 
 // 08
@@ -246,8 +246,8 @@ public:
 	} data;			// 04
 
 	MEMBER_FN_PREFIX(VMValue);
-	DEFINE_MEMBER_FN(Set, void, 0x00C2B5F0, VMValue * src);
-	DEFINE_MEMBER_FN(Destroy, void, 0x00C2B4F0);
+	DEFINE_MEMBER_FN(Set, void, 0x00C2B5B0, VMValue * src);
+	DEFINE_MEMBER_FN(Destroy, void, 0x00C2B4B0);
 
 	void	SetNone(void)
 	{
@@ -335,7 +335,7 @@ public:
 		VMValue	* Get(UInt32 idx)	{ return (idx < m_size) ? &m_data[idx] : NULL; }
 
 		MEMBER_FN_PREFIX(Output);
-		DEFINE_MEMBER_FN(Resize, bool, 0x008BBFA0, UInt32 len);
+		DEFINE_MEMBER_FN(Resize, bool, 0x008BB830, UInt32 len);
 	};
 
 	virtual bool	Copy(Output * dst) = 0;

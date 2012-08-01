@@ -1,6 +1,6 @@
 #include "GameRTTI.h"
 
-const _Runtime_DynamicCast Runtime_DynamicCast = (_Runtime_DynamicCast)0x00F4994E;
+const _Runtime_DynamicCast Runtime_DynamicCast = (_Runtime_DynamicCast)0x00F498BE;
 
 const void * RTTI_BaseFormComponent = (void *)0x01230030;
 const void * RTTI_IFormFactory = (void *)0x01230050;

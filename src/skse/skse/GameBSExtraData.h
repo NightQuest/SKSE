@@ -16,6 +16,7 @@ enum ExtraDataType
 	// ??						= 0xC,
  	kExtraData_Action			= 0xD,
  	kExtraData_StartingPosition	= 0xE,
+	// ??						= 0xF,
  	kExtraData_AnimGraphManager	= 0x10,
 	// ??						= 0x11,
  	kExtraData_UsedMarkers		= 0x12,
@@ -38,6 +39,7 @@ enum ExtraDataType
  	kExtraData_Rank				= 0x23,
  	kExtraData_Count			= 0x24,
  	kExtraData_Health			= 0x25,
+	// ??						= 0x26,
  	kExtraData_TimeLeft			= 0x27,
  	kExtraData_Charge			= 0x28,
  	kExtraData_Light			= 0x29,
@@ -48,8 +50,11 @@ enum ExtraDataType
  	kExtraData_LeveledItem		= 0x2E,
  	kExtraData_Scale			= 0x2F,
  	kExtraData_Seed				= 0x30,
- 	kExtraData_MagicCaster		= 0x31,
+ 	kExtraData_MagicCaster		= 0x31, // ExtraMagicLight??
+ 	// ??						= 0x32, 
+ 	// ??						= 0x33, 
  	kExtraData_PlayerCrimeList	= 0x34,
+	// ??						= 0x35,
  	kExtraData_EnableStateParent	= 0x36,
  	kExtraData_EnableStateChildren	= 0x37,
  	kExtraData_ItemDropper		= 0x38,
@@ -137,12 +142,14 @@ enum ExtraDataType
 	//??						= 0x8A,
  	kExtraData_LocationRefType	= 0x8B,
  	kExtraData_PromotedRef		= 0x8C,
+	//??						= 0x8D,
  	kExtraData_OutfitItem		= 0x8E,
+	//??						= 0x8F,
  	kExtraData_LeveledItemBase	= 0x90,
  	kExtraData_LightData		= 0x91,
  	kExtraData_SceneData		= 0x92,
  	kExtraData_BadPosition		= 0x93,
- 	kExtraData_GeadTrackingWeight	= 0x94,
+ 	kExtraData_HeadTrackingWeight	= 0x94,
  	kExtraData_FromAlias		= 0x95,
  	kExtraData_ShouldWear		= 0x96,
  	kExtraData_FavorCost		= 0x97,
@@ -160,7 +167,7 @@ enum ExtraDataType
  	kExtraData_LockList			= 0xA3,
  	kExtraData_ForcedLandingMarker	= 0xA4,
  	kExtraData_LargeRefOwnerCells	= 0xA5,
- 	kExtraData_CelLWaterEnvMap	= 0xA6,
+ 	kExtraData_CellWaterEnvMap	= 0xA6,
  	kExtraData_CellGrassData	= 0xA7,
  	kExtraData_TeleportName		= 0xA8,
  	kExtraData_Interaction		= 0xA9,
@@ -184,8 +191,8 @@ public:
 	virtual ~BSExtraData();
 
 	BSExtraData* next;		// 04
-	UInt8 type;				// 08
-	UInt8 padding[3];		
+	//UInt8 type;				// 08
+	//UInt8 padding[3];		
 };
 
 // 08
@@ -211,15 +218,7 @@ public:
 		return (m_presence) ? m_presence->HasType(type) : false;
 	}
 
-	BSExtraData* GetByType(UInt32 type) const {
-		if (!HasType(type)) return NULL;
-
-		for(BSExtraData * traverse = m_data; traverse; traverse = traverse->next)
-			if(traverse->type == type)
-				return traverse;
-		return NULL;
-	}
-
+	BSExtraData* GetByType(UInt32 type) const;
 	BSExtraData			* m_data;		// 00
 	PresenceBitfield	* m_presence;	// 04
 };

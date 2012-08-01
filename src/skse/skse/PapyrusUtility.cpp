@@ -12,16 +12,6 @@
 
 namespace papyrusUtility
 {
-	// This was taken from Hooks_Scaleform.cpp, maybe move this to somewhere it can be mutually defined
-	static Setting * GetINISetting(const char * name)
-	{
-		Setting	* setting = (*g_iniSettingCollection)->Get(name);
-		if(!setting)
-			setting = (*g_iniPrefSettingCollection)->Get(name);
-
-		return setting;
-	}
-
 	float GetINIFloat(StaticFunctionTag* base, BSFixedString ini)
 	{
 		Setting * setting = GetINISetting(ini.data);

@@ -286,7 +286,7 @@ class MenuManager
 		UInt32		* data;		// 18 - pointer to list data, passed to GetMenu
 
 		MEMBER_FN_PREFIX(List);
-		DEFINE_MEMBER_FN(GetMenu, bool, 0x00A565D0, void * arg1, UInt32 hash, BSFixedString * name, Result * arg4);
+		DEFINE_MEMBER_FN(GetMenu, bool, 0x00A55D30, void * arg1, UInt32 hash, BSFixedString * name, Result * arg4);
 	};
 
 public:
@@ -295,8 +295,8 @@ public:
 	UInt32		* unk090;		// 090 - threadId?
 
 	MEMBER_FN_PREFIX(MenuManager);
-	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A55250, BSFixedString * menuName);
-	//DEFINE_MEMBER_FN(Register, void, 0x00A55660, const char * name, void * func);
+	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A549F0, BSFixedString * menuName);
+	//DEFINE_MEMBER_FN(Register, void, 0x00A54E00, const char * name, void * func);
 
 	static MenuManager *	GetSingleton(void)
 	{

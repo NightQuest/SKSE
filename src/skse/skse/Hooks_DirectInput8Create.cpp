@@ -286,7 +286,7 @@ UInt32 DIHookControl::GetNumKeysPressed()
 	for (UInt32 keycode = 0; keycode < kMaxMacros; keycode++)
 	{
 		KeyInfo* info = &m_keys[keycode];
-		if (_IsKeyPressed(info, 0))
+		if (_IsKeyPressed(info, kFlag_DefaultBackCompat))
 			keysPressed++;
 	}
 	return keysPressed;
@@ -297,7 +297,7 @@ SInt32 DIHookControl::GetNthKeyPressed(UInt32 n)
 	UInt32 index = 0;
 	for (UInt32 keycode = 0; keycode < kMaxMacros; keycode++) {
 		KeyInfo* info = &m_keys[keycode];
-		if (_IsKeyPressed(info, 0)) {
+		if (_IsKeyPressed(info, kFlag_DefaultBackCompat)) {
 			if (index == n) {
 				return keycode;
 			} else

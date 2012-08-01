@@ -1,3 +1,7 @@
+1.5.9
+- hook up Race functions.
+- support for runtime 1.6.89.0
+
 1.5.8:
 - Fix size of enchantable class so that Weapon and Armor functions work again.
 - Fix other various bugs in previous version.

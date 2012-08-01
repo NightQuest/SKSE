@@ -9,7 +9,7 @@ Function RemoteCast(ObjectReference akSource, Actor akBlameActor, ObjectReferenc
 ; Is this spell classified as hostile?
 bool Function IsHostile() native
 
-; SKSE additions built 2012-05-27 07:43:18.932000 UTC
+; SKSE additions built 2012-06-06 02:49:46.290000 UTC
 ; return the casting time
 float Function GetCastTime() native
 

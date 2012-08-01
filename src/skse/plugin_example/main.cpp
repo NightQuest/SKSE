@@ -26,7 +26,7 @@ void GameplayPatches(void)
 		0xC3							// retn
 	};
 
-	ApplyPatch(0x00596590, kPickpocketChance, sizeof(kPickpocketChance));
+	ApplyPatch(0x00595FF0, kPickpocketChance, sizeof(kPickpocketChance));
 }
 
 class SKSEScaleform_ExampleFunction : public GFxFunctionHandler
@@ -66,7 +66,7 @@ bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info)
 
 		return false;
 	}
-	else if(skse->runtimeVersion != RUNTIME_VERSION_1_6_87_0)
+	else if(skse->runtimeVersion != RUNTIME_VERSION_1_6_89_0)
 	{
 		_MESSAGE("unsupported runtime version %08X", skse->runtimeVersion);
 

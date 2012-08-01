@@ -201,11 +201,13 @@ class ActorState : public IMovementState
 public:
 	virtual ~ActorState();
 
-	UInt32 align04;	// 04
-	UInt64 flags;	// 08
+	//UInt32 align04;	// 04
+	//UInt64 flags;	// 08
+	UInt32 flags04;
+	UInt32 flags08;
 };
 
-STATIC_ASSERT(sizeof(ActorState) == 0x10);
+//STATIC_ASSERT(sizeof(ActorState) == 0x10);
 
 // 1B0
 class Actor : public TESObjectREFR
@@ -222,7 +224,7 @@ public:
 
 	MagicTarget		magicTarget;					// 054
 	ActorValueOwner	actorValueOwner;				// 060
-	UInt32			align64;						// 064
+	//UInt32			align64;						// 064
 	ActorState		actorState;						// 068
 	BSTEventSink<void*> transformDeltaEvent;		// 078 .?AV?$BSTEventSink@VBSTransformDeltaEvent@@@@
 	BSTEventSink<void*>	characterMoveFinishEvent;	// 07C .?AV?$BSTEventSink@VbhkCharacterMoveFinishEvent@@@@
@@ -234,10 +236,14 @@ public:
 	BSTEventSink<void*>	 menuOpenCloseEvent;		// 1A8	.?AV?$BSTEventSink@VMenuOpenCloseEvent@@@@
 	BSTEventSink<void*>	 menuModeChangeEvent;		// 1AC .?AV?$BSTEventSink@VMenuModeChangeEvent@@@@
 };
-STATIC_ASSERT(offsetof(Actor, actorState) == 0x68);
-STATIC_ASSERT(offsetof(Actor, addedSpells) == 0x104);
-STATIC_ASSERT(offsetof(Actor, menuOpenCloseEvent) == 0x1A8);
-STATIC_ASSERT(sizeof(Actor) == 0x1B0);
+STATIC_ASSERT(offsetof(Actor, magicTarget) == 0x54);
+STATIC_ASSERT(offsetof(Actor, actorValueOwner) == 0x60);
+STATIC_ASSERT(sizeof(ActorValueOwner) == 0x4);
+STATIC_ASSERT(offsetof(Actor, actorState) == 0x64);
+STATIC_ASSERT(offsetof(Actor, transformDeltaEvent) == 0x70);
+STATIC_ASSERT(offsetof(Actor, addedSpells) == 0xFC);
+STATIC_ASSERT(offsetof(Actor, menuOpenCloseEvent) == 0x1A0);
+STATIC_ASSERT(sizeof(Actor) == 0x1A8);
 
 // 1B0
 // Character + 98 = process?
@@ -246,7 +252,7 @@ class Character : public Actor
 	enum { kTypeID = kFormType_Character };
 public:
 	MEMBER_FN_PREFIX(Character);
-	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x0072EC00, bool);
+	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x0072E660, bool);
 };
 
 // 718
@@ -256,14 +262,14 @@ public:
 	virtual ~PlayerCharacter();
 
 	// parents
-	BSTEventSink <void *>	userEventEnabledEvent;		// 1B0 .?AV?$BSTEventSink@VUserEventEnabledEvent@@@@
-	BSTEventSource <void *>	actorCellEventSource;		// 1B4 .?AV?$BSTEventSource@UBGSActorCellEvent@@@@
-	BSTEventSource <void *>	actorDeathEventSource;		// 1E4 .?AV?$BSTEventSource@UBGSActorDeathEvent@@@@
-	BSTEventSource <void *>	positionPlayerEventSource;	// 214 .?AV?$BSTEventSource@UPositionPlayerEvent@@@@
+	BSTEventSink <void *>	userEventEnabledEvent;		// 1A8 .?AV?$BSTEventSink@VUserEventEnabledEvent@@@@
+	BSTEventSource <void *>	actorCellEventSource;		// 1AC .?AV?$BSTEventSource@UBGSActorCellEvent@@@@
+	BSTEventSource <void *>	actorDeathEventSource;		// 1DC .?AV?$BSTEventSource@UBGSActorDeathEvent@@@@
+	BSTEventSource <void *>	positionPlayerEventSource;	// 20C .?AV?$BSTEventSource@UPositionPlayerEvent@@@@
 
-	UInt32	pad244[(0x6C8 - 0x244) >> 2];	// 244
-	UInt8	pad6C8;							// 6C8
-	UInt8	numPerkPoints;					// 6C9
+	UInt32	pad23C[(0x6D4 - 0x23C) >> 2];	// 23C
+	UInt8   pad6D4;							// 6D4
+	UInt8	numPerkPoints;					// 6D5
 
 	// ### todo: confirm
 	struct ObjDesc
@@ -273,12 +279,13 @@ public:
 	};
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
-	DEFINE_MEMBER_FN(GetDamage, double, 0x0072E530, ObjDesc * pForm);
-	DEFINE_MEMBER_FN(GetArmorValue, double, 0x0072E500, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x0072DF90, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x0072DF60, ObjDesc * pForm);
 };
 
-STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1B0);
-STATIC_ASSERT(offsetof(PlayerCharacter, numPerkPoints) == 0x6C9);
+STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1A8);
+STATIC_ASSERT(offsetof(PlayerCharacter, pad23C) == 0x23C);
+STATIC_ASSERT(offsetof(PlayerCharacter, numPerkPoints) == 0x6D5);
 
 // D8
 class Explosion : public TESObjectREFR

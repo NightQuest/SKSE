@@ -70,3 +70,12 @@ Setting	* GameSettingCollection::Get(const char * name)
 
 	return result;
 }
+
+Setting * GetINISetting(const char * name)
+{
+	Setting	* setting = (*g_iniSettingCollection)->Get(name);
+	if(!setting)
+		setting = (*g_iniPrefSettingCollection)->Get(name);
+
+	return setting;
+}

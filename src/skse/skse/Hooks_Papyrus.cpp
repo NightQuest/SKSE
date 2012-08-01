@@ -28,6 +28,7 @@
 #include "PapyrusObjectReference.h"
 #include "PapyrusPotion.h"
 #include "PapyrusQuest.h"
+#include "PapyrusRace.h"
 #include "PapyrusSKSE.h"
 #include "PapyrusSpell.h"
 #include "PapyrusStringUtil.h"
@@ -35,7 +36,7 @@
 #include "PapyrusWeapon.h"
 
 typedef void (* _RegisterPapyrusFunctions)(VMClassRegistry ** registry);
-_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F2F10;
+_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F2340;
 
 void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 {
@@ -95,6 +96,9 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// Potion
 	papyrusPotion::RegisterFuncs(registry);
 
+	// Race
+	papyrusRace::RegisterFuncs(registry);
+
 	// Spell
 	papyrusSpell::RegisterFuncs(registry);
 
@@ -136,5 +140,5 @@ void Hooks_Papyrus_Init(void)
 
 void Hooks_Papyrus_Commit(void)
 {
-	WriteRelCall(0x008D1E3B, (UInt32)RegisterPapyrusFunctions_Hook);
+	WriteRelCall(0x008D13DB, (UInt32)RegisterPapyrusFunctions_Hook);
 }

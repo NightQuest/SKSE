@@ -38,6 +38,15 @@ StringCache::Ref::Ref(const char * buf)
 	CALL_MEMBER_FN(this, ctor)(buf);
 }
 
+BSString::~BSString()
+{
+	if(m_data)
+	{
+		FormHeap_Free(m_data);
+		m_data = NULL;
+	}
+}
+
 const char * BSString::Get(void)
 {
 	return m_data ? m_data : "";
@@ -45,7 +54,3 @@ const char * BSString::Get(void)
 
 const _CRC32_Calc4 CRC32_Calc4 = (_CRC32_Calc4)0x00A41480;
 const _CRC32_Calc8 CRC32_Calc8 = (_CRC32_Calc8)0x00A414E0;
-
-template <> UInt32 GetHash<UInt32> (UInt32 * key)				{ UInt32 hash; CRC32_Calc4(&hash, *key); return hash; }
-template <> UInt32 GetHash<UInt64> (UInt64 * key)				{ UInt32 hash; CRC32_Calc8(&hash, *key); return hash; }
-template <> UInt32 GetHash<BSFixedString> (BSFixedString * key)	{ UInt32 hash; CRC32_Calc4(&hash, (UInt32)key->data); return hash; }

@@ -16,7 +16,7 @@ SKSEEventHandler											g_skseEventHandler;
 
 //// Generic functors
 
-template <typename T> void SetVMValue(VMValue * val, T arg)						{ STATIC_ASSERT(false); }
+template <typename T> void SetVMValue(VMValue * val, T arg);
 
 template <> void SetVMValue<bool> (VMValue * val, bool arg)						{ val->SetBool(arg); }
 template <> void SetVMValue<SInt32> (VMValue * val, SInt32 arg)					{ val->SetInt(arg); }
@@ -39,7 +39,7 @@ public:
 		return true;
 	}
 
-	void			operator() (const EventRegistration<void*> & reg)
+	void			operator() (const EventRegistration<NullParameters> & reg)
 	{
 		VMClassRegistry * registry = (*g_skyrimVM)->GetClassRegistry();
 		registry->QueueEvent(reg.handle, &eventName, this);
@@ -66,7 +66,7 @@ public:
 		return true;
 	}
 
-	void			operator() (const EventRegistration<void*> & reg)
+	void			operator() (const EventRegistration<NullParameters> & reg)
 	{
 		VMClassRegistry * registry = (*g_skyrimVM)->GetClassRegistry();
 		registry->QueueEvent(reg.handle, &eventName, this);
@@ -131,20 +131,23 @@ EventResult SKSEEventHandler::ReceiveEvent(MenuOpenCloseEvent * evn, EventDispat
 	return kEvent_Continue;
 }
 
-
 EventResult SKSEEventHandler::ReceiveEvent(InputEvent ** evns, EventDispatcher<InputEvent,InputEvent*> * dispatcher)
 {
 	// Function is called periodically, if no buttons pressed/held *evns == NULL
 
-	static UInt8	keyState[0x100] = { 0 };
-	static float	keyTimer[0x100] = { 0 };
+	static UInt8	keyState[InputMap::kMaxMacros] = { 0 };
+	static float	keyTimer[InputMap::kMaxMacros] = { 0 };
 
-	for (UInt32 i = 0; i< 0x100; i++)
+	for (UInt32 i = 0; i < InputMap::kMaxMacros; i++)
+	{
 		if (keyState[i] && (--keyState[i] == 0))
+		{
 			g_inputEventRegs.ForEach(
 				i,
 				EventQueueFunctor2<SInt32, float>(BSFixedString("OnKeyUp"), (SInt32)i, keyTimer[i])
 			);
+		}
+	}
 
 	if (! *evns)
 		return kEvent_Continue;
@@ -156,55 +159,38 @@ EventResult SKSEEventHandler::ReceiveEvent(InputEvent ** evns, EventDispatcher<I
 			case InputEvent::kEventType_Button:
 			{
 				ButtonEvent * t = DYNAMIC_CAST(e, InputEvent, ButtonEvent);
-				//_MESSAGE("kInput_Button");
-				//_MESSAGE("\tdevice type: %08X", t->deviceType);
-				//_MESSAGE("\tdevice id: %08X", t->deviceID);
-				//_MESSAGE("\tscanCode: %d", t->scanCode);
-				//_MESSAGE("\tmodFlags: %08X", t->modFlags);
-				//_MESSAGE("\ttimer: %f", t->timer);
 
-				if (!keyState[t->scanCode])
+				UInt32 keyCode;
+				UInt32 deviceType = t->deviceType;
+				UInt32 keyMask = t->keyMask;
+
+				// Mouse
+				if (deviceType == kDeviceType_Mouse)
+					keyCode = InputMap::kMacro_MouseButtonOffset + keyMask; 
+
+				// Gamepad
+				else if (deviceType == kDeviceType_Gamepad)
+					keyCode = InputMap::GetGamepadKeycode(keyMask);
+
+				// Keyboard
+				else
+					keyCode = keyMask;
+
+				// Valid scancode?
+				if (keyCode >= InputMap::kMaxMacros)
+					break;
+
+				if (!keyState[keyCode])
 				{
-					//_MESSAGE("KeyDown: %c", t->scanCode);
 					g_inputEventRegs.ForEach(
-						t->scanCode,
-						EventQueueFunctor1<SInt32>(BSFixedString("OnKeyDown"), (SInt32)t->scanCode)
+						keyCode,
+						EventQueueFunctor1<SInt32>(BSFixedString("OnKeyDown"), (SInt32)keyCode)
 					);
 				}
 
-				keyState[t->scanCode] = 2;
-				keyTimer[t->scanCode] = t->timer;
+				keyState[keyCode] = 2;
+				keyTimer[keyCode] = t->timer;
 
-				break;
-			}
-			case InputEvent::kEventType_MouseMove:
-			{
-				MouseMoveEvent * t = DYNAMIC_CAST(e, InputEvent, MouseMoveEvent);
-				//_MESSAGE("kInput_MouseMove");
-				break;
-			}
-			case InputEvent::kEventType_Char:
-			{
-				CharEvent * t = DYNAMIC_CAST(e, InputEvent, CharEvent);
-				//_MESSAGE("kInput_Char: %c", t->keyCode);
-				break;
-			}
-			case InputEvent::kEventType_Thumbstick:
-			{
-				ThumbstickEvent * t = DYNAMIC_CAST(e, InputEvent, ThumbstickEvent);
-				//_MESSAGE("kInput_Thumbstick");
-				break;
-			}
-			case InputEvent::kEventType_DeviceConnect:
-			{
-				DeviceConnectEvent * t = DYNAMIC_CAST(e, InputEvent, DeviceConnectEvent);
-				//_MESSAGE("kInput_DeviceConnect");
-				break;
-			}
-			case InputEvent::kEventType_Kinect:
-			{
-				KinectEvent * t = DYNAMIC_CAST(e, InputEvent, KinectEvent);
-				//_MESSAGE("kInput_Kinect");
 				break;
 			}
 		};

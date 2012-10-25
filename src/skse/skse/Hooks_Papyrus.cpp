@@ -36,9 +36,12 @@
 #include "PapyrusRace.h"
 #include "PapyrusSKSE.h"
 #include "PapyrusSpell.h"
+#include "PapyrusSound.h"
+#include "PapyrusSoundDescriptor.h"
 #include "PapyrusStringUtil.h"
 #include "PapyrusUI.h"
 #include "PapyrusWeapon.h"
+#include "PapyrusWeather.h"
 #include "PapyrusShout.h"
 #include "PapyrusUtility.h"
 
@@ -71,6 +74,7 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	papyrusForm::RegisterFuncs(registry);
 
 	// ColorForm
+	papyrusColorComponent::RegisterFuncs(registry);
 	papyrusColorForm::RegisterFuncs(registry);
 
 	// HeadPart
@@ -124,7 +128,7 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// Spell
 	papyrusSpell::RegisterFuncs(registry);
 
-	// Spell
+	// Enchantment
 	papyrusEnchantment::RegisterFuncs(registry);
 
 	// Ingredient
@@ -163,6 +167,15 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// ActiveMagicEffect
 	papyrusActiveMagicEffect::RegisterFuncs(registry);
 
+	// SoundDescriptor
+	papyrusSoundDescriptor::RegisterFuncs(registry);
+
+	// Sound
+	papyrusSound::RegisterFuncs(registry);
+
+	// Weather
+	papyrusWeather::RegisterFuncs(registry);
+
 #ifdef _PPAPI
 	// Plugins
 	for(PapyrusPluginList::iterator iter = s_pap_plugins.begin(); iter != s_pap_plugins.end(); ++iter)
@@ -177,42 +190,14 @@ void Hooks_Papyrus_Init(void)
 	//
 }
 
-// Todo: move somewhere else
-class SaveLoadManager
-{
-public:
-	MEMBER_FN_PREFIX(SaveLoadManager);
-	DEFINE_MEMBER_FN(SaveGame_Internal, void, 0x00675F20, const char * fileName);
-	DEFINE_MEMBER_FN(LoadGame_Internal, void, 0x00678440, const char * fileName, bool unk1);
-
-	void SaveGame_Hook(const char * fileName)
-	{
-		_MESSAGE("Executing SaveLoadManager::SaveGame_Hook. Filename: %s", fileName);
-		CALL_MEMBER_FN(this, SaveGame_Internal)(fileName);
-		_MESSAGE("Executed SaveLoadManager::SaveGame_Hook.");
-	}
-
-	void LoadGame_Hook(const char * fileName, bool unk1)
-	{
-		_MESSAGE("Executing SaveLoadManager::LoadGame_Hook. Filename: %s", fileName);
-		CALL_MEMBER_FN(this, LoadGame_Internal)(fileName, unk1);
-		_MESSAGE("Executed SaveLoadManager::LoadGame_Hook.");
-	}
-};
-
 void Hooks_Papyrus_Commit(void)
 {
 	WriteRelCall(0x008CF2B0 + 0x098B, (UInt32)RegisterPapyrusFunctions_Hook);
-/*
+
 	// GlobalData / event regs
 	WriteRelCall(0x008CDC0A, GetFnAddr(&SkyrimVM::OnFormDelete_Hook));
 	WriteRelCall(0x008CE037, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // Normal game load
 	WriteRelCall(0x008CE4A6, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // New script reload command
 	WriteRelCall(0x008CADE1, GetFnAddr(&SkyrimVM::SaveGlobalData_Hook));
 	WriteRelCall(0x008CE209, GetFnAddr(&SkyrimVM::LoadGlobalData_Hook));
-
-	// Load & save
-	WriteRelCall(0x0067E272, GetFnAddr(&SaveLoadManager::SaveGame_Hook));
-	WriteRelCall(0x0067EC35, GetFnAddr(&SaveLoadManager::LoadGame_Hook));
-*/
 }

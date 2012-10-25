@@ -76,31 +76,3 @@ bool IsConsoleMode(void)
 {
 	return GetTLSData()->consoleMode != 0;
 }
-
-InputManager * InputManager::GetSingleton(void)
-{
-	return *((InputManager **)0x0128EAB8);
-}
-
-UInt8 InputManager::AllowTextInput(bool allow)
-{
-	if(allow)
-	{
-		if(allowTextInput == 0xFF)
-			_WARNING("InputManager::AllowTextInput: counter overflow");
-		else
-			allowTextInput++;
-	}
-	else
-	{
-		if(allowTextInput == 0)
-			_WARNING("InputManager::AllowTextInput: counter underflow");
-		else
-			allowTextInput--;
-	}
-
-	if(IsConsoleMode())
-		Console_Print("%s text input, count = %d", allow ? "allowed" : "disallowed", allowTextInput);
-
-	return allowTextInput;
-}

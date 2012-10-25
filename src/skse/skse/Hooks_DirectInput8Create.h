@@ -3,23 +3,10 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 #include <queue>
+#include "InputMap.h"
 
 void Hooks_DirectInput_Commit(void);
 
-enum
-{
-	kDeviceType_Keyboard = 1,
-	kDeviceType_Mouse
-};
-
-enum
-{
-	// first 256 for keyboard, then 8 mouse buttons, then mouse wheel up, wheel down
-	kMacro_MouseButtonOffset = 256,
-	kMacro_MouseWheelOffset = kMacro_MouseButtonOffset + 8,
-
-	kMaxMacros = kMacro_MouseWheelOffset + 2,
-};
 
 class DIHookControl : public ISingleton <DIHookControl>
 {
@@ -85,7 +72,7 @@ private:
 	};
 	bool	_IsKeyPressed(KeyInfo* info, UInt32 flags);
 
-	KeyInfo	m_keys[kMaxMacros];
+	KeyInfo	m_keys[InputMap::kMaxMacros];
 
 	typedef std::queue <DIDEVICEOBJECTDATA>	BufferedPressQueue;
 	BufferedPressQueue	m_bufferedPresses;

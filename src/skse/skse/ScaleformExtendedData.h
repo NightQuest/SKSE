@@ -18,9 +18,10 @@ namespace scaleformExtend
 {
 	void CommonItemData(GFxValue* pFxVal, TESForm * pForm);
 	void StandardItemData(GFxValue* pFxVal, TESForm * pForm);
-	void MagicItemData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm);
-	void ActorData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm);
-	void FormListData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm);
-	void FormData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm);
+	void MagicItemData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive);
+	void ActorData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive);
+	void FormListData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive);
+	void MiscData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive);
+	void FormData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive);
 	void InventoryData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerCharacter::ObjDesc * objDesc);
 };

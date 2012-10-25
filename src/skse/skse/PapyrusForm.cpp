@@ -107,17 +107,23 @@ namespace papyrusForm
 
 	void RegisterForKey(TESForm * thisForm, UInt32 key)
 	{
-		g_inputEventRegs.Register(thisForm, key);
+		if(!thisForm)
+			return;
+		g_inputEventRegs.Register<TESForm>(key, thisForm->GetFormType(), thisForm);
 	}
 
-	void UnregisterFromKey(TESForm * thisForm, UInt32 key)
+	void UnregisterForKey(TESForm * thisForm, UInt32 key)
 	{
-		g_inputEventRegs.Unregister(thisForm, key);
+		if(!thisForm)
+			return;
+		g_inputEventRegs.Unregister<TESForm>(key, thisForm->GetFormType(), thisForm);
 	}
 
-	void UnregisterFromAllKeys(TESForm * thisForm)
+	void UnregisterForAllKeys(TESForm * thisForm)
 	{
-		g_inputEventRegs.UnregisterFromAll(thisForm);
+		if(!thisForm)
+			return;
+		g_inputEventRegs.UnregisterAll<TESForm>(thisForm->GetFormType(), thisForm);
 	}
 
 	void UpdateKeys(UInt8 * data)
@@ -153,47 +159,50 @@ namespace papyrusForm
 
 	void RegisterForMenu(TESForm * thisForm, BSFixedString menuName)
 	{
-		if (!menuName.data)
+		if(!thisForm || !menuName.data)
 			return;
 		
-		g_menuOpenCloseRegs.Register(thisForm, menuName);
+		g_menuOpenCloseRegs.Register<TESForm>(menuName, thisForm->GetFormType(), thisForm);
 	}
 
-	void UnregisterFromMenu(TESForm * thisForm, BSFixedString menuName)
+	void UnregisterForMenu(TESForm * thisForm, BSFixedString menuName)
 	{
-		if (!menuName.data)
+		if(!thisForm || !menuName.data)
 			return;
 
-		g_menuOpenCloseRegs.Unregister(thisForm, menuName);
+		g_menuOpenCloseRegs.Unregister<TESForm>(menuName, thisForm->GetFormType(), thisForm);
 	}
 
-	void UnregisterFromAllMenus(TESForm * thisForm)
+	void UnregisterForAllMenus(TESForm * thisForm)
 	{
-		g_menuOpenCloseRegs.UnregisterFromAll(thisForm);
+		if(!thisForm)
+			return;
+
+		g_menuOpenCloseRegs.UnregisterAll<TESForm>(thisForm->GetFormType(), thisForm);
 	}
 
 	void RegisterForModEvent(TESForm * thisForm, BSFixedString eventName, BSFixedString callbackName)
 	{
-		if (!eventName.data || !callbackName.data)
+		if(!thisForm || !eventName.data || !callbackName.data)
 			return;
 
 		ModCallbackParameters params;
 		params.callbackName = callbackName;
 
-		g_modCallbackRegs.Register(thisForm, eventName, &params);
+		g_modCallbackRegs.Register<TESForm>(eventName, thisForm->GetFormType(), thisForm, &params);
 	}
 
-	void UnregisterFromModEvent(TESForm * thisForm, BSFixedString eventName)
+	void UnregisterForModEvent(TESForm * thisForm, BSFixedString eventName)
 	{
-		if (!eventName.data)
+		if(!thisForm || !eventName.data)
 			return;
 
-		g_modCallbackRegs.Unregister(thisForm, eventName);
+		g_modCallbackRegs.Unregister<TESForm>(eventName, thisForm->GetFormType(), thisForm);
 	}
 
-	void UnregisterFromAllModEvents(TESForm * thisForm)
+	void UnregisterForAllModEvents(TESForm * thisForm)
 	{
-		g_modCallbackRegs.UnregisterFromAll(thisForm);
+		g_modCallbackRegs.UnregisterAll<TESForm>(thisForm->GetFormType(), thisForm);
 	}
 
 	void SendModEvent(TESForm * thisForm, BSFixedString eventName, BSFixedString strArg, float numArg)
@@ -203,6 +212,35 @@ namespace papyrusForm
 
 		SKSEModCallbackEvent evn(eventName, strArg, numArg, thisForm);
 		g_modCallbackEventDispatcher.SendEvent(&evn);
+	}
+
+	TESForm * TempClone(TESForm * thisForm)
+	{
+		TESForm	* result = NULL;
+
+		if(thisForm)
+		{
+			IFormFactory	* factory = IFormFactory::GetFactoryForType(thisForm->formType);
+			if(factory)
+			{
+				result = factory->Create();
+				if(result)
+				{
+					result->Init();
+					result->CopyFrom(thisForm);
+				}
+				else
+				{
+					_ERROR("Form::TempClone: factory for type %02X failed", thisForm->formType);
+				}
+			}
+			else
+			{
+				_MESSAGE("Form::TempClone: tried to clone form %08X (type %02X), no factory found", thisForm->formID, thisForm->formType);
+			}
+		}
+
+		return result;
 	}
 }
 
@@ -251,19 +289,19 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <TESForm, void, UInt32> ("RegisterForKey", "Form", papyrusForm::RegisterForKey, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1 <TESForm, void, UInt32> ("UnregisterFromKey", "Form", papyrusForm::UnregisterFromKey, registry));
+		new NativeFunction1 <TESForm, void, UInt32> ("UnregisterForKey", "Form", papyrusForm::UnregisterForKey, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction0 <TESForm, void> ("UnregisterFromAllKeys", "Form", papyrusForm::UnregisterFromAllKeys, registry));
+		new NativeFunction0 <TESForm, void> ("UnregisterForAllKeys", "Form", papyrusForm::UnregisterForAllKeys, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESForm, void, BSFixedString> ("RegisterForMenu", "Form", papyrusForm::RegisterForMenu, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1 <TESForm, void, BSFixedString> ("UnregisterFromMenu", "Form", papyrusForm::UnregisterFromMenu, registry));
+		new NativeFunction1 <TESForm, void, BSFixedString> ("UnregisterForMenu", "Form", papyrusForm::UnregisterForMenu, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction0 <TESForm, void> ("UnregisterFromAllMenus", "Form", papyrusForm::UnregisterFromAllMenus, registry));
+		new NativeFunction0 <TESForm, void> ("UnregisterForAllMenus", "Form", papyrusForm::UnregisterForAllMenus, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction2 <TESForm, void, BSFixedString, BSFixedString> ("RegisterForModEvent", "Form", papyrusForm::RegisterForModEvent, registry));
@@ -272,8 +310,11 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction3 <TESForm, void, BSFixedString, BSFixedString, float> ("SendModEvent", "Form", papyrusForm::SendModEvent, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1 <TESForm, void, BSFixedString> ("UnregisterFromModEvent", "Form", papyrusForm::UnregisterFromModEvent, registry));
+		new NativeFunction1 <TESForm, void, BSFixedString> ("UnregisterForModEvent", "Form", papyrusForm::UnregisterForModEvent, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction0 <TESForm, void> ("UnregisterFromAllModEvents", "Form", papyrusForm::UnregisterFromAllModEvents, registry));
+		new NativeFunction0 <TESForm, void> ("UnregisterForAllModEvents", "Form", papyrusForm::UnregisterForAllModEvents, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, TESForm *> ("TempClone", "Form", papyrusForm::TempClone, registry));
 }

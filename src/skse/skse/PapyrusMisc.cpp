@@ -3,9 +3,6 @@
 #include "GameForms.h"
 #include "GameObjects.h"
 
-#include "PapyrusVM.h"
-#include "PapyrusNativeFunctions.h"
-
 namespace papyrusSoulGem
 {
 	UInt32 GetSoulSize(TESSoulGem* thisGem)
@@ -21,19 +18,7 @@ namespace papyrusSoulGem
 			return 0;
 		return thisGem->gemSize;
 	}
-
-	void RegisterFuncs(VMClassRegistry* registry)
-	{
-		registry->RegisterFunction(
-			new NativeFunction0 <TESSoulGem, UInt32>("GetSoulSize", "SoulGem", papyrusSoulGem::GetGemSize, registry));
-
-		registry->RegisterFunction(
-			new NativeFunction0 <TESSoulGem, UInt32> ("GetGemSize", "SoulGem", papyrusSoulGem::GetGemSize, registry));
-	}
-
 }
-
-
 
 namespace papyrusApparatus
 {
@@ -50,14 +35,6 @@ namespace papyrusApparatus
 			thisApparatus->quality.unk04 = nuQuality;
 		}
 	}
-	void RegisterFuncs(VMClassRegistry* registry)
-	{
-		registry->RegisterFunction(
-			new NativeFunction0 <BGSApparatus, UInt32> ("GetQuality", "Apparatus", papyrusApparatus::GetQuality, registry));
-
-		registry->RegisterFunction(
-			new NativeFunction1 <BGSApparatus, void, UInt32> ("SetQuality", "Apparatus", papyrusApparatus::SetQuality, registry));
-	}	
 }
 
 namespace papyrusOutfit
@@ -72,17 +49,37 @@ namespace papyrusOutfit
 		TESForm* pForm = NULL;
 		if (thisOutfit) {
 			thisOutfit->armorOrLeveledItemArray.GetNthItem(n, pForm);
-		}	
+		}
 		return pForm;
-
 	}
+}
 
-	void RegisterFuncs(VMClassRegistry* registry)
-	{
-		registry->RegisterFunction(
-			new NativeFunction0 <BGSOutfit, UInt32> ("GetNumParts", "Outfit", papyrusOutfit::GetNumParts, registry));
-		
-		registry->RegisterFunction(
-			new NativeFunction1 <BGSOutfit, TESForm*, UInt32> ("GetNthPart", "Outfit", papyrusOutfit::GetNthPart, registry));
-	}
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
+
+void papyrusSoulGem::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0 <TESSoulGem, UInt32>("GetSoulSize", "SoulGem", papyrusSoulGem::GetGemSize, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESSoulGem, UInt32> ("GetGemSize", "SoulGem", papyrusSoulGem::GetGemSize, registry));
+}
+
+void papyrusApparatus::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSApparatus, UInt32> ("GetQuality", "Apparatus", papyrusApparatus::GetQuality, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSApparatus, void, UInt32> ("SetQuality", "Apparatus", papyrusApparatus::SetQuality, registry));
+}
+
+void papyrusOutfit::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSOutfit, UInt32> ("GetNumParts", "Outfit", papyrusOutfit::GetNumParts, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSOutfit, TESForm*, UInt32> ("GetNthPart", "Outfit", papyrusOutfit::GetNthPart, registry));
 }

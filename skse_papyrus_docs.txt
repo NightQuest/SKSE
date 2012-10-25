@@ -1,4 +1,8 @@
-SKSE 1.5.10 Papyrus Functions
+SKSE 1.5.11 Papyrus Functions
+
+ActiveMagicEffect
+ - GetDuration
+ - GetTimeElapsed
 
 Actor.psc
  - GetWornForm
@@ -37,6 +41,15 @@ Armor.psc
  - GetWeightClass
  - Get/Set/ModelPath/IconPath/MessageIconPath
  - Get/SetEnchantment
+ - GetNumArmorAddons
+ - GetNthArmorAddon
+
+ArmorAddon.psc
+ - Get/SetModelPath
+ - GetModelNumTextureSets
+ - Get/SetModelNthTextureSet
+ - GetNumAdditionalRaces
+ - GetNthAdditionalRace
 
 Book.psc
  - GetSpell
@@ -112,6 +125,7 @@ Game.psc
  - GetModName/Author/Description
  - GetModDependencyCount
  - GetNthModDependency
+ - SetGameSettingFloat/Int/Bool/String
 
  HeadPart.psc
 - GetType
@@ -152,6 +166,9 @@ ObjectReference.psc
  - IsHarvested
  - GetTotalItemWeight
  - GetTotalArmorWeight
+ - SetItemHealthPercent
+ - GetItemMaxCharge
+ - Get/SetItemCharge
  
 Outfit
  - GetNumParts
@@ -181,7 +198,6 @@ Race.psc
 - Various RaceFlag properties
 - Various alias functions for info about specific race flags
 
-
 Scroll.psc
  - GetCastTime
  - GetPerk
@@ -191,6 +207,11 @@ Scroll.psc
  - GetNthEffectDuration
  - GetNthEffectMagicEffect
  - GetCostliestEffectIndex
+
+Shout.psc
+ - Get/SetNthWordOfPower
+ - Get/SetNthSpell
+ - Get/SetNthRecoveryTime
 
 SKSE.psc
  - GetVersion
@@ -224,7 +245,7 @@ UI.psc
  - IsMenuOpen
 
 Utility.psc
-- GetINIFloat/Int/Bool/String
+ - GetINIFloat/Int/Bool/String
  
 Weapon.psc
  - Get/SetBaseDamage

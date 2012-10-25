@@ -28,3 +28,17 @@ UInt8 DataHandler::GetModIndex(const char* modName)
 	return modList.modInfoList.GetIndexOf(LoadedModFinder(modName));
 }
 
+void SaveManager::Save(const char * name)
+{
+	CALL_MEMBER_FN(this, Save_Internal)(name, -1, 0);
+}
+
+void SaveManager::Load(const char * name)
+{
+	CALL_MEMBER_FN(this, Load_Internal)(name, -1, 0, 1);
+}
+
+SaveManager * SaveManager::GetSingleton(void)
+{
+	return *((SaveManager **)0x01AD5A58);
+}

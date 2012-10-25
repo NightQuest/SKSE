@@ -11,4 +11,14 @@ namespace papyrusAlias
 
 	BSFixedString GetName(BGSBaseAlias* thisAlias);
 	UInt32 GetId(BGSBaseAlias* thisAlias);
+
+	void RegisterForKey(BGSBaseAlias * thisAlias, UInt32 key);
+	void UnregisterForKey(BGSBaseAlias * thisAlias, UInt32 key);
+	void UnregisterForAllKeys(BGSBaseAlias * thisAlias);
+	void RegisterForMenu(BGSBaseAlias * thisAlias, BSFixedString menuName);
+	void UnregisterForMenu(BGSBaseAlias * thisAlias, BSFixedString menuName);
+	void UnregisterForAllMenus(BGSBaseAlias * thisAlias);
+	void RegisterForModEvent(BGSBaseAlias * thisAlias, BSFixedString eventName, BSFixedString callbackName);
+	void UnregisterForModEvent(BGSBaseAlias * thisAlias, BSFixedString eventName);
+	void UnregisterForAllModEvents(BGSBaseAlias * thisAlias);
 }

@@ -167,7 +167,7 @@ namespace scaleformExtend
 	}
 
 
-	void MagicItemData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm)
+	void MagicItemData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive)
 	{
 		if(!pFxVal || !pForm)
 			return;
@@ -193,8 +193,15 @@ namespace scaleformExtend
 						RegisterNumber(pFxVal, "area", pEffect->area);
 
 						// PLB: Normally I'd have this as a separate object but SkyUI is already using this
-						scaleformExtend::MagicItemData(pFxVal, movieView, pEffect->mgef);
+						scaleformExtend::MagicItemData(pFxVal, movieView, pEffect->mgef, bRecursive ? bExtra : false, bRecursive);
 					}
+				}
+
+				SpellItem * pSpellItem = DYNAMIC_CAST(pMagicItem, MagicItem, SpellItem);
+				if(pSpellItem)
+				{
+					RegisterNumber(pFxVal, "spellType", pSpellItem->data.type);
+					RegisterNumber(pFxVal, "trueCost", pSpellItem->GetMagickaCost());
 				}
 			}
 			break;
@@ -204,12 +211,10 @@ namespace scaleformExtend
 				EffectSetting * pEffectSetting = DYNAMIC_CAST(pForm, TESForm, EffectSetting);
 				if(pEffectSetting)
 				{
-					UInt32 school = pEffectSetting->school();
-					UInt32 skillLevel = pEffectSetting->level();
-
 					if(pEffectSetting->fullName.name.data)
 						RegisterString(pFxVal, movieView, "effectName", pEffectSetting->fullName.name.data);
 
+					RegisterNumber(pFxVal, "effectFlags", pEffectSetting->properties.flags);
 					RegisterNumber(pFxVal, "subType", pEffectSetting->school());
 					RegisterNumber(pFxVal, "skillLevel", pEffectSetting->level());
 					RegisterNumber(pFxVal, "archetype", pEffectSetting->properties.archetype);
@@ -217,6 +222,7 @@ namespace scaleformExtend
 					RegisterNumber(pFxVal, "castTime", pEffectSetting->properties.castingTime);
 					RegisterNumber(pFxVal, "delayTime", pEffectSetting->properties.delayTime);
 					RegisterNumber(pFxVal, "actorValue", pEffectSetting->properties.primaryValue);
+					RegisterNumber(pFxVal, "castType", pEffectSetting->properties.castType);
 					RegisterNumber(pFxVal, "magicType", pEffectSetting->properties.resistance);
 				}
 			}
@@ -238,13 +244,16 @@ namespace scaleformExtend
 						movieView->CreateObject(&word);
 
 						if(pShout->words[i].word && pShout->words[i].word->fullName.name.data)
-							RegisterString(pFxVal, movieView, "fullName", pShout->words[i].word->fullName.name.data);
+							RegisterString(&word, movieView, "word", pShout->words[i].word->fullName.name.data);
+
+						if(pShout->words[i].word && pShout->words[i].word->word.data)
+							RegisterString(&word, movieView, "fullName", pShout->words[i].word->word.data);
 
 						RegisterNumber(&word, "recoveryTime", pShout->words[i].recoverytime);
 
 						// Spell Object
-						scaleformExtend::MagicItemData(&word, movieView, pShout->words[i].spell);
-						words.PushBack(&words);
+						scaleformExtend::FormData(&word, movieView, pShout->words[i].spell, bRecursive ? bExtra : false, bRecursive);
+						words.PushBack(&word);
 					}
 					pFxVal->SetMember("words", &words);
 				}
@@ -256,7 +265,7 @@ namespace scaleformExtend
 		}
 	}
 
-	void ActorData(GFxValue * pFxVal,  GFxMovieView * movieView, TESForm * pForm)
+	void ActorData(GFxValue * pFxVal,  GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive)
 	{
 		if(!pForm || !pFxVal)
 			return;
@@ -278,7 +287,7 @@ namespace scaleformExtend
 					{
 						GFxValue spell;
 						movieView->CreateObject(&spell);
-						scaleformExtend::MagicItemData(&spell, movieView, pRace->spellList.GetNthSpell(i));
+						scaleformExtend::FormData(&spell, movieView, pRace->spellList.GetNthSpell(i), bRecursive ? bExtra : false, bRecursive);
 						spells.PushBack(&spell);
 					}
 					pFxVal->SetMember("spells", &spells);
@@ -290,7 +299,7 @@ namespace scaleformExtend
 					{
 						GFxValue shout;
 						movieView->CreateObject(&shout);
-						scaleformExtend::MagicItemData(&shout, movieView, pRace->spellList.GetNthShout(i));
+						scaleformExtend::FormData(&shout, movieView, pRace->spellList.GetNthShout(i), bRecursive ? bExtra : false, bRecursive);
 						shouts.PushBack(&shout);
 					}
 					pFxVal->SetMember("shouts", &shouts);
@@ -311,7 +320,7 @@ namespace scaleformExtend
 
 					GFxValue race;
 					movieView->CreateObject(&race);
-					scaleformExtend::ActorData(&race, movieView, pNPC->race.race);
+					scaleformExtend::FormData(&race, movieView, pNPC->race.race, bRecursive ? bExtra : false, bRecursive);
 					pFxVal->SetMember("race", &race);
 
 					// Spells
@@ -321,7 +330,7 @@ namespace scaleformExtend
 					{
 						GFxValue spell;
 						movieView->CreateObject(&spell);
-						scaleformExtend::MagicItemData(&spell, movieView, pNPC->spellList.GetNthSpell(i));
+						scaleformExtend::FormData(&spell, movieView, pNPC->spellList.GetNthSpell(i), bRecursive ? bExtra : false, bRecursive);
 						spells.PushBack(&spell);
 					}
 					pFxVal->SetMember("spells", &spells);
@@ -333,7 +342,7 @@ namespace scaleformExtend
 					{
 						GFxValue shout;
 						movieView->CreateObject(&shout);
-						scaleformExtend::MagicItemData(&shout, movieView, pNPC->spellList.GetNthShout(i));
+						scaleformExtend::FormData(&shout, movieView, pNPC->spellList.GetNthShout(i), bRecursive ? bExtra : false, bRecursive);
 						shouts.PushBack(&shout);
 					}
 					pFxVal->SetMember("shouts", &shouts);
@@ -350,7 +359,7 @@ namespace scaleformExtend
 					GFxValue actorBase;
 					movieView->CreateObject(&actorBase);
 
-					scaleformExtend::ActorData(&actorBase, movieView, pActor->baseForm);
+					scaleformExtend::FormData(&actorBase, movieView, pActor->baseForm, bRecursive ? bExtra : false, bRecursive);
 					pFxVal->SetMember("actorBase", &actorBase);
 
 					// Spells as Array
@@ -361,7 +370,7 @@ namespace scaleformExtend
 					{
 						GFxValue spell;
 						movieView->CreateObject(&spell);
-						scaleformExtend::MagicItemData(&spell, movieView, pActor->addedSpells.spells[i]);
+						scaleformExtend::FormData(&spell, movieView, pActor->addedSpells.spells[i], bRecursive ? bExtra : false, bRecursive);
 						addedSpells.PushBack(&spell);
 					}
 
@@ -380,16 +389,37 @@ namespace scaleformExtend
 							movieView->CreateObject(&effect);
 
 							ActiveEffect * pEffect = effects->GetNthItem(i);
-							RegisterNumber(pFxVal, "elapsed", pEffect->elapsed);
+
+							if(pEffect->item)
+								scaleformExtend::MagicItemData(&effect, movieView, pEffect->item, bRecursive ? bExtra : false, bRecursive);
+
+							RegisterNumber(&effect, "elapsed", pEffect->elapsed);
+							RegisterNumber(&effect, "duration", pEffect->duration);
+							RegisterNumber(&effect, "magnitude", pEffect->magnitude);
 							
 							// ActiveEffect
 							if(pEffect->effect && pEffect->effect->mgef)
-								scaleformExtend::MagicItemData(pFxVal, movieView, pEffect->effect->mgef);
+								scaleformExtend::MagicItemData(&effect, movieView, pEffect->effect->mgef, bRecursive ? bExtra : false, bRecursive);
 							
 							activeEffects.PushBack(&effect);
 						}
 					}
 					pFxVal->SetMember("activeEffects", &activeEffects);
+
+					GFxValue actorValues;
+					movieView->CreateArray(&actorValues);
+
+					for(int i = 0; i < ActorValueOwner::kNumActorValues; i++)
+					{
+						GFxValue actorValue;
+						movieView->CreateObject(&actorValue);
+						RegisterNumber(&actorValue, "current", pActor->actorValueOwner.GetCurrent(i));
+						RegisterNumber(&actorValue, "maximum", pActor->actorValueOwner.GetMaximum(i));
+						RegisterNumber(&actorValue, "base", pActor->actorValueOwner.GetBase(i));
+						actorValues.PushBack(&actorValue);
+					}
+
+					pFxVal->SetMember("actorValues", &actorValues);
 				}
 				PlayerCharacter* pPC = DYNAMIC_CAST(pForm, TESForm, PlayerCharacter);
 				if(pPC)
@@ -404,7 +434,7 @@ namespace scaleformExtend
 		}
 	}
 
-	void FormListData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm)
+	void FormListData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive)
 	{
 		if(!pForm || !pFxVal)
 			return;
@@ -427,7 +457,7 @@ namespace scaleformExtend
 						{
 							GFxValue arrArg;
 							movieView->CreateObject(&arrArg);
-							scaleformExtend::FormData(&arrArg, movieView, childForm);
+							scaleformExtend::FormData(&arrArg, movieView, childForm, bRecursive ? bExtra : false, bRecursive);
 							formArray.PushBack(&arrArg);
 						}
 					}
@@ -442,7 +472,7 @@ namespace scaleformExtend
 							if(childForm) {
 								GFxValue arrArg;
 								movieView->CreateObject(&arrArg);
-								scaleformExtend::FormData(&arrArg, movieView, childForm);
+								scaleformExtend::FormData(&arrArg, movieView, childForm, bRecursive ? bExtra : false, bRecursive);
 								formArray.PushBack(&arrArg);
 							}
 						}
@@ -457,17 +487,87 @@ namespace scaleformExtend
 		}
 	}
 
+	void MiscData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive)
+	{
+		if(!pForm || !pFxVal)
+			return;
+
+		switch(pForm->GetFormType())
+		{
+		case kFormType_Message:
+			{
+				BGSMessage * message = DYNAMIC_CAST(pForm, TESForm, BGSMessage);
+				if(message)
+				{
+					GFxValue btnArray;
+					movieView->CreateArray(&btnArray);
+					BSFixedString * btnText;
+					for(int i = 0; i < message->buttons.Count(); i++)
+					{
+						GFxValue fxValue;
+						btnText = message->buttons.GetNthItem(i);
+						if(btnText) {
+							movieView->CreateString(&fxValue, btnText->data);
+							btnArray.PushBack(&fxValue);
+						}
+					}
+
+					pFxVal->SetMember("buttons", &btnArray);
+				}
+			}
+			break;
+		case kFormType_Quest:
+			{
+				TESQuest * quest = DYNAMIC_CAST(pForm, TESForm, TESQuest);
+				if(quest)
+				{
+					RegisterString(pFxVal, movieView, "fullName", quest->fullName.name.data);
+					RegisterNumber(pFxVal, "flags", quest->unk07C.flags);
+					RegisterNumber(pFxVal, "priority", quest->unk07C.priority);
+					RegisterString(pFxVal, movieView, "editorId", quest->questID.Get());
+
+					GFxValue aliasArray;
+
+					movieView->CreateArray(&aliasArray);
+					
+					for(int i = 0; i < quest->aliases.count; i++)
+					{
+						BGSBaseAlias* alias;
+						if(quest->aliases.GetNthItem(i, alias)) {
+							GFxValue arrArg;
+							movieView->CreateObject(&arrArg);
+							RegisterString(&arrArg, movieView, "name", alias->name.data);
+							RegisterNumber(&arrArg, "id", alias->aliasId);
+							RegisterNumber(&arrArg, "flags", alias->flags);
+							aliasArray.PushBack(&arrArg);
+						}
+					}
+
+					pFxVal->SetMember("aliases", &aliasArray);
+				}
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
 	// Convenience function, maybe combine all other functions into this one anyway?
-	void FormData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm)
+	// bExtra - Adds all extra data other than FormId and FormType
+	// bRecursive - Processes child forms
+	void FormData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive)
 	{
 		if(!pForm || !pFxVal)
 			return;
 
 		scaleformExtend::CommonItemData(pFxVal, pForm);
-		scaleformExtend::StandardItemData(pFxVal, pForm);
-		scaleformExtend::MagicItemData(pFxVal, movieView, pForm);
-		scaleformExtend::ActorData(pFxVal, movieView, pForm);
-		scaleformExtend::FormListData(pFxVal, movieView, pForm);
+		if(bExtra) {
+			scaleformExtend::StandardItemData(pFxVal, pForm);
+			scaleformExtend::MagicItemData(pFxVal, movieView, pForm, bExtra, bRecursive);
+			scaleformExtend::ActorData(pFxVal, movieView, pForm, bExtra, bRecursive);
+			scaleformExtend::MiscData(pFxVal, movieView, pForm, bExtra, bRecursive);
+		}
+		scaleformExtend::FormListData(pFxVal, movieView, pForm, bExtra, bRecursive);
 	}
 
 	void InventoryData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerCharacter::ObjDesc * objDesc)

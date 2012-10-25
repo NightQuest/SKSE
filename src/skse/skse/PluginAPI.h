@@ -53,6 +53,31 @@ struct SKSEScaleformInterface
 	bool	(* Register)(const char * name, RegisterCallback callback);
 };
 
+struct SKSESerializationInterface
+{
+	enum
+	{
+		kVersion = 1,
+	};
+
+	typedef void (* EventCallback)(SKSESerializationInterface * intfc);
+
+	UInt32	version;
+
+	void	(* SetRevertCallback)(PluginHandle plugin, EventCallback callback);
+	void	(* SetSaveCallback)(PluginHandle plugin, EventCallback callback);
+	void	(* SetLoadCallback)(PluginHandle plugin, EventCallback callback);
+	void	(* SetFormDeleteCallback)(PluginHandle plugin, EventCallback callback);
+
+	bool	(* WriteRecord)(UInt32 type, UInt32 version, const void * buf, UInt32 length);
+	bool	(* OpenRecord)(UInt32 type, UInt32 version);
+	bool	(* WriteRecordData)(const void * buf, UInt32 length);
+
+	bool	(* GetNextRecordInfo)(UInt32 * type, UInt32 * version, UInt32 * length);
+	UInt32	(* ReadRecordData)(void * buf, UInt32 length);
+	bool	(* ResolveHandle)(UInt64 handle, UInt64 * handleOut);
+};
+
 #ifdef _PPAPI
 class VMClassRegistry;
 

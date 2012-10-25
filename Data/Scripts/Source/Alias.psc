@@ -109,9 +109,47 @@ EndEvent
 Event OnUpdateGameTime()
 EndEvent
 
-; SKSE additions built 2012-08-04 05:25:04.547000 UTC
+; SKSE additions built 2012-09-30 07:24:37.943000 UTC
 ; return the name of the alias
 string Function GetName() native
 
 ; return the id of the alias
 int Function GetID() native
+
+; Registers for OnKeyDown and OnKeyUp events for the given keycode.
+Function RegisterForKey(int keyCode) native
+Function UnregisterForKey(int keyCode) native
+Function UnregisterForAllKeys() native
+
+Event OnKeyDown(int keyCode)
+EndEvent
+
+Event OnKeyUp(int keyCode, float holdTime)
+EndEvent
+
+; Registers for OnMenuOpen and OnMenuClose events for the given menu.
+; Registrations have to be refreshed after each game load.
+; For a list of valid menu names, see UI.psc.
+Function RegisterForMenu(string menuName) native
+Function UnregisterForMenu(string menuName) native
+Function UnregisterForAllMenus() native
+
+Event OnMenuOpen(string menuName)
+endEvent
+
+Event OnMenuClose(string menuName)
+endEvent
+
+; Registers a custom event callback for given event name.
+; Registrations have to be refreshed after each game load.
+;
+;	Examples:
+;		RegisterForModEvent("myCustomEvent", "MyModEventCallback")
+;
+;	Event signature of custom event callbacks:
+;		Event MyModEventCallback(string eventName, string strArg, float numArg, Form sender)
+;		endEvent
+;
+Function RegisterForModEvent(string eventName, string callbackName) native
+Function UnregisterForModEvent(string eventName) native
+Function UnregisterForAllModEvents() native

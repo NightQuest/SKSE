@@ -1,6 +1,5 @@
 #include "PapyrusStringUtil.h"
-#include "PapyrusVM.h"
-#include "PapyrusNativeFunctions.h"
+
 #include <algorithm>
 #include <locale>
 
@@ -127,51 +126,52 @@ namespace papyrusStringUtil
 		std::string sub = (len) ? tmpStr.substr(startIndex, len) : tmpStr.substr(startIndex);
 		return sub.c_str();
 	}
+}
 
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
 
-	void RegisterFuncs(VMClassRegistry* registry)
-	{
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, UInt32, BSFixedString> ("GetLength", "StringUtil", papyrusStringUtil::GetLength, registry));
-		
-		registry->RegisterFunction(
-			new NativeFunction2 <StaticFunctionTag, BSFixedString, BSFixedString, UInt32> ("GetNthChar", "StringUtil", papyrusStringUtil::GetNthChar, registry));
+void papyrusStringUtil::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, UInt32, BSFixedString> ("GetLength", "StringUtil", papyrusStringUtil::GetLength, registry));
 
-		//registry->RegisterFunction(
-		//	new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsUppercase", "StringUtil", papyrusStringUtil::IsUppercase, registry));
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, BSFixedString, BSFixedString, UInt32> ("GetNthChar", "StringUtil", papyrusStringUtil::GetNthChar, registry));
 
-		//registry->RegisterFunction(
-		//	new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsLowercase", "StringUtil", papyrusStringUtil::IsLowercase, registry));
+	//registry->RegisterFunction(
+	//	new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsUppercase", "StringUtil", papyrusStringUtil::IsUppercase, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsLetter", "StringUtil", papyrusStringUtil::IsLetter, registry));
+	//registry->RegisterFunction(
+	//	new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsLowercase", "StringUtil", papyrusStringUtil::IsLowercase, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsDigit", "StringUtil", papyrusStringUtil::IsDigit, registry));
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsLetter", "StringUtil", papyrusStringUtil::IsLetter, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsPunctuation", "StringUtil", papyrusStringUtil::IsPunctuation, registry));
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsDigit", "StringUtil", papyrusStringUtil::IsDigit, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsPrintable", "StringUtil", papyrusStringUtil::IsPrintable, registry));
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsPunctuation", "StringUtil", papyrusStringUtil::IsPunctuation, registry));
 
-		//registry->RegisterFunction(
-		//	new NativeFunction1 <StaticFunctionTag, BSFixedString, BSFixedString> ("ToUpper", "StringUtil", papyrusStringUtil::ToUpper, registry));
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsPrintable", "StringUtil", papyrusStringUtil::IsPrintable, registry));
 
-		//registry->RegisterFunction(
-		//	new NativeFunction1 <StaticFunctionTag, BSFixedString, BSFixedString> ("ToLower", "StringUtil", papyrusStringUtil::ToLower, registry));
+	//registry->RegisterFunction(
+	//	new NativeFunction1 <StaticFunctionTag, BSFixedString, BSFixedString> ("ToUpper", "StringUtil", papyrusStringUtil::ToUpper, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction3 <StaticFunctionTag, SInt32, BSFixedString, BSFixedString, UInt32> ("Find", "StringUtil", papyrusStringUtil::Find, registry));
+	//registry->RegisterFunction(
+	//	new NativeFunction1 <StaticFunctionTag, BSFixedString, BSFixedString> ("ToLower", "StringUtil", papyrusStringUtil::ToLower, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction3 <StaticFunctionTag, BSFixedString, BSFixedString, UInt32, UInt32> ("Substring", "StringUtil", papyrusStringUtil::Substring, registry));
+	registry->RegisterFunction(
+		new NativeFunction3 <StaticFunctionTag, SInt32, BSFixedString, BSFixedString, UInt32> ("Find", "StringUtil", papyrusStringUtil::Find, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, UInt32, BSFixedString> ("AsOrd", "StringUtil", papyrusStringUtil::AsOrd, registry));
+	registry->RegisterFunction(
+		new NativeFunction3 <StaticFunctionTag, BSFixedString, BSFixedString, UInt32, UInt32> ("Substring", "StringUtil", papyrusStringUtil::Substring, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, BSFixedString, UInt32> ("AsChar", "StringUtil", papyrusStringUtil::AsChar, registry));
-	}
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, UInt32, BSFixedString> ("AsOrd", "StringUtil", papyrusStringUtil::AsOrd, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, BSFixedString, UInt32> ("AsChar", "StringUtil", papyrusStringUtil::AsChar, registry));
 }

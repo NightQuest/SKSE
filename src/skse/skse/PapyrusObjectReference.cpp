@@ -267,9 +267,20 @@ namespace papyrusObjectReference
 	{
 		UInt8 formType = pProduceRef->baseForm->formType;
 		if (formType == kFormType_Tree || formType == kFormType_Flora) {
-			return ((pProduceRef->flags & 0x2000) == 0x2000) ? true : false;
+			return (pProduceRef->flags & TESObjectREFR::kFlag_Harvested) != 0;
 		}
 		return false;
+	}
+
+	void SetHarvested(TESObjectREFR * pProduceRef, bool isHarvested)
+	{
+		UInt8 formType = pProduceRef->baseForm->formType;
+		if (formType == kFormType_Tree || formType == kFormType_Flora) {
+			if(isHarvested)
+				pProduceRef->flags |= TESObjectREFR::kFlag_Harvested;
+			else
+				pProduceRef->flags &= ~TESObjectREFR::kFlag_Harvested;
+		}
 	}
 
 	void SetItemHealthPercent(TESObjectREFR* object, float value)
@@ -333,6 +344,10 @@ namespace papyrusObjectReference
 		}
 	}
 
+	void ResetInventory(TESObjectREFR * obj)
+	{
+		obj->ResetInventory(false);
+	}
 };
 
 #include "PapyrusVM.h"
@@ -355,6 +370,9 @@ void papyrusObjectReference::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction0<TESObjectREFR, bool>("IsHarvested", "ObjectReference", papyrusObjectReference::IsHarvested, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction1<TESObjectREFR, void, bool>("SetHarvested", "ObjectReference", papyrusObjectReference::SetHarvested, registry));
+
 	// Item modifications, Tempering/Charges
 	registry->RegisterFunction(
 		new NativeFunction1<TESObjectREFR, void, float>("SetItemHealthPercent", "ObjectReference", papyrusObjectReference::SetItemHealthPercent, registry));
@@ -367,4 +385,7 @@ void papyrusObjectReference::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1<TESObjectREFR, void, float>("SetItemCharge", "ObjectReference", papyrusObjectReference::SetItemCharge, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectREFR, void>("ResetInventory", "ObjectReference", papyrusObjectReference::ResetInventory, registry));
 }

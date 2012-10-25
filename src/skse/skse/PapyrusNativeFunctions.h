@@ -51,7 +51,7 @@ public:
 	virtual UInt32				GetUnk24(void) = 0;
 	virtual StringCache::Ref *	GetStr28(void) = 0;
 	virtual void				Unk_0E(UInt32 unk) = 0;
-	virtual UInt32				Invoke(UInt32 unk0, UInt32 unk1, UInt32 unk2, UInt32 unk3) = 0;
+	virtual UInt32				Invoke(UInt32 unk0, UInt32 unk1, VMClassRegistry * registry, UInt32 unk3) = 0;
 	virtual StringCache::Ref *	Unk_10(void) = 0;
 	virtual bool				Unk_11(UInt32 unk0, UInt32 * unk1) = 0;
 	virtual bool				Unk_12(UInt32 idx, UInt32 out) = 0;	// param list stuff
@@ -104,8 +104,8 @@ public:
 	virtual UInt32				GetUnk24(void)				{ return unk24; }
 	virtual StringCache::Ref *	GetStr28(void)				{ return &unk28; }
 	virtual void				Unk_0E(UInt32 unk)			{ }							// always nop?
-	virtual UInt32				Invoke(UInt32 unk0, UInt32 unk1, UInt32 unk2, UInt32 unk3)
-															{ return CALL_MEMBER_FN(this, Impl_Invoke)(unk0, unk1, unk2, unk3); }
+	virtual UInt32				Invoke(UInt32 unk0, UInt32 unk1, VMClassRegistry * registry, UInt32 unk3)
+															{ return CALL_MEMBER_FN(this, Impl_Invoke)(unk0, unk1, registry, unk3); }
 	virtual StringCache::Ref *	Unk_10(void)				{ return CALL_MEMBER_FN(this, Impl_Fn10)(); }
 	virtual bool				Unk_11(UInt32 unk0, UInt32 * unk1)
 															{ *unk1 = 0; return false; }
@@ -119,7 +119,7 @@ public:
 	MEMBER_FN_PREFIX(NativeFunctionBase);
 	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C16F20);
 	DEFINE_MEMBER_FN(Impl_GetParam, UInt32 *, 0x00C10900, UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut);
-	DEFINE_MEMBER_FN(Impl_Invoke, UInt32, 0x00C17100, UInt32 unk0, UInt32 unk1, UInt32 unk2, UInt32 unk3);
+	DEFINE_MEMBER_FN(Impl_Invoke, UInt32, 0x00C17100, UInt32 unk0, UInt32 unk1, VMClassRegistry * registry, UInt32 unk3);
 	DEFINE_MEMBER_FN(Impl_Fn10, StringCache::Ref *, 0x00C16F60);
 	DEFINE_MEMBER_FN(Impl_Fn12, bool, 0x00C173B0, UInt32 idx, UInt32 out);
 

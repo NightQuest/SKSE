@@ -1,6 +1,6 @@
 Scriptname ConstructibleObject extends MiscObject Hidden
 
-; SKSE additions built 2012-08-04 05:25:04.547000 UTC
+; SKSE additions built 2012-09-30 07:24:37.943000 UTC
 
 ; Gets/Sets the result of this recipe
 Form Function GetResult() native
@@ -23,4 +23,4 @@ Function SetNthIngredientQuantity(int value, int n) native
 
 ; Gets/Sets the Workbench keyword (Which apparatus creates this)
 Keyword Function GetWorkbenchKeyword() native
-Function SetWorkbenchKeyword(string keyword) native
+Function SetWorkbenchKeyword(Keyword aKeyword) native

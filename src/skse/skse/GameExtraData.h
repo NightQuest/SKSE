@@ -293,7 +293,7 @@ public:
  //	ExtraLightData
  //	ExtraSceneData
  //	ExtraBadPosition
- //	ExtraGeadTrackingWeight
+ //	ExtraHeadTrackingWeight
  //	ExtraFromAlias
  //	ExtraShouldWear
  //	ExtraFavorCost

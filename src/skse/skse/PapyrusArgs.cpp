@@ -238,6 +238,7 @@ template <> void UnpackValue <VMArray<BSFixedString>>(VMArray<BSFixedString> * d
 void * UnpackHandle(VMValue * src, UInt32 typeID)
 {
 	if(!src->IsIdentifier()) return NULL;
+	if(!src->data.id) return NULL;
 
 	UInt64	handle = src->data.id->GetHandle();
 

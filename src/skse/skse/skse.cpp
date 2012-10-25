@@ -3,9 +3,12 @@
 #include "SafeWrite.h"
 #include "PluginManager.h"
 #include "Utilities.h"
+#include "InternalSerialization.h"
 #include <shlobj.h>
 
 IDebugLog	gLog;
+
+#define _SAVELOAD 1
 
 #if RUNTIME
 
@@ -18,6 +21,10 @@ STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_7_7_0);
 #include "Hooks_ObScript.h"
 #include "Hooks_DirectInput8Create.h"
 #include "Hooks_Papyrus.h"
+
+#ifdef _SAVELOAD
+#include "Hooks_SaveLoad.h"
+#endif
 
 #else
 
@@ -92,6 +99,10 @@ void SKSE_Initialize(void)
 		Hooks_Gameplay_Commit();
 		Hooks_ObScript_Commit();
 		Hooks_Papyrus_Commit();
+#ifdef _SAVELOAD
+		Hooks_SaveLoad_Commit();
+		Init_CoreSerialization_Callbacks();
+#endif
 		Hooks_DirectInput_Commit();
 
 		FlushInstructionCache(GetCurrentProcess(), NULL, 0);

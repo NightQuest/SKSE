@@ -5,6 +5,7 @@
 #include "GameMenus.h"
 #include "GameEvents.h"
 #include "GameForms.h"
+#include "GameInput.h"
 
 namespace papyrusUI
 {
@@ -18,7 +19,7 @@ namespace papyrusUI
 
 	void InvokeForm(StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr, TESForm * form)
 	{
-		if (!menuName.data || !targetStr.data)
+		if (!form || !menuName.data || !targetStr.data)
 			return;
 
 		MenuManager * mm = MenuManager::GetSingleton();
@@ -29,35 +30,13 @@ namespace papyrusUI
 		if (!view)
 			return;
 
-		std::string dest, name;
-		if (! ExtractTargetData(targetStr.data, dest, name))
-			return;
-
-		GFxValue fxDest;
-		if (! view->GetVariable(&fxDest, dest.c_str()))
-			return;
-
 		GFxValue args;
 		view->CreateObject(&args);
-		scaleformExtend::FormData(&args, view, form);
-		fxDest.Invoke(name.c_str(), NULL, &args, 1);
-	}
+		scaleformExtend::FormData(&args, view, form, false, false);
 
-	bool ExtractTargetData(const char * target, std::string & dest, std::string & name)
-	{
-		// target format: [_global|_root].d.e.s.t.ValueName
-		
-		std::string t(target);
-		UInt32 lastDelim = t.rfind('.');
+		view->Invoke(targetStr.data, NULL, &args, 1);
 
-		// Need at least 1 delim
-		if (lastDelim == std::string::npos)
-			return false;
-
-		dest = t.substr(0, lastDelim);
-		name = t.substr(lastDelim+1);
-
-		return true;
+		args.CleanManaged();
 	}
 
 	bool IsMenuOpen(StaticFunctionTag* thisInput, BSFixedString menuName)
@@ -70,6 +49,15 @@ namespace papyrusUI
 			return false;
 
 		return CALL_MEMBER_FN(mm, IsMenuOpen)(&menuName);
+	}
+
+	bool IsTextInputEnabled(StaticFunctionTag * thisInput)
+	{
+		InputManager	* inputManager = InputManager::GetSingleton();
+
+		if(!inputManager) return false;
+
+		return inputManager->allowTextInput != 0;
 	}
 };
 
@@ -119,4 +107,7 @@ void papyrusUI::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsMenuOpen", "UI", papyrusUI::IsMenuOpen, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <StaticFunctionTag, bool> ("IsTextInputEnabled", "UI", papyrusUI::IsTextInputEnabled, registry));
 }

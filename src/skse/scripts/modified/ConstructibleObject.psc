@@ -20,4 +20,4 @@ Function SetNthIngredientQuantity(int value, int n) native
 
 ; Gets/Sets the Workbench keyword (Which apparatus creates this)
 Keyword Function GetWorkbenchKeyword() native
-Function SetWorkbenchKeyword(string keyword) native
+Function SetWorkbenchKeyword(Keyword aKeyword) native

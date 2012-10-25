@@ -32,8 +32,8 @@ public:
 	virtual bool	ResizeArray(const char * name, UInt32 len, UInt32 flags);
 	virtual UInt32	GetArrayLen(const char * name);
 	virtual bool	GetArray(UInt32 type, const char * name, UInt32 offset, void * buf, UInt32 len);
-	virtual bool	Invoke(const char * name, GFxValue * result, const char * fmt, ...);
 	virtual bool	Invoke(const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
+	virtual bool	Invoke(const char * name, GFxValue * result, const char * fmt, ...);
 	virtual bool	Invoke_v(const char * name, GFxValue * result, const char * fmt, va_list args);
 	// more
 };

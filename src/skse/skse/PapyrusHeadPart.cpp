@@ -1,9 +1,6 @@
- 
 #include "PapyrusHeadPart.h"
- 
+
 #include "GameObjects.h"
-#include "PapyrusVM.h"
-#include "PapyrusNativeFunctions.h"
  
 namespace papyrusHeadPart
 {
@@ -50,30 +47,33 @@ namespace papyrusHeadPart
 			thisPart->validRaces = raceList;
 		}
     }
+}
 
-    void RegisterFuncs(VMClassRegistry* registry)
-    {
-		registry->RegisterForm(BGSHeadPart::kTypeID, "HeadPart");
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
 
-		registry->RegisterFunction(
-			new NativeFunction0<BGSHeadPart, UInt32>("GetType", "HeadPart", papyrusHeadPart::GetType, registry));
+void papyrusHeadPart::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterForm(BGSHeadPart::kTypeID, "HeadPart");
 
-		registry->RegisterFunction(
-			new NativeFunction0<BGSHeadPart, UInt32>("GetNumExtraParts", "HeadPart", papyrusHeadPart::GetNumExtraParts, registry));
+	registry->RegisterFunction(
+		new NativeFunction0<BGSHeadPart, UInt32>("GetType", "HeadPart", papyrusHeadPart::GetType, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1<BGSHeadPart, BGSHeadPart*, UInt32>("GetNthExtraPart", "HeadPart", papyrusHeadPart::GetNthExtraPart, registry));
+	registry->RegisterFunction(
+		new NativeFunction0<BGSHeadPart, UInt32>("GetNumExtraParts", "HeadPart", papyrusHeadPart::GetNumExtraParts, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1<BGSHeadPart, bool, BGSHeadPart*>("HasExtraPart", "HeadPart", papyrusHeadPart::HasExtraPart, registry));
+	registry->RegisterFunction(
+		new NativeFunction1<BGSHeadPart, BGSHeadPart*, UInt32>("GetNthExtraPart", "HeadPart", papyrusHeadPart::GetNthExtraPart, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1<BGSHeadPart, UInt32, BGSHeadPart*>("GetIndexOfExtraPart", "HeadPart", papyrusHeadPart::GetIndexOfExtraPart, registry));
+	registry->RegisterFunction(
+		new NativeFunction1<BGSHeadPart, bool, BGSHeadPart*>("HasExtraPart", "HeadPart", papyrusHeadPart::HasExtraPart, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction0<BGSHeadPart, BGSListForm*>("GetValidRaces", "HeadPart", papyrusHeadPart::GetValidRaces, registry));
+	registry->RegisterFunction(
+		new NativeFunction1<BGSHeadPart, UInt32, BGSHeadPart*>("GetIndexOfExtraPart", "HeadPart", papyrusHeadPart::GetIndexOfExtraPart, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1<BGSHeadPart, void, BGSListForm*>("SetValidRaces", "HeadPart", papyrusHeadPart::SetValidRaces, registry));
-    }
+	registry->RegisterFunction(
+		new NativeFunction0<BGSHeadPart, BGSListForm*>("GetValidRaces", "HeadPart", papyrusHeadPart::GetValidRaces, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<BGSHeadPart, void, BGSListForm*>("SetValidRaces", "HeadPart", papyrusHeadPart::SetValidRaces, registry));
 }

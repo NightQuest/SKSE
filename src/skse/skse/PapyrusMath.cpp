@@ -1,37 +1,36 @@
 #include "PapyrusMath.h"
 
-namespace papyrusMath {
-
-UInt32 LeftShift(StaticFunctionTag* base, UInt32 value, UInt32 shiftBy)
+namespace papyrusMath
 {
-	return (shiftBy >= 32) ? 0 : value << shiftBy;
-}
+	UInt32 LeftShift(StaticFunctionTag* base, UInt32 value, UInt32 shiftBy)
+	{
+		return (shiftBy >= 32) ? 0 : value << shiftBy;
+	}
 
-UInt32 RightShift(StaticFunctionTag* base, UInt32 value, UInt32 shiftBy)
-{
-	return (shiftBy >= 32) ? 0 : value >> shiftBy;
-}
+	UInt32 RightShift(StaticFunctionTag* base, UInt32 value, UInt32 shiftBy)
+	{
+		return (shiftBy >= 32) ? 0 : value >> shiftBy;
+	}
 
-UInt32 LogicalAnd(StaticFunctionTag* base, UInt32 arg1, UInt32 arg2)
-{
-	return arg1 & arg2;
-}
+	UInt32 LogicalAnd(StaticFunctionTag* base, UInt32 arg1, UInt32 arg2)
+	{
+		return arg1 & arg2;
+	}
 
-UInt32 LogicalOr(StaticFunctionTag* base, UInt32 arg1, UInt32 arg2)
-{
-	return arg1 | arg2;
-}
+	UInt32 LogicalOr(StaticFunctionTag* base, UInt32 arg1, UInt32 arg2)
+	{
+		return arg1 | arg2;
+	}
 
-UInt32 LogicalXor(StaticFunctionTag* base, UInt32 arg1, UInt32 arg2)
-{
-	return arg1 ^ arg2;
-}
+	UInt32 LogicalXor(StaticFunctionTag* base, UInt32 arg1, UInt32 arg2)
+	{
+		return arg1 ^ arg2;
+	}
 
-UInt32 LogicalNot(StaticFunctionTag* base, UInt32 arg1)
-{
-	return ~arg1;
-}
-
+	UInt32 LogicalNot(StaticFunctionTag* base, UInt32 arg1)
+	{
+		return ~arg1;
+	}
 }
 
 #include "PapyrusVM.h"

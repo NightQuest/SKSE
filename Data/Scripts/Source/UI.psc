@@ -90,3 +90,7 @@ Function InvokeStringA(string menuName, string target, string[] args) global nat
 
 ; Sends Form data to Scaleform as a Flash object, FormLists included.
 Function InvokeForm(string menuName, string target, Form arg) global native
+
+; returns if scaleform is in 'text input' mode
+; this is useful for ignoring keys that should get swallowed by an editable text box
+bool Function IsTextInputEnabled() global native

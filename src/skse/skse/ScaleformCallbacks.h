@@ -42,13 +42,13 @@ public:
 
 	union Data
 	{
-		double	number;
-		bool	boolean;
-		char	* string;
-		char	** managedString;
-		wchar_t	* wideString;
-		wchar_t	** managedWideString;
-		void	* obj;
+		double			number;
+		bool			boolean;
+		const char		* string;
+		const char		** managedString;
+		const wchar_t	* wideString;
+		const wchar_t	** managedWideString;
+		void			* obj;
 	};
 
 	// 4
@@ -65,7 +65,16 @@ public:
 		DEFINE_MEMBER_FN(Invoke, bool, 0x0091A0D0, void * obj, GFxValue * result, const char * name, GFxValue * args, UInt32 numArgs, bool isDisplayObj);
 		DEFINE_MEMBER_FN(AttachMovie, bool, 0x0091A260, void * obj, GFxValue * value, const char * symbolName, const char * instanceName, SInt32 depth, void * initArgs);
 		DEFINE_MEMBER_FN(PushBack, bool, 0x009180E0, void * obj, GFxValue * value);
+		DEFINE_MEMBER_FN(SetText, bool, 0x0091A5A0, void * obj, const wchar_t * text, bool html);
+		//DEFINE_MEMBER_FN(PopBack, bool, 0x00000000, void * obj, GFxValue * value);
+		DEFINE_MEMBER_FN(GetArraySize, UInt32, 0x00918070, void * obj);
+		//DEFINE_MEMBER_FN(SetArraySize, bool, 0x00000000, void * obj, UInt32 size);
+		DEFINE_MEMBER_FN(GetElement, bool, 0x0091ACD0, void * obj, UInt32 index, GFxValue * value);
+		//DEFINE_MEMBER_FN(SetElement, bool, 0x00000000, void * obj, UInt32 index, GFxValue * value);
+		//DEFINE_MEMBER_FN(GotoLabeledFrame, bool, 0x00000000, void * obj, const char * frameLabel, bool stop);
+		//DEFINE_MEMBER_FN(GotoFrame, bool, 0x00000000, void * obj, UInt32 frameNumber, bool stop);
 
+		DEFINE_MEMBER_FN(AddManaged_Internal, void, 0x00918F90, GFxValue * value, void * obj);
 		DEFINE_MEMBER_FN(ReleaseManaged_Internal, void, 0x00919850, GFxValue * value, void * obj);
 	};
 
@@ -78,18 +87,22 @@ public:
 	void	CleanManaged(void);
 	bool	IsDisplayObject(void) const	{ return GetType() == kType_DisplayObject; }
 
-	bool		GetBool(void);
-	char *		GetString(void);
-	wchar_t *	GetWideString(void);
-	double		GetNumber(void);
+	bool			GetBool(void);
+	const char *	GetString(void);
+	const wchar_t *	GetWideString(void);
+	double			GetNumber(void);
 
 	void	SetUndefined(void);
 	void	SetNull(void);
 	void	SetBool(bool value);
 	void	SetNumber(double value);
+	void	SetString(const char * value);
+	void	SetWideString(const wchar_t * value);
 
 	MEMBER_FN_PREFIX(GFxValue);
 
+	UInt32	GetArraySize();
+	bool	GetElement(UInt32 index, GFxValue * value);
 	bool	HasMember(const char * name);
 	bool	SetMember(const char * name, GFxValue * value);
 	bool	GetMember(const char * name, GFxValue * value);

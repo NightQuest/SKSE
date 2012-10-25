@@ -29,3 +29,7 @@ Function SetGameSettingFloat(string setting, float value) global native
 Function SetGameSettingInt(string setting, int value) global native
 Function SetGameSettingBool(string setting, bool value) global native
 Function SetGameSettingString(string setting, string value) global native
+
+; save/load game
+Function SaveGame(string name) native global
+Function LoadGame(string name) native global

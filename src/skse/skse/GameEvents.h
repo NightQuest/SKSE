@@ -83,77 +83,6 @@ struct MenuModeChangeEvent
 {
 };
 
-// 10 - See sub_A61970
-class InputEvent
-{
-public:
-	enum
-	{
-		kEventType_Button = 0,
-		kEventType_MouseMove,
-		kEventType_Char,
-		kEventType_Thumbstick,
-		kEventType_DeviceConnect,
-		kEventType_Kinect
-	};
-
-	enum
-	{
-		kDeviceType_Keyboard = 0,
-		kDeviceType_Mouse
-	};
-
-	virtual			~InputEvent();
-	virtual bool	IsIDEvent();
-	virtual UInt32	GetID();
-
-//	void			** _vtbl;	// 00
-	const UInt32	deviceType;	// 04
-	const UInt32	eventType;	// 08
-	InputEvent		* next;		// 0C
-};
-STATIC_ASSERT(sizeof(InputEvent) == 0x10);
-
-class IDEvent
-{
-public:
-	UInt32			deviceID;			// 00 - device ID?
-};
-
-// 20
-class ButtonEvent : public IDEvent, public InputEvent
-{
-public:
-	UInt32			scanCode;	// 14
-	UInt32			modFlags;	// 18 (00000038 when ALT is pressed, 0000001D when STRG is pressed)
-	float			timer;		// 1C (hold duration)
-};
-STATIC_ASSERT(sizeof(ButtonEvent) == 0x20);
-
-class MouseMoveEvent : public IDEvent, public InputEvent
-{
-};
-
-// 14
-class CharEvent : public InputEvent
-{
-public:
-	UInt32			keyCode;		// 10 (ascii-compatible)
-};
-STATIC_ASSERT(sizeof(CharEvent) == 0x14);
-
-class ThumbstickEvent : public IDEvent, public InputEvent
-{
-};
-
-class DeviceConnectEvent : public InputEvent
-{
-};
-
-class KinectEvent : public IDEvent, public InputEvent
-{
-};
-
 class Character;
 class TESForm;
 class ActiveEffect;
@@ -173,6 +102,283 @@ struct TESActiveEffectApplyRemoveEvent
 	ActiveEffect	* effect2;
 };
 
+struct TESQuestStageEvent
+{
+	void			* finishedCallback;
+	UInt32			formId;
+	UInt32			stage;
+};
+
+// This isn't necessarily correct, just there to receive events
+struct TESHarvestEvent
+{
+	struct ItemHarvested
+	{
+		// Unknown
+	};
+};
+
+struct LevelIncrease
+{
+	struct Event
+	{
+		TESForm		* character;
+		UInt32		level;
+	};
+};
+
+struct SkillIncrease
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct WordLearned
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct WordUnlocked
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct Inventory
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct Bounty
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct QuestStatus
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct ObjectiveState
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct Trespass
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct FinePaid
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct HoursPassed
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct DaysPassed
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct DaysJailed
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct CriticalHitEvent
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct DisarmedEvent
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct ItemsPickpocketed
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct ItemSteal
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct ItemCrafted
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct LocationDiscovery
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct Jailing
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct ChestsLooted
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct TimesTrained
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct TimesBartered
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct ContractedDisease
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct SpellsLearned
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct DragonSoulGained
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct SoulGemsUsed
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct SoulsTrapped
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct PoisonedWeapon
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct ShoutAttack
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct JailEscape
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct GrandTheftHorse
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct AssaultCrime
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct MurderCrime
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct LocksPicked
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct LocationCleared
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
+struct ShoutMastered
+{
+	struct Event
+	{
+		// Unknown
+	};
+};
 
 template <>
 class BSTEventSink <TESSleepStartEvent>
@@ -191,13 +397,31 @@ public:
 };
 
 template <>
-class BSTEventSink <InputEvent>
+class BSTEventSink <TESQuestStageEvent>
 {
 public:
 	virtual ~BSTEventSink() {}; // todo?
-	virtual	EventResult ReceiveEvent(InputEvent ** evn, EventDispatcher<InputEvent,InputEvent*> * dispatcher) = 0;
+	virtual	EventResult ReceiveEvent(TESQuestStageEvent * evn, EventDispatcher<TESQuestStageEvent> * dispatcher) = 0;
+};
+
+template <>
+class BSTEventSink <LevelIncrease::Event>
+{
+public:
+	virtual ~BSTEventSink() {}; // todo?
+	virtual	EventResult ReceiveEvent(LevelIncrease::Event * evn, EventDispatcher<LevelIncrease::Event> * dispatcher) = 0;
+};
+
+template <>
+class BSTEventSink <TESHarvestEvent::ItemHarvested>
+{
+public:
+	virtual ~BSTEventSink() {}; // todo?
+	virtual	EventResult ReceiveEvent(TESHarvestEvent::ItemHarvested * evn, EventDispatcher<TESHarvestEvent::ItemHarvested> * dispatcher) = 0;
 };
 
 // For testing
 //extern EventDispatcher<TESSleepStartEvent> * g_sleepStartEventDispatcher;
-extern EventDispatcher<InputEvent,InputEvent*> ** g_inputEventDispatcher;
+extern EventDispatcher<TESQuestStageEvent> * g_questStageEventDispatcher;
+extern EventDispatcher<TESHarvestEvent::ItemHarvested> * g_harvestEventDispatcher;
+extern EventDispatcher<LevelIncrease::Event> * g_levelIncreaseEventDispatcher;

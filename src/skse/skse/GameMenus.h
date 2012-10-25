@@ -285,6 +285,13 @@ public:
 	bool operator==(const MenuTableItem & rhs) const	{ return name == rhs.name; }
 	bool operator==(const BSFixedString a_name) const	{ return name == a_name; }
 	operator UInt32() const								{ return (UInt32)name.data; }
+
+	static inline UInt32 GetHash(BSFixedString * key)
+	{
+		UInt32 hash;
+		CRC32_Calc4(&hash, (UInt32)key->data);
+		return hash;
+	}
 };
 
 typedef tHashSet<MenuTableItem,BSFixedString> MenuTable;

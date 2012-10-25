@@ -182,6 +182,20 @@ namespace papyrusGame
 			}
 		}
 	}
+
+	void SaveGame(StaticFunctionTag * base, BSFixedString name)
+	{
+		SaveManager	* mgr = SaveManager::GetSingleton();
+		if(mgr)
+			mgr->Save(name.data);
+	}
+
+	void LoadGame(StaticFunctionTag * base, BSFixedString name)
+	{
+		SaveManager	* mgr = SaveManager::GetSingleton();
+		if(mgr)
+			mgr->Load(name.data);
+	}
 }
 
 #include "PapyrusVM.h"
@@ -233,4 +247,10 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction2 <StaticFunctionTag, void, BSFixedString, BSFixedString>("SetGameSettingString", "Game", papyrusGame::SetGameSettingString, registry));
 
+	// Save/Load
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, void, BSFixedString>("SaveGame", "Game", papyrusGame::SaveGame, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, void, BSFixedString>("LoadGame", "Game", papyrusGame::LoadGame, registry));
 }

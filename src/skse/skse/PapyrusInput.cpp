@@ -1,6 +1,7 @@
 #include "PapyrusInput.h"
 
 #include "Hooks_DirectInput8Create.h"
+#include "GameInput.h"
 
 namespace papyrusInput
 {
@@ -63,6 +64,60 @@ namespace papyrusInput
 	//void DisableMouse(StaticFunctionTag* thisInput);
 	//void EnableMouse(StaticFunctionTag* thisInput);
 	//bool IsMouseDisabled(StaticFunctionTag* thisInput);
+
+	SInt32 GetMappedKey(StaticFunctionTag* thisInput, BSFixedString name, UInt32 deviceType)
+	{
+		InputManager * inputManager = InputManager::GetSingleton();
+		if (!inputManager)
+			return -1;
+
+		UInt32 key = 0xFF;
+		
+		// Manual device selection
+		if (deviceType != 0xFF)
+		{
+			key = inputManager->GetMappedKey(name.data, deviceType, InputManager::kContext_Gameplay);
+		}
+		// Auto-selected device
+		else
+		{
+			// Gamepad
+			if (*g_inputEventDispatcher && (*g_inputEventDispatcher)->IsGamepadEnabled())
+			{
+				deviceType = kDeviceType_Gamepad;
+				key = inputManager->GetMappedKey(name.data, kDeviceType_Gamepad, InputManager::kContext_Gameplay);
+			}
+			// Mouse + Keyboard
+			else
+			{
+				deviceType = kDeviceType_Mouse;
+				key = inputManager->GetMappedKey(name.data, deviceType, InputManager::kContext_Gameplay);
+				if (key == 0xFF)
+				{
+					deviceType = kDeviceType_Keyboard;
+					key = inputManager->GetMappedKey(name.data, deviceType, InputManager::kContext_Gameplay);
+				}
+			}
+		}
+
+		if (key == 0xFF)
+			return -1;
+
+		// Map to common value space
+		if (deviceType == kDeviceType_Mouse)
+		{
+			return key + InputMap::kMacro_MouseButtonOffset;
+		}
+		else if (deviceType == ::kDeviceType_Gamepad)
+		{
+			UInt32 mapped = InputMap::GetGamepadKeycode(key);
+			return (mapped != InputMap::kMaxMacros ? mapped : -1);
+		}
+		else
+		{
+			return key;
+		}
+	}
 }
 
 #include "PapyrusVM.h"
@@ -100,6 +155,9 @@ void papyrusInput::RegisterFuncs(VMClassRegistry* registry)
 
 	//registry->RegisterFunction(
 	//	new NativeFunction1 <StaticFunctionTag, void, UInt32> ("EnableKey", "Input", papyrusInput::EnableKey, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, SInt32, BSFixedString, UInt32> ("GetMappedKey", "Input", papyrusInput::GetMappedKey, registry));
 
 
 }

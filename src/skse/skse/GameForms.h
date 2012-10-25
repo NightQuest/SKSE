@@ -320,7 +320,9 @@ kFormType_ConstructibleObject,	//	COBJ	BGSConstructibleObject
 	kFormType_Alias,			//			BGSBaseAlias
 	kFormType_ReferenceAlias,	//			BGSRefAlias
 	kFormType_LocationAlias,	//			BGSLocAlias
-	kFormType_ActiveMagicEffect	//			ActiveMagicEffect
+	kFormType_ActiveMagicEffect,//			ActiveMagicEffect
+
+	kFormType_Max =				kFormType_ReverbParam	// max of standard types
 };
 
 // 14
@@ -664,7 +666,7 @@ public:
 	};
 	UInt32					type;           // 3C
 	tArray<BGSHeadPart*>	extraParts; // 40
-	void *					textureSet;             // 4C
+	BGSTextureSet *			textureSet;             // 4C
 	TESModelTri				unk50[3];       // 50
 	UInt32					unk8C;          // 8C
 	BGSListForm *			validRaces;       // 90
@@ -747,11 +749,13 @@ public:
 	struct Data
 	{
 		// 20 - used elsewhere
-		struct Data28
+		struct Color
 		{
-			UInt32	unk00[6];	// 00 - init'd to 00FFFFFF
-			UInt32	unk18;		// 18 - init'd to 0
-			float	unk1C;		// 1C - init'd to 1
+			UInt32	x[2];				// 00 - init'd to 00FFFFFF
+			UInt32	y[2];
+			UInt32	z[2];
+			UInt32	specular;			// 18 - init'd to 0
+			float	fresnelPower;		// 1C - init'd to 1
 		};
 
 		UInt32	unk00;			// 00 - init'd to 0
@@ -764,7 +768,7 @@ public:
 		float	unk1C;			// 1C - init'd to 1
 		UInt32	unk20;			// 20 - init'd to 0
 		float	unk24;			// 24 - init'd to 1
-		Data28	unk28;			// 28
+		Color	unk28;			// 28
 		UInt32	unk48;			// 48 - init'd to 0
 		float	unk4C;			// 4C - init'd to 1
 		float	lodStartFade;	// 50 - fLightLODStartFade
@@ -774,7 +778,7 @@ public:
 
 	Data			unk14;	// 14
 	UInt32			pad70;	// 70
-	Data::Data28	unk74;	// 74
+	Data::Color		unk74;	// 74
 };
 
 STATIC_ASSERT(sizeof(BGSLightingTemplate) == 0x94);
@@ -876,22 +880,16 @@ class BGSMessage : public TESForm
 public:
 	enum { kTypeID = kFormType_Message };
 
-	struct Data
-	{
-		UInt32	unk0;
-		UInt32	unk4;
-	};
-
 	// parents
 	TESFullName		fullName;		// 14
 	TESDescription	description;	// 1C
 
 	// members
-	TESForm	* icon;		// 28 - init'd to 0
-	TESForm	* quest;	// 2C - init'd to 0
-	Data	unk30;		// 30
-	UInt32	unk38;		// 38 - init'd to 1
-	UInt32	unk3C;		// 3C - init'd to 2
+	TESForm					* icon;		// 28 - init'd to 0
+	TESQuest				* quest;	// 2C - init'd to 0
+	tList<BSFixedString>	buttons;	// 30
+	UInt32					unk38;		// 38 - init'd to 1
+	UInt32					unk3C;		// 3C - init'd to 2
 };
 
 // 50
@@ -950,6 +948,8 @@ public:
 	tArray<TESForm*>	armorOrLeveledItemArray;	// 14
 };
 
+class BGSPerkEntry;
+
 // 4C
 class BGSPerk : public TESForm
 {
@@ -962,15 +962,15 @@ public:
 	TESIcon			icon;			// 28
 
 	// members
-	UInt8	unk30;		// 30
-	UInt8	unk31;		// 31
-	UInt8	unk32;		// 32
-	UInt8	unk33;		// 33
-	UInt8	unk34;		// 34
-	UInt8	pad35[3];	// 35
-	void	* unk38;	// 38
-	UnkArray	unk3C;	// 3C
-	UInt32	unk48;		// 48
+	UInt8							unk30;		// 30
+	UInt8							unk31;		// 31
+	UInt8							unk32;		// 32
+	UInt8							unk33;		// 33
+	UInt8							unk34;		// 34
+	UInt8							pad35[3];	// 35
+	Condition						* conditions;	// 38
+	tArray<BGSPerkEntry*>			perkEntries;	// 3C
+	UInt32							unk48;		// 48
 };
 
 // 124
@@ -1199,10 +1199,10 @@ public:
 	virtual void	Unk_39(void);	// calls something on unk18
 
 	// parents
-	BSISoundDescriptor	soundDescriptor;	// 14
+	BGSSoundDescriptor	soundDescriptor;	// 14
 
 	// members
-	void				* unk18;	// 18
+	BGSStandardSoundDef		* standardSoundDef;	// 18
 	StringCache::Ref	unk1C;		// 1C
 };
 
@@ -1292,9 +1292,14 @@ public:
 
 STATIC_ASSERT(sizeof(BGSStoryManagerQuestNode) == 0x88);
 
-class BGSBaseAlias : public BaseFormComponent // Not actually a form, but its used like one in Papyrus
+class BGSBaseAlias // Not actually a form, but its used like one in Papyrus
 {
 public:
+	virtual ~BGSBaseAlias();
+	virtual void		Unk01(void);
+	virtual void		Unk02(void);
+	virtual const char	* Unk03(void);
+
 	enum { kTypeID = kFormType_Alias };
 
 	StringCache::Ref name;	// 04
@@ -1351,6 +1356,17 @@ public:
 		UInt8	type;
 	};
 
+	struct Objective
+	{
+		StringCache::Ref	displayText;
+		TESQuest			* owner;
+		UInt32				unk08;
+		UInt32				unk0C;
+		UInt16				index;
+		UInt16				unk12;
+		UInt32				unk14;
+	};
+
 	// 8
 	struct Data088
 	{
@@ -1361,7 +1377,7 @@ public:
 	// 20
 	struct Data0A0
 	{
-		UInt8	data[0x20];	// ### todo
+		UInt8	data[0x1C];	// ### todo
 	};
 
 	UnkArray	unk020;		// 020
@@ -1372,10 +1388,13 @@ public:
 	Data07C		unk07C;		// 07C
 	UInt32		unk084;		// 084
 	Data088		unk088;		// 088
-	Data088		unk090;		// 090
+	tList<Objective>		objectives;
 	void		* unk098;	// 098 - linked list
 	void		* unk09C;	// 09C - linked list
-	Data0A0		unk0A0[2];	// 0A0
+	Data0A0		unk0A0;		// 0A0
+	void		* unk0BC;
+	Data0A0		unk0C0;
+	UInt32		unk0DC;
 	UnkArray	unk0E0[6];	// 0E0
 	UnkArray	unk128;		// 128
 	void		* unk134;	// 134 - linked list
@@ -1478,7 +1497,10 @@ public:
 			kArchetype_EnhanceWeapon,
 			kArchetype_SpawnHazard,
 			kArchetype_Etherealize,
-			kArchetype_Banish
+			kArchetype_Banish,
+			kArchetype_Disguise = 44,
+			kArchetype_GrabActor,
+			kArchetype_VampireLord
 		};
 
 		enum {
@@ -2533,26 +2555,38 @@ public:
 	StringCache::Ref	unk34;		// 34
 };
 
-// 34
+// 2C
 class TESTopicInfo : public TESForm
 {
 public:
 	enum { kTypeID = kFormType_TopicInfo };
 
-	struct Data28
+	enum
 	{
-		UInt32	unk0;	// 0
-		UInt32	unk4;	// 4
+		kDialogFlag_Goodbye =					1 << 0,
+		kDialogFlag_Random =					1 << 1,
+		kDialogFlag_SayOnce =					1 << 2,
+		kDialogFlag_RandomEnd =					1 << 5,
+		kDialogFlag_InvisibleContinue =			1 << 6,
+		kDialogFlag_ForceSubtitle =				1 << 8,
+		kDialogFlag_CanMoveWhileGreeting =		1 << 10,
+		kDialogFlag_HasNoLipFile =				1 << 11,
+		kDialogFlag_RequiresPostProcessing =	1 << 12,
+		kDialogFlag_SpendsFavorPoints =			1 << 14,
 	};
 
-	void	* unk1C;	// 1C - linked list
-	UInt16	unk20;		// 20
-	UInt8	unk22;		// 22
-	UInt8	unk23;		// 23
-	UInt8	unk24;		// 24
-	Data28	unk28;		// 28
-	UInt32	unk30;		// 30
+	UInt32		unk14;				// 14
+	UInt32		unk18;				// 18 - show response data from info?
+	Condition	* conditions;		// 1C - linked list
+	UInt16		unk20;				// 20 - init'd to FFFF
+	UInt8		unk22;				// 22
+	UInt8		favorLevel;			// 23
+	UInt16		dialogFlags;		// 24
+	UInt16		hoursUntilReset;	// 26
+	void		* unk28;			// 28 - quest pointer?
 };
+
+STATIC_ASSERT(sizeof(TESTopicInfo) == 0x2C);
 
 // 1D4
 class TESWaterForm : public TESForm
@@ -2694,73 +2728,95 @@ class TESWeather : public TESForm
 public:
 	enum { kTypeID = kFormType_Weather };
 
+	enum { kNumColorTypes = 17 };
+	enum { kNumTimeOfDay = 4 };
+
+	enum ColorTypes {
+		kColorType_SkyUpper = 0,
+		kColorType_FogNear = 1,
+		kColorType_Unk = 2,
+		kColorType_Ambient = 3,
+		kColorType_Sunlight = 4,
+		kColorType_Sun = 5,
+		kColorType_Stars = 6,
+		kColorType_SkyLower = 7,
+		kColorType_Horizon = 8,
+		kColorType_EffectLighting = 9,
+		kColorType_CloudLODDiffuse = 10,
+		kColorType_CloudLODAmbient = 11,
+		kColorType_FogFar = 12,
+		kColorType_SkyStatics = 13,
+		kColorType_WaterMultiplier = 14,
+		kColorType_SunGlare = 15,
+		kColorType_MoonGlare = 16
+	};
+
+	enum TimeOfDay {
+		kTime_Sunrise = 0,
+		kTime_Day = 1,
+		kTime_Sunset = 2,
+		kTime_Night = 3
+	};
+
 	// 110
-	struct Data58C
+	struct ColorType
 	{
-		UInt32	unk000[0xE0 / 4];	// 000 ### todo
-		UInt32	unk0E0;				// 0E0 - init'd to 00FFFFFF
-		UInt32	unk0E4;				// 0E4 - init'd to 00FFFFFF
-		UInt32	unk0E8;				// 0E8 - init'd to 00FFFFFF
-		UInt32	unk0EC;				// 0EC - init'd to 00FFFFFF
-		UInt32	unk0F0;				// 0F0 - init'd to 00FFFFFF
-		UInt32	unk0F4;				// 0F4 - init'd to 00FFFFFF
-		UInt32	unk0F8;				// 0F8 - init'd to 00FFFFFF
-		UInt32	unk0FC;				// 0FC - init'd to 00FFFFFF
-		UInt32	unk100;				// 100 - init'd to 00FFFFFF
-		UInt32	unk104;				// 104 - init'd to 00FFFFFF
-		UInt32	unk108;				// 108 - init'd to 00FFFFFF
-		UInt32	unk10C;				// 10C - init'd to 00FFFFFF
+		UInt32	time[kNumTimeOfDay];
 	};
 
 	// 13
-	struct Data558
+	struct General
 	{
-		UInt8	unk00[0x13];			// 00
+		//UInt8	unk00[0x13];			// 00
+		UInt8	unk00[3];
+		UInt8	transDelta;				// Div 1000
+		UInt8	sunGlare;				// Div 256
+		UInt8	sunDamage;				// Div 256
+		UInt16	pad06;
+		UInt32	unk08;
+		UInt32	unk0C;
+		UInt8	unk10;
+		UInt8	windDirection;			// Div (256/360)
+		UInt8	windDirRange;			// Div (256/180)
+		UInt8	pad13;
 	};
 
 	// 20
-	struct Data56C
+	struct FogDistance
 	{
-		UInt32	unk00[0x10 / 4];		// 00
-		float	unk10;					// 10
-		float	unk14;					// 14
-		float	unk18;					// 18
-		float	unk1C;					// 1C
+		float	nearDay;
+		float	farDay;				// 10
+		float	nearNight;			// 14
+		float	farNight;			// 18
+		float	powerDay;			// 1C
+		float	powerNight;
+		float	maxDay;
+		float	maxNight;
 	};
 
-	// 10
-	struct Data354
+	struct CloudAlpha
 	{
-		float	unk0;	// 0
-		float	unk4;	// 4
-		float	unk8;	// 8
-		float	unkC;	// C
+		float	time[kNumTimeOfDay];
 	};
 
-	// 10
-	struct Data6B4
-	{
-		UInt32	unk00[0x10 / 4];	// 00
-	};
-
-	TESTexture1024	texture[0x20];		// 014
-	UInt8			unk114[0x20];		// 114 - cleared to 0x7F
-	UInt8			unk134[0x20];		// 134 - cleared to 0x7F
-	UInt8			unk154[0x200];		// 154
-	Data354			unk354[0x20];		// 354
-	UInt32			unk554;				// 554
-	Data558			unk558;				// 558
-	UInt8			pad56B;				// 56B
-	Data56C			unk56C;				// 56C
-	Data58C			unk58C;				// 58C
-	TESAIForm::Data	unk69C;				// 69C
-	UnkArray	unk6A4;	// 6A4
-	UInt32			pad6B0;				// 6B0 - not init'd
-	Data6B4			unk6B4;				// 6B4
-	BGSLightingTemplate::Data::Data28	unk6C4[4];	// 6C4
+	TESTexture1024	texture[0x20];					// 014
+	UInt8			unk114[0x20];					// 114 - cleared to 0x7F
+	UInt8			unk134[0x20];					// 134 - cleared to 0x7F
+	UInt8			unk154[0x200];					// 154
+	CloudAlpha		cloudAlpha[0x20];				// 354
+	UInt32			unk554;							// 554
+	General			general;						// 558
+	//UInt8			pad56B;							// 56B
+	FogDistance		fogDistance;					// 56C
+	ColorType		colorTypes[kNumColorTypes];		// 58C
+	TESAIForm::Data	unk69C;							// 69C
+	UnkArray		unk6A4;							// 6A4
+	UInt32			pad6B0;							// 6B0 - not init'd
+	TESImageSpace	* imageSpaces[kNumTimeOfDay];
+	BGSLightingTemplate::Data::Color	directionalAmbient[kNumTimeOfDay];	// 6C4
 	TESModel		unk744;	// 744
-	UInt32			unk758;	// 758
-	UInt32			unk75C;	// 75C
+	BGSShaderParticleGeometryData	* particleShader;	// 758
+	BGSReferenceEffect				* referenceEffect;	// 75C
 };
 
 STATIC_ASSERT(sizeof(TESWeather) == 0x760);
@@ -2876,3 +2932,37 @@ public:
 };
 
 STATIC_ASSERT(sizeof(TESWorldSpace) == 0x174);
+
+// 4
+class IFormFactory
+{
+public:
+	IFormFactory();
+	virtual ~IFormFactory();
+
+	virtual TESForm *		Create(void) = 0;
+	virtual const char *	GetName(void) = 0;
+	virtual UInt32			GetTypeID(void) = 0;
+	virtual const char *	Unk_04(void);	// return NULL
+	virtual UInt32			Unk_05(void);	// return 0x67
+	virtual UInt32			Unk_06(void);	// return 9
+
+//	void		** _vtbl;	// 00
+
+	static IFormFactory *	GetFactoryForType(UInt32 type)
+	{
+		if(type > kFormType_Max)
+			return NULL;
+
+		IFormFactory	** kFactoryList = (IFormFactory **)0x0128CE40;
+
+		return kFactoryList[type];
+	}
+};
+
+// 8
+class ConcreteFormFactory : public IFormFactory
+{
+public:
+	const char	* name;		// 04
+};

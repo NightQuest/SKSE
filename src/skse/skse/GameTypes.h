@@ -101,6 +101,9 @@ typedef StringCache::Ref	BSFixedString;
 class BSString
 {
 public:
+	BSString() :m_data(NULL), m_dataLen(0), m_bufLen(0) { }
+	~BSString();
+
 	const char *	Get(void);
 
 private:
@@ -476,11 +479,6 @@ extern const _CRC32_Calc4 CRC32_Calc4;
 typedef void (__cdecl * _CRC32_Calc8)(UInt32 * out, UInt64 data);
 extern const _CRC32_Calc8 CRC32_Calc8;
 
-template <typename T> UInt32 GetHash(T* key);
-template <> UInt32 GetHash<UInt32> (UInt32 * key);
-template <> UInt32 GetHash<UInt64> (UInt64 * key);
-template <> UInt32 GetHash<BSFixedString> (BSFixedString * key);
-
 // 01C
 // How to default/copy-construct in insert/grow still needs some work for items that have an overloaded assignment operator (like STL-types)
 template <typename Item, typename Key = Item>
@@ -496,7 +494,7 @@ class tHashSet
 
 		void Dump(void)
 		{
-			_MESSAGE("\t\titem: %d", (Key)item);
+			item.Dump();
 			_MESSAGE("\t\tnext: %08X", next);
 		}
 	};
@@ -546,7 +544,7 @@ class tHashSet
 			return 0;
 
 		Key k = (Key)*item;
-		_Entry * targetEntry = GetEntry(GetHash<Key>(&k));
+		_Entry * targetEntry = GetEntry(Item::GetHash(&k));
 
 		// Case 1: Target entry is free
 		if (!targetEntry->next)
@@ -578,7 +576,7 @@ class tHashSet
 			return 0;
 
 		k = (Key)targetEntry->item;
-		p = GetEntry(GetHash<Key>(&k));
+		p = GetEntry(Item::GetHash(&k));
 
 		// Case 3a: Hash collision - insert new entry between target entry and successor
         if (targetEntry == p)
@@ -608,7 +606,7 @@ class tHashSet
 			return false;
 
 		Key k = (Key)sourceEntry->item;
-		_Entry * targetEntry = GetEntry(GetHash<Key>(&k));
+		_Entry * targetEntry = GetEntry(Item::GetHash(&k));
 
 		// Case 1: Target location is unused
 		if (!targetEntry->next)
@@ -624,7 +622,7 @@ class tHashSet
 
 		_Entry * freeEntry = NextFreeEntry();
 		k = (Key)targetEntry->item;
-		_Entry * p = GetEntry(GetHash<Key>(&k));
+		_Entry * p = GetEntry(Item::GetHash(&k));
 
 		// Case 2a: Hash collision - insert new entry between target entry and successor
 		if (targetEntry == p)
@@ -693,7 +691,7 @@ public:
 		if (!m_entries)
 			return NULL;
 
-		_Entry * entry = GetEntry(GetHash<Key>(key));
+		_Entry * entry = GetEntry(Item::GetHash(key));
 		if (! entry->next)
 			return NULL;
 
@@ -722,7 +720,7 @@ public:
 		if ( !m_entries)
 			return false;
 
-		_Entry * entry = GetEntry(GetHash<Key>(key));
+		_Entry * entry = GetEntry(Item::GetHash(key));
 		if (! entry->next)
 			return NULL;
 
@@ -741,7 +739,7 @@ public:
 		{
 			if (prevEntry)
 				prevEntry->next = m_eolPtr;
-			entry->next = 0;
+			entry->next = NULL;
 		}
 		else
 		{
@@ -807,7 +805,8 @@ public:
 			_Entry * p = m_entries;
 			for (UInt32 i = 0; i < m_size; i++, p++) {
 				_MESSAGE("* %d %s:", i, p->IsFree()?"(free)" : "");
-				p->Dump();
+				if (!p->IsFree())
+					p->Dump();
 			}
 		}
 	}

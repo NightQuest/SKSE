@@ -4,9 +4,6 @@
 #include "GameObjects.h"
 #include "GameData.h"
 
-#include "PapyrusVM.h"
-#include "PapyrusNativeFunctions.h"
-
 #include "common/ICriticalSection.h"
 
 extern UInt32 g_invalidateKeywordCache;
@@ -51,14 +48,17 @@ namespace papyrusKeyword
 	{
 		return (thisKeyword) ? thisKeyword->keyword.Get() : NULL;
 	}
+}
 
-	void RegisterFuncs(VMClassRegistry* registry)
-	{
-		registry->RegisterFunction(
-			new NativeFunction0 <BGSKeyword, BSFixedString> ("GetString", "Keyword", papyrusKeyword::GetString, registry));
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
 
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, BGSKeyword*, BSFixedString> ("GetKeyword", "Keyword", papyrusKeyword::GetKeyword, registry));
+void papyrusKeyword::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSKeyword, BSFixedString> ("GetString", "Keyword", papyrusKeyword::GetString, registry));
 
-	}
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, BGSKeyword*, BSFixedString> ("GetKeyword", "Keyword", papyrusKeyword::GetKeyword, registry));
+
 }

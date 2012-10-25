@@ -1,8 +1,6 @@
 #include "PapyrusSpell.h"
 
 #include "GameObjects.h"
-#include "PapyrusVM.h"
-#include "PapyrusNativeFunctions.h"
 
 namespace papyrusSpell
 {
@@ -37,38 +35,6 @@ namespace papyrusSpell
 	UInt32 GetMagickaCost(SpellItem* thisSpell)
 	{
 		return (thisSpell) ? thisSpell->GetMagickaCost() : 0;
-	}
-
-
-	void RegisterFuncs(VMClassRegistry* registry)
-	{
-		registry->RegisterFunction(
-			new NativeFunction0<SpellItem, float>("GetCastTime", "Spell", papyrusSpell::GetCastTime, registry));
-
-		registry->RegisterFunction(
-			new NativeFunction0<SpellItem, BGSPerk*>("GetPerk", "Spell", papyrusSpell::GetPerk, registry));
-
-		registry->RegisterFunction(
-			new NativeFunction0<SpellItem, UInt32>("GetNumEffects", "Spell", papyrusSpell::GetNumEffects, registry));
-
-		registry->RegisterFunction(
-			new NativeFunction1<SpellItem, float, UInt32>("GetNthEffectMagnitude", "Spell", papyrusSpell::GetNthEffectMagnitude, registry));
-
-		registry->RegisterFunction(
-			new NativeFunction1<SpellItem, UInt32, UInt32>("GetNthEffectArea", "Spell", papyrusSpell::GetNthEffectArea, registry));
-
-		registry->RegisterFunction(
-			new NativeFunction1<SpellItem, UInt32, UInt32>("GetNthEffectDuration", "Spell", papyrusSpell::GetNthEffectDuration, registry));
-
-		registry->RegisterFunction(
-			new NativeFunction1<SpellItem, EffectSetting*, UInt32>("GetNthEffectMagicEffect", "Spell", papyrusSpell::GetNthEffectMagicEffect, registry));
-
-		registry->RegisterFunction(
-			new NativeFunction0<SpellItem, UInt32>("GetCostliestEffectIndex", "Spell", papyrusSpell::GetCostliestEffectIndex, registry));
-
-		registry->RegisterFunction(
-			new NativeFunction0<SpellItem, UInt32>("GetMagickaCost", "Spell", papyrusSpell::GetMagickaCost, registry));
-
 	}
 }
 
@@ -127,4 +93,37 @@ namespace magicItemUtils
 		MagicItem::EffectItem * pEI = CALL_MEMBER_FN(thisMagic, GetCostliestEffectItem)(5, false);
 		return (pEI) ? thisMagic->effectItemList.GetItemIndex(pEI) : 0;
 	}
+}
+
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
+
+void papyrusSpell::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0<SpellItem, float>("GetCastTime", "Spell", papyrusSpell::GetCastTime, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<SpellItem, BGSPerk*>("GetPerk", "Spell", papyrusSpell::GetPerk, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<SpellItem, UInt32>("GetNumEffects", "Spell", papyrusSpell::GetNumEffects, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<SpellItem, float, UInt32>("GetNthEffectMagnitude", "Spell", papyrusSpell::GetNthEffectMagnitude, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<SpellItem, UInt32, UInt32>("GetNthEffectArea", "Spell", papyrusSpell::GetNthEffectArea, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<SpellItem, UInt32, UInt32>("GetNthEffectDuration", "Spell", papyrusSpell::GetNthEffectDuration, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<SpellItem, EffectSetting*, UInt32>("GetNthEffectMagicEffect", "Spell", papyrusSpell::GetNthEffectMagicEffect, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<SpellItem, UInt32>("GetCostliestEffectIndex", "Spell", papyrusSpell::GetCostliestEffectIndex, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<SpellItem, UInt32>("GetMagickaCost", "Spell", papyrusSpell::GetMagickaCost, registry));
 }

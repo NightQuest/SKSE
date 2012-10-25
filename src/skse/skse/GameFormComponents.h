@@ -6,6 +6,8 @@
 
 class TESObjectSTAT;
 class BGSSoundDescriptorForm;
+class BGSSoundOutput;
+class BGSSoundCategory;
 class BGSKeyword;
 class TESForm;
 class SpellItem;
@@ -644,9 +646,14 @@ class ActorValueOwner
 public:
 	virtual ~ActorValueOwner();
 
-	virtual float	Unk_01(UInt32 arg);
-	virtual float	Unk_02(UInt32 arg);
-	virtual float	Unk_03(UInt32 arg);
+	enum {
+		kNumActorValues = 164
+	};
+
+	// Argument is the ActorValue ID
+	virtual float	GetCurrent(UInt32 arg);
+	virtual float	GetMaximum(UInt32 arg);
+	virtual float	GetBase(UInt32 arg);
 	virtual void	Unk_04(UInt32 arg0, UInt32 arg1);
 	virtual void	Unk_05(UInt32 arg0, UInt32 arg1);
 	virtual void	Unk_06(UInt32 arg0, UInt32 arg1, UInt32 arg2);
@@ -751,10 +758,19 @@ class BSISoundDescriptor
 public:
 	virtual ~BSISoundDescriptor();
 
+	virtual void	Unk_01(void) = 0;
+	virtual void	Unk_02(void) = 0;
+
+//	void	** _vtbl;	// 00
+};
+
+class BGSSoundDescriptor : public BSISoundDescriptor
+{
+public:
 	virtual void	Unk_01(void);
 	virtual void	Unk_02(void);
 
-//	void	** _vtbl;	// 00
+	//	void	** _vtbl;	// 00
 };
 
 // 04
@@ -774,6 +790,52 @@ public:
 	virtual void	Unk_09(void);
 
 //	void	** _vtbl;	// 00
+};
+
+class BSIPlaybackCharacteristics
+{
+public:
+	virtual ~BSIPlaybackCharacteristics();
+
+	virtual UInt8	GetFrequencyShift(void) = 0;
+	virtual UInt8	GetFrequencyVariance(void) = 0;
+	virtual UInt8	GetPriority(void) = 0;
+	virtual UInt16	GetDBAttenuation(void) = 0;
+	virtual UInt8	GetDBVariance(void) = 0;
+};
+
+class SoundPlaybackCharacteristics : public BSIPlaybackCharacteristics
+{
+public:
+	virtual UInt8	GetFrequencyShift(void);
+	virtual UInt8	GetFrequencyVariance(void);
+	virtual UInt8	GetPriority(void);
+	virtual UInt16	GetDBAttenuation(void);
+	virtual UInt8	GetDBVariance(void);
+
+	UInt8	frequencyShift;
+	UInt8	frequencyVariance;
+	UInt8	priority;
+	UInt8	dbVariance;
+	UInt16	dbAttenuation;			// CK Value * 100
+	UInt16	pad1A;
+	UInt32	unk20;
+	BGSSoundOutput	* soundOutput;
+	UInt32	unk28;
+	UInt32	unk2C;
+};
+
+class BGSStandardSoundDef : public BGSSoundDescriptor
+{
+public:
+	virtual ~BGSStandardSoundDef();
+
+	BGSSoundCategory	* soundCategory;
+	UInt32				unk08;
+	UInt32				unk0C;
+	UInt32				unk10;
+	UInt32				unk14;
+	SoundPlaybackCharacteristics soundCharacteristics;
 };
 
 // 04
@@ -812,4 +874,93 @@ public:
 
 STATIC_ASSERT(sizeof(MagicTarget) == 0xC);
 
+// 20
+class Condition
+{
+public:
+	enum ComparisonFlags {
+		kComparisonFlag_And = 0x00,
+		kComparisonFlag_Or = 0x01,
+		kComparisonFlag_Equal = 0x00,
+		kComparisonFlag_UseAliases = 0x02,
+		kComparisonFlag_Global = 0x04,
+		kComparisonFlag_UsePackData = 0x08,
+		kComparisonFlag_SwapTarget = 0x10,
+		kComparisonFlag_NotEqual = 0x20,
+		kComparisonFlag_Greater = 0x40,
+		kComparisonFlag_GreaterEqual = 0x60,
+		kComparisonFlag_Less = 0x80,
+		kComparisonFlag_LessEqual = 0xA0
+	};
+	enum ReferenceTypes {
+		kReferenceType_Target = 0x01,
+		kReferenceType_Reference = 0x02,
+		kReferenceType_CombatTarget = 0x03,
+		kReferenceType_LinkedRef = 0x04,
+		kReferenceType_Alias = 0x05,
+		kReferenceType_PackageData = 0x06,
+		kReferenceType_EventData = 0x07
+	};
+	Condition	* next;					// 00
+	UInt32		compareValue;			// 04
+	UInt32		unk08;					// 08
+	UInt32		unk0C;					// 0C - FFFFFFFF
+	UInt16		functionId;				// 10
+	UInt8		unk12;					// 12
+	UInt8		unk13;					// 13
+	UInt32		param1;					// 14
+	UInt32		param2;					// 18
+	UInt8		comparisonType;			// 1C
+	UInt8		referenceType;			// 1D
+};
 
+STATIC_ASSERT(sizeof(Condition) == 0x20);
+
+// Maybe move this class to netimmerse
+class NiObject;
+
+class NiModel
+{
+public:
+	virtual ~NiModel();
+
+	virtual void Unk_01(void);
+	virtual void Unk_02(void);
+	virtual void Unk_03(void);
+	virtual void Unk_04(void);
+	virtual void Unk_05(void);
+	virtual void Unk_06(void);
+	virtual void Unk_07(void);
+	virtual void Unk_08(void);
+	virtual void Unk_09(void);
+	virtual void Unk_0A(void);
+	virtual void Unk_0B(void);
+	virtual void Unk_0C(void);
+	virtual void Unk_0D(void);
+	virtual void Unk_0E(void);
+	virtual void Unk_0F(void);
+	virtual void Unk_10(void);
+	virtual void Unk_11(void);
+	virtual void Unk_12(void);
+	virtual void Unk_13(void);
+	virtual void Unk_14(void);
+	virtual void Unk_15(void);
+	virtual void Unk_16(void);
+	virtual void Unk_17(void);
+	virtual void Unk_18(void);
+	virtual void Unk_19(void);
+	virtual void Unk_1A(void);
+	virtual void Unk_1B(void);
+	virtual void Unk_1C(void);
+	virtual void Unk_1D(void);
+	virtual void Unk_1E(void);
+	virtual void Unk_1F(void);
+	virtual void Unk_20(void);
+	virtual void Unk_21(void);
+	virtual void Unk_22(void);
+	virtual void Unk_23(void);
+	virtual void Unk_24(void);
+	virtual void Unk_25(void);
+	virtual void Unk_26(void);
+	virtual NiObject * GetNiObject(BSFixedString *); // Returns an NiObject by its name
+};

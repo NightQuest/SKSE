@@ -7,6 +7,7 @@
 #include "GameBSExtraData.h"
 
 class BSAnimationGraphEvent;
+class NiNode;
 
 // TESObjectREFR and child classes
 
@@ -57,6 +58,11 @@ class TESObjectREFR : public TESForm
 {
 public:
 	enum { kTypeID = kFormType_Reference };
+
+	enum
+	{
+		kFlag_Harvested = 0x2000,
+	};
 
 	// currently none of these have been analyzed
 	virtual void	Unk_39(void);
@@ -113,7 +119,7 @@ public:
 	virtual void	Unk_6C(void);
 	virtual void	Unk_6D(void);
 	virtual void	Unk_6E(void);
-	virtual void	Unk_6F(void);
+	virtual NiModel *	GetNiModel(void);	// Not sure what this should actually be called
 	virtual void	Unk_70(void);
 	virtual void	Unk_71(void);
 	virtual void	Unk_72(void);
@@ -139,7 +145,7 @@ public:
 	virtual void	Unk_86(void);
 	virtual void	Unk_87(void);
 	virtual void	Unk_88(void);
-	virtual void	Unk_89(void);
+	virtual void	ResetInventory(bool unk);
 	virtual void	Unk_8A(void);
 	virtual void	Unk_8B(void);
 	virtual void	Unk_8C(void);
@@ -159,6 +165,20 @@ public:
 	virtual void	Unk_9A(void);
 	virtual void	Unk_9B(void);
 
+	struct LoadedState
+	{
+		UInt32	unk00;	// 00
+		UInt32	unk04;	// 04
+		UInt32	unk08;	// 08
+		UInt32	unk0C;	// 0C
+		UInt32	unk10;	// 10
+		UInt32	unk14;	// 14
+		UInt32	unk18;	// 18
+		UInt32	unk1C;	// 1C
+		NiNode	* node;	// 20
+		// ... probably more
+	};
+
 	// parents
 	BSHandleRefObject	handleRefObject;	// 14
 	BSTEventSink <BSAnimationGraphEvent>	animGraphEventSink;	// 1C
@@ -174,7 +194,7 @@ public:
 	float	posZ;		// 3C
 	
 	TESObjectCELL	* parentCell;	// 40
-	BGSMovementType	* movementType;	// 44
+	LoadedState		* loadedState;	// 44
 	BaseExtraList	extraData;		// 48
 	UInt32			unk50;			// flags?
 };

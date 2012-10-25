@@ -2,6 +2,7 @@
 
 #include "GameForms.h"
 
+#include "PapyrusEvents.h"
 #include "PapyrusVM.h"
 #include "PapyrusNativeFunctions.h"
 
@@ -17,6 +18,75 @@ namespace papyrusAlias
 		return (thisAlias) ? thisAlias->aliasId : -1;
 	}
 
+	void RegisterForKey(BGSBaseAlias * thisAlias, UInt32 key)
+	{
+		if(!thisAlias)
+			return;
+		g_inputEventRegs.Register<BGSBaseAlias>(key, BGSBaseAlias::kTypeID, thisAlias);
+	}
+
+	void UnregisterForKey(BGSBaseAlias * thisAlias, UInt32 key)
+	{
+		if(!thisAlias)
+			return;
+		g_inputEventRegs.Unregister<BGSBaseAlias>(key, BGSBaseAlias::kTypeID, thisAlias);
+	}
+
+	void UnregisterForAllKeys(BGSBaseAlias * thisAlias)
+	{
+		if(!thisAlias)
+			return;
+		g_inputEventRegs.UnregisterAll<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisAlias);
+	}
+
+	void RegisterForMenu(BGSBaseAlias * thisAlias, BSFixedString menuName)
+	{
+		if(!thisAlias || !menuName.data)
+			return;
+
+		g_menuOpenCloseRegs.Register<BGSBaseAlias>(menuName, BGSBaseAlias::kTypeID, thisAlias);
+	}
+
+	void UnregisterForMenu(BGSBaseAlias * thisAlias, BSFixedString menuName)
+	{
+		if(!thisAlias || !menuName.data)
+			return;
+
+		g_menuOpenCloseRegs.Unregister<BGSBaseAlias>(menuName, BGSBaseAlias::kTypeID, thisAlias);
+	}
+
+	void UnregisterForAllMenus(BGSBaseAlias * thisAlias)
+	{
+		if(!thisAlias)
+			return;
+
+		g_menuOpenCloseRegs.UnregisterAll<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisAlias);
+	}
+
+	void RegisterForModEvent(BGSBaseAlias * thisAlias, BSFixedString eventName, BSFixedString callbackName)
+	{
+		if(!thisAlias || !eventName.data || !callbackName.data)
+			return;
+
+		ModCallbackParameters params;
+		params.callbackName = callbackName;
+
+		g_modCallbackRegs.Register<BGSBaseAlias>(eventName, BGSBaseAlias::kTypeID, thisAlias, &params);
+	}
+
+	void UnregisterForModEvent(BGSBaseAlias * thisAlias, BSFixedString eventName)
+	{
+		if(!thisAlias || !eventName.data)
+			return;
+
+		g_modCallbackRegs.Unregister<BGSBaseAlias>(eventName, BGSBaseAlias::kTypeID, thisAlias);
+	}
+
+	void UnregisterForAllModEvents(BGSBaseAlias * thisAlias)
+	{
+		g_modCallbackRegs.UnregisterAll<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisAlias);
+	}
+
 	void RegisterFuncs(VMClassRegistry* registry)
 	{
 		registry->RegisterFunction(
@@ -24,5 +94,32 @@ namespace papyrusAlias
 
 		registry->RegisterFunction(
 			new NativeFunction0<BGSBaseAlias, UInt32> ("GetId", "Alias", papyrusAlias::GetId, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction1 <BGSBaseAlias, void, UInt32> ("RegisterForKey", "Alias", papyrusAlias::RegisterForKey, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction1 <BGSBaseAlias, void, UInt32> ("UnregisterForKey", "Alias", papyrusAlias::UnregisterForKey, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllKeys", "Alias", papyrusAlias::UnregisterForAllKeys, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("RegisterForMenu", "Alias", papyrusAlias::RegisterForMenu, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("UnregisterForMenu", "Alias", papyrusAlias::UnregisterForMenu, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllMenus", "Alias", papyrusAlias::UnregisterForAllMenus, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction2 <BGSBaseAlias, void, BSFixedString, BSFixedString> ("RegisterForModEvent", "Alias", papyrusAlias::RegisterForModEvent, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("UnregisterForModEvent", "Alias", papyrusAlias::UnregisterForModEvent, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllModEvents", "Alias", papyrusAlias::UnregisterForAllModEvents, registry));
 	}
 }

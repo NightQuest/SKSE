@@ -118,7 +118,7 @@ EndEvent
 Event OnUpdateGameTime()
 EndEvent
 
-; SKSE additions built 2012-08-04 05:25:04.547000 UTC
+; SKSE additions built 2012-09-30 07:24:37.943000 UTC
 
 ; Returns the typecode for this form object
 Int Function GetType() native
@@ -149,17 +149,23 @@ bool Function HasKeywordString(string s)
 	return HasKeyword(k)
 endFunction
 
-; upcoming support to register for OnKeyDown input events
-;Function RegisterForKey(int keyCode) native
-;Function UnregisterFromKey(int keyCode) native
-;Function UnregisterFromAllKeys() native
+; Registers for OnKeyDown and OnKeyUp events for the given keycode.
+Function RegisterForKey(int keyCode) native
+Function UnregisterForKey(int keyCode) native
+Function UnregisterForAllKeys() native
+
+Event OnKeyDown(int keyCode)
+EndEvent
+
+Event OnKeyUp(int keyCode, float holdTime)
+EndEvent
 
 ; Registers for OnMenuOpen and OnMenuClose events for the given menu.
 ; Registrations have to be refreshed after each game load.
 ; For a list of valid menu names, see UI.psc.
 Function RegisterForMenu(string menuName) native
-Function UnregisterFromMenu(string menuName) native
-Function UnregisterFromAllMenus() native
+Function UnregisterForMenu(string menuName) native
+Function UnregisterForAllMenus() native
 
 Event OnMenuOpen(string menuName)
 endEvent
@@ -178,8 +184,11 @@ endEvent
 ;		endEvent
 ;
 Function RegisterForModEvent(string eventName, string callbackName) native
-Function UnregisterFromModEvent(string eventName) native
-Function UnregisterFromAllModEvents() native
+Function UnregisterForModEvent(string eventName) native
+Function UnregisterForAllModEvents() native
 
 ; Sends custom event with given generic parameters.
 Function SendModEvent(string eventName, string strArg = "", float numArg = 0.0) native
+
+; Returns a temporary clone of this form
+Form Function TempClone() native

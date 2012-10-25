@@ -7,6 +7,7 @@ float Function GetTotalArmorWeight() native
 
 ; Tree and Flora only functions
 bool Function IsHarvested() native
+Function SetHarvested(bool harvested) native
 
 ; Tempering
 Function SetItemHealthPercent(float health) native
@@ -15,3 +16,5 @@ Function SetItemHealthPercent(float health) native
 float Function GetItemMaxCharge() native
 float Function GetItemCharge() native
 Function SetItemCharge(float charge) native
+
+Function ResetInventory() native

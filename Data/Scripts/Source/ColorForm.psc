@@ -1,9 +1,27 @@
 Scriptname ColorForm extends Form Hidden
 
-int Function GetRed() native
-int Function GetGreen() native
-int Function GetBlue() native
+int Function GetColor() native
 
-int Function GetHue() native
-int Function GetSaturation() native
-int Function GetLuminosity() native
+int Function GetRed()
+	return ColorComponent.GetRed(Self.GetColor())
+EndFunction
+
+int Function GetGreen()
+	return ColorComponent.GetGreen(Self.GetColor())
+EndFunction
+
+int Function GetBlue()
+	return ColorComponent.GetBlue(Self.GetColor())
+EndFunction
+
+float Function GetHue()
+	return ColorComponent.GetHue(Self.GetColor())
+EndFunction
+
+float Function GetSaturation()
+	return ColorComponent.GetSaturation(Self.GetColor())
+EndFunction
+
+float Function GetLuminosity()
+	return ColorComponent.GetLuminosity(Self.GetColor())
+EndFunction

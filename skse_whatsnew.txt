@@ -1,3 +1,46 @@
+1.6.0
+- fix RemoveSlotFromMask
+- add UI.IsTextInputEnabled, ObjectReference.SetHarvested, Book.GetSkill, Game.Save/LoadGame, ObjectReference.ResetInventory
+- add UI.Get*/Set* for direct UI data manipluation
+- add UI.Invoke* to call ActionScript functions
+- add Form/Alias.RegisterForMenu etc to receive menu open/close events
+- add Form/Alias.RegisterForModEvent etc, Form/Alias.SendModEvent
+	Mods can register callbacks for custom events:
+		RegisterForModEvent("MYPREFIX_myCustomEvent", "MyModEventCallback")
+	Prefix your event names if you want them to be unique!
+	See Form.psc for more details
+- add Form/Alias.RegisterForKey to receive OnKeyDown/Up events
+	For a list of keycodes, see
+		http://fose.silverlock.org/fose_command_doc.html#DirectX_Scancodes
+	Supported GamePad buttons:
+		266: DPAD_UP
+		267: DPAD_DOWN
+		268: DPAD_LEFT
+		269: DPAD_RIGHT
+		270: START
+		271: BACK
+		272: LEFT_THUMB
+		273: RIGHT_THUMB
+		274: LEFT_SHOULDER
+		275: RIGHT_SHOULDER
+		276: A
+		277: B
+		278: X
+		279: Y
+		280: LT
+		281: RT
+- support for additional interface translation files (same as Translate_ENGLISH.txt)
+	If your mod is named MyMod.esp, place files in Data/Interface/Translations/MyMod_<LANGUAGE>.txt,
+		i.e. MyMod_RUSSIAN.txt
+	Files must use the same encoding as the original Translate_*: UTF16 LE with BOM aka UCS-2 LE
+		and contain $key<TAB>value pairs. Loading them from .BSA files is supported, too
+- introduced co-save to hold event registrations for SKSE-added event types
+- add ActionScript functions: SendModEvent, RequestActivePlayerEffects, ExtendForm, RequestActorValue, GetMappedKey, StartRemapMode
+	see skse_docs.txt for details
+- Form.TempClone. Not all types support this - you may get back a valid form with initialized data rather than data copied from the source.
+- add Input.GetMappedKey to return keycode bound to given control and device
+- locked out some unsafe scaleform functions from being called while the game is loading/reloading (crash avoidance)
+
 1.5.11
 - BGSBipedObjectForm changed size in 1.7.7, fixed TESRace, TESObjectARMO/ARMA functions
 - moved SetGameSetting functions to Game from Utility to match 

@@ -8,4 +8,5 @@ Int Function GetSpellCount() native
 ; returns the specified added spell for the actor
 Spell Function GetNthSpell(int n) native
 
+; Updates an Actors meshes (Used for Armor mesh/texture changes and face changes)
 Function QueueNiNodeUpdate() native

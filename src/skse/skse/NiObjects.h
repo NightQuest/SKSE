@@ -1,6 +1,7 @@
 #pragma once
 
 #include "skse/NiRTTI.h"
+#include "skse/NiTypes.h"
 
 // NiRefObject/NiObject and important children
 // generally other children should go in other files
@@ -9,6 +10,8 @@
 class NiCloningProcess;
 class NiStream;
 class NiObjectGroup;
+class NiExtraData;
+class NiTimeController;
 
 // 08
 class NiRefObject
@@ -75,3 +78,43 @@ public:
 	// begin bethesda extensions? possibly just stuff we can't match up
 	virtual UInt32			Unk_20(void);
 };
+
+STATIC_ASSERT(sizeof(NiObject) == 0x08);
+
+// 18
+class NiObjectNET : public NiObject
+{
+public:
+	const char	* m_name;
+
+	NiTimeController	* m_controller;
+
+	NiExtraData	** m_extraData;			// 10 extra data
+	UInt16		m_extraDataLen;			// 14 max valid entry
+	UInt16		m_extraDataCapacity;	// 16 array len
+};
+
+STATIC_ASSERT(sizeof(NiObjectNET) == 0x18);
+
+// A8+
+class NiAVObject : public NiObjectNET
+{
+public:
+	virtual void	Unk_21(void);
+
+	UInt32	unk18;	// 18
+	UInt32	unk1C;	// 1C
+	NiTransform	m_localTransform;	// 20
+	NiTransform	m_worldTransform;	// 54
+	float	unk88;	// 88
+	float	unk8C;	// 8C
+	float	unk90;	// 90
+	float	unk94;	// 94
+	UInt32	unk98;	// 98 - bitfield
+	float	unk9C;	// 9C
+	UInt32	unkA0;	// A0
+	UInt8	unkA4;	// A4
+	UInt8	unkA5;	// A5 - bitfield
+};
+
+STATIC_ASSERT(sizeof(NiAVObject) >= 0xA8);

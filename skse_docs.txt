@@ -56,6 +56,7 @@ dynamic intrinsic class skse
 	function CloseMenu(menuName : String) : Void;
 	
 	// Enable extended data for item cards and favorites menu
+	// ### this is out of date, see ScaleformExtendedData.cpp ###
 	// common data for all objects:
 	//	var extended : Boolean;		// always set to true
 	//	var formType : Number;		// object type (see GameForms.h for a list)
@@ -93,10 +94,66 @@ dynamic intrinsic class skse
 	//  var bookType : Number;		// 0 - none, 1 - skill, 4 - spell
 	//  var teachesSkill : Number;	// present on skill books, index of the skill the book teaches
 	//  var teachesSpell : Number;	// present on spell books, form ID of the spell the book teaches, or -1 on error
+	// data for messages:
+	//	var buttons[] : String;
 	function ExtendData(enable : Boolean) : Void;
 	
 	// forces containers to show categories like NPCs
 	function ForceContainerCategorization(enable : Boolean) : Void;
+	
+	// send an event to SKSE's papyrus event dispatcher
+	// strArg, numArg, formIDArg are optional
+	function SendModEvent(eventName : String, strArg : String, numArg : Number, formIDArg : Number) : Void;
+	
+	// write the current magic effects active on the player to the outEffects array
+	//	var	duration : Number;
+	//	var	elapsed : Number;
+	//	var	effectFlags : Number;
+	//	var	subType : Number;
+	//	var	archetype : Number;
+	//	var	actorValue : Number;
+	//	var	magicType : Number;
+	function RequestActivePlayerEffects(outEffects : Object) : Void;
+	
+	// request details about a form
+	// same format as ExendData
+	// extra and recursive are optional
+	function ExtendForm(formID : Number, outData : Object, extra : Boolean, recursive : Boolean) : Void;
+	
+	// request details about an actor value
+	//	var	base : Number;
+	//	var	current : Number;
+	//	var	maximum : Number;
+	function RequestActorValue(formID : Number, actorValue : Number, outData : Object) : Void;
+	
+	// returns the keycode mapped to an input event
+	// device types:
+	//	0	keyboard
+	//	1	mouse
+	//	2	gamepad
+	// contexts:
+	//	0	gameplay
+	//	1	menumode
+	//	2	console
+	//	3	item menu
+	//	4	inventory
+	//	5	debug text
+	//	6	favorites
+	//	7	map
+	//	8	stats
+	//	9	cursor
+	//	10	book
+	//	11	debug overlay
+	//	12	journal
+	//	13	TFC mode
+	//	14	map debug
+	//	15	lockpicking
+	//	16	favor
+	function GetMappedKey(name : String, deviceType : Number, contextIdx : Number) : Number;
+	
+	// enters input event rebind mode
+	// callbackObject.EndRemapMode(keyCode : Number) will be called when the next input event occurs
+	function StartRemapMode(callbackObject : Object);
 	
 	dynamic intrinsic class version
 	{
@@ -141,3 +198,4 @@ dynamic intrinsic class skse
 //	1.5.9	1.6.89.0	25
 //	1.5.10	1.7.7.0		26
 //	1.5.11	1.7.7.0		27
+//	1.6.0	1.7.7.0		28

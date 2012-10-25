@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GameTypes.h"
+
 struct StaticFunctionTag;
 
 class VMClassRegistry;
@@ -29,4 +31,6 @@ namespace papyrusInput
 	//void DisableMouse(Input* thisInput);
 	//void EnableMouse(Input* thisInput);
 	//bool IsMouseDisabled(Input* thisInput);
+
+	SInt32 GetMappedKey(StaticFunctionTag* thisInput, BSFixedString name, UInt32 deviceType);
 }

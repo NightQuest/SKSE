@@ -1,6 +1,7 @@
 #include "PapyrusVM.h"
 #include "GameAPI.h"
 #include "PapyrusEvents.h"
+#include "Serialization.h"
 
 IObjectHandlePolicy	** g_objectHandlePolicy = (IObjectHandlePolicy **)0x01B4E608;
 SkyrimVM			** g_skyrimVM = (SkyrimVM **)0x0128CD1C;
@@ -9,12 +10,12 @@ void SkyrimVM::OnFormDelete_Hook(UInt64 handle)
 {
 	CALL_MEMBER_FN(this, UnregisterFromSleep_Internal)(handle);
 
-	g_menuOpenCloseRegs.UnregisterFromAll(handle);
-	g_inputEventRegs.UnregisterFromAll(handle);
-	g_modCallbackRegs.UnregisterFromAll(handle);
+	g_menuOpenCloseRegs.UnregisterAll(handle);
+	g_inputEventRegs.UnregisterAll(handle);
+	g_modCallbackRegs.UnregisterAll(handle);
 
 #if _DEBUG
-	_MESSAGE("Executed SkyrimVM::OnFormDelete_Hook.");
+	_MESSAGE("Executed SkyrimVM::OnFormDelete_Hook - %016llX", handle);
 #endif
 }
 
@@ -22,9 +23,7 @@ void SkyrimVM::RevertGlobalData_Hook(void)
 {
 	CALL_MEMBER_FN(this, RevertGlobalData_Internal)();
 
-	g_menuOpenCloseRegs.Clear();
-	g_inputEventRegs.Clear();
-	g_modCallbackRegs.Clear();
+	Serialization::HandleRevertGlobalData();
 
 	// For now, this is a suitable place to do this.
 	if (*g_inputEventDispatcher)
@@ -35,30 +34,30 @@ void SkyrimVM::RevertGlobalData_Hook(void)
 #endif
 }
 
-bool SkyrimVM::SaveGlobalData_Hook(void * saveFileHandle, void * saveStorageWrapper)
+bool SkyrimVM::SaveGlobalData_Hook(void * handleReaderWriter, void * saveStorageWrapper)
 {
-	bool result = CALL_MEMBER_FN(this, SaveRegSleepEventHandles_Internal)(saveFileHandle, saveStorageWrapper);
+	bool success = CALL_MEMBER_FN(this, SaveRegSleepEventHandles_Internal)(handleReaderWriter, saveStorageWrapper);
 
-	// TODO
+	Serialization::HandleSaveGlobalData();
 
 #if _DEBUG
 	_MESSAGE("Executed SkyrimVM::SaveGlobalData_Hook.");
 #endif
 
-	return result;
+	return success;
 }
 
-bool SkyrimVM::LoadGlobalData_Hook(void * saveFileHandle, void * saveStorageWrapper)
+bool SkyrimVM::LoadGlobalData_Hook(void * handleReaderWriter, void * loadStorageWrapper)
 {
-	bool result = CALL_MEMBER_FN(this, LoadRegSleepEventHandles_Internal)(saveFileHandle, saveStorageWrapper);
+	bool success = CALL_MEMBER_FN(this, LoadRegSleepEventHandles_Internal)(handleReaderWriter, loadStorageWrapper);
 
-	// TODO
+	Serialization::HandleLoadGlobalData();
 
 #if _DEBUG
 	_MESSAGE("Executed SkyrimVM::LoadGlobalData_Hook.");
 #endif
 
-	return result;
+	return success;
 }
 
 

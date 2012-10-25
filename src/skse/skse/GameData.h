@@ -247,3 +247,18 @@ public:
 	const ModInfo* LookupModByName(const char* modName);
 	UInt8 GetModIndex(const char* modName);
 };
+
+class SaveManager
+{
+public:
+	static SaveManager *	GetSingleton(void);
+
+	void	Save(const char * name);
+	void	Load(const char * name);
+
+	MEMBER_FN_PREFIX(SaveManager);
+
+private:
+	DEFINE_MEMBER_FN(Save_Internal, bool, 0x0067E090, const char * name, int unk1, UInt32 unk2);
+	DEFINE_MEMBER_FN(Load_Internal, bool, 0x0067EB80, const char * name, int unk1, UInt32 unk2, UInt32 unk3);
+};

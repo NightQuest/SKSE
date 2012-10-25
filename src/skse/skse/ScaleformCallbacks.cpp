@@ -47,6 +47,22 @@ void GFxValue::SetNumber(double value)
 	data.number = value;
 }
 
+void GFxValue::SetString(const char * value)
+{
+	CleanManaged();
+
+	type = kType_String;
+	data.string = value;
+}
+
+void GFxValue::SetWideString(const wchar_t * value)
+{
+	CleanManaged();
+
+	type = kType_WideString;
+	data.wideString = value;
+}
+
 bool GFxValue::GetBool(void)
 {
 	switch(GetType())
@@ -57,7 +73,7 @@ bool GFxValue::GetBool(void)
 	}
 }
 
-char * GFxValue::GetString(void)
+const char * GFxValue::GetString(void)
 {
 	if(GetType() != kType_String)
 		return NULL;
@@ -68,7 +84,7 @@ char * GFxValue::GetString(void)
 		return data.string;
 }
 
-wchar_t * GFxValue::GetWideString(void)
+const wchar_t * GFxValue::GetWideString(void)
 {
 	if(GetType() != kType_WideString)
 		return NULL;
@@ -118,6 +134,17 @@ bool GFxValue::PushBack(GFxValue * value)
 {
 	return CALL_MEMBER_FN(objectInterface, PushBack)(data.obj, value);
 }
+
+UInt32 GFxValue::GetArraySize()
+{
+	return CALL_MEMBER_FN(objectInterface, GetArraySize)(data.obj);
+}
+
+bool GFxValue::GetElement(UInt32 index, GFxValue * value)
+{
+	return CALL_MEMBER_FN(objectInterface, GetElement)(data.obj, index, value);
+}
+
 
 UInt32 g_GFxFunctionHandler_count = 0;
 

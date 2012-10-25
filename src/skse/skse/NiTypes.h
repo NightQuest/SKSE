@@ -39,6 +39,26 @@ public:
 	float	a;	// C
 };
 
+// 24
+class NiMatrix33
+{
+public:
+	float	data[9];
+};
+
+STATIC_ASSERT(sizeof(NiMatrix33) == 0x24);
+
+// 34
+class NiTransform
+{
+public:
+	NiMatrix33	rot;	// 00
+	NiPoint3	pos;	// 24
+	float		scale;	// 30
+};
+
+STATIC_ASSERT(sizeof(NiTransform) == 0x34);
+
 // 10
 // derives from NiTMapBase, we don't bother
 template <typename T_key, typename T_data>

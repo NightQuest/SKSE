@@ -1,7 +1,6 @@
 #include "PapyrusSKSE.h"
+
 #include "skse_version.h"
-#include "PapyrusVM.h"
-#include "PapyrusNativeFunctions.h"
 
 namespace papyrusSKSE {
 
@@ -23,22 +22,22 @@ namespace papyrusSKSE {
 	{
 		return SKSE_VERSION_RELEASEIDX;
 	}
+}
 
-	void RegisterFuncs(VMClassRegistry* registry)
-	{
-		registry->RegisterFunction(
-			new NativeFunction0<StaticFunctionTag, UInt32>("GetVersion", "SKSE", papyrusSKSE::GetVersion, registry));
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
 
-		registry->RegisterFunction(
-			new NativeFunction0<StaticFunctionTag, UInt32>("GetVersionMinor", "SKSE", papyrusSKSE::GetVersionMinor, registry));
+void papyrusSKSE::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0<StaticFunctionTag, UInt32>("GetVersion", "SKSE", papyrusSKSE::GetVersion, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction0<StaticFunctionTag, UInt32>("GetVersionBeta", "SKSE", papyrusSKSE::GetVersionBeta, registry));
+	registry->RegisterFunction(
+		new NativeFunction0<StaticFunctionTag, UInt32>("GetVersionMinor", "SKSE", papyrusSKSE::GetVersionMinor, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction0<StaticFunctionTag, UInt32>("GetVersionRelease", "SKSE", papyrusSKSE::GetVersionRelease, registry));
+	registry->RegisterFunction(
+		new NativeFunction0<StaticFunctionTag, UInt32>("GetVersionBeta", "SKSE", papyrusSKSE::GetVersionBeta, registry));
 
-
-	}
-
+	registry->RegisterFunction(
+		new NativeFunction0<StaticFunctionTag, UInt32>("GetVersionRelease", "SKSE", papyrusSKSE::GetVersionRelease, registry));
 }

@@ -22,8 +22,6 @@ namespace papyrusUI
 	template <> BSFixedString GetGFxValue<BSFixedString> (GFxValue * val);
 
 	void RegisterFuncs(VMClassRegistry* registry);
-
-	bool ExtractTargetData(const char * target, std::string & dest, std::string & name);
 	
 	template <typename T>
 	void SetT(StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr, T value)
@@ -38,21 +36,11 @@ namespace papyrusUI
 		GFxMovieView * view = mm->GetMovieView(&menuName);
 		if (!view)
 			return;
-		
-		std::string valueDest, valueName;
-		if (! ExtractTargetData(targetStr.data, valueDest, valueName))
-			return;
-
-		GFxValue fxDest;
-		if (! view->GetVariable(&fxDest, valueDest.c_str()))
-			return;
-
-		if (fxDest.GetType() == GFxValue::kType_Undefined || fxDest.objectInterface == NULL)
-			return;
 
 		GFxValue fxValue;
 		SetGFxValue<T>(&fxValue, value, view);
-		fxDest.SetMember(valueName.c_str(), &fxValue);
+
+		view->SetVariable(targetStr.data, &fxValue, 1);
 	}
 
 	template <typename T>
@@ -90,26 +78,17 @@ namespace papyrusUI
 		if (!view)
 			return;
 
-		std::string dest, name;
-		if (! ExtractTargetData(targetStr.data, dest, name))
-			return;
-
-		GFxValue fxDest;
-		if (! view->GetVariable(&fxDest, dest.c_str()))
-			return;
-
-		if (fxDest.GetType() == GFxValue::kType_Undefined || fxDest.objectInterface == NULL)
-			return;
-
 		GFxValue args;
 		SetGFxValue<T>(&args, arg, view);
-		fxDest.Invoke(name.c_str(), NULL, &args, 1);		
+
+		view->Invoke(targetStr.data, NULL, &args, 1);
+
+		args.CleanManaged();
 	}
 
 	template <typename T>
 	void InvokeArrayT(StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr, VMArray<T> args)
 	{
-		// TODO: Is this ok?
 		GFxValue fxArgsBuf[128];
 
 		if (!menuName.data || !targetStr.data)
@@ -123,32 +102,19 @@ namespace papyrusUI
 		if (!view)
 			return;
 
-		std::string dest, name;
-		if (! ExtractTargetData(targetStr.data, dest, name))
-			return;
-
-		GFxValue fxDest;
-		if (! view->GetVariable(&fxDest, dest.c_str()))
-			return;
-
-		if (fxDest.GetType() == GFxValue::kType_Undefined || fxDest.objectInterface == NULL)
-			return;
-
 		UInt32 argCount = args.Length();
-		GFxValue * pArgs = NULL;
-		if (argCount > 0)
+		for (UInt32 i=0; i<argCount; i++)
 		{
-			pArgs = (GFxValue*) &fxArgsBuf;
-			for (UInt32 i=0; i<argCount; i++, pArgs++)
-			{
-				pArgs->CleanManaged();
-				T arg;
-				args.Get(&arg, i);
-				SetGFxValue<T>(pArgs, arg, view);
-			}
+			T arg;
+			args.Get(&arg, i);
+			SetGFxValue<T>(&fxArgsBuf[i], arg, view);
 		}
-		
-		fxDest.Invoke(name.c_str(), NULL, (GFxValue*) &fxArgsBuf, argCount);
+
+		view->Invoke(targetStr.data, NULL, (GFxValue*) &fxArgsBuf, argCount);
+
+		// Release
+		for (UInt32 i=0; i<argCount; i++)
+			fxArgsBuf[i].CleanManaged();
 	}
 
 	bool IsMenuOpen(StaticFunctionTag* thisInput, BSFixedString menuName);

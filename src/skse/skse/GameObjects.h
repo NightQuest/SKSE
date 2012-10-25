@@ -322,7 +322,7 @@ public:
 	TESTexture		texturePaths[kNumTextures];	// 28
 	UInt32			unk68;						// 68
 	UInt32			unk6C;						// 6C
-	Data			unk70[kNumTextures];		// 70	
+	Data			unk70[kNumTextures];		// 70
 };
 
 STATIC_ASSERT(sizeof(BGSTextureSet) == 0xD0);
@@ -508,7 +508,7 @@ public:
 		};
 
 		Data0	unk00;	// 00
-		UInt32	unk08;	// 08
+		UInt32	type;	// 08
 		float	castTime;	// 0C
 		UInt32	unk10;	// 10
 		UInt32	unk14;	// 14
@@ -664,6 +664,9 @@ public:
 
 	FaceMorphs	* faceMorph;	// 15C
 	UInt32		unk160;			// 160
+
+	MEMBER_FN_PREFIX(TESNPC);
+	DEFINE_MEMBER_FN(GetHeadPartByType, BGSHeadPart *, 0x0055E7E0, int);
 };
 
 STATIC_ASSERT(sizeof(TESNPC) == 0x164);
@@ -837,8 +840,7 @@ class TESSound : public TESBoundAnimObject
 public:
 	enum { kTypeID = kFormType_Sound };
 
-	BSString	unk20;	// 20
-	UInt32		unk28;	// 28
+	BGSSoundDescriptorForm	* descriptor;	// 20
 };
 
 // 54
@@ -1289,7 +1291,8 @@ public:
 
 //	void					** _vtbl;		// 00
 	ActiveEffectReferenceEffectController	controller;	// 04
-	UInt32					unk0C[9];		// 0C
+	UInt32					unk0C[8];		// 0C
+	void					* niNode;		// 2C
 	MagicItem				* item;			// 30
 	MagicItem::EffectItem	* effect;		// 34
 	TESObjectREFR			* reference;	// 38
@@ -1298,12 +1301,12 @@ public:
 	UInt32					unk44;			// 44
 	float					elapsed;		// 48
 	float					duration;		// 4C
-	float					unk50;			// 50
+	float					magnitude;		// 50
 	UInt32					unk54;			// 54
 	UInt32					unk58;			// 58
 	UInt32					effectNum;		// 5C - Somekind of counter used to determine whether the ActiveMagicEffect handle is valid
 	UInt32					unk60;			// 60
-	UInt32					unk64;			// 64 - Only seems to appear on value modifiers
+	UInt32					actorValue;		// 64 - Only seems to appear on value modifiers
 	UInt32					unk68;			// 68
 	UInt32					unk6C;			// 6C
 };
@@ -1658,4 +1661,111 @@ public:
 	virtual ~BanishEffect();
 
 	// ??
+};
+
+class BGSEntryPointFunctionData
+{
+public:
+	virtual ~BGSEntryPointFunctionData();
+};
+
+
+class BGSEntryPointFunctionDataTwoValue : public BGSEntryPointFunctionData
+{
+public:
+	virtual ~BGSEntryPointFunctionDataTwoValue();
+
+	float value1;
+	float value2;
+};
+
+class BGSEntryPointFunctionDataOneValue : public BGSEntryPointFunctionData
+{
+public:
+	virtual ~BGSEntryPointFunctionDataOneValue();
+
+	float value;
+};
+
+class BGSEntryPointFunctionDataText : public BGSEntryPointFunctionData
+{
+public:
+	virtual ~BGSEntryPointFunctionDataText();
+
+	StringCache::Ref text;
+};
+
+class BGSEntryPointFunctionDataSpellItem : public BGSEntryPointFunctionData
+{
+public:
+	virtual ~BGSEntryPointFunctionDataSpellItem();
+
+	SpellItem	* spellItem;
+};
+
+class BGSEntryPointFunctionDataLeveledList : public BGSEntryPointFunctionData
+{
+public:
+	virtual ~BGSEntryPointFunctionDataLeveledList();
+
+	TESLevItem	* leveledList;
+};
+
+class BGSEntryPointFunctionDataActivateChoice : public BGSEntryPointFunctionData
+{
+public:
+	virtual ~BGSEntryPointFunctionDataActivateChoice();
+
+	StringCache::Ref	label;
+	BGSPerk				* perk;
+	SpellItem			* appliedSpell;
+	UInt32				flags;
+	UInt32				unk14;
+};
+
+class BGSEntryPointFunctionDataBooleanGraphVariable : public BGSEntryPointFunctionData
+{
+public:
+	virtual ~BGSEntryPointFunctionDataBooleanGraphVariable();
+
+	StringCache::Ref	variable;
+};
+
+
+class BGSPerkEntry
+{
+public:
+	virtual ~BGSPerkEntry();
+
+	UInt8	rank;
+	UInt8	priority;
+	UInt16	unk06;
+};
+
+class BGSQuestPerkEntry : public BGSPerkEntry
+{
+public:
+	virtual ~BGSQuestPerkEntry();
+
+	TESQuest	* quest;
+	UInt8		stage;
+};
+
+class BGSAbilityPerkEntry : public BGSPerkEntry
+{
+public:
+	virtual ~BGSAbilityPerkEntry();
+
+	SpellItem	* spellItem;
+};
+
+class BGSEntryPointPerkEntry : public BGSPerkEntry
+{
+public:
+	virtual ~BGSEntryPointPerkEntry(); // Has a number of virtuals, dont know what they are yet
+
+	UInt32						unk08;
+	BGSEntryPointFunctionData	* data;
+	void						* unk10;
+	BGSPerk						* perk;
 };

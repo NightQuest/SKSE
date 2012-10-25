@@ -3,8 +3,6 @@
 #include "GameForms.h"
 #include "GameData.h"
 
-#include "PapyrusVM.h"
-#include "PapyrusNativeFunctions.h"
 #include <algorithm>
 
 #include "common/ICriticalSection.h"
@@ -90,25 +88,28 @@ namespace papyrusQuest
 		
 		return NULL;
 	}
+}
 
-	void RegisterFuncs(VMClassRegistry* registry)
-	{
-		registry->RegisterFunction(
-			new NativeFunction1 <StaticFunctionTag, TESQuest*, BSFixedString> ("GetQuest", "Quest", papyrusQuest::GetQuest, registry));
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
 
-		registry->RegisterFunction(
-			new NativeFunction0 <TESQuest, BSFixedString> ("GetId", "Quest", papyrusQuest::GetId, registry));
+void papyrusQuest::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, TESQuest*, BSFixedString> ("GetQuest", "Quest", papyrusQuest::GetQuest, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction0 <TESQuest, UInt32> ("GetPriority", "Quest", papyrusQuest::GetPriority, registry));
+	registry->RegisterFunction(
+		new NativeFunction0 <TESQuest, BSFixedString> ("GetId", "Quest", papyrusQuest::GetId, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction0 <TESQuest, UInt32> ("GetNumAliases", "Quest", papyrusQuest::GetNumAliases, registry));
+	registry->RegisterFunction(
+		new NativeFunction0 <TESQuest, UInt32> ("GetPriority", "Quest", papyrusQuest::GetPriority, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <TESQuest, BGSBaseAlias*, UInt32> ("GetNthAlias", "Quest", papyrusQuest::GetNthAlias, registry));
+	registry->RegisterFunction(
+		new NativeFunction0 <TESQuest, UInt32> ("GetNumAliases", "Quest", papyrusQuest::GetNumAliases, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <TESQuest, BGSBaseAlias*, BSFixedString> ("GetAliasByName", "Quest", papyrusQuest::GetAliasByName, registry));
-	}
+	registry->RegisterFunction(
+		new NativeFunction1 <TESQuest, BGSBaseAlias*, UInt32> ("GetNthAlias", "Quest", papyrusQuest::GetNthAlias, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESQuest, BGSBaseAlias*, BSFixedString> ("GetAliasByName", "Quest", papyrusQuest::GetAliasByName, registry));
 }

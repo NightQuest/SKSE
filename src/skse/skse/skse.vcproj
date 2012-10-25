@@ -298,14 +298,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\PapyrusEvents.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\PapyrusEvents.h"
-					>
-				</File>
-				<File
 					RelativePath=".\PapyrusForm.cpp"
 					>
 				</File>
@@ -426,6 +418,22 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusSound.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusSound.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusSoundDescriptor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusSoundDescriptor.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusSpell.cpp"
 					>
 				</File>
@@ -465,6 +473,14 @@
 					RelativePath=".\PapyrusWeapon.h"
 					>
 				</File>
+				<File
+					RelativePath=".\PapyrusWeather.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusWeather.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="vm"
@@ -499,6 +515,18 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusVM.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="internals"
+				>
+				<File
+					RelativePath=".\PapyrusEvents.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusEvents.h"
 					>
 				</File>
 			</Filter>
@@ -559,6 +587,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GameInput.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GameInput.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GameMenus.cpp"
 				>
 			</File>
@@ -604,6 +640,14 @@
 			</File>
 			<File
 				RelativePath=".\GameSettings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GameStreams.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GameStreams.h"
 				>
 			</File>
 			<File
@@ -711,6 +755,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Hooks_SaveLoad.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_SaveLoad.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Hooks_Scaleform.cpp"
 				>
 			</File>
@@ -722,6 +774,30 @@
 		<Filter
 			Name="internals"
 			>
+			<File
+				RelativePath=".\GlobalLocks.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GlobalLocks.h"
+				>
+			</File>
+			<File
+				RelativePath=".\InputMap.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\InputMap.h"
+				>
+			</File>
+			<File
+				RelativePath=".\InternalSerialization.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\InternalSerialization.h"
+				>
+			</File>
 			<File
 				RelativePath=".\PluginAPI.h"
 				>
@@ -740,6 +816,22 @@
 			</File>
 			<File
 				RelativePath=".\SafeWrite.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Serialization.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Translation.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Translation.h"
 				>
 			</File>
 			<File
@@ -784,6 +876,14 @@
 			</File>
 			<File
 				RelativePath=".\NiRTTI.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NiTextures.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NiTextures.h"
 				>
 			</File>
 			<File

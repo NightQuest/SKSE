@@ -162,13 +162,13 @@ public:
 	MEMBER_FN_PREFIX(SkyrimVM);
 	DEFINE_MEMBER_FN(UnregisterFromSleep_Internal, void, 0x008CC1D0, UInt64 handle);
 	DEFINE_MEMBER_FN(RevertGlobalData_Internal, bool, 0x008CD480);
-	DEFINE_MEMBER_FN(SaveRegSleepEventHandles_Internal, bool, 0x008C4B70, void * saveFileHandle, void * saveStorageWrapper);
-	DEFINE_MEMBER_FN(LoadRegSleepEventHandles_Internal, bool, 0x008CB340, void * saveFileHandle, void * saveStorageWrapper);
+	DEFINE_MEMBER_FN(SaveRegSleepEventHandles_Internal, bool, 0x008C4B70, void * handleReaderWriter, void * saveStorageWrapper);
+	DEFINE_MEMBER_FN(LoadRegSleepEventHandles_Internal, bool, 0x008CB340, void * handleReaderWriter, void * loadStorageWrapper);
 
 	void OnFormDelete_Hook(UInt64 handle);
 	void RevertGlobalData_Hook(void);
-	bool SaveGlobalData_Hook(void * saveFileHandle, void * saveStorageWrapper);
-	bool LoadGlobalData_Hook(void * saveFileHandle, void * saveStorageWrapper);
+	bool SaveGlobalData_Hook(void * handleReaderWriter, void * saveStorageWrapper);
+	bool LoadGlobalData_Hook(void * handleReaderWriter, void * loadStorageWrapper);
 };
 
 extern SkyrimVM	** g_skyrimVM;

@@ -4,6 +4,12 @@
 #include "PapyrusForm.h"
 #include "Utilities.h"
 
+enum
+{
+	kDeviceType_Keyboard = 1,
+	kDeviceType_Mouse
+};
+
 static const GUID GUID_SysMouse		= { 0x6F1D2B60, 0xD5A0, 0x11CF, { 0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00} };
 static const GUID GUID_SysKeyboard	= { 0x6F1D2B61, 0xD5A0, 0x11CF, { 0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00} };
 
@@ -65,7 +71,7 @@ public:
 			// keyboard
 
 			// get raw data
-			UInt8	rawData[kMaxMacros];
+			UInt8	rawData[InputMap::kMaxMacros];
 			HRESULT hr = m_device->GetDeviceState(256, rawData);
 			if(hr != DI_OK) return hr;
 
@@ -101,7 +107,7 @@ public:
 		// ### begin hack land
 		if(m_deviceType == kDeviceType_Keyboard)
 		{
-			UInt8	rawData[kMaxMacros];
+			UInt8	rawData[InputMap::kMaxMacros];
 			HRESULT	hr = m_device->GetDeviceState(256, rawData);
 			if(hr == DI_OK)
 			{
@@ -271,7 +277,7 @@ bool DIHookControl::_IsKeyPressed(KeyInfo* info, UInt32 flags)
 
 bool DIHookControl::IsKeyPressed(UInt32 keycode, UInt32 flags)
 {
-	if(keycode >= kMaxMacros) return false;
+	if(keycode >= InputMap::kMaxMacros) return false;
 
 	// default mode
 	if(!flags) flags = kFlag_DefaultBackCompat;
@@ -284,7 +290,7 @@ UInt32 DIHookControl::GetNumKeysPressed()
 {
 	UInt32 keysPressed = 0;
 
-	for (UInt32 keycode = 0; keycode < kMaxMacros; keycode++)
+	for (UInt32 keycode = 0; keycode < InputMap::kMaxMacros; keycode++)
 	{
 		KeyInfo* info = &m_keys[keycode];
 		if (_IsKeyPressed(info, kFlag_DefaultBackCompat))
@@ -296,7 +302,7 @@ UInt32 DIHookControl::GetNumKeysPressed()
 SInt32 DIHookControl::GetNthKeyPressed(UInt32 n)
 {
 	UInt32 index = 0;
-	for (UInt32 keycode = 0; keycode < kMaxMacros; keycode++) {
+	for (UInt32 keycode = 0; keycode < InputMap::kMaxMacros; keycode++) {
 		KeyInfo* info = &m_keys[keycode];
 		if (_IsKeyPressed(info, kFlag_DefaultBackCompat)) {
 			if (index == n) {
@@ -310,7 +316,7 @@ SInt32 DIHookControl::GetNthKeyPressed(UInt32 n)
 
 bool DIHookControl::IsKeyDisabled(UInt32 keycode)
 {
-	if(keycode >= kMaxMacros) return false;
+	if(keycode >= InputMap::kMaxMacros) return false;
 
 	KeyInfo	* info = &m_keys[keycode];
 
@@ -319,14 +325,14 @@ bool DIHookControl::IsKeyDisabled(UInt32 keycode)
 
 bool DIHookControl::IsKeyHeld(UInt32 keycode)
 {
-	if(keycode >= kMaxMacros) return false;
+	if(keycode >= InputMap::kMaxMacros) return false;
 
 	return m_keys[keycode].hold;
 }
 
 bool DIHookControl::IsKeyTapped(UInt32 keycode)
 {
-	if(keycode >= kMaxMacros) return false;
+	if(keycode >= InputMap::kMaxMacros) return false;
 
 	return m_keys[keycode].tap;
 }
@@ -335,7 +341,7 @@ void DIHookControl::SetKeyDisableState(UInt32 keycode, bool bDisable, UInt32 mas
 {
 	if(!mask) mask = kDisable_All;	// default mask value
 
-	if(keycode < kMaxMacros)
+	if(keycode < InputMap::kMaxMacros)
 	{
 		KeyInfo	* info = &m_keys[keycode];
 
@@ -346,13 +352,13 @@ void DIHookControl::SetKeyDisableState(UInt32 keycode, bool bDisable, UInt32 mas
 
 void DIHookControl::SetKeyHeldState(UInt32 keycode, bool bHold)
 {
-	if(keycode < kMaxMacros)
+	if(keycode < InputMap::kMaxMacros)
 		m_keys[keycode].hold = bHold;
 }
 
 void DIHookControl::TapKey(UInt32 keycode)
 {
-	if(keycode < kMaxMacros)
+	if(keycode < InputMap::kMaxMacros)
 		m_keys[keycode].tap = true;
 }
 
@@ -417,10 +423,12 @@ void DIHookControl::ProcessKeyboardData(UInt8 * data)
 
 void DIHookControl::ProcessMouseData(DIMOUSESTATE2 * data)
 {
+	STATIC_ASSERT(sizeof(data->rgbButtons) == InputMap::kMacro_NumMouseButtons);
+
 	// process buttons
-	for(UInt32 idx = 0; idx < 8; idx++)
+	for(UInt32 idx = 0; idx < InputMap::kMacro_NumMouseButtons; idx++)
 	{
-		UInt32	macroIdx = kMacro_MouseButtonOffset + idx;
+		UInt32	macroIdx = InputMap::kMacro_MouseButtonOffset + idx;
 		bool	keyDown = data->rgbButtons[idx] != 0;
 
 		keyDown = m_keys[macroIdx].Process(keyDown, macroIdx);
@@ -429,14 +437,14 @@ void DIHookControl::ProcessMouseData(DIMOUSESTATE2 * data)
 	}
 
 	// process mouse wheel
-	UInt8	wheelState[2];	// 0 = +, 1 = -
+	UInt8	wheelState[InputMap::kMacro_MouseWheelDirections];	// 0 = +, 1 = -
 
 	wheelState[0] = data->lZ > 0 ? 0x80 : 0x00;
 	wheelState[1] = data->lZ < 0 ? 0x80 : 0x00;
 
-	for(UInt32 idx = 0; idx < 2; idx++)
+	for(UInt32 idx = 0; idx < InputMap::kMacro_MouseWheelDirections; idx++)
 	{
-		UInt32	macroIdx = kMacro_MouseWheelOffset + idx;
+		UInt32	macroIdx = InputMap::kMacro_MouseWheelOffset + idx;
 		bool	keyDown = wheelState[idx] != 0;
 
 		keyDown = m_keys[macroIdx].Process(keyDown, macroIdx);

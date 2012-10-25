@@ -759,7 +759,7 @@ int Property Motion_ThinBoxIntertia = 6 AutoReadOnly
 int Property Motion_Character = 7 AutoReadOnly
 
 
-; SKSE additions built 2012-08-04 05:25:04.547000 UTC
+; SKSE additions built 2012-09-30 07:24:37.943000 UTC
 
 ; Container-only functions
 int Function GetNumItems() native
@@ -769,6 +769,7 @@ float Function GetTotalArmorWeight() native
 
 ; Tree and Flora only functions
 bool Function IsHarvested() native
+Function SetHarvested(bool harvested) native
 
 ; Tempering
 Function SetItemHealthPercent(float health) native
@@ -777,3 +778,5 @@ Function SetItemHealthPercent(float health) native
 float Function GetItemMaxCharge() native
 float Function GetItemCharge() native
 Function SetItemCharge(float charge) native
+
+Function ResetInventory() native

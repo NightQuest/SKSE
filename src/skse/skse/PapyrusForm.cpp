@@ -109,21 +109,42 @@ namespace papyrusForm
 	{
 		if(!thisForm)
 			return;
-		g_inputEventRegs.Register<TESForm>(key, thisForm->GetFormType(), thisForm);
+		g_inputKeyEventRegs.Register<TESForm>(key, thisForm->GetFormType(), thisForm);
 	}
 
 	void UnregisterForKey(TESForm * thisForm, UInt32 key)
 	{
 		if(!thisForm)
 			return;
-		g_inputEventRegs.Unregister<TESForm>(key, thisForm->GetFormType(), thisForm);
+		g_inputKeyEventRegs.Unregister<TESForm>(key, thisForm->GetFormType(), thisForm);
 	}
 
 	void UnregisterForAllKeys(TESForm * thisForm)
 	{
 		if(!thisForm)
 			return;
-		g_inputEventRegs.UnregisterAll<TESForm>(thisForm->GetFormType(), thisForm);
+		g_inputKeyEventRegs.UnregisterAll<TESForm>(thisForm->GetFormType(), thisForm);
+	}
+
+	void RegisterForControl(TESForm * thisForm, BSFixedString control)
+	{
+		if(!thisForm)
+			return;
+		g_inputControlEventRegs.Register<TESForm>(control, thisForm->GetFormType(), thisForm);
+	}
+
+	void UnregisterForControl(TESForm * thisForm, BSFixedString control)
+	{
+		if(!thisForm)
+			return;
+		g_inputControlEventRegs.Unregister<TESForm>(control, thisForm->GetFormType(), thisForm);
+	}
+
+	void UnregisterForAllControls(TESForm * thisForm)
+	{
+		if(!thisForm)
+			return;
+		g_inputControlEventRegs.UnregisterAll<TESForm>(thisForm->GetFormType(), thisForm);
 	}
 
 	void UpdateKeys(UInt8 * data)
@@ -248,12 +269,12 @@ void papyrusForm::RegisterEventSinks(void)
 {
 	MenuManager * mm = MenuManager::GetSingleton();
 	if (mm)
-		mm->MenuOpenCloseEventDispatcher()->AddEventSink(&g_skseEventHandler);
+		mm->MenuOpenCloseEventDispatcher()->AddEventSink(&g_menuEventHandler);
 
-	g_modCallbackEventDispatcher.AddEventSink(&g_skseEventHandler);
+	g_modCallbackEventDispatcher.AddEventSink(&g_modCallbackEventHandler);
 
 	// Has to be done later, because the pointer is not set yet.
-	//(*g_inputEventDispatcher)->AddEventSink(&g_skseEventHandler);
+	//(*g_inputEventDispatcher)->AddEventSink(&g_inputEventHandler);
 }
 
 #include "PapyrusVM.h"
@@ -317,4 +338,13 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0 <TESForm, TESForm *> ("TempClone", "Form", papyrusForm::TempClone, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, BSFixedString> ("RegisterForControl", "Form", papyrusForm::RegisterForControl, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, BSFixedString> ("UnregisterForControl", "Form", papyrusForm::UnregisterForControl, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, void> ("UnregisterForAllControls", "Form", papyrusForm::UnregisterForAllControls, registry));
 }

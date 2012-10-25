@@ -25,7 +25,7 @@ StringCache * StringCache::GetSingleton(void)
 {
 	typedef StringCache * (* _GetSingleton)(void);
 
-	return ((_GetSingleton)0x00A47A40)();
+	return ((_GetSingleton)0x00A50240)();
 }
 
 StringCache::Lock * StringCache::GetLock(UInt32 crc16)
@@ -52,5 +52,5 @@ const char * BSString::Get(void)
 	return m_data ? m_data : "";
 }
 
-const _CRC32_Calc4 CRC32_Calc4 = (_CRC32_Calc4)0x00A41480;
-const _CRC32_Calc8 CRC32_Calc8 = (_CRC32_Calc8)0x00A414E0;
+const _CRC32_Calc4 CRC32_Calc4 = (_CRC32_Calc4)0x00A49BF0;
+const _CRC32_Calc8 CRC32_Calc8 = (_CRC32_Calc8)0x00A49C50;

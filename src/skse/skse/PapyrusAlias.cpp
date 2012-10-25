@@ -22,21 +22,42 @@ namespace papyrusAlias
 	{
 		if(!thisAlias)
 			return;
-		g_inputEventRegs.Register<BGSBaseAlias>(key, BGSBaseAlias::kTypeID, thisAlias);
+		g_inputKeyEventRegs.Register<BGSBaseAlias>(key, BGSBaseAlias::kTypeID, thisAlias);
 	}
 
 	void UnregisterForKey(BGSBaseAlias * thisAlias, UInt32 key)
 	{
 		if(!thisAlias)
 			return;
-		g_inputEventRegs.Unregister<BGSBaseAlias>(key, BGSBaseAlias::kTypeID, thisAlias);
+		g_inputKeyEventRegs.Unregister<BGSBaseAlias>(key, BGSBaseAlias::kTypeID, thisAlias);
 	}
 
 	void UnregisterForAllKeys(BGSBaseAlias * thisAlias)
 	{
 		if(!thisAlias)
 			return;
-		g_inputEventRegs.UnregisterAll<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisAlias);
+		g_inputKeyEventRegs.UnregisterAll<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisAlias);
+	}
+
+	void RegisterForControl(BGSBaseAlias * thisAlias, BSFixedString control)
+	{
+		if(!thisAlias)
+			return;
+		g_inputControlEventRegs.Register<BGSBaseAlias>(control, BGSBaseAlias::kTypeID, thisAlias);
+	}
+
+	void UnregisterForControl(BGSBaseAlias * thisAlias, BSFixedString control)
+	{
+		if(!thisAlias)
+			return;
+		g_inputControlEventRegs.Unregister<BGSBaseAlias>(control, BGSBaseAlias::kTypeID, thisAlias);
+	}
+
+	void UnregisterForAllControls(BGSBaseAlias * thisAlias)
+	{
+		if(!thisAlias)
+			return;
+		g_inputControlEventRegs.UnregisterAll<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisAlias);
 	}
 
 	void RegisterForMenu(BGSBaseAlias * thisAlias, BSFixedString menuName)
@@ -121,5 +142,14 @@ namespace papyrusAlias
 
 		registry->RegisterFunction(
 			new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllModEvents", "Alias", papyrusAlias::UnregisterForAllModEvents, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("RegisterForControl", "Alias", papyrusAlias::RegisterForControl, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("UnregisterForControl", "Alias", papyrusAlias::UnregisterForControl, registry));
+
+		registry->RegisterFunction(
+			new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllControls", "Alias", papyrusAlias::UnregisterForAllControls, registry));
 	}
 }

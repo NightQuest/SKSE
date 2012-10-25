@@ -12,7 +12,7 @@ public:
 		Reset();
 	}
 
-	virtual ~IMemPool()	{ Clear(); }
+	~IMemPool()	{ Clear(); }
 
 	void	Reset(void)
 	{
@@ -150,7 +150,7 @@ public:
 		Reset();
 	}
 
-	virtual ~IBasicMemPool()	{ }
+	~IBasicMemPool()	{ }
 
 	void	Reset(void)
 	{
@@ -181,12 +181,12 @@ public:
 
 	void	Free(T * obj)
 	{
+		obj->~T();
+
 		PoolItem	* item = reinterpret_cast <PoolItem *>(obj);
 
 		item->next = m_free;
 		m_free = item;
-
-		obj->~T();
 	}
 
 	UInt32	GetSize(void)	{ return size; }
@@ -231,7 +231,7 @@ public:
 		Reset();
 	}
 
-	virtual ~IThreadSafeBasicMemPool()	{ }
+	~IThreadSafeBasicMemPool()	{ }
 
 	void	Reset(void)
 	{
@@ -275,6 +275,8 @@ public:
 
 	void	Free(T * obj)
 	{
+		obj->~T();
+
 		PoolItem	* item = reinterpret_cast <PoolItem *>(obj);
 
 		item->next = m_free;
@@ -284,8 +286,6 @@ public:
 		m_free = item;
 
 		m_mutex.Leave();
-
-		obj->~T();
 	}
 
 	UInt32	GetSize(void)	{ return size; }

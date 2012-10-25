@@ -76,7 +76,7 @@ namespace papyrusInput
 		// Manual device selection
 		if (deviceType != 0xFF)
 		{
-			key = inputManager->GetMappedKey(name.data, deviceType, InputManager::kContext_Gameplay);
+			key = inputManager->GetMappedKey(name, deviceType, InputManager::kContext_Gameplay);
 		}
 		// Auto-selected device
 		else
@@ -85,17 +85,17 @@ namespace papyrusInput
 			if (*g_inputEventDispatcher && (*g_inputEventDispatcher)->IsGamepadEnabled())
 			{
 				deviceType = kDeviceType_Gamepad;
-				key = inputManager->GetMappedKey(name.data, kDeviceType_Gamepad, InputManager::kContext_Gameplay);
+				key = inputManager->GetMappedKey(name, kDeviceType_Gamepad, InputManager::kContext_Gameplay);
 			}
 			// Mouse + Keyboard
 			else
 			{
 				deviceType = kDeviceType_Keyboard;
-				key = inputManager->GetMappedKey(name.data, deviceType, InputManager::kContext_Gameplay);
+				key = inputManager->GetMappedKey(name, deviceType, InputManager::kContext_Gameplay);
 				if (key == 0xFF)
 				{
 					deviceType = kDeviceType_Mouse;
-					key = inputManager->GetMappedKey(name.data, deviceType, InputManager::kContext_Gameplay);
+					key = inputManager->GetMappedKey(name, deviceType, InputManager::kContext_Gameplay);
 				}
 			}
 		}
@@ -108,15 +108,46 @@ namespace papyrusInput
 		{
 			return key + InputMap::kMacro_MouseButtonOffset;
 		}
-		else if (deviceType == ::kDeviceType_Gamepad)
+		else if (deviceType == kDeviceType_Gamepad)
 		{
-			UInt32 mapped = InputMap::GetGamepadKeycode(key);
+			UInt32 mapped = InputMap::GamepadMaskToKeycode(key);
 			return (mapped != InputMap::kMaxMacros ? mapped : -1);
 		}
 		else
 		{
 			return key;
 		}
+	}
+
+	BSFixedString GetMappedControl(StaticFunctionTag* thisInput, SInt32 keyCode)
+	{
+		if (keyCode < 0 || keyCode >= InputMap::kMaxMacros)
+			return BSFixedString();
+
+		InputManager * inputManager = InputManager::GetSingleton();
+		if (!inputManager)
+			return BSFixedString();
+
+		UInt32 buttonID;
+		UInt32 deviceType;
+
+		if (keyCode >= InputMap::kMacro_GamepadOffset)
+		{
+			buttonID = InputMap::GamepadKeycodeToMask(keyCode);
+			deviceType = kDeviceType_Gamepad;
+		}
+		else if (keyCode >= InputMap::kMacro_MouseButtonOffset)
+		{
+			buttonID = keyCode - InputMap::kMacro_MouseButtonOffset;
+			deviceType = kDeviceType_Mouse;
+		}
+		else
+		{
+			buttonID = keyCode;
+			deviceType = kDeviceType_Keyboard;
+		}
+
+		return inputManager->GetMappedControl(buttonID, deviceType, InputManager::kContext_Gameplay);
 	}
 }
 
@@ -158,6 +189,9 @@ void papyrusInput::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction2 <StaticFunctionTag, SInt32, BSFixedString, UInt32> ("GetMappedKey", "Input", papyrusInput::GetMappedKey, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, BSFixedString, SInt32> ("GetMappedControl", "Input", papyrusInput::GetMappedControl, registry));
 
 
 }

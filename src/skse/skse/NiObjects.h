@@ -12,6 +12,7 @@ class NiStream;
 class NiObjectGroup;
 class NiExtraData;
 class NiTimeController;
+class NiNode;
 
 // 08
 class NiRefObject
@@ -36,8 +37,9 @@ public:
 	// standard NetImmerse
 	virtual NiRTTI *		GetRTTI(void);
 
-	// then a bunch of empty functions (what)
-	virtual UInt32			Unk_03(void);
+	// then a bunch of attempts to avoid dynamic_cast?
+	// unverified, do not use
+	virtual NiNode *		GetAsNiNode(void);
 	virtual UInt32			Unk_04(void);
 	virtual UInt32			Unk_05(void);
 	virtual UInt32			Unk_06(void);
@@ -87,7 +89,7 @@ class NiObjectNET : public NiObject
 public:
 	const char	* m_name;
 
-	NiTimeController	* m_controller;
+	NiTimeController	* m_controller;	// 0C next pointer at +0x30
 
 	NiExtraData	** m_extraData;			// 10 extra data
 	UInt16		m_extraDataLen;			// 14 max valid entry
@@ -96,25 +98,63 @@ public:
 
 STATIC_ASSERT(sizeof(NiObjectNET) == 0x18);
 
-// A8+
+// A8
 class NiAVObject : public NiObjectNET
 {
 public:
-	virtual void	Unk_21(void);
+	enum
+	{
+		kFlag_SelectiveUpdate =				0x00000002,
+		kFlag_UpdatePropertyControllers =	0x00000004,
 
-	UInt32	unk18;	// 18
-	UInt32	unk1C;	// 1C
+		kFlag_SelectiveUpdateRigid =		0x00000010,
+
+		kFlag_OverrideSelectiveTransforms =	0x00000080,
+	};
+
+	struct ControllerUpdateContext
+	{
+		enum
+		{
+			kDirty =	1 << 0,
+		};
+
+		float	delta;
+		UInt8	flags;
+	};
+
+	virtual void	UpdateControllers(ControllerUpdateContext * ctx);	// calls controller vtbl+0x8C
+	virtual void	UpdateNodeBound(ControllerUpdateContext * ctx);
+	virtual void	ApplyTransform(NiMatrix33 * mtx, NiPoint3 * translate, bool postTransform);
+	virtual void	Unk_24(UInt32 arg0);	// call Unk_24 on all children
+	virtual void	Unk_25(UInt32 arg0);
+	virtual void	Unk_26(UInt32 arg0);
+	virtual NiAVObject *	GetObjectByName(const char ** name);	// BSFixedString? alternatively BSFixedString is a typedef of a netimmerse type
+	virtual void	SetSelectiveUpdateFlags(bool * selectiveUpdate, bool selectiveUpdateTransforms, bool * rigid);
+	virtual void	UpdateDownwardPass(ControllerUpdateContext * ctx, UInt32 unk1);
+	virtual void	UpdateSelectedDownwardPass(ControllerUpdateContext * ctx, UInt32 unk1);
+	virtual void	UpdateRigidDownwardPass(ControllerUpdateContext * ctx, UInt32 unk1);
+	virtual void	UpdateWorldBound(void);
+	virtual void	UpdateWorldData(ControllerUpdateContext * ctx);
+	virtual void	UpdateNoControllers(ControllerUpdateContext * ctx);
+	virtual void	UpdateDownwardPassTempParent(NiNode * parent, ControllerUpdateContext * ctx);
+	virtual void	Unk_30(void);	// calls virtual function on parent
+	virtual void	Unk_31(UInt32 arg0);
+	virtual void	Unk_32(UInt32 arg0);
+
+	NiNode		* m_parent;			// 18
+	NiAVObject	* unk1C;			// 1C
 	NiTransform	m_localTransform;	// 20
 	NiTransform	m_worldTransform;	// 54
-	float	unk88;	// 88
-	float	unk8C;	// 8C
-	float	unk90;	// 90
-	float	unk94;	// 94
-	UInt32	unk98;	// 98 - bitfield
-	float	unk9C;	// 9C
-	UInt32	unkA0;	// A0
-	UInt8	unkA4;	// A4
-	UInt8	unkA5;	// A5 - bitfield
+	float		unk88;				// 88
+	float		unk8C;				// 8C
+	float		unk90;				// 90
+	float		unk94;				// 94
+	UInt32		m_flags;			// 98 - bitfield
+	float		unk9C;				// 9C
+	UInt32		unkA0;				// A0
+	UInt8		unkA4;				// A4
+	UInt8		unkA5;				// A5 - bitfield
 };
 
-STATIC_ASSERT(sizeof(NiAVObject) >= 0xA8);
+STATIC_ASSERT(sizeof(NiAVObject) == 0xA8);

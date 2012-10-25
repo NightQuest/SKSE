@@ -1,4 +1,5 @@
 #include "PapyrusUI.h"
+#include "PapyrusVM.h"
 #include "ScaleformCallbacks.h"
 #include "ScaleformMovie.h"
 #include "ScaleformExtendedData.h"
@@ -6,27 +7,95 @@
 #include "GameEvents.h"
 #include "GameForms.h"
 #include "GameInput.h"
+#include "common/IMemPool.h"
 
 namespace papyrusUI
 {
-	template <> void SetGFxValue<bool> (GFxValue * val, bool arg, GFxMovieView * view)						{ val->SetBool(arg); }
-	template <> void SetGFxValue<float> (GFxValue * val, float arg, GFxMovieView * view)					{ val->SetNumber(arg); }
-	template <> void SetGFxValue<BSFixedString> (GFxValue * val, BSFixedString arg, GFxMovieView * view)	{ view->CreateString(val, arg.data); }
+	template <> void SetGFxValue<bool> (GFxValue * val, bool arg)						{ val->SetBool(arg); }
+	template <> void SetGFxValue<float> (GFxValue * val, float arg)						{ val->SetNumber(arg); }
+	template <> void SetGFxValue<BSFixedString> (GFxValue * val, BSFixedString arg)
+	{
+		// ### MEMORY LEAK HERE ###
+		// we need to free this ourselves
+
+		BSFixedString s(arg.data);
+		val->SetString(s.data);
+	}
 
 	template <> bool GetGFxValue<bool> (GFxValue * val)						{ return (val->GetType() == GFxValue::kType_Bool ? val->GetBool() : false); }
 	template <> float GetGFxValue<float> (GFxValue * val)					{ return (val->GetType() == GFxValue::kType_Number ? val->GetNumber() : 0); }
-	template <> BSFixedString GetGFxValue<BSFixedString> (GFxValue * val)	{ return (val->GetType() == GFxValue::kType_String ? val->GetString() : NULL); }
-
-	void InvokeForm(StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr, TESForm * form)
+	template <> BSFixedString GetGFxValue<BSFixedString> (GFxValue * val)
 	{
-		if (!form || !menuName.data || !targetStr.data)
+		return (val->GetType() == GFxValue::kType_String ? BSFixedString(val->GetString()) : BSFixedString());
+	}
+
+	// Delegate object pools
+	IThreadSafeBasicMemPool<UIInvokeDelegate,40>		s_invokeDelegatePool;
+	IThreadSafeBasicMemPool<UIInvokeFormDelegate,40>	s_invokeFormDelegatePool;
+
+	UIInvokeDelegate * UIInvokeDelegate::Create(const char * nameBuf, const char * targetBuf)
+	{
+		UIInvokeDelegate * cmd = s_invokeDelegatePool.Allocate();
+		if (cmd)
+		{
+			cmd->menuName = nameBuf;
+			cmd->target = targetBuf;
+			cmd->argCount = 0;
+		}
+		return cmd;
+	}
+
+	void UIInvokeDelegate::Dispose(void)
+	{
+		s_invokeDelegatePool.Free(this);
+	}
+
+	void UIInvokeDelegate::Run(void)
+	{
+		MenuManager * mm = MenuManager::GetSingleton();
+		if (!mm)
+			return;
+
+		BSFixedString t(menuName.c_str());
+		GFxMovieView * view = mm->GetMovieView(&t);
+		if (!view)
+			return;
+
+		view->Invoke(target.c_str(), NULL, args, argCount);
+	}
+
+	UIInvokeFormDelegate * UIInvokeFormDelegate::Create(const char * nameBuf, const char * targetBuf)
+	{
+		UIInvokeFormDelegate * cmd = s_invokeFormDelegatePool.Allocate();
+		if (cmd)
+		{
+			cmd->menuName = nameBuf;
+			cmd->target = targetBuf;
+			cmd->handle = 0;
+		}
+		return cmd;
+	}
+
+	void UIInvokeFormDelegate::Dispose(void)
+	{
+		s_invokeFormDelegatePool.Free(this);
+	}
+
+	void UIInvokeFormDelegate::Run(void)
+	{
+		VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
+		IObjectHandlePolicy	* policy =		registry->GetHandlePolicy();
+		
+		TESForm * form = (TESForm*) policy->Resolve(type, handle);
+		if (!form)
 			return;
 
 		MenuManager * mm = MenuManager::GetSingleton();
 		if (!mm)
 			return;
 
-		GFxMovieView * view = mm->GetMovieView(&menuName);
+		BSFixedString t(menuName.c_str());
+		GFxMovieView * view = mm->GetMovieView(&t);
 		if (!view)
 			return;
 
@@ -34,9 +103,35 @@ namespace papyrusUI
 		view->CreateObject(&args);
 		scaleformExtend::FormData(&args, view, form, false, false);
 
-		view->Invoke(targetStr.data, NULL, &args, 1);
+		view->Invoke(target.c_str(), NULL, &args, 1);
+	}
 
-		args.CleanManaged();
+	void InvokeForm(StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr, TESForm * form)
+	{
+		if (!form || !menuName.data || !targetStr.data)
+			return;
+
+		UIManager * uiManager = UIManager::GetSingleton();
+		if (!uiManager)
+			return;
+
+		VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
+		IObjectHandlePolicy	* policy =		registry->GetHandlePolicy();
+		
+		UInt64 handle = policy->Create(form->formType, form);
+		if (handle == policy->GetInvalidHandle())
+			return;
+
+		UIInvokeFormDelegate * cmd = UIInvokeFormDelegate::Create(menuName.data, targetStr.data);
+		if (!cmd)
+		{
+			_MESSAGE("Failed to allocate UIInvokeFormDelegate, skipping invoke");
+			return;
+		}
+
+		cmd->type = form->formType;
+		cmd->handle = handle;
+		uiManager->QueueCommand(cmd);
 	}
 
 	bool IsMenuOpen(StaticFunctionTag* thisInput, BSFixedString menuName)
@@ -48,7 +143,7 @@ namespace papyrusUI
 		if (!mm)
 			return false;
 
-		return CALL_MEMBER_FN(mm, IsMenuOpen)(&menuName);
+		return mm->IsMenuOpen(&menuName);
 	}
 
 	bool IsTextInputEnabled(StaticFunctionTag * thisInput)

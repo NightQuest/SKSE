@@ -5,11 +5,11 @@ bool InputEventDispatcher::IsGamepadEnabled(void)
 	return (gamepad != NULL) && gamepad->IsEnabled();
 }
 
-InputEventDispatcher ** g_inputEventDispatcher = (InputEventDispatcher**) 0x01AD5DD4;
+InputEventDispatcher ** g_inputEventDispatcher = (InputEventDispatcher**) 0x01B2DA14;
 
 InputManager * InputManager::GetSingleton(void)
 {
-	return *((InputManager **)0x0128EAB8);
+	return *((InputManager **)0x012E6658);
 }
 
 UInt8 InputManager::AllowTextInput(bool allow)
@@ -35,7 +35,7 @@ UInt8 InputManager::AllowTextInput(bool allow)
 	return allowTextInput;
 }
 
-UInt32 InputManager::GetMappedKey(const char * name, UInt32 deviceType, UInt32 contextIdx)
+UInt32 InputManager::GetMappedKey(BSFixedString name, UInt32 deviceType, UInt32 contextIdx)
 {
 	ASSERT(contextIdx < kContextCount);
 
@@ -60,12 +60,40 @@ UInt32 InputManager::GetMappedKey(const char * name, UInt32 deviceType, UInt32 c
 	return 0xFF;
 }
 
+BSFixedString InputManager::GetMappedControl(UInt32 buttonID, UInt32 deviceType, UInt32 contextIdx)
+{
+	ASSERT(contextIdx < kContextCount);
+
+	// 0xFF == unbound
+	if (buttonID == 0xFF)
+		return BSFixedString();
+
+	tArray<InputContext::Mapping> * mappings;
+	if (deviceType == kDeviceType_Mouse)
+		mappings = &context[contextIdx]->mouseMap;
+	else if (deviceType == kDeviceType_Gamepad)
+		mappings = &context[contextIdx]->gamepadMap;
+	else
+		mappings = &context[contextIdx]->keyboardMap;
+
+	for (UInt32 i=0; i < mappings->count; i++)
+	{
+		InputContext::Mapping m;
+		if (!mappings->GetNthItem(i, m))
+			break;
+		if (m.buttonID == buttonID)
+			return m.name;
+	}
+
+	return BSFixedString();
+}
+
 PlayerControls * PlayerControls::GetSingleton(void)
 {
-	return *((PlayerControls **)0x0128EAB4);
+	return *((PlayerControls **)0x012E6654);
 }
 
 MenuControls * MenuControls::GetSingleton(void)
 {
-	return *((MenuControls **)0x01AB83BC);
+	return *((MenuControls **)0x01B0FF5C);
 }

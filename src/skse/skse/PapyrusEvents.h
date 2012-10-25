@@ -323,7 +323,8 @@ public:
 };
 
 extern RegistrationMapHolder<BSFixedString>							g_menuOpenCloseRegs;
-extern RegistrationMapHolder<UInt32>								g_inputEventRegs;
+extern RegistrationMapHolder<UInt32>								g_inputKeyEventRegs;
+extern RegistrationMapHolder<BSFixedString>							g_inputControlEventRegs;
 extern RegistrationMapHolder<BSFixedString,ModCallbackParameters>	g_modCallbackRegs;
 
 
@@ -349,16 +350,24 @@ public:
 extern EventDispatcher<SKSEModCallbackEvent> g_modCallbackEventDispatcher;
 
 
-class SKSEEventHandler :
-	public BSTEventSink <MenuOpenCloseEvent>,
-	public BSTEventSink <InputEvent>,
-	public BSTEventSink <SKSEModCallbackEvent>
+class MenuEventHandler : public BSTEventSink <MenuOpenCloseEvent>
 {
-
 public:
 	virtual EventResult		ReceiveEvent(MenuOpenCloseEvent * evn, EventDispatcher<MenuOpenCloseEvent> * dispatcher);
+};
+
+class InputEventHandler : public BSTEventSink <InputEvent>
+{
+public:
 	virtual EventResult		ReceiveEvent(InputEvent ** evns, InputEventDispatcher * dispatcher);
+};
+
+class ModCallbackEventHandler :	public BSTEventSink <SKSEModCallbackEvent>
+{
+public:
 	virtual	EventResult		ReceiveEvent(SKSEModCallbackEvent * evn, EventDispatcher<SKSEModCallbackEvent> * dispatcher);
 };
 
-extern SKSEEventHandler	g_skseEventHandler;
+extern MenuEventHandler			g_menuEventHandler;
+extern InputEventHandler		g_inputEventHandler;
+extern ModCallbackEventHandler	g_modCallbackEventHandler;

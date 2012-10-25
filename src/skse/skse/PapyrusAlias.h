@@ -15,6 +15,9 @@ namespace papyrusAlias
 	void RegisterForKey(BGSBaseAlias * thisAlias, UInt32 key);
 	void UnregisterForKey(BGSBaseAlias * thisAlias, UInt32 key);
 	void UnregisterForAllKeys(BGSBaseAlias * thisAlias);
+	void RegisterForControl(BGSBaseAlias * thisAlias, BSFixedString control);
+	void UnregisterForControl(BGSBaseAlias * thisAlias, BSFixedString control);
+	void UnregisterForAllControls(BGSBaseAlias * thisAlias);
 	void RegisterForMenu(BGSBaseAlias * thisAlias, BSFixedString menuName);
 	void UnregisterForMenu(BGSBaseAlias * thisAlias, BSFixedString menuName);
 	void UnregisterForAllMenus(BGSBaseAlias * thisAlias);

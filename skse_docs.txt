@@ -154,6 +154,10 @@ dynamic intrinsic class skse
 	// enters input event rebind mode
 	// callbackObject.EndRemapMode(keyCode : Number) will be called when the next input event occurs
 	function StartRemapMode(callbackObject : Object);
+
+	// gets name of the last control detected by the SKSE input handler
+	// bKeyDown specifies whether it's the last pressed or released control
+	function GetLastControl(bKeyDown : Boolean) : String;
 	
 	dynamic intrinsic class version
 	{
@@ -200,3 +204,4 @@ dynamic intrinsic class skse
 //	1.5.11	1.7.7.0		27
 //	1.6.0	1.7.7.0		28
 //	1.6.1	1.7.7.0		29
+//	1.6.2	1.8.145.0	30

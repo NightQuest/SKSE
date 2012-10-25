@@ -664,13 +664,14 @@ public:
 		kTypeScar,
 		kTypeBrows
 	};
-	UInt32					type;           // 3C
-	tArray<BGSHeadPart*>	extraParts; // 40
-	BGSTextureSet *			textureSet;             // 4C
-	TESModelTri				unk50[3];       // 50
+
+	UInt32					type;			// 3C
+	tArray <BGSHeadPart *>	extraParts;		// 40
+	BGSTextureSet *			textureSet;		// 4C
+	TESModelTri				unk50[3];		// 50
 	UInt32					unk8C;          // 8C
-	BGSListForm *			validRaces;       // 90
-	StringCache::Ref		unk94;  // 94
+	BGSListForm *			validRaces;		// 90
+	StringCache::Ref		unk94;			// 94
 };
 
 // 78
@@ -890,6 +891,13 @@ public:
 	tList<BSFixedString>	buttons;	// 30
 	UInt32					unk38;		// 38 - init'd to 1
 	UInt32					unk3C;		// 3C - init'd to 2
+
+	std::string GetDescription()
+	{
+		BSString str;
+		CALL_MEMBER_FN(&description, Get)(&str, this, 'DESC');
+		return str.Get();
+	};
 };
 
 // 50
@@ -2954,7 +2962,7 @@ public:
 		if(type > kFormType_Max)
 			return NULL;
 
-		IFormFactory	** kFactoryList = (IFormFactory **)0x0128CE40;
+		IFormFactory	** kFactoryList = (IFormFactory **)0x012E49B0;
 
 		return kFactoryList[type];
 	}

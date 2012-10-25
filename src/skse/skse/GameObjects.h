@@ -382,7 +382,7 @@ public:
 	UInt32				unk4C;	// 4C
 
 	MEMBER_FN_PREFIX(MagicItem);
-	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407720, int arg1, bool arg2);
+	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407750, int arg1, bool arg2);
 };
 
 STATIC_ASSERT(sizeof(MagicItem) == 0x50);
@@ -640,7 +640,7 @@ public:
 	UInt32		unk11C;			// 11C
 	UInt32		unk120;			// 120
 	UInt32		unk124;			// 124
-	float		unk128;			// 128
+	float		height;			// 128
 	float		weight;			// 12C
 
 	UInt32		pad130;			// 130
@@ -656,9 +656,9 @@ public:
 	UInt8		unk151;			// 151
 	UInt8		unk152;			// 152
 	UInt8		unk153;			// 153
-	UInt8		unk154;			// 154
-	UInt8		unk155;			// 155
-	UInt8		unk156;			// 156
+	struct Color {
+		UInt8   red, green, blue; // 154 - 156 - Skin Color
+	} color;
 	UInt8		pad157;			// 157
 	UInt32		unk158;			// 158 // Relationships?
 
@@ -666,7 +666,8 @@ public:
 	UInt32		unk160;			// 160
 
 	MEMBER_FN_PREFIX(TESNPC);
-	DEFINE_MEMBER_FN(GetHeadPartByType, BGSHeadPart *, 0x0055E7E0, int);
+	DEFINE_MEMBER_FN(GetHeadPartByType, BGSHeadPart *, 0x00560E50, int);
+	//DEFINE_MEMBER_FN(GetUnk04, int, 0x005640D0, Character * actor, void * val, TintMask * tint, char i, UInt32 k);
 };
 
 STATIC_ASSERT(sizeof(TESNPC) == 0x164);
@@ -1675,8 +1676,11 @@ class BGSEntryPointFunctionDataTwoValue : public BGSEntryPointFunctionData
 public:
 	virtual ~BGSEntryPointFunctionDataTwoValue();
 
-	float value1;
-	float value2;
+	enum {
+		kNumValues = 2
+	};
+
+	float value[kNumValues];
 };
 
 class BGSEntryPointFunctionDataOneValue : public BGSEntryPointFunctionData
@@ -1749,6 +1753,7 @@ public:
 
 	TESQuest	* quest;
 	UInt8		stage;
+	UInt8		pad[3];
 };
 
 class BGSAbilityPerkEntry : public BGSPerkEntry
@@ -1768,4 +1773,50 @@ public:
 	BGSEntryPointFunctionData	* data;
 	void						* unk10;
 	BGSPerk						* perk;
+};
+
+class BGSPrimitive
+{
+public:
+	BGSPrimitive();
+	virtual ~BGSPrimitive();
+
+	enum {
+		kPrimitive_None = 0,
+		kPrimitive_Box = 1,
+		kPrimitive_Sphere = 2
+	};
+
+	UInt32	type;
+	float	bounds_x; // Div 2 from CK
+	float	bounds_y; // Div 2 from CK
+	float	bounds_z; // Div 2 from CK
+};
+
+class BGSPrimitiveBox : public BGSPrimitive
+{
+public:
+	BGSPrimitiveBox();
+	virtual ~BGSPrimitiveBox();
+};
+
+class BGSPrimitiveLine : public BGSPrimitiveBox
+{
+public:
+	BGSPrimitiveLine();
+	virtual ~BGSPrimitiveLine();
+};
+
+class BGSPrimitivePlane : public BGSPrimitive
+{
+public:
+	BGSPrimitivePlane();
+	virtual ~BGSPrimitivePlane();
+};
+
+class BGSPrimitiveSphere : public BGSPrimitive
+{
+public:
+	BGSPrimitiveSphere();
+	virtual ~BGSPrimitiveSphere();
 };

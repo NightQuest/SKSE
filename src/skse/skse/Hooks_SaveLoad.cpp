@@ -3,50 +3,78 @@
 #include "Utilities.h"
 #include "Serialization.h"
 #include "GlobalLocks.h"
+#include "GameData.h"
 
-class SaveLoadManager
+void BGSSaveLoadManager::SaveGame_Hook(const char * saveName)
 {
-public:
-	MEMBER_FN_PREFIX(SaveLoadManager);
-	DEFINE_MEMBER_FN(SaveGame_Internal, void, 0x00675F20, const char * fileName);
-	DEFINE_MEMBER_FN(LoadGame_Internal, bool, 0x00678440, const char * fileName, bool unk0);
-
-	void SaveGame_Hook(const char * saveName)
-	{
 #ifdef DEBUG
-		_MESSAGE("Executing SaveLoadManager::SaveGame_Hook. saveName: %s", saveName);
+	_MESSAGE("Executing BGSSaveLoadManager::SaveGame_Hook. saveName: %s", saveName);
 #endif
 
-		Serialization::SetSaveName(saveName);
-		CALL_MEMBER_FN(this, SaveGame_Internal)(saveName);
-		Serialization::SetSaveName(NULL);
+	Serialization::SetSaveName(saveName);
+	CALL_MEMBER_FN(this, SaveGame_HookTarget)(saveName);
+	Serialization::SetSaveName(NULL);
 
 #ifdef DEBUG
-		_MESSAGE("Executed SaveLoadManager::SaveGame_Hook.");
+	_MESSAGE("Executed BGSSaveLoadManager::SaveGame_Hook.");
 #endif
-	}
+}
 
-	bool LoadGame_Hook(const char * saveName, bool unk1)
-	{
+bool BGSSaveLoadManager::LoadGame_Hook(const char * saveName, bool unk1)
+{
 #ifdef DEBUG
-		_MESSAGE("Executing SaveLoadManager::LoadGame_Hook. saveName: %s", saveName);
+	_MESSAGE("Executing BGSSaveLoadManager::LoadGame_Hook. saveName: %s", saveName);
 #endif
 
-		g_loadGameLock.Enter();
+	g_loadGameLock.Enter();
 
-		Serialization::SetSaveName(saveName);
-		bool result = CALL_MEMBER_FN(this, LoadGame_Internal)(saveName, unk1);
-		Serialization::SetSaveName(NULL);
+	Serialization::SetSaveName(saveName);
+	bool result = CALL_MEMBER_FN(this, LoadGame_HookTarget)(saveName, unk1);
+	Serialization::SetSaveName(NULL);
 
-		g_loadGameLock.Leave();
+	g_loadGameLock.Leave();
 
 #ifdef DEBUG
-		_MESSAGE("Executed SaveLoadManager::LoadGame_Hook.");
+	_MESSAGE("Executed BGSSaveLoadManager::LoadGame_Hook.");
 #endif
 
-		return result;
-	}
-};
+	return result;
+}
+
+bool		s_requestedSave	= false;
+bool		s_requestedLoad	= false;
+std::string	s_reqSaveName;
+std::string	s_reqLoadName;
+
+void BGSSaveLoadManager::RequestSave(const char * name)
+{
+	s_requestedSave = true;
+	s_reqSaveName = name;
+}
+
+void BGSSaveLoadManager::RequestLoad(const char * name)
+{
+	s_requestedLoad = true;
+	s_reqLoadName = name;
+}
+
+void BGSSaveLoadManager::ProcessEvents_Hook(void)
+{
+	CALL_MEMBER_FN(this, ProcessEvents_Internal)();
+
+	// wants both? gets nothing.
+	if(s_requestedSave && s_requestedLoad)
+		_MESSAGE("BGSSaveLoadManager: save and load requested in the same frame, ignoring both");
+	else if(s_requestedSave)
+		Save(s_reqSaveName.c_str());
+	else if(s_requestedLoad)
+		Load(s_reqLoadName.c_str());
+
+	s_requestedSave = false;
+	s_requestedLoad = false;
+	s_reqSaveName.clear();
+	s_reqLoadName.clear();
+}
 
 #if 0
 
@@ -123,6 +151,7 @@ public:
 void Hooks_SaveLoad_Commit(void)
 {
 	// Load & save
-	WriteRelCall(0x0067E272, GetFnAddr(&SaveLoadManager::SaveGame_Hook));
-	WriteRelCall(0x0067EC35, GetFnAddr(&SaveLoadManager::LoadGame_Hook));
+	WriteRelCall(0x00680CB0 + 0x01E2, GetFnAddr(&BGSSaveLoadManager::SaveGame_Hook));
+	WriteRelCall(0x006819A0 + 0x00B5, GetFnAddr(&BGSSaveLoadManager::LoadGame_Hook));
+	WriteRelCall(0x0069C860 + 0x0064, GetFnAddr(&BGSSaveLoadManager::ProcessEvents_Hook));
 }

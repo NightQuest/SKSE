@@ -3,15 +3,21 @@
 #include "GameRTTI.h"
 #include <set>
 #include "PapyrusArgs.h"
+#include "Hooks_Scaleform.h"
 
 
 //// Global instances
 
 RegistrationMapHolder<BSFixedString>						g_menuOpenCloseRegs;
-RegistrationMapHolder<UInt32>								g_inputEventRegs;
+RegistrationMapHolder<UInt32>								g_inputKeyEventRegs;
+RegistrationMapHolder<BSFixedString>						g_inputControlEventRegs;
 RegistrationMapHolder<BSFixedString,ModCallbackParameters>	g_modCallbackRegs;
-EventDispatcher<SKSEModCallbackEvent>						g_modCallbackEventDispatcher;
-SKSEEventHandler											g_skseEventHandler;
+
+EventDispatcher<SKSEModCallbackEvent>	g_modCallbackEventDispatcher;
+
+MenuEventHandler		g_menuEventHandler;
+InputEventHandler		g_inputEventHandler;
+ModCallbackEventHandler	g_modCallbackEventHandler;
 
 
 //// Generic functors
@@ -115,12 +121,8 @@ private:
 
 //// Event handlers
 
-EventResult SKSEEventHandler::ReceiveEvent(MenuOpenCloseEvent * evn, EventDispatcher<MenuOpenCloseEvent> * dispatcher)
+EventResult MenuEventHandler::ReceiveEvent(MenuOpenCloseEvent * evn, EventDispatcher<MenuOpenCloseEvent> * dispatcher)
 {
-#if _DEBUG
-	_MESSAGE("Received internal MenuOpenCloseEvent. Name: %s, Opening: %d", evn->menuName, evn->opening);
-#endif
-
 	BSFixedString eventName = evn->opening ? BSFixedString("OnMenuOpen") : BSFixedString("OnMenuClose");
 
 	g_menuOpenCloseRegs.ForEach(
@@ -131,80 +133,77 @@ EventResult SKSEEventHandler::ReceiveEvent(MenuOpenCloseEvent * evn, EventDispat
 	return kEvent_Continue;
 }
 
-EventResult SKSEEventHandler::ReceiveEvent(InputEvent ** evns, InputEventDispatcher * dispatcher)
+EventResult InputEventHandler::ReceiveEvent(InputEvent ** evns, InputEventDispatcher * dispatcher)
 {
 	// Function is called periodically, if no buttons pressed/held *evns == NULL
-
-	static UInt8	keyState[InputMap::kMaxMacros] = { 0 };
-	static float	keyTimer[InputMap::kMaxMacros] = { 0 };
-
-	for (UInt32 i = 0; i < InputMap::kMaxMacros; i++)
-	{
-		if (keyState[i] && (--keyState[i] == 0))
-		{
-			g_inputEventRegs.ForEach(
-				i,
-				EventQueueFunctor2<SInt32, float>(BSFixedString("OnKeyUp"), (SInt32)i, keyTimer[i])
-			);
-		}
-	}
-
 	if (! *evns)
 		return kEvent_Continue;
 
 	for (InputEvent * e = *evns; e; e = e->next)
 	{
-		switch(e->eventType)
+		if (e->eventType != InputEvent::kEventType_Button)
+			continue;
+
+		ButtonEvent * t = DYNAMIC_CAST(e, InputEvent, ButtonEvent);
+
+		UInt32	keyCode;
+		UInt32	deviceType = t->deviceType;
+		UInt32	keyMask = t->keyMask;
+
+		// Mouse
+		if (deviceType == kDeviceType_Mouse)
+			keyCode = InputMap::kMacro_MouseButtonOffset + keyMask; 
+		// Gamepad
+		else if (deviceType == kDeviceType_Gamepad)
+			keyCode = InputMap::GamepadMaskToKeycode(keyMask);
+		// Keyboard
+		else
+			keyCode = keyMask;
+
+		// Valid scancode?
+		if (keyCode >= InputMap::kMaxMacros)
+			continue;
+
+		BSFixedString	control	= *t->GetControlID();
+		float			timer	= t->timer;
+
+		bool isDown	= t->flags != 0 && timer == 0.0;
+		bool isUp	= t->flags == 0 && timer != 0;
+
+		if (isDown)
 		{
-			case InputEvent::kEventType_Button:
-			{
-				ButtonEvent * t = DYNAMIC_CAST(e, InputEvent, ButtonEvent);
+			// Used by scaleform skse.GetLastControl
+			SetLastControlDown(control.data);
 
-				UInt32 keyCode;
-				UInt32 deviceType = t->deviceType;
-				UInt32 keyMask = t->keyMask;
+			g_inputKeyEventRegs.ForEach(
+				keyCode,
+				EventQueueFunctor1<SInt32>(BSFixedString("OnKeyDown"), (SInt32)keyCode)
+			);
+			g_inputControlEventRegs.ForEach(
+				control,
+				EventQueueFunctor1<BSFixedString>(BSFixedString("OnControlDown"), control)
+			);
+		}
+		else if (isUp)
+		{
+			SetLastControlUp(control.data);
 
-				// Mouse
-				if (deviceType == kDeviceType_Mouse)
-					keyCode = InputMap::kMacro_MouseButtonOffset + keyMask; 
-
-				// Gamepad
-				else if (deviceType == kDeviceType_Gamepad)
-					keyCode = InputMap::GetGamepadKeycode(keyMask);
-
-				// Keyboard
-				else
-					keyCode = keyMask;
-
-				// Valid scancode?
-				if (keyCode >= InputMap::kMaxMacros)
-					break;
-
-				if (!keyState[keyCode])
-				{
-					g_inputEventRegs.ForEach(
-						keyCode,
-						EventQueueFunctor1<SInt32>(BSFixedString("OnKeyDown"), (SInt32)keyCode)
-					);
-				}
-
-				keyState[keyCode] = 2;
-				keyTimer[keyCode] = t->timer;
-
-				break;
-			}
-		};
+			g_inputKeyEventRegs.ForEach(
+				keyCode,
+				EventQueueFunctor2<SInt32, float>(BSFixedString("OnKeyUp"), (SInt32)keyCode, timer)
+			);
+			g_inputControlEventRegs.ForEach(
+				control,
+				EventQueueFunctor2<BSFixedString, float>(BSFixedString("OnControlUp"), control, timer)
+			);
+		}
 	}
 
 	return kEvent_Continue;
 }
 
-EventResult SKSEEventHandler::ReceiveEvent(SKSEModCallbackEvent * evn, EventDispatcher<SKSEModCallbackEvent> * dispatcher)
+EventResult ModCallbackEventHandler::ReceiveEvent(SKSEModCallbackEvent * evn, EventDispatcher<SKSEModCallbackEvent> * dispatcher)
 {
-#if _DEBUG
-	_MESSAGE("Received internal SKSEModCallbackEvent. EventName: %s. strArg: %s. numArg: %d", evn->eventName, evn->strArg, evn->numArg);
-#endif
-
 	const char * eventNameData = evn->eventName.data;
 
 	g_modCallbackRegs.ForEach(

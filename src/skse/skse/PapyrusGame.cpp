@@ -1,9 +1,12 @@
 #include "PapyrusGame.h"
+#include "PapyrusColorForm.h"
 
+#include "GameRTTI.h"
 #include "GameAPI.h"
 #include "GameReferences.h"
 #include "GameData.h"
 #include "GameSettings.h"
+#include "GameForms.h"
 
 namespace papyrusGame
 {
@@ -185,16 +188,73 @@ namespace papyrusGame
 
 	void SaveGame(StaticFunctionTag * base, BSFixedString name)
 	{
-		SaveManager	* mgr = SaveManager::GetSingleton();
-		if(mgr)
-			mgr->Save(name.data);
+		BGSSaveLoadManager	* mgr = BGSSaveLoadManager::GetSingleton();
+		if(!mgr)
+			return;
+
+		mgr->RequestSave(name.data);
 	}
 
 	void LoadGame(StaticFunctionTag * base, BSFixedString name)
 	{
-		SaveManager	* mgr = SaveManager::GetSingleton();
-		if(mgr)
-			mgr->Load(name.data);
+		BGSSaveLoadManager	* mgr = BGSSaveLoadManager::GetSingleton();
+		if(!mgr)
+			return;
+
+		mgr->RequestLoad(name.data);
+	}
+
+	UInt32 GetTintMaskColor(StaticFunctionTag * base, UInt32 tintType, UInt32 index)
+	{
+		UInt32 color = 0;
+		PlayerCharacter* pPC = (*g_thePlayer);
+		TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
+		TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(tintType, index);
+		if(tintMask) {
+			color = (((UInt32)(tintMask->alpha * 255)) << 24) | tintMask->color.red << 16 | tintMask->color.green << 8 | tintMask->color.blue;
+		}
+
+		return color;
+	}
+
+	void SetTintMaskColor(StaticFunctionTag * base, UInt32 color, UInt32 tintType, UInt32 index)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(tintType, index);
+		TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
+		if(tintMask) {
+			float alpha = ((color & 0xFF000000) >> 24) / 255.0;
+			UInt8 red = (color & 0x00FF0000) >> 16;
+			UInt8 green = (color & 0x0000FF00) >> 8;
+			UInt8 blue = color & 0x000000FF;
+
+			if(alpha > 1.0)
+				alpha = 1.0;
+			if(alpha < 0.0)
+				alpha = 0.0;
+
+			// TODO: Correct for Overlay (Vampire)
+
+			// Skin tones must have full alpha, use the alpha channel for saturation instead
+			if(tintType == TintMask::kMaskType_SkinTone) {
+				float saturation = papyrusColorComponent::GetSaturation(NULL, color);
+				UInt32 outColor = papyrusColorComponent::SetSaturation(NULL, color, alpha * saturation);
+				tintMask->color.red = (outColor & 0xFF0000) >> 16;
+				tintMask->color.green = (outColor & 0x00FF00) >> 8;
+				tintMask->color.blue = (outColor & 0x0000FF);
+				npc->color.red = tintMask->color.red;
+				npc->color.green = tintMask->color.green;
+				npc->color.blue = tintMask->color.blue;
+				tintMask->alpha = 1.0;
+			} else {
+				tintMask->color.red = red;
+				tintMask->color.green = green;
+				tintMask->color.blue = blue;
+				tintMask->alpha = alpha;
+			}
+
+			//CALL_MEMBER_FN(pPC, QueueNiNodeUpdate)(true); // Call this explicitly incase multiple tints are changed simultanenously
+		}
 	}
 }
 
@@ -253,4 +313,11 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, void, BSFixedString>("LoadGame", "Game", papyrusGame::LoadGame, registry));
+
+	// Tintmasks
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, UInt32, UInt32, UInt32>("GetTintMaskColor", "Game", papyrusGame::GetTintMaskColor, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction3 <StaticFunctionTag, void, UInt32, UInt32, UInt32>("SetTintMaskColor", "Game", papyrusGame::SetTintMaskColor, registry));
 }

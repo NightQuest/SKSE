@@ -15,6 +15,18 @@ EndEvent
 Event OnKeyUp(int keyCode, float holdTime)
 EndEvent
 
+; Registers for OnControlDown and OnControlUp events for the given control.
+; For a list of valid controls, see Input.psc.
+Function RegisterForControl(string control) native
+Function UnregisterForControl(string control) native
+Function UnregisterForAllControls() native
+
+Event OnControlDown(string control)
+EndEvent
+
+Event OnControlUp(string control, float holdTime)
+EndEvent
+
 ; Registers for OnMenuOpen and OnMenuClose events for the given menu.
 ; Registrations have to be refreshed after each game load.
 ; For a list of valid menu names, see UI.psc.

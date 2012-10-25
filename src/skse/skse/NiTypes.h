@@ -109,3 +109,24 @@ class NiTPointerMap : NiTMap <T_key, T_data>
 {
 public:
 };
+
+// 10
+template <typename T>
+class NiTArray
+{
+public:
+	NiTArray();
+	virtual ~NiTArray();
+
+	// sparse array, can have NULL entries that should be skipped
+	// iterate from 0 to m_emptyRunStart - 1
+
+//	void	** _vtbl;			// 00
+	T		* m_data;			// 04
+	UInt16	m_arrayBufLen;		// 08 - max elements storable in m_data
+	UInt16	m_emptyRunStart;	// 0A - index of beginning of empty slot run
+	UInt16	m_size;				// 0C - number of filled slots
+	UInt16	m_growSize;			// 0E - number of slots to grow m_data by
+};
+
+STATIC_ASSERT(sizeof(NiTArray <void *>) == 0x10);

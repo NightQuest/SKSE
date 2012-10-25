@@ -93,9 +93,6 @@
     <ClCompile Include="IMemPool.cpp">
       <Filter>memory</Filter>
     </ClCompile>
-    <ClCompile Include="IObjectPool.cpp">
-      <Filter>memory</Filter>
-    </ClCompile>
     <ClCompile Include="IPipeClient.cpp">
       <Filter>pipe</Filter>
     </ClCompile>
@@ -178,9 +175,6 @@
       <Filter>utilities</Filter>
     </ClInclude>
     <ClInclude Include="IMemPool.h">
-      <Filter>memory</Filter>
-    </ClInclude>
-    <ClInclude Include="IObjectPool.h">
       <Filter>memory</Filter>
     </ClInclude>
     <ClInclude Include="IPipeClient.h">

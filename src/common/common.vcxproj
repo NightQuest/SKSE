@@ -110,7 +110,6 @@
     <ClCompile Include="IDynamicCreate.cpp" />
     <ClCompile Include="ITimer.cpp" />
     <ClCompile Include="IMemPool.cpp" />
-    <ClCompile Include="IObjectPool.cpp" />
     <ClCompile Include="IPipeClient.cpp" />
     <ClCompile Include="IPipeServer.cpp" />
     <ClCompile Include="IDirectoryIterator.cpp" />
@@ -141,7 +140,6 @@
     <ClInclude Include="IDynamicCreate.h" />
     <ClInclude Include="ITimer.h" />
     <ClInclude Include="IMemPool.h" />
-    <ClInclude Include="IObjectPool.h" />
     <ClInclude Include="IPipeClient.h" />
     <ClInclude Include="IPipeServer.h" />
     <ClInclude Include="IDirectoryIterator.h" />

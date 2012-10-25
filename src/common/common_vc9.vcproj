@@ -373,14 +373,6 @@
 				RelativePath=".\IMemPool.h"
 				>
 			</File>
-			<File
-				RelativePath="IObjectPool.cpp"
-				>
-			</File>
-			<File
-				RelativePath="IObjectPool.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="pipe"

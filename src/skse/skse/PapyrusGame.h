@@ -26,4 +26,7 @@ namespace papyrusGame
 	void SetGameSettingInt(StaticFunctionTag * base, BSFixedString name, UInt32 value);
 	void SetGameSettingBool(StaticFunctionTag * base, BSFixedString name, bool value);
 	void SetGameSettingString(StaticFunctionTag * base, BSFixedString name, BSFixedString value);
+
+	UInt32 GetTintMaskColor(StaticFunctionTag * base, UInt32 tintType, UInt32 index);
+	void SetTintMaskColor(StaticFunctionTag * base, UInt32 color, UInt32 tintType, UInt32 index);
 };

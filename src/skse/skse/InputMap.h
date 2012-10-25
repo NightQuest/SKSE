@@ -41,6 +41,7 @@ enum
 	kGamepadButtonOffset_RT	// 281
 };
 
-UInt32 GetGamepadKeycode(UInt32 keyMask);
+UInt32 GamepadMaskToKeycode(UInt32 keyMask);
+UInt32 GamepadKeycodeToMask(UInt32 keyCode);
 
 }

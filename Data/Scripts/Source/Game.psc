@@ -257,7 +257,7 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2012-09-30 21:33:39.305000 UTC
+; SKSE additions built 2012-10-15 23:22:58.026000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native
@@ -293,3 +293,23 @@ Function SetGameSettingString(string setting, string value) global native
 ; save/load game
 Function SaveGame(string name) native global
 Function LoadGame(string name) native global
+
+; TintMasks
+; Types
+; 0 - Frekles
+; 1 - Lips
+; 2 - Cheeks
+; 3 - Eyeliner
+; 4 - Upper Eyesocket
+; 5 - Lower Eyesocket
+; 6 - SkinTone
+; 7 - Warpaint
+; 8 - Frownlines
+; 9 - Lower Cheeks
+; 10 - Nose
+; 11 - Chin
+; 12 - Neck
+; 13 - Forehead
+; 14 - Dirt
+Function SetTintMaskColor(int color, int type, int index) global native
+int Function GetTintMaskColor(int type, int index) global native

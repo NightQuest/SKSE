@@ -417,6 +417,9 @@ class TESDescription : public BaseFormComponent
 public:
 	UInt32	unk04;	// 04
 	UInt32	unk08;	// 08 - init'd to FFFFFFFF
+
+	MEMBER_FN_PREFIX(TESDescription);
+	DEFINE_MEMBER_FN(Get, void, 0x0044FFC0, BSString * out, TESForm * parent, UInt32 fieldType);
 };
 
 // C
@@ -916,51 +919,39 @@ public:
 
 STATIC_ASSERT(sizeof(Condition) == 0x20);
 
-// Maybe move this class to netimmerse
-class NiObject;
 
-class NiModel
+class TintMask
 {
 public:
-	virtual ~NiModel();
+	TintMask();
+	~TintMask();
 
-	virtual void Unk_01(void);
-	virtual void Unk_02(void);
-	virtual void Unk_03(void);
-	virtual void Unk_04(void);
-	virtual void Unk_05(void);
-	virtual void Unk_06(void);
-	virtual void Unk_07(void);
-	virtual void Unk_08(void);
-	virtual void Unk_09(void);
-	virtual void Unk_0A(void);
-	virtual void Unk_0B(void);
-	virtual void Unk_0C(void);
-	virtual void Unk_0D(void);
-	virtual void Unk_0E(void);
-	virtual void Unk_0F(void);
-	virtual void Unk_10(void);
-	virtual void Unk_11(void);
-	virtual void Unk_12(void);
-	virtual void Unk_13(void);
-	virtual void Unk_14(void);
-	virtual void Unk_15(void);
-	virtual void Unk_16(void);
-	virtual void Unk_17(void);
-	virtual void Unk_18(void);
-	virtual void Unk_19(void);
-	virtual void Unk_1A(void);
-	virtual void Unk_1B(void);
-	virtual void Unk_1C(void);
-	virtual void Unk_1D(void);
-	virtual void Unk_1E(void);
-	virtual void Unk_1F(void);
-	virtual void Unk_20(void);
-	virtual void Unk_21(void);
-	virtual void Unk_22(void);
-	virtual void Unk_23(void);
-	virtual void Unk_24(void);
-	virtual void Unk_25(void);
-	virtual void Unk_26(void);
-	virtual NiObject * GetNiObject(BSFixedString *); // Returns an NiObject by its name
+	enum {
+		kMaskType_Frekles = 0,
+		kMaskType_Lips = 1,
+		kMaskType_Cheeks = 2,
+		kMaskType_Eyeliner = 3,
+		kMaskType_UpperEyeSocket = 4,
+		kMaskType_LowerEyeSocket = 5,
+		kMaskType_SkinTone = 6,
+		kMaskType_WarPaint = 7,
+		kMaskType_FrownLines = 8,
+		kMaskType_LowerCheeks = 9,
+		kMaskType_Nose = 10,
+		kMaskType_Chin = 11,
+		kMaskType_Neck = 12,
+		kMaskType_Forehead = 13,
+		kMaskType_Dirt = 14
+	};
+	TESTexture	* texture;
+
+	union {
+		struct Color {
+			UInt8   red, green, blue, alpha; // The alpha isn't actually used here so its usually zero
+		} color;
+		UInt32 abgr;
+	};
+
+	float		alpha;
+	UInt32		tintType;
 };

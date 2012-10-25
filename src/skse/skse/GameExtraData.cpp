@@ -188,13 +188,13 @@ extern const void* RTTIForExtraType[0xB4] =
  	RTTI_ExtraMissingRefIDs,	// 0xB3
 };
 
-static const UInt32 s_ExtraHealthVtbl =				0x0102C0D8;
-static const UInt32 s_ExtraChargeVtbl =				0x0102C108;
-static const UInt32	s_ExtraCountVtbl =				0x0102C098;
-static const UInt32 s_ExtraTextDisplayVtbl =		0x0102C408;
-static const UInt32 s_ExtraSoulVtbl =				0x0102CC4C;
-static const UInt32 s_ExtraOwnershipVtbl =			0x0102C068;
-static const UInt32 s_ExtraAliasInstanceArrayVtbl = 0x0102C998;
+static const UInt32 s_ExtraHealthVtbl =				0x010781D8;
+static const UInt32 s_ExtraChargeVtbl =				0x01078208;
+static const UInt32	s_ExtraCountVtbl =				0x01078198;
+static const UInt32 s_ExtraTextDisplayVtbl =		0x01078508;
+static const UInt32 s_ExtraSoulVtbl =				0x01078D44;
+static const UInt32 s_ExtraOwnershipVtbl =			0x01078168;
+static const UInt32 s_ExtraAliasInstanceArrayVtbl = 0x01078A98;
 
 BSExtraData* BaseExtraList::GetByType(UInt32 type) const {
 	if (!HasType(type)) return NULL;

@@ -21,6 +21,8 @@
 #include "ScaleformState.h"
 #include "Translation.h"
 #include "GlobalLocks.h"
+#include "Hooks_UI.h"
+#include "common/IMemPool.h"
 
 //// plugin API
 
@@ -98,7 +100,7 @@ public:
 		if (!inputManager)
 			return;
 
-		UInt32 key = inputManager->GetMappedKey(name.data, deviceType, contextIdx);
+		UInt32 key = inputManager->GetMappedKey(name, deviceType, contextIdx);
 
 		if (key == 0xFF)
 		{
@@ -112,7 +114,7 @@ public:
 		}
 		else if (deviceType == kDeviceType_Gamepad)
 		{
-			UInt32 mapped = InputMap::GetGamepadKeycode(key);
+			UInt32 mapped = InputMap::GamepadMaskToKeycode(key);
 			args->result->SetNumber((mapped != InputMap::kMaxMacros ? mapped : -1));
 		}
 		else
@@ -137,7 +139,7 @@ class SKSEScaleform_StartRemapMode : public GFxFunctionHandler
 				
 			UInt32 deviceType = e->deviceType;
 
-			if ((dispatcher->IsGamepadEnabled() ^ (deviceType == kDeviceType_Gamepad)) || e->modFlags == 0 || e->timer != 0.0)
+			if ((dispatcher->IsGamepadEnabled() ^ (deviceType == kDeviceType_Gamepad)) || e->flags == 0 || e->timer != 0.0)
 				return kEvent_Continue;
 			
 			UInt32 keyMask = e->keyMask;
@@ -148,7 +150,7 @@ class SKSEScaleform_StartRemapMode : public GFxFunctionHandler
 				keyCode = InputMap::kMacro_MouseButtonOffset + keyMask; 
 			// Gamepad
 			else if (deviceType == kDeviceType_Gamepad)
-				keyCode = InputMap::GetGamepadKeycode(keyMask);
+				keyCode = InputMap::GamepadMaskToKeycode(keyMask);
 			// Keyboard
 			else
 				keyCode = keyMask;
@@ -196,6 +198,36 @@ public:
 		playerControls->remapMode = true;
 	}
 };
+
+const char * s_lastControlDown;
+const char * s_lastControlUp;
+
+void SetLastControlDown(const char * control)
+{
+	s_lastControlDown = control;
+}
+
+void SetLastControlUp(const char * control)
+{
+	s_lastControlUp = control;
+}
+
+class SKSEScaleform_GetLastControl : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		ASSERT(args->numArgs >= 1);
+
+		bool isKeyDown = args->args[0].GetBool();
+
+		if (isKeyDown)
+			args->result->SetString(s_lastControlDown);
+		else
+			args->result->SetString(s_lastControlUp);
+	}
+};
+
 
 class SKSEScaleform_Log : public GFxFunctionHandler
 {
@@ -590,9 +622,9 @@ public:
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x0083A760, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00841DD0, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 
-	enum { kCtorHookAddress = 0x0083BAC9 };
+	enum { kCtorHookAddress = 0x008430F0 + 0x0049 };
 
 	StandardItemData * ctor_Hook(GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 };
@@ -632,9 +664,9 @@ public:
 	GFxValue		fxValue;	// 10
 
 	MEMBER_FN_PREFIX(MagicItemData);
-	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x0086BF70, GFxMovieView ** movieView, TESForm * pForm, int unk);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x00873A10, GFxMovieView ** movieView, TESForm * pForm, int unk);
 
-	enum { kCtorHookAddress = 0x0086C529 };
+	enum { kCtorHookAddress = 0x00873F80 + 0x0049 };
 
 	MagicItemData * ctor_Hook(GFxMovieView ** movieView, TESForm * pForm, int unk);
 };
@@ -665,9 +697,9 @@ public:
 	GFxValue	* fxValue;	// 08
 
 	MEMBER_FN_PREFIX(FavItemDataHook);
-	DEFINE_MEMBER_FN(Hooked, int, 0x008544F0, TESForm * pForm);
+	DEFINE_MEMBER_FN(Hooked, int, 0x0085BA90, TESForm * pForm);
 
-	enum { kCtorHookAddress = 0x00854EDF };
+	enum { kCtorHookAddress = 0x0085C440 + 0x004F };
 
 	int Hook(TESForm * pForm);
 };
@@ -691,9 +723,9 @@ public:
 	GFxStateBag		* stateBag;
 
 	MEMBER_FN_PREFIX(GFxLoaderHook);
-	DEFINE_MEMBER_FN(Hooked, UInt32, 0xA58170);
+	DEFINE_MEMBER_FN(Hooked, UInt32, 0x00A608F0);
 
-	enum { kCtorHookAddress = 0x0069A5E7 };
+	enum { kCtorHookAddress = 0x0069CE60 + 0x07D7 };
 
 	UInt32 Hook(void);
 };
@@ -731,6 +763,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	RegisterFunction <SKSEScaleform_AllowTextInput>(&skse, view, "AllowTextInput");
 	RegisterFunction <SKSEScaleform_GetMappedKey>(&skse, view, "GetMappedKey");
 	RegisterFunction <SKSEScaleform_StartRemapMode>(&skse, view, "StartRemapMode");
+	RegisterFunction <SKSEScaleform_GetLastControl>(&skse, view, "GetLastControl");
 	RegisterFunction <SKSEScaleform_Log>(&skse, view, "Log");
 	RegisterFunction <SKSEScaleform_SetINISetting>(&skse, view, "SetINISetting");
 	RegisterFunction <SKSEScaleform_GetINISetting>(&skse, view, "GetINISetting");
@@ -773,7 +806,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	globals.SetMember("skse", &skse);
 }
 
-static const UInt32 kInstallHooks_Base = 0x00A57E10;
+static const UInt32 kInstallHooks_Base = 0x00A60590;
 static const UInt32 kInstallHooks_Entry_retn = kInstallHooks_Base + 0xBE;
 
 __declspec(naked) void InstallHooks_Entry(void)

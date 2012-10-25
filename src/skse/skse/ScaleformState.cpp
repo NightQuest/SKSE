@@ -1,3 +1,3 @@
 #include "ScaleformState.h"
 
-const BSScaleformTranslator::_GetCachedString BSScaleformTranslator::GetCachedString = (BSScaleformTranslator::_GetCachedString)0x00A48740;
+const BSScaleformTranslator::_GetCachedString BSScaleformTranslator::GetCachedString = (BSScaleformTranslator::_GetCachedString)0x00A50F40;

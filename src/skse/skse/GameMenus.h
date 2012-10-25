@@ -4,6 +4,7 @@
 #include "skse/GameTypes.h"
 #include "skse/GameEvents.h"
 #include "skse/Utilities.h"
+#include "skse/Hooks_UI.h"
 
 class TESObjectREFR;
 
@@ -168,14 +169,20 @@ public:
 
 	MEMBER_FN_PREFIX(UIManager);
 	// this takes ownership of the message ptr
-//	DEFINE_MEMBER_FN(AddMessage, void, 0x004500C0, UIMessage * msg);	// old 1.1 implementation
+//	DEFINE_MEMBER_FN(AddMessage, void, 0x004503E0, UIMessage * msg);	// old 1.1 implementation
 	// 1.3 uses a little non-thread-safe pool of UIMessages to wrap around the nicely thread-safe BSTMessageQueue it gets added to
-	DEFINE_MEMBER_FN(AddMessage, void, 0x00431A20, StringCache::Ref * strData, UInt32 msgID, void * objData);
+	DEFINE_MEMBER_FN(AddMessage, void, 0x00431C60, StringCache::Ref * strData, UInt32 msgID, void * objData);
 
 	static UIManager *	GetSingleton(void)
 	{
-		return *((UIManager **)0x0128AC74);
+		return *((UIManager **)0x012E27E4);
 	}
+
+	// Used by Hooks_UI
+	void ProcessCommands(void);
+	void QueueCommand(UIDelegate * cmd);
+
+	DEFINE_MEMBER_FN(ProcessEventQueue_HookTarget, void, 0x00A5B9C0);
 };
 
 
@@ -257,7 +264,7 @@ public:
 
 	static UIStringHolder *	GetSingleton(void)
 	{
-		return *((UIStringHolder **)0x0128AC70);
+		return *((UIStringHolder **)0x012E27E0);
 	}
 };
 
@@ -266,6 +273,11 @@ class Inventory3DManager
 {
 public:
 	~Inventory3DManager();
+
+	static Inventory3DManager * GetSingleton(void)
+	{
+		return *((Inventory3DManager **)0x01B2DC8C);
+	}
 
 //	void			** _vtbl;	// 00
 	UInt32			pad04[(0x34 - 0x04) / 4];	// 04
@@ -277,7 +289,6 @@ public:
 class MenuTableItem
 {
 public:
-
 	BSFixedString	name;				// 000
 	IMenu			* menuInstance;		// 004	0 if the menu is not currently open
 	void			* menuConstructor;	// 008
@@ -291,6 +302,12 @@ public:
 		UInt32 hash;
 		CRC32_Calc4(&hash, (UInt32)key->data);
 		return hash;
+	}
+
+	void Dump(void)
+	{
+		_MESSAGE("\t\tname: %s", name);
+		_MESSAGE("\t\tinstance: %08X", menuInstance);
 	}
 };
 
@@ -329,7 +346,7 @@ private:
 	EventDispatcher<MenuModeChangeEvent>	menuModeChangeEventDispatcher;	// 034
 	EventDispatcher<void*>					unk_064;						// 064 - New in 1.6.87.0 - Kintect related?
 
-	UnkArray				unk_094;	// 094
+	UnkArray				menuStack;	// 094
 	UInt32					unk_0A0;	// 0A0
 	MenuTable				menuTable;	// 0A4
 	UInt32					unk_0C0;	// 0C0 (= 0)
@@ -347,23 +364,23 @@ private:
 	bool					unk_119;	// 119 (= 0)
 	char					pad[2];
 
+	MEMBER_FN_PREFIX(MenuManager);
+	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A5C610, BSFixedString * menuName);
+	//DEFINE_MEMBER_FN(Register, void, 0x00A5CA20, const char * name, void * ctorFunc);
+
 public:
+
+	static MenuManager * GetSingleton(void)
+	{
+		return *((MenuManager **)0x012E2748);
+	}
 
 	EventDispatcher<MenuOpenCloseEvent> * MenuOpenCloseEventDispatcher()
 	{
 		return &menuOpenCloseEventDispatcher;
 	}
 
-	static MenuManager * GetSingleton(void)
-	{
-		return *((MenuManager **)0x0128ABD8);
-	}
-
-	MEMBER_FN_PREFIX(MenuManager);
-	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A53D80, BSFixedString * menuName);
-	//DEFINE_MEMBER_FN(Register, void, 0x00A54190, const char * name, void * ctorFunc);
-
+	bool				IsMenuOpen(BSFixedString * menuName);
 	GFxMovieView *		GetMovieView(BSFixedString * menuName);
-	
 };
 STATIC_ASSERT(sizeof(MenuManager) == 0x11C);

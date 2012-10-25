@@ -118,7 +118,7 @@ EndEvent
 Event OnUpdateGameTime()
 EndEvent
 
-; SKSE additions built 2012-09-30 21:33:39.305000 UTC
+; SKSE additions built 2012-10-15 23:22:58.026000 UTC
 
 ; Returns the typecode for this form object
 Int Function GetType() native
@@ -158,6 +158,18 @@ Event OnKeyDown(int keyCode)
 EndEvent
 
 Event OnKeyUp(int keyCode, float holdTime)
+EndEvent
+
+; Registers for OnControlDown and OnControlUp events for the given control.
+; For a list of valid controls, see Input.psc.
+Function RegisterForControl(string control) native
+Function UnregisterForControl(string control) native
+Function UnregisterForAllControls() native
+
+Event OnControlDown(string control)
+EndEvent
+
+Event OnControlUp(string control, float holdTime)
 EndEvent
 
 ; Registers for OnMenuOpen and OnMenuClose events for the given menu.

@@ -3,6 +3,7 @@
 #include "GameMenus.h"
 #include "ScaleformCallbacks.h"
 #include "ScaleformMovie.h"
+#include "Hooks_UI.h"
 
 struct StaticFunctionTag;
 class VMClassRegistry;
@@ -11,10 +12,10 @@ template <typename T> class VMArray;
 
 namespace papyrusUI
 {
-	template <typename T> void SetGFxValue(GFxValue * val, T arg, GFxMovieView * view);
-	template <> void SetGFxValue<bool> (GFxValue * val, bool arg, GFxMovieView * view);
-	template <> void SetGFxValue<float> (GFxValue * val, float arg, GFxMovieView * view);
-	template <> void SetGFxValue<BSFixedString> (GFxValue * val, BSFixedString arg, GFxMovieView * view);
+	template <typename T> void SetGFxValue(GFxValue * val, T arg);
+	template <> void SetGFxValue<bool> (GFxValue * val, bool arg);
+	template <> void SetGFxValue<float> (GFxValue * val, float arg);
+	template <> void SetGFxValue<BSFixedString> (GFxValue * val, BSFixedString arg);
 
 	template <typename T> T GetGFxValue(GFxValue * val);
 	template <> bool GetGFxValue<bool> (GFxValue * val);
@@ -22,6 +23,42 @@ namespace papyrusUI
 	template <> BSFixedString GetGFxValue<BSFixedString> (GFxValue * val);
 
 	void RegisterFuncs(VMClassRegistry* registry);
+
+	class UIInvokeDelegate : public UIDelegate
+	{
+	private:
+		std::string		menuName;
+		std::string		target;
+
+	public:
+		static UIInvokeDelegate * Create(const char * nameBuf, const char * targetBuf);
+
+		UIInvokeDelegate()	: argCount(0) {};
+
+		virtual void	Run(void);
+		virtual void	Dispose(void);
+
+		UInt32			argCount;
+		GFxValue		args[128];
+	};
+
+	class UIInvokeFormDelegate : public UIDelegate
+	{
+	private:
+		std::string		menuName;
+		std::string		target;
+
+	public:
+		static UIInvokeFormDelegate * Create(const char * nameBuf, const char * targetBuf);
+
+		UIInvokeFormDelegate()	: type(0), handle(0) {};
+
+		virtual void	Run(void);
+		virtual void	Dispose(void);
+
+		UInt32			type;
+		UInt64			handle;
+	};
 	
 	template <typename T>
 	void SetT(StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr, T value)
@@ -38,7 +75,7 @@ namespace papyrusUI
 			return;
 
 		GFxValue fxValue;
-		SetGFxValue<T>(&fxValue, value, view);
+		SetGFxValue<T>(&fxValue, value);
 
 		view->SetVariable(targetStr.data, &fxValue, 1);
 	}
@@ -70,52 +107,54 @@ namespace papyrusUI
 		if (!menuName.data || !targetStr.data)
 			return;
 
-		MenuManager * mm = MenuManager::GetSingleton();
-		if (!mm)
+		UIManager * uiManager = UIManager::GetSingleton();
+		if (!uiManager)
 			return;
 
-		GFxMovieView * view = mm->GetMovieView(&menuName);
-		if (!view)
+		UIInvokeDelegate * cmd = UIInvokeDelegate::Create(menuName.data, targetStr.data);
+		if (!cmd)
+		{
+			_MESSAGE("Failed to allocate UIInvokeDelegate, skipping invoke");
 			return;
+		}
 
-		GFxValue args;
-		SetGFxValue<T>(&args, arg, view);
+		cmd->argCount = 1;
+		SetGFxValue<T>(&cmd->args[0], arg);
 
-		view->Invoke(targetStr.data, NULL, &args, 1);
-
-		args.CleanManaged();
+		uiManager->QueueCommand(cmd);
 	}
 
 	template <typename T>
 	void InvokeArrayT(StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr, VMArray<T> args)
 	{
-		GFxValue fxArgsBuf[128];
-
 		if (!menuName.data || !targetStr.data)
 			return;
 
-		MenuManager * mm = MenuManager::GetSingleton();
-		if (!mm)
-			return;
-
-		GFxMovieView * view = mm->GetMovieView(&menuName);
-		if (!view)
+		UIManager * uiManager = UIManager::GetSingleton();
+		if (!uiManager)
 			return;
 
 		UInt32 argCount = args.Length();
+
+		UIInvokeDelegate * cmd = UIInvokeDelegate::Create(menuName.data, targetStr.data);
+		if (!cmd)
+		{
+			_MESSAGE("Failed to allocate UIInvokeDelegate, skipping invoke");
+			return;
+		}
+		
+		cmd->argCount = argCount;
 		for (UInt32 i=0; i<argCount; i++)
 		{
 			T arg;
 			args.Get(&arg, i);
-			SetGFxValue<T>(&fxArgsBuf[i], arg, view);
+			SetGFxValue<T>(&cmd->args[i], arg);
 		}
 
-		view->Invoke(targetStr.data, NULL, (GFxValue*) &fxArgsBuf, argCount);
-
-		// Release
-		for (UInt32 i=0; i<argCount; i++)
-			fxArgsBuf[i].CleanManaged();
+		uiManager->QueueCommand(cmd);
 	}
 
 	bool IsMenuOpen(StaticFunctionTag* thisInput, BSFixedString menuName);
+
+	void InvokeForm(StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr, TESForm * form);
 }

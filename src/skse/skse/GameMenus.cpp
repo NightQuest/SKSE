@@ -1,5 +1,10 @@
 #include "GameMenus.h"
 
+bool MenuManager::IsMenuOpen(BSFixedString * menuName)
+{
+	return CALL_MEMBER_FN(this, IsMenuOpen)(menuName);
+}
+
 GFxMovieView * MenuManager::GetMovieView(BSFixedString * menuName)
 {
 	if (!menuName->data)
@@ -14,10 +19,5 @@ GFxMovieView * MenuManager::GetMovieView(BSFixedString * menuName)
 	if (!menu)
 		return NULL;
 
-	// Necessary #2?
-	//menu->AddRef();
-	GFxMovieView * view = menu->view;
-	//menu->Release();
-
-	return view;
+	return menu->view;
 }

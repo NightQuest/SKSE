@@ -119,7 +119,7 @@ public:
 	virtual void	Unk_6C(void);
 	virtual void	Unk_6D(void);
 	virtual void	Unk_6E(void);
-	virtual NiModel *	GetNiModel(void);	// Not sure what this should actually be called
+	virtual NiNode *	GetNiNode(void);	// possibly the face only?
 	virtual void	Unk_70(void);
 	virtual void	Unk_71(void);
 	virtual void	Unk_72(void);
@@ -197,6 +197,9 @@ public:
 	LoadedState		* loadedState;	// 44
 	BaseExtraList	extraData;		// 48
 	UInt32			unk50;			// flags?
+
+	MEMBER_FN_PREFIX(TESObjectREFR);
+	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D4740);
 };
 STATIC_ASSERT(sizeof(TESObjectREFR) == 0x54);
 STATIC_ASSERT(offsetof(TESObjectREFR, handleRefObject) == 0x14);
@@ -274,7 +277,7 @@ class Character : public Actor
 
 public:
 	MEMBER_FN_PREFIX(Character);
-	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x0072CD80, bool);
+	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730460, bool);
 };
 
 STATIC_ASSERT(sizeof(Character) == 0x19C);
@@ -297,6 +300,11 @@ public:
 	UInt8   unk6D4;							// 6D4
 	UInt8	numPerkPoints;					// 6D5
 	UInt8   unk6D6;							// 6D6
+	UInt16	unk6D8;							// 6D8
+
+	tArray<TintMask*> tintMasks;			// 6DC		// These are the actual tints
+	tArray<TintMask*> * faceGenTintMasks;	// 6E8		// These apply when the Race's FaceGen Head is off
+
 
 	// Confirmed - Same as ExtraContainerChanges::EntryData
 	// This type is used by scaleform to extend data
@@ -309,8 +317,9 @@ public:
 	};
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
-	DEFINE_MEMBER_FN(GetDamage, double, 0x0072C6B0, ObjDesc * pForm);
-	DEFINE_MEMBER_FN(GetArmorValue, double, 0x0072C680, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetTintMask, TintMask*, 0x00735650, UInt32 tintType, UInt32 index);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x0072FD90, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x0072FD60, ObjDesc * pForm);
 };
 
 STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1A4);

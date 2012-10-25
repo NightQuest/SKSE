@@ -3,6 +3,7 @@
 #include "GameBSExtraData.h"
 #include "GameReferences.h"
 #include "GameAPI.h"
+#include "GameObjects.h"
 
 	//ExtraHavok
  //	ExtraCell3D
@@ -18,7 +19,7 @@ class ExtraPersistentCell : public BSExtraData
 {
 public:
 	ExtraPersistentCell();
-	~ExtraPersistentCell();
+	virtual ~ExtraPersistentCell();
 
 	TESObjectCELL* cell;
 };
@@ -67,14 +68,14 @@ typedef ExtraContainerChanges::FoundEquipData EquipData;
 {
 public:
 	ExtraWorn();
-	~ExtraWorn();
+	virtual ~ExtraWorn();
 };
 
 class ExtraWornLeft : public BSExtraData
 {
 public:
 	ExtraWornLeft();
-	~ExtraWornLeft();
+	virtual ~ExtraWornLeft();
 };
  //	ExtraPackageStartLocation
  //	ExtraPackage
@@ -85,7 +86,7 @@ class ExtraFollower : public BSExtraData
 {
 public:
 	ExtraFollower();
-	~ExtraFollower();
+	virtual ~ExtraFollower();
 
 	UInt32	unk08;		// 08
 	UInt32	unk0C;		// 0C
@@ -98,7 +99,7 @@ class ExtraOwnership : public BSExtraData
 {
 public:
 	ExtraOwnership();
-	~ExtraOwnership();
+	virtual ~ExtraOwnership();
 
 	TESForm* owner;
 };
@@ -185,7 +186,7 @@ struct ExtraFactionChanges : public BSExtraData
 {
 public:
 	ExtraFactionChanges();
-	~ExtraFactionChanges();
+	virtual ~ExtraFactionChanges();
 
 	struct FactionInfo
 	{
@@ -206,20 +207,52 @@ public:
  //	ExtraEmittanceSource
  //	ExtraRadioData
  //	ExtraCombatStyle
- //	ExtraPrimitive
+struct ExtraPrimitive : public BSExtraData
+{
+public:
+	ExtraPrimitive();
+	virtual ~ExtraPrimitive();
+
+	BGSPrimitive	* primitive;
+};
  //	ExtraOpenCloseActivateRef
  //	ExtraAnimNoteReceiver
  //	ExtraAmmo
  //	ExtraPatrolRefData
  //	ExtraPackageData
  //	ExtraOcclusionShape
- //	ExtraCollisionData
+struct ExtraCollisionData : public BSExtraData
+{
+public:
+	ExtraCollisionData();
+	virtual ~ExtraCollisionData();
+
+	enum {
+		kCollisionLayer_Trigger = 0x0C,
+		kCollisionLayer_NonCollidable = 0x0F,
+		kCollisionLayer_ActorZone = 0x16,
+		kCollisionLayer_ProjectileZone = 0x17,
+		kCollisionLayer_GasTrap = 0x18,		
+		kCollisionLayer_DeadActorZone = 0x2F,
+		kCollisionLayer_TriggerFallingTrap = 0x30,
+		kCollisionLayer_SpellTrigger = 0x33,
+		kCollisionLayer_LivingAndDead = 0x34,
+		kCollisionLayer_TrapTrigger = 0x36
+	};
+
+	struct Data
+	{
+		UInt32	collisionLayer;
+	};
+
+	Data	* data;
+};
  //	ExtraSayTopicInfoOnceADay
 struct ExtraEncounterZone : public BSExtraData
 {
 public:
 	ExtraEncounterZone();
-	~ExtraEncounterZone();
+	virtual ~ExtraEncounterZone();
 
 	BGSEncounterZone* encounterZone;
 };
@@ -246,7 +279,7 @@ class ExtraFollowerSwimBreadcrumbs : public BSExtraData
 {
 public:
 	ExtraFollowerSwimBreadcrumbs();
-	~ExtraFollowerSwimBreadcrumbs();
+	virtual ~ExtraFollowerSwimBreadcrumbs();
 
 	UInt32	unk08;
 	float	unk0C; // Looks like a position?
@@ -258,7 +291,7 @@ class ExtraAliasInstanceArray : public BSExtraData
 {
 public:
 	ExtraAliasInstanceArray();
-	~ExtraAliasInstanceArray();
+	virtual ~ExtraAliasInstanceArray();
 
 	struct AliasInfo
 	{
@@ -284,7 +317,7 @@ class ExtraPromotedRef : public BSExtraData
 {
 public:
 	ExtraPromotedRef();
-	~ExtraPromotedRef();
+	virtual ~ExtraPromotedRef();
 
 	tArray<TESForm*> unk08;
 };
@@ -341,7 +374,7 @@ public:
 class ExtraFlags : public BSExtraData
 {
 	ExtraFlags();
-	~ExtraFlags();
+	virtual ~ExtraFlags();
 
 	UInt32 flags;
 };

@@ -6,6 +6,8 @@
 #include "GameAPI.h"
 #include "GameObjects.h"
 #include "GameReferences.h"
+#include "PapyrusEvents.h"
+#include "Serialization.h"
 #ifdef _PPAPI
 #include <list>
 #endif
@@ -45,8 +47,10 @@
 #include "PapyrusShout.h"
 #include "PapyrusUtility.h"
 
+#define LOG_PAPYRUS_FUNCTIONS 0
+
 typedef void (* _RegisterPapyrusFunctions)(VMClassRegistry ** registry);
-_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F0C20;
+_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F8C10;
 
 #ifdef _PPAPI
 typedef std::list <SKSEPapyrusInterface::RegisterFunctions> PapyrusPluginList;
@@ -59,10 +63,33 @@ bool RegisterPapyrusPlugin(SKSEPapyrusInterface::RegisterFunctions callback)
 }
 #endif
 
+#if LOG_PAPYRUS_FUNCTIONS
+struct VTableProxy
+{
+	void	** vtbl;
+
+	void RegisterFunction_Hook(IFunction * fn)
+	{
+		_MESSAGE("%s %s", fn->GetClassName()->data, fn->GetName()->data);
+	}
+};
+#endif
+
 void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 {
+#if LOG_PAPYRUS_FUNCTIONS
+	// this is all kinds of bad
+	VTableProxy	** vtableProxy = (VTableProxy **)registryPtr;
+	void		* oldRegisterFunction = (*vtableProxy)->vtbl[0x16 + 1];
+	SafeWrite32((UInt32)&(*vtableProxy)->vtbl[0x16 + 1], GetFnAddr(&VTableProxy::RegisterFunction_Hook));
+#endif
+
 	// call original code
 	RegisterPapyrusFunctions(registryPtr);
+
+#if LOG_PAPYRUS_FUNCTIONS
+	SafeWrite32((UInt32)&(*vtableProxy)->vtbl[0x16 + 1], (UInt32)oldRegisterFunction);
+#endif
 
 	VMClassRegistry * registry = *registryPtr;
 
@@ -185,6 +212,43 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 #endif
 }
 
+//// Event registration hooks
+
+void SkyrimVM::OnFormDelete_Hook(UInt64 handle)
+{
+	CALL_MEMBER_FN(this, UnregisterFromSleep_Internal)(handle);
+
+	g_menuOpenCloseRegs.UnregisterAll(handle);
+	g_inputKeyEventRegs.UnregisterAll(handle);
+	g_inputControlEventRegs.UnregisterAll(handle);
+	g_modCallbackRegs.UnregisterAll(handle);
+}
+
+void SkyrimVM::RevertGlobalData_Hook(void)
+{
+	CALL_MEMBER_FN(this, RevertGlobalData_Internal)();
+
+	Serialization::HandleRevertGlobalData();
+
+	// For now, this is a suitable place to do this.
+	if (*g_inputEventDispatcher)
+		(*g_inputEventDispatcher)->AddEventSink(&g_inputEventHandler);
+}
+
+bool SkyrimVM::SaveGlobalData_Hook(void * handleReaderWriter, void * saveStorageWrapper)
+{
+	bool success = CALL_MEMBER_FN(this, SaveRegSleepEventHandles_Internal)(handleReaderWriter, saveStorageWrapper);
+	Serialization::HandleSaveGlobalData();
+	return success;
+}
+
+bool SkyrimVM::LoadGlobalData_Hook(void * handleReaderWriter, void * loadStorageWrapper)
+{
+	bool success = CALL_MEMBER_FN(this, LoadRegSleepEventHandles_Internal)(handleReaderWriter, loadStorageWrapper);
+	Serialization::HandleLoadGlobalData();
+	return success;
+}
+
 void Hooks_Papyrus_Init(void)
 {
 	//
@@ -192,12 +256,12 @@ void Hooks_Papyrus_Init(void)
 
 void Hooks_Papyrus_Commit(void)
 {
-	WriteRelCall(0x008CF2B0 + 0x098B, (UInt32)RegisterPapyrusFunctions_Hook);
+	WriteRelCall(0x008D6DA0 + 0x098B, (UInt32)RegisterPapyrusFunctions_Hook);
 
 	// GlobalData / event regs
-	WriteRelCall(0x008CDC0A, GetFnAddr(&SkyrimVM::OnFormDelete_Hook));
-	WriteRelCall(0x008CE037, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // Normal game load
-	WriteRelCall(0x008CE4A6, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // New script reload command
-	WriteRelCall(0x008CADE1, GetFnAddr(&SkyrimVM::SaveGlobalData_Hook));
-	WriteRelCall(0x008CE209, GetFnAddr(&SkyrimVM::LoadGlobalData_Hook));
+	WriteRelCall(0x008D56D0 + 0x002A, GetFnAddr(&SkyrimVM::OnFormDelete_Hook));
+	WriteRelCall(0x008D5B10 + 0x0017, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // Normal game load
+	WriteRelCall(0x008D5E80 + 0x0116, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // New script reload command
+	WriteRelCall(0x008D2790 + 0x0101, GetFnAddr(&SkyrimVM::SaveGlobalData_Hook));
+	WriteRelCall(0x008D5B40 + 0x01B9, GetFnAddr(&SkyrimVM::LoadGlobalData_Hook));
 }

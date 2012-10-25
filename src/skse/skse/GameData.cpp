@@ -2,7 +2,7 @@
 
 DataHandler * DataHandler::GetSingleton()
 {
-	return *((DataHandler **)0x0128A348);
+	return *((DataHandler **)0x012E1EB8);
 }
 
 class LoadedModFinder
@@ -28,17 +28,17 @@ UInt8 DataHandler::GetModIndex(const char* modName)
 	return modList.modInfoList.GetIndexOf(LoadedModFinder(modName));
 }
 
-void SaveManager::Save(const char * name)
+void BGSSaveLoadManager::Save(const char * name)
 {
 	CALL_MEMBER_FN(this, Save_Internal)(name, -1, 0);
 }
 
-void SaveManager::Load(const char * name)
+void BGSSaveLoadManager::Load(const char * name)
 {
 	CALL_MEMBER_FN(this, Load_Internal)(name, -1, 0, 1);
 }
 
-SaveManager * SaveManager::GetSingleton(void)
+BGSSaveLoadManager * BGSSaveLoadManager::GetSingleton(void)
 {
-	return *((SaveManager **)0x01AD5A58);
+	return *((BGSSaveLoadManager **)0x01B2D698);
 }

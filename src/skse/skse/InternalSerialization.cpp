@@ -63,12 +63,9 @@ UInt8 ResolveModIndex(UInt8 modIndex)
 void Core_RevertCallback(SKSESerializationInterface * intfc)
 {
 	g_menuOpenCloseRegs.Clear();
-	g_inputEventRegs.Clear();
+	g_inputKeyEventRegs.Clear();
+	g_inputControlEventRegs.Clear();
 	g_modCallbackRegs.Clear();
-
-#ifdef DEBUG
-	_MESSAGE("Executed Core_RevertCallback");
-#endif
 }
 
 void Core_SaveCallback(SKSESerializationInterface * intfc)
@@ -79,7 +76,10 @@ void Core_SaveCallback(SKSESerializationInterface * intfc)
 	g_menuOpenCloseRegs.Save(intfc, 'MENR', 1);
 
 	_MESSAGE("Saving key input event registrations...");
-	g_inputEventRegs.Save(intfc, 'KEYR', 1);
+	g_inputKeyEventRegs.Save(intfc, 'KEYR', 1);
+
+	_MESSAGE("Saving control input event registrations...");
+	g_inputControlEventRegs.Save(intfc, 'CTLR', 1);
 
 	_MESSAGE("Saving mod callback event registrations...");
 	g_modCallbackRegs.Save(intfc, 'MCBR', 1);
@@ -108,7 +108,13 @@ void Core_LoadCallback(SKSESerializationInterface * intfc)
 		// Key input events
 		case 'KEYR':
 			_MESSAGE("Loading key input event registrations...");
-			g_inputEventRegs.Load(intfc, 1);
+			g_inputKeyEventRegs.Load(intfc, 1);
+			break;
+
+		// Control input events
+		case 'CTLR':
+			_MESSAGE("Loading control input event registrations...");
+			g_inputControlEventRegs.Load(intfc, 1);
 			break;
 
 		// Custom mod events

@@ -1,65 +1,8 @@
 #include "PapyrusVM.h"
 #include "GameAPI.h"
-#include "PapyrusEvents.h"
-#include "Serialization.h"
 
-IObjectHandlePolicy	** g_objectHandlePolicy = (IObjectHandlePolicy **)0x01B4E608;
-SkyrimVM			** g_skyrimVM = (SkyrimVM **)0x0128CD1C;
-
-void SkyrimVM::OnFormDelete_Hook(UInt64 handle)
-{
-	CALL_MEMBER_FN(this, UnregisterFromSleep_Internal)(handle);
-
-	g_menuOpenCloseRegs.UnregisterAll(handle);
-	g_inputEventRegs.UnregisterAll(handle);
-	g_modCallbackRegs.UnregisterAll(handle);
-
-#if _DEBUG
-	_MESSAGE("Executed SkyrimVM::OnFormDelete_Hook - %016llX", handle);
-#endif
-}
-
-void SkyrimVM::RevertGlobalData_Hook(void)
-{
-	CALL_MEMBER_FN(this, RevertGlobalData_Internal)();
-
-	Serialization::HandleRevertGlobalData();
-
-	// For now, this is a suitable place to do this.
-	if (*g_inputEventDispatcher)
-		(*g_inputEventDispatcher)->AddEventSink(&g_skseEventHandler);
-
-#if _DEBUG
-	_MESSAGE("Executed SkyrimVM::RevertGlobalData_Hook.");
-#endif
-}
-
-bool SkyrimVM::SaveGlobalData_Hook(void * handleReaderWriter, void * saveStorageWrapper)
-{
-	bool success = CALL_MEMBER_FN(this, SaveRegSleepEventHandles_Internal)(handleReaderWriter, saveStorageWrapper);
-
-	Serialization::HandleSaveGlobalData();
-
-#if _DEBUG
-	_MESSAGE("Executed SkyrimVM::SaveGlobalData_Hook.");
-#endif
-
-	return success;
-}
-
-bool SkyrimVM::LoadGlobalData_Hook(void * handleReaderWriter, void * loadStorageWrapper)
-{
-	bool success = CALL_MEMBER_FN(this, LoadRegSleepEventHandles_Internal)(handleReaderWriter, loadStorageWrapper);
-
-	Serialization::HandleLoadGlobalData();
-
-#if _DEBUG
-	_MESSAGE("Executed SkyrimVM::LoadGlobalData_Hook.");
-#endif
-
-	return success;
-}
-
+IObjectHandlePolicy	** g_objectHandlePolicy = (IObjectHandlePolicy **)0x01BA6308;
+SkyrimVM			** g_skyrimVM = (SkyrimVM **)0x012E488C;
 
 void VMClassInfo::AddRef(void)
 {

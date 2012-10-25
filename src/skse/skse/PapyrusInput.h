@@ -32,5 +32,6 @@ namespace papyrusInput
 	//void EnableMouse(Input* thisInput);
 	//bool IsMouseDisabled(Input* thisInput);
 
-	SInt32 GetMappedKey(StaticFunctionTag* thisInput, BSFixedString name, UInt32 deviceType);
+	SInt32			GetMappedKey(StaticFunctionTag* thisInput, BSFixedString name, UInt32 deviceType);
+	BSFixedString	GetMappedControl(StaticFunctionTag* thisInput, SInt32 keyCode);
 }

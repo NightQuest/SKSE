@@ -33,3 +33,6 @@ int Function GetNthKeyPressed(int n) global native
 ;	1			mouse
 ;	2			gamepad
 int Function GetMappedKey(string control, int deviceType = 0xFF) global native
+
+; returns name of control bound to given keycode, or "" if unbound
+string Function GetMappedControl(int keycode) global native

@@ -8,23 +8,19 @@
 
 IDebugLog	gLog;
 
-#define _SAVELOAD 1
-
 #if RUNTIME
 
 const char * kLogPath = "\\My Games\\Skyrim\\SKSE\\skse.log";
 
-STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_7_7_0);
+STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_8_145_0);
 
 #include "Hooks_Scaleform.h"
 #include "Hooks_Gameplay.h"
 #include "Hooks_ObScript.h"
 #include "Hooks_DirectInput8Create.h"
 #include "Hooks_Papyrus.h"
-
-#ifdef _SAVELOAD
 #include "Hooks_SaveLoad.h"
-#endif
+#include "Hooks_UI.h"
 
 #else
 
@@ -40,8 +36,8 @@ void ApplyPatch(UInt32 base, UInt8 * buf, UInt32 len)
 
 void FixCoopLevel(void)
 {
-	SafeWrite8(0x00A60E50 + 0x71 + 1, 0x06);
-	SafeWrite8(0x00A61F70 + 0x4C + 1, 0x16);
+	SafeWrite8(0x00A69640 + 0x71 + 1, 0x06);
+	SafeWrite8(0x00A6A760 + 0x4C + 1, 0x16);
 }
 
 void WaitForDebugger(void)
@@ -99,10 +95,11 @@ void SKSE_Initialize(void)
 		Hooks_Gameplay_Commit();
 		Hooks_ObScript_Commit();
 		Hooks_Papyrus_Commit();
-#ifdef _SAVELOAD
+		Hooks_UI_Commit();
+
 		Hooks_SaveLoad_Commit();
 		Init_CoreSerialization_Callbacks();
-#endif
+
 		Hooks_DirectInput_Commit();
 
 		FlushInstructionCache(GetCurrentProcess(), NULL, 0);

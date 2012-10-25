@@ -36,4 +36,8 @@ namespace papyrusForm
 	void RegisterForKey(TESForm * thisForm, UInt32 key);
 	void UnregisterForKey(TESForm * thisForm, UInt32 key);
 	void UnregisterForAllKeys(TESForm * thisForm);
+
+	void RegisterForControl(TESForm * thisForm, BSFixedString control);
+	void UnregisterForControl(TESForm * thisForm, UInt32 control);
+	void UnregisterForAllControls(TESForm * thisForm);
 }

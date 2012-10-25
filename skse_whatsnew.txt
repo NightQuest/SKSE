@@ -1,3 +1,6 @@
+1.6.3:
+- support for runtime version 1.8.151
+
 1.6.2:
 - add Input.GetMappedControl to return name of control bound to given keycode
 - fix Game.Save/LoadGame
@@ -5,7 +8,7 @@
 - add Form/Alias.RegisterForControl to receive OnControlDown/Up events
 	For a list of valid control names, see Data/Scripts/Source/Input.psc
 - add ActionScript function GetLastControl to return the name of the last pressed/released control
-- support for runtime  version 1.8.145
+- support for runtime version 1.8.145
 
 1.6.1:
 - corrected build error; I forgot to sync to latest before releasing 1.6.0

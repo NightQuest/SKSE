@@ -7,7 +7,7 @@ int Function GetBlue(int argb) global native
 
 float Function GetHue(int argb) global native
 float Function GetSaturation(int argb) global native
-float Function GetLuminosity(int argb) global native
+float Function GetValue(int argb) global native
 
 Function SetAlpha(int argb, int a) global native
 Function SetRed(int argb, int r) global native
@@ -16,4 +16,4 @@ Function SetBlue(int argb, int b) global native
 
 Function SetHue(int argb, float h) global native
 Function SetSaturation(int argb, float s) global native
-Function SetLuminosity(int argb, float l) global native
+Function SetValue(int argb, float v) global native

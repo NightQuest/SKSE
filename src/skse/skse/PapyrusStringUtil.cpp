@@ -174,4 +174,15 @@ void papyrusStringUtil::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, BSFixedString, UInt32> ("AsChar", "StringUtil", papyrusStringUtil::AsChar, registry));
+
+	registry->SetFunctionFlags("StringUtil", "GetLength", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("StringUtil", "GetNthChar", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("StringUtil", "IsLetter", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("StringUtil", "IsDigit", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("StringUtil", "IsPunctuation", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("StringUtil", "IsPrintable", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("StringUtil", "Find", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("StringUtil", "Substring", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("StringUtil", "AsOrd", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("StringUtil", "AsChar", VMClassRegistry::kFunctionFlag_NoWait);
 }

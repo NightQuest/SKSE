@@ -43,7 +43,7 @@ Function SetProtected(bool abProtected = true) native
 Function SetOutfit( Outfit akOutfit, bool abSleepOutfit = false ) native
 
 
-; SKSE additions built 2012-10-15 23:22:58.026000 UTC
+; SKSE additions built 2012-10-25 03:42:32.926000 UTC
 ; get/set the CombatStyle of the actor
 CombatStyle Function GetCombatStyle() native
 Function SetCombatStyle(CombatStyle cs) native
@@ -53,6 +53,10 @@ Outfit Function GetOutfit(bool bSleepOutfit = false) native
 
 ; set the Class of the actor
 Function SetClass(Class c) native
+
+; Get/Set the actors body height
+float Function GetHeight() native
+Function SetHeight(float height) native
 
 ; Get/Set the actors body weight
 float Function GetWeight() native

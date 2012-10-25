@@ -72,8 +72,8 @@ namespace Serialization
 
 	// utilities
 
-	// build full path from save name
-	std::string GetSavePath(std::string name)
+	// make full path from save name
+	std::string MakeSavePath(std::string name, const char * extension)
 	{
 		char	path[MAX_PATH];
 		ASSERT(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, path)));
@@ -81,7 +81,8 @@ namespace Serialization
 		std::string	result = path;
 		result += kSavegamePath;
 		result += name;
-		result += ".skse";
+		if (extension)
+			result += extension;
 		return result;
 	}
 
@@ -123,7 +124,7 @@ namespace Serialization
 		if(name)
 		{
 			_MESSAGE("save name is %s", name);
-			s_savePath = GetSavePath(name);
+			s_savePath = MakeSavePath(name, ".skse");
 			_MESSAGE("full save path: %s", s_savePath.c_str());
 		}
 		else
@@ -418,6 +419,26 @@ namespace Serialization
 
 	done:
 		s_currentFile.Close();
+	}
+
+	void HandleDeleteSave(std::string saveName)
+	{
+		std::string savePath = MakeSavePath(saveName, NULL);
+		std::string coSavePath = savePath;
+		savePath += ".ess";
+		coSavePath += ".skse";
+
+		// Old save file really gone?
+		IFileStream	saveFile;
+		if (!saveFile.Open(savePath.c_str()))
+		{
+			_MESSAGE("deleting co-save %s", coSavePath.c_str());	
+			DeleteFile(coSavePath.c_str());
+		}
+		else
+		{
+			_MESSAGE("skipped delete of co-save %s", coSavePath.c_str());	
+		}
 	}
 
 	template <>

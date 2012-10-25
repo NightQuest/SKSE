@@ -43,8 +43,18 @@ namespace papyrusActorBase
 	{
 		if (thisNPC) {
 			thisNPC->weight = weight;
-			// Invoke Actor Member that updates FaceGen (SetNPCWeight should have it)
-			// Alternatively there is probably a member that already does this as the race menu needs a way to do the same thing
+		}
+	}
+
+	float GetHeight(TESNPC* thisNPC)
+	{
+		return (thisNPC) ? thisNPC->height : 0.0;
+	}
+
+	void SetHeight(TESNPC* thisNPC, float height)
+	{
+		if (thisNPC) {
+			thisNPC->height = height;
 		}
 	}
 
@@ -143,6 +153,12 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <TESNPC, void, TESClass*>("SetClass", "ActorBase", papyrusActorBase::SetClass, registry));
 
 	// Character Creation Information
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, float>("GetHeight", "ActorBase", papyrusActorBase::GetHeight, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, void, float>("SetHeight", "ActorBase", papyrusActorBase::SetHeight, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0 <TESNPC, float>("GetWeight", "ActorBase", papyrusActorBase::GetWeight, registry));

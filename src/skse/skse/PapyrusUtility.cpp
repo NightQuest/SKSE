@@ -62,4 +62,9 @@ void papyrusUtility::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, BSFixedString, BSFixedString>("GetINIString", "Utility", papyrusUtility::GetINIString, registry));
+
+	registry->SetFunctionFlags("Utility", "GetINIFloat", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Utility", "GetINIInt", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Utility", "GetINIBool", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Utility", "GetINIString", VMClassRegistry::kFunctionFlag_NoWait);
 }

@@ -199,7 +199,7 @@ public:
 	UInt32			unk50;			// flags?
 
 	MEMBER_FN_PREFIX(TESObjectREFR);
-	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D4740);
+	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D4450);
 };
 STATIC_ASSERT(sizeof(TESObjectREFR) == 0x54);
 STATIC_ASSERT(offsetof(TESObjectREFR, handleRefObject) == 0x14);
@@ -277,7 +277,7 @@ class Character : public Actor
 
 public:
 	MEMBER_FN_PREFIX(Character);
-	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730460, bool);
+	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x007309B0, bool);
 };
 
 STATIC_ASSERT(sizeof(Character) == 0x19C);
@@ -289,21 +289,61 @@ public:
 	virtual ~PlayerCharacter();
 
 	// parents
-	BSTEventSink <void*>	menuOpenCloseEvent;			// 19C .?AV?$BSTEventSink@VMenuOpenCloseEvent@@@@
-	BSTEventSink <void*>	menuModeChangeEvent;		// 1A0 .?AV?$BSTEventSink@VMenuModeChangeEvent@@@@
+	BSTEventSink <void *>	menuOpenCloseEvent;			// 19C .?AV?$BSTEventSink@VMenuOpenCloseEvent@@@@
+	BSTEventSink <void *>	menuModeChangeEvent;		// 1A0 .?AV?$BSTEventSink@VMenuModeChangeEvent@@@@
 	BSTEventSink <void *>	userEventEnabledEvent;		// 1A4 .?AV?$BSTEventSink@VUserEventEnabledEvent@@@@
 	BSTEventSource <void *>	actorCellEventSource;		// 1A8 .?AV?$BSTEventSource@UBGSActorCellEvent@@@@
 	BSTEventSource <void *>	actorDeathEventSource;		// 1D8 .?AV?$BSTEventSource@UBGSActorDeathEvent@@@@
 	BSTEventSource <void *>	positionPlayerEventSource;	// 208 .?AV?$BSTEventSource@UPositionPlayerEvent@@@@
 
-	UInt32	pad238[(0x6D4 - 0x238) >> 2];	// 238
-	UInt8   unk6D4;							// 6D4
-	UInt8	numPerkPoints;					// 6D5
-	UInt8   unk6D6;							// 6D6
-	UInt16	unk6D8;							// 6D8
+	UInt32	pad238[(0x6E0 - 0x238) >> 2];	// 238
+	UInt8	unk6E0;							// 6E0
+	UInt8	numPerkPoints;					// 6E1
+	UInt16  unk6E2;							// 6E2
+	UInt32	unk6E4;							// 6E4
 
-	tArray<TintMask*> tintMasks;			// 6DC		// These are the actual tints
-	tArray<TintMask*> * faceGenTintMasks;	// 6E8		// These apply when the Race's FaceGen Head is off
+	tArray <TintMask *>	tintMasks;			// 6E8		// These are the actual tints
+	tArray <TintMask *>	* overlayTintMasks;	// 6F4		// These apply when the Race's FaceGen Head is off
+
+	// Use these to modify the overlay, but it gets reset frequently so its pointless
+	/*TintMask * GetOverlayTintMask(UInt32 tintType, UInt32 index)
+	{
+		UInt32 curIndex = 0;
+		if(!overlayTintMasks)
+			return NULL;
+
+		for(int i = 0; i < overlayTintMasks->count; i++)
+		{
+			TintMask * tintMask;
+			overlayTintMasks->GetNthItem(i, tintMask);
+			if(tintMask && tintMask->tintType == tintType) {
+				if(index == curIndex)
+					return tintMask;
+				else
+					++curIndex;
+			}
+		}
+
+		return NULL;
+	}
+
+	UInt32 GetNumOverlayTints(UInt32 tintType)
+	{
+		UInt32 count = 0;
+		if(!overlayTintMasks)
+			return NULL;
+
+		for(int i = 0; i < overlayTintMasks->count; i++)
+		{
+			TintMask * tintMask;
+			overlayTintMasks->GetNthItem(i, tintMask);
+			if(tintMask && tintMask->tintType == tintType) {
+				count++;
+			}
+		}
+
+		return count;
+	}*/
 
 
 	// Confirmed - Same as ExtraContainerChanges::EntryData
@@ -317,13 +357,16 @@ public:
 	};
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
-	DEFINE_MEMBER_FN(GetTintMask, TintMask*, 0x00735650, UInt32 tintType, UInt32 index);
-	DEFINE_MEMBER_FN(GetDamage, double, 0x0072FD90, ObjDesc * pForm);
-	DEFINE_MEMBER_FN(GetArmorValue, double, 0x0072FD60, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetNumTints, UInt32, 0x007359A0, UInt32 tintType);
+	DEFINE_MEMBER_FN(GetTintMask, TintMask *, 0x00735960, UInt32 tintType, UInt32 index);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x007302E0, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x007302B0, ObjDesc * pForm);
 };
 
 STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1A4);
-STATIC_ASSERT(offsetof(PlayerCharacter, numPerkPoints) == 0x6D5);
+STATIC_ASSERT(offsetof(PlayerCharacter, numPerkPoints) == 0x6E1);
+STATIC_ASSERT(offsetof(PlayerCharacter, tintMasks) == 0x6E8);
+STATIC_ASSERT(offsetof(PlayerCharacter, overlayTintMasks) == 0x6F4);
 
 // D8
 class Explosion : public TESObjectREFR

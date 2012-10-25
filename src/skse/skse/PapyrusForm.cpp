@@ -347,4 +347,17 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0 <TESForm, void> ("UnregisterForAllControls", "Form", papyrusForm::UnregisterForAllControls, registry));
+
+	registry->SetFunctionFlags("Form", "RegisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "UnregisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "UnregisterForAllKeys", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "RegisterForMenu", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "UnregisterForMenu", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "UnregisterForAllMenus", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "RegisterForModEvent", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "SendModEvent", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "UnregisterForAllModEvents", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "RegisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "UnregisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "UnregisterForAllControls", VMClassRegistry::kFunctionFlag_NoWait);
 }

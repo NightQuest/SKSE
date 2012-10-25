@@ -1,10 +1,7 @@
 #include "PapyrusAlias.h"
 
 #include "GameForms.h"
-
 #include "PapyrusEvents.h"
-#include "PapyrusVM.h"
-#include "PapyrusNativeFunctions.h"
 
 namespace papyrusAlias
 {
@@ -107,49 +104,65 @@ namespace papyrusAlias
 	{
 		g_modCallbackRegs.UnregisterAll<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisAlias);
 	}
+}
 
-	void RegisterFuncs(VMClassRegistry* registry)
-	{
-		registry->RegisterFunction(
-			new NativeFunction0<BGSBaseAlias, BSFixedString> ("GetName", "Alias", papyrusAlias::GetName, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction0<BGSBaseAlias, UInt32> ("GetId", "Alias", papyrusAlias::GetId, registry));
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
 
-		registry->RegisterFunction(
-			new NativeFunction1 <BGSBaseAlias, void, UInt32> ("RegisterForKey", "Alias", papyrusAlias::RegisterForKey, registry));
+void papyrusAlias::RegisterFuncs(VMClassRegistry* registry)
+{
+	registry->RegisterFunction(
+		new NativeFunction0<BGSBaseAlias, BSFixedString> ("GetName", "Alias", papyrusAlias::GetName, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <BGSBaseAlias, void, UInt32> ("UnregisterForKey", "Alias", papyrusAlias::UnregisterForKey, registry));
+	registry->RegisterFunction(
+		new NativeFunction0<BGSBaseAlias, UInt32> ("GetId", "Alias", papyrusAlias::GetId, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllKeys", "Alias", papyrusAlias::UnregisterForAllKeys, registry));
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSBaseAlias, void, UInt32> ("RegisterForKey", "Alias", papyrusAlias::RegisterForKey, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("RegisterForMenu", "Alias", papyrusAlias::RegisterForMenu, registry));
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSBaseAlias, void, UInt32> ("UnregisterForKey", "Alias", papyrusAlias::UnregisterForKey, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("UnregisterForMenu", "Alias", papyrusAlias::UnregisterForMenu, registry));
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllKeys", "Alias", papyrusAlias::UnregisterForAllKeys, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllMenus", "Alias", papyrusAlias::UnregisterForAllMenus, registry));
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("RegisterForMenu", "Alias", papyrusAlias::RegisterForMenu, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction2 <BGSBaseAlias, void, BSFixedString, BSFixedString> ("RegisterForModEvent", "Alias", papyrusAlias::RegisterForModEvent, registry));
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("UnregisterForMenu", "Alias", papyrusAlias::UnregisterForMenu, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("UnregisterForModEvent", "Alias", papyrusAlias::UnregisterForModEvent, registry));
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllMenus", "Alias", papyrusAlias::UnregisterForAllMenus, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllModEvents", "Alias", papyrusAlias::UnregisterForAllModEvents, registry));
+	registry->RegisterFunction(
+		new NativeFunction2 <BGSBaseAlias, void, BSFixedString, BSFixedString> ("RegisterForModEvent", "Alias", papyrusAlias::RegisterForModEvent, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("RegisterForControl", "Alias", papyrusAlias::RegisterForControl, registry));
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("UnregisterForModEvent", "Alias", papyrusAlias::UnregisterForModEvent, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("UnregisterForControl", "Alias", papyrusAlias::UnregisterForControl, registry));
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllModEvents", "Alias", papyrusAlias::UnregisterForAllModEvents, registry));
 
-		registry->RegisterFunction(
-			new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllControls", "Alias", papyrusAlias::UnregisterForAllControls, registry));
-	}
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("RegisterForControl", "Alias", papyrusAlias::RegisterForControl, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("UnregisterForControl", "Alias", papyrusAlias::UnregisterForControl, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllControls", "Alias", papyrusAlias::UnregisterForAllControls, registry));
+
+	registry->SetFunctionFlags("Alias", "RegisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "UnregisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "UnregisterForAllKeys", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "RegisterForMenu", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "UnregisterForMenu", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "UnregisterForAllMenus", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "RegisterForModEvent", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "UnregisterForAllModEvents", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "RegisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "UnregisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "UnregisterForAllControls", VMClassRegistry::kFunctionFlag_NoWait);
 }

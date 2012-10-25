@@ -50,7 +50,7 @@
 #define LOG_PAPYRUS_FUNCTIONS 0
 
 typedef void (* _RegisterPapyrusFunctions)(VMClassRegistry ** registry);
-_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F8C10;
+_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F8B10;
 
 #ifdef _PPAPI
 typedef std::list <SKSEPapyrusInterface::RegisterFunctions> PapyrusPluginList;
@@ -256,12 +256,12 @@ void Hooks_Papyrus_Init(void)
 
 void Hooks_Papyrus_Commit(void)
 {
-	WriteRelCall(0x008D6DA0 + 0x098B, (UInt32)RegisterPapyrusFunctions_Hook);
+	WriteRelCall(0x008D7130 + 0x098B, (UInt32)RegisterPapyrusFunctions_Hook);
 
 	// GlobalData / event regs
-	WriteRelCall(0x008D56D0 + 0x002A, GetFnAddr(&SkyrimVM::OnFormDelete_Hook));
-	WriteRelCall(0x008D5B10 + 0x0017, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // Normal game load
-	WriteRelCall(0x008D5E80 + 0x0116, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // New script reload command
-	WriteRelCall(0x008D2790 + 0x0101, GetFnAddr(&SkyrimVM::SaveGlobalData_Hook));
-	WriteRelCall(0x008D5B40 + 0x01B9, GetFnAddr(&SkyrimVM::LoadGlobalData_Hook));
+	WriteRelCall(0x008D5A60 + 0x002A, GetFnAddr(&SkyrimVM::OnFormDelete_Hook));
+	WriteRelCall(0x008D5EA0 + 0x0017, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // Normal game load
+	WriteRelCall(0x008D6210 + 0x0116, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // New script reload command
+	WriteRelCall(0x008D2B60 + 0x0101, GetFnAddr(&SkyrimVM::SaveGlobalData_Hook));
+	WriteRelCall(0x008D5ED0 + 0x01B9, GetFnAddr(&SkyrimVM::LoadGlobalData_Hook));
 }

@@ -59,7 +59,7 @@ public:
 	Entry	items;	// 10C
 
 	MEMBER_FN_PREFIX(SettingCollectionList);
-	DEFINE_MEMBER_FN(Get_Internal, bool, 0x005259E0, const char * name, Setting ** out);
+	DEFINE_MEMBER_FN(Get_Internal, bool, 0x00525830, const char * name, Setting ** out);
 
 	Setting	*	Get(const char * name);
 };

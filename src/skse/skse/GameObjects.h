@@ -382,7 +382,7 @@ public:
 	UInt32				unk4C;	// 4C
 
 	MEMBER_FN_PREFIX(MagicItem);
-	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407750, int arg1, bool arg2);
+	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407670, int arg1, bool arg2);
 };
 
 STATIC_ASSERT(sizeof(MagicItem) == 0x50);
@@ -666,8 +666,9 @@ public:
 	UInt32		unk160;			// 160
 
 	MEMBER_FN_PREFIX(TESNPC);
-	DEFINE_MEMBER_FN(GetHeadPartByType, BGSHeadPart *, 0x00560E50, int);
-	//DEFINE_MEMBER_FN(GetUnk04, int, 0x005640D0, Character * actor, void * val, TintMask * tint, char i, UInt32 k);
+	DEFINE_MEMBER_FN(GetHeadPartByType, BGSHeadPart *, 0x00560A30, int);
+	DEFINE_MEMBER_FN(GetSex, char, 0x0055ABD0);
+	//DEFINE_MEMBER_FN(GetUnk04, int, 0x00563BB0, Character * actor, void * val, TintMask * tint, char i, UInt32 k);
 };
 
 STATIC_ASSERT(sizeof(TESNPC) == 0x164);

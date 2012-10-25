@@ -419,7 +419,7 @@ public:
 	UInt32	unk08;	// 08 - init'd to FFFFFFFF
 
 	MEMBER_FN_PREFIX(TESDescription);
-	DEFINE_MEMBER_FN(Get, void, 0x0044FFC0, BSString * out, TESForm * parent, UInt32 fieldType);
+	DEFINE_MEMBER_FN(Get, void, 0x0044FF30, BSString * out, TESForm * parent, UInt32 fieldType);
 };
 
 // C
@@ -509,9 +509,9 @@ public:
 class TESProduceForm : public BaseFormComponent
 {
 public:
-	BGSSoundDescriptorForm*	harvestSound;		// 04
-	IngredientItem*	produce;		// 08
-	UInt8	unk0C[4];	// 0C
+	BGSSoundDescriptorForm	* harvestSound;	// 04
+	IngredientItem			* produce;		// 08
+	UInt8					unk0C[4];		// 0C
 };
 
 // 08
@@ -556,11 +556,11 @@ public:
 class TESSpellList : public BaseFormComponent
 {
 public:
-	UInt32 GetSpellCount() const;
-	SpellItem* GetNthSpell(UInt32 n) const;
+	UInt32		GetSpellCount() const;
+	SpellItem *	GetNthSpell(UInt32 n) const;
 
-	UInt32 GetShoutCount() const;
-	TESShout* GetNthShout(UInt32 n) const;
+	UInt32		GetShoutCount() const;
+	TESShout *	GetNthShout(UInt32 n) const;
 
 	struct Data
 	{

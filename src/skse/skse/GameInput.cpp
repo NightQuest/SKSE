@@ -5,7 +5,7 @@ bool InputEventDispatcher::IsGamepadEnabled(void)
 	return (gamepad != NULL) && gamepad->IsEnabled();
 }
 
-InputEventDispatcher ** g_inputEventDispatcher = (InputEventDispatcher**) 0x01B2DA14;
+InputEventDispatcher ** g_inputEventDispatcher = (InputEventDispatcher **)0x01B2DA14;
 
 InputManager * InputManager::GetSingleton(void)
 {

@@ -171,7 +171,7 @@ public:
 	// this takes ownership of the message ptr
 //	DEFINE_MEMBER_FN(AddMessage, void, 0x004503E0, UIMessage * msg);	// old 1.1 implementation
 	// 1.3 uses a little non-thread-safe pool of UIMessages to wrap around the nicely thread-safe BSTMessageQueue it gets added to
-	DEFINE_MEMBER_FN(AddMessage, void, 0x00431C60, StringCache::Ref * strData, UInt32 msgID, void * objData);
+	DEFINE_MEMBER_FN(AddMessage, void, 0x00431CE0, StringCache::Ref * strData, UInt32 msgID, void * objData);
 
 	static UIManager *	GetSingleton(void)
 	{
@@ -182,7 +182,7 @@ public:
 	void ProcessCommands(void);
 	void QueueCommand(UIDelegate * cmd);
 
-	DEFINE_MEMBER_FN(ProcessEventQueue_HookTarget, void, 0x00A5B9C0);
+	DEFINE_MEMBER_FN(ProcessEventQueue_HookTarget, void, 0x00A5B8E0);
 };
 
 
@@ -365,8 +365,8 @@ private:
 	char					pad[2];
 
 	MEMBER_FN_PREFIX(MenuManager);
-	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A5C610, BSFixedString * menuName);
-	//DEFINE_MEMBER_FN(Register, void, 0x00A5CA20, const char * name, void * ctorFunc);
+	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A5C490, BSFixedString * menuName);
+	//DEFINE_MEMBER_FN(Register, void, 0x00A5C8A0, const char * name, void * ctorFunc);
 
 public:
 
@@ -384,3 +384,22 @@ public:
 	GFxMovieView *		GetMovieView(BSFixedString * menuName);
 };
 STATIC_ASSERT(sizeof(MenuManager) == 0x11C);
+
+// ?
+class UISaveLoadManager
+{
+public:
+	virtual ~UISaveLoadManager();
+
+	// See Hooks_SaveLoad
+	void DeleteSavegame_Hook(double saveIndex);
+
+	static UISaveLoadManager * GetSingleton(void)
+	{
+		return *((UISaveLoadManager **)0x01B0FFCC);
+	}
+
+private:
+	MEMBER_FN_PREFIX(UISaveLoadManager);
+	DEFINE_MEMBER_FN(DeleteSavegame_HookTarget, void, 0x00897EF0, double saveIndex);
+};

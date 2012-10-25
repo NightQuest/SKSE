@@ -7,10 +7,10 @@
 #define MIN3(x,y,z)  ((y) <= (z) ? ((x) <= (y) ? (x) : (y)) : ((x) <= (z) ? (x) : (z)))
 #define MAX3(x,y,z)  ((y) >= (z) ? ((x) >= (y) ? (x) : (y)) : ((x) >= (z) ? (x) : (z)))
  
-struct HSLColor {
+struct HSVColor {
 	double	h; // Hue between 0 and 1.0
 	double	s; // Saturation between 0 and 1.0
-	double	l; // Lum between 0 and 1.0
+	double	v; // Lum between 0 and 1.0
 	double	a; // Alpha between 0 and 1.0
 };
 
@@ -21,7 +21,7 @@ struct RGBColor {
 	UInt8 b;
 };
 
-HSLColor GetHSV(RGBColor rgb)
+HSVColor GetHSV(RGBColor rgb)
 {
 	double r,g,b, rgb_max, rgb_min, delta, h, s;
 	r = rgb.r / 255.0;
@@ -54,94 +54,15 @@ HSLColor GetHSV(RGBColor rgb)
 			h += 360.0f;
 	}
 
-	HSLColor out;
+	HSVColor out;
+	out.a = rgb.a / 255.0;
 	out.h = h;
 	out.s = s;
-	out.l = rgb_max;
+	out.v = rgb_max;
 	return out;
 }
 
-HSLColor GetHSL(RGBColor rgb) {
-	double r, g, b, rgb_max, rgb_min, diff, r2, g2, b2;
-
-	r = rgb.r / 255.0;
-	g = rgb.g / 255.0;
-	b = rgb.b / 255.0;
-
-	HSLColor out;
-	out.a = rgb.a / 255.0;
-	out.h = 0; // default to black
-	out.s = 0;
-	out.l = 0;
-	rgb_max = MAX3(r, g, b);
-	rgb_min = MIN3(r, g, b);
-	out.l = (rgb_min + rgb_max) / 2.0;
-	if (out.l <= 0.0)
-		return out;
-
-	diff = rgb_max - rgb_min;
-	out.s = diff;
-	if (out.s > 0.0)
-		out.s /= (out.l <= 0.5) ? (rgb_max - rgb_min) / (rgb_max + rgb_min) : (2.0 - rgb_max - rgb_min);
-	else
-		return out;
-
-	r2 = (rgb_max - r) / diff;
-	g2 = (rgb_max - g) / diff;
-	b2 = (rgb_max - b) / diff;
-	if (r == rgb_max)
-		out.h = (g == rgb_min ? 5.0 + b2 : 1.0 - g2);
-	else if (g == rgb_max)
-		out.h = (b == rgb_min ? 1.0 + r2 : 3.0 - b2);
-	else
-		out.h = (r == rgb_min ? 3.0 + g2 : 5.0 - r2);
-
-	out.h /= 6.0;
-	return out;
-}
-
-RGBColor GetRGBFromHSL(HSLColor hsl)
-{
-	double v;
-	double r,g,b,a;
-
-	a = hsl.a;
-	r = hsl.l;   // default to gray
-	g = hsl.l;
-	b = hsl.l;
-	v = (hsl.l <= 0.5) ? (hsl.l * (1.0 + hsl.s)) : (hsl.l + hsl.s - hsl.l * hsl.s);
-	if (v > 0)
-	{
-		double m, sv, fract, vsf, mid1, mid2;
-		int sextant;
-		m = hsl.l + hsl.l - v;
-		sv = (v - m) / v;
-		hsl.h *= 6.0;
-		sextant = (SInt32)hsl.h;
-		fract = hsl.h - sextant;
-		vsf = v * sv * fract;
-		mid1 = m + vsf;
-		mid2 = v - vsf;
-		switch (sextant)
-		{
-			case 0:	r = v;		g = mid1;	b = m;		break;
-			case 1:	r = mid2;	g = v;		b = m;		break;
-			case 2:	r = m;		g = v;		b = mid1;	break;
-			case 3:	r = m;		g = mid2;	b = v;		break;
-			case 4:	r = mid1;	g = m;		b = v;		break;
-			case 5:	r = v;		g = m;		b = mid2;	break;
-		}
-	}
-
-	RGBColor out;
-	out.a = a * 255;
-	out.r = r * 255;
-	out.g = g * 255;
-	out.b = b * 255;
-	return out;
-}
-
-RGBColor GetRGBFromHSV(HSLColor hsv)
+RGBColor GetRGBFromHSV(HSVColor hsv)
 {
 	double h,s,v;
 	double r,g,b,a;
@@ -149,7 +70,7 @@ RGBColor GetRGBFromHSV(HSLColor hsv)
 	a = hsv.a;
 	h = hsv.h;
 	s = hsv.s;
-	v = hsv.l;
+	v = hsv.v;
 
 	if (h < 0.0)
 		h += 360.0;
@@ -213,7 +134,7 @@ namespace papyrusColorComponent
 		rgb.r = GetRed(NULL, argb);
 		rgb.g = GetGreen(NULL, argb);
 		rgb.b = GetBlue(NULL, argb);
-		HSLColor hsl = GetHSL(rgb);
+		HSVColor hsl = GetHSV(rgb);
 		return hsl.h;
 	}
 	float GetSaturation(StaticFunctionTag* base, UInt32 argb)
@@ -222,17 +143,8 @@ namespace papyrusColorComponent
 		rgb.r = GetRed(NULL, argb);
 		rgb.g = GetGreen(NULL, argb);
 		rgb.b = GetBlue(NULL, argb);
-		HSLColor hsl = GetHSL(rgb);
+		HSVColor hsl = GetHSV(rgb);
 		return hsl.s;
-	}
-	float GetLuminosity(StaticFunctionTag* base, UInt32 argb)
-	{
-		RGBColor rgb;
-		rgb.r = GetRed(NULL, argb);
-		rgb.g = GetGreen(NULL, argb);
-		rgb.b = GetBlue(NULL, argb);
-		HSLColor hsl = GetHSL(rgb);
-		return hsl.l;
 	}
 	float GetValue(StaticFunctionTag* base, UInt32 argb)
 	{
@@ -240,8 +152,8 @@ namespace papyrusColorComponent
 		rgb.r = GetRed(NULL, argb);
 		rgb.g = GetGreen(NULL, argb);
 		rgb.b = GetBlue(NULL, argb);
-		HSLColor hsv = GetHSV(rgb);
-		return hsv.l;
+		HSVColor hsv = GetHSV(rgb);
+		return hsv.v;
 	}
 	UInt32 SetColor(StaticFunctionTag* base, UInt32 red, UInt32 green, UInt32 blue, UInt32 alpha)
 	{
@@ -270,9 +182,9 @@ namespace papyrusColorComponent
 		rgb.g = GetGreen(NULL, argb);
 		rgb.b = GetBlue(NULL, argb);
 		rgb.a = GetAlpha(NULL, argb);
-		HSLColor hsl = GetHSL(rgb);
+		HSVColor hsl = GetHSV(rgb);
 		hsl.h = hue;
-		RGBColor newRgb = GetRGBFromHSL(hsl);
+		RGBColor newRgb = GetRGBFromHSV(hsl);
 		return (newRgb.a << 24 | newRgb.r << 16 | newRgb.g << 8 | newRgb.b);
 	}
 	UInt32 SetSaturation(StaticFunctionTag* base, UInt32 argb, float sat)
@@ -282,21 +194,9 @@ namespace papyrusColorComponent
 		rgb.g = GetGreen(NULL, argb);
 		rgb.b = GetBlue(NULL, argb);
 		rgb.a = GetAlpha(NULL, argb);
-		HSLColor hsl = GetHSL(rgb);
-		hsl.s = sat;
-		RGBColor newRgb = GetRGBFromHSL(hsl);
-		return (newRgb.a << 24 | newRgb.r << 16 | newRgb.g << 8 | newRgb.b);
-	}
-	UInt32 SetLuminosity(StaticFunctionTag* base, UInt32 argb, float lum)
-	{
-		RGBColor rgb;
-		rgb.r = GetRed(NULL, argb);
-		rgb.g = GetGreen(NULL, argb);
-		rgb.b = GetBlue(NULL, argb);
-		rgb.a = GetAlpha(NULL, argb);
-		HSLColor hsl = GetHSL(rgb);
-		hsl.l = lum;
-		RGBColor newRgb = GetRGBFromHSL(hsl);
+		HSVColor hsv = GetHSV(rgb);
+		hsv.s = sat;
+		RGBColor newRgb = GetRGBFromHSV(hsv);
 		return (newRgb.a << 24 | newRgb.r << 16 | newRgb.g << 8 | newRgb.b);
 	}
 	UInt32 SetValue(StaticFunctionTag* base, UInt32 argb, float val)
@@ -306,8 +206,8 @@ namespace papyrusColorComponent
 		rgb.g = GetGreen(NULL, argb);
 		rgb.b = GetBlue(NULL, argb);
 		rgb.a = GetAlpha(NULL, argb);
-		HSLColor hsv = GetHSV(rgb);
-		hsv.l = val;
+		HSVColor hsv = GetHSV(rgb);
+		hsv.v = val;
 		RGBColor newRgb = GetRGBFromHSV(hsv);
 		return (newRgb.a << 24 | newRgb.r << 16 | newRgb.g << 8 | newRgb.b);
 	}
@@ -318,6 +218,13 @@ namespace papyrusColorForm
 	UInt32 GetColor(BGSColorForm* colorForm)
 	{
 		return (colorForm) ? (MACRO_SWAP32(colorForm->abgr) >> 8) | (colorForm->color.alpha << 24) : 0;
+	}
+
+	void SetColor(BGSColorForm* colorForm, UInt32 color)
+	{
+		colorForm->color.red = (color & 0x00FF0000) >> 16;
+		colorForm->color.green = (color & 0x0000FF00) >> 8;
+		colorForm->color.blue = (color & 0x000000FF);
 	}
 }
 
@@ -345,7 +252,7 @@ void papyrusColorComponent::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <StaticFunctionTag, float, UInt32>("GetSaturation", "ColorComponent", papyrusColorComponent::GetSaturation, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1 <StaticFunctionTag, float, UInt32>("GetLuminosity", "ColorComponent", papyrusColorComponent::GetLuminosity, registry));
+		new NativeFunction1 <StaticFunctionTag, float, UInt32>("GetValue", "ColorComponent", papyrusColorComponent::GetValue, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction2 <StaticFunctionTag, UInt32, UInt32, UInt32>("SetAlpha", "ColorComponent", papyrusColorComponent::SetAlpha, registry));
@@ -366,10 +273,22 @@ void papyrusColorComponent::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction2 <StaticFunctionTag, UInt32, UInt32, float>("SetSaturation", "ColorComponent", papyrusColorComponent::SetSaturation, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, UInt32, UInt32, float>("SetLuminosity", "ColorComponent", papyrusColorComponent::SetLuminosity, registry));
-
-	registry->RegisterFunction(
 		new NativeFunction2 <StaticFunctionTag, UInt32, UInt32, float>("SetValue", "ColorComponent", papyrusColorComponent::SetValue, registry));
+
+	registry->SetFunctionFlags("ColorComponent", "GetAlpha", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "GetRed", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "GetGreen", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "GetBlue", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "GetHue", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "GetSaturation", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "GetValue", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "SetAlpha", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "SetRed", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "SetGreen", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "SetBlue", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "SetHue", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "SetSaturation", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ColorComponent", "SetValue", VMClassRegistry::kFunctionFlag_NoWait);
 }
 
 void papyrusColorForm::RegisterFuncs(VMClassRegistry* registry)
@@ -378,4 +297,7 @@ void papyrusColorForm::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0 <BGSColorForm, UInt32>("GetColor", "ColorForm", papyrusColorForm::GetColor, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSColorForm, void, UInt32>("SetColor", "ColorForm", papyrusColorForm::SetColor, registry));
 }

@@ -44,7 +44,7 @@ class ConsoleManager
 {
 public:
 	MEMBER_FN_PREFIX(ConsoleManager);
-	DEFINE_MEMBER_FN(Print, void, 0x008483F0, const char * fmt, va_list args);
+	DEFINE_MEMBER_FN(Print, void, 0x00848D90, const char * fmt, va_list args);
 
 	ConsoleManager();
 	~ConsoleManager();

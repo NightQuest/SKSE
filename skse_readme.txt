@@ -1,4 +1,4 @@
-Skyrim Script Extender v1.6.2
+Skyrim Script Extender v1.6.3
 by Ian Patterson and Stephen Abel
 (ianpatt and behippo)
 Thanks to: Paul Connelly (scruggsywuggsy the ferret), gibbed, Purple Lunchbox, snakster
@@ -7,7 +7,7 @@ The Skyrim Script Extender, or SKSE for short, is a modder's resource that expan
 
 Compatibility:
 
-SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.8.145.0). When a new version is released, we will update as soon as possible; please be patient. The editor does not appear to need modification, however a custom set of .pex/psc files must be installed.
+SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.8.151.0). When a new version is released, we will update as soon as possible; please be patient. The editor does not appear to need modification, however a custom set of .pex/psc files must be installed.
 
 [ Installation ]
 
@@ -17,7 +17,7 @@ SKSE will support the latest version of Skyrim available on Steam, and _only_ th
 
 3. Copy the .psc files in Data\Scripts\Source\ into the Data\Scripts\Source\ folder of your installation.  The .psc files are only needed if you have the CreationKit installed and intend to create or compile Papyrus scripts.
 
-4. Launch the game via running skse_loader.exe.
+4. Launch the game via running skse_loader.exe. Steam must be running before launching Skyrim.
 
 If you use a desktop shortcut to launch Skyrim normally, just update the shortcut to point to skse_loader.exe instead of TESV.exe or SkyrimLauncher.exe.
 

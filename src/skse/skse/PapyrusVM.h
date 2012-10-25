@@ -54,7 +54,7 @@ public:
 //	void	** _vtbl;	// 00
 
 	MEMBER_FN_PREFIX(ObjectBindPolicy);
-	DEFINE_MEMBER_FN(BindObject, void, 0x00C2B250, VMIdentifier ** identifier, UInt64 handle);
+	DEFINE_MEMBER_FN(BindObject, void, 0x00C2B190, VMIdentifier ** identifier, UInt64 handle);
 };
 
 // 10
@@ -63,25 +63,39 @@ class VMClassInfo
 public:
 	SInt32				refCount;
 	StringCache::Ref	name;	// probably StringCache::Ref
-	void				* unk08;
+	VMClassInfo			* parent;
 	void				* unk0C;
 
 	void	AddRef(void);
 	void	Release(void);
 
 	MEMBER_FN_PREFIX(VMClassInfo);
-	DEFINE_MEMBER_FN(Destroy, void, 0x00C34540);
+	DEFINE_MEMBER_FN(Destroy, void, 0x00C34460);
+	DEFINE_MEMBER_FN(GetVariable, SInt32, 0x00C333C0, BSFixedString * name);
+};
+
+// This type is not fully decoded or correctly sized, just enough to use the functor
+class VMScriptInstance
+{
+public:
+	UInt32				unk00;
+	VMClassInfo			* classInfo;
+	void				* unk08;
+	UInt32				unk0C;
+	UInt32				formId;
+	UInt32				unk14;
+	UInt32				unk18;
 };
 
 // 04
 class IForEachScriptObjectFunctor
 {
 public:
-	IForEachScriptObjectFunctor();
-	virtual ~IForEachScriptObjectFunctor();
+	IForEachScriptObjectFunctor(){};
+	virtual ~IForEachScriptObjectFunctor() {};
 
 	// return true to continue
-	virtual bool	Visit(void * arg1, void * arg2) = 0;
+	virtual bool	Visit(VMScriptInstance * arg, void * arg2) { return false; };
 
 //	void	** _vtbl;	// 00
 };
@@ -91,6 +105,11 @@ public:
 class VMClassRegistry
 {
 public:
+	enum
+	{
+		kFunctionFlag_NoWait = 0x01
+	};
+
 	VMClassRegistry();
 	virtual ~VMClassRegistry();
 
@@ -129,7 +148,7 @@ public:
 	virtual void	Unk_1E(void);
 	virtual void	Unk_1F(void);
 	virtual void	Unk_20(void);
-	virtual bool	ExtractValue(UInt64 handle, void * unk, UInt32 varInfo, VMValue * out);	// unk probably script context object?
+	virtual bool	ExtractValue(UInt64 handle, StringCache::Ref * className, SInt32 variableIndex, VMValue * out);	// unk probably script context object?
 	virtual void	QueueEvent(UInt64 handle, const StringCache::Ref * eventName, IFunctionArguments * args);
 	virtual void	Unk_23(void);
 	virtual void	Unk_24(void);
@@ -176,10 +195,10 @@ public:
 	MEMBER_FN_PREFIX(SkyrimVM);
 
 	// Used by Hooks_Papyrus
-	DEFINE_MEMBER_FN(UnregisterFromSleep_Internal, void, 0x008D3C80, UInt64 handle);
-	DEFINE_MEMBER_FN(RevertGlobalData_Internal, bool, 0x008D4F70);
-	DEFINE_MEMBER_FN(SaveRegSleepEventHandles_Internal, bool, 0x008CCB00, void * handleReaderWriter, void * saveStorageWrapper);
-	DEFINE_MEMBER_FN(LoadRegSleepEventHandles_Internal, bool, 0x008D2DF0, void * handleReaderWriter, void * loadStorageWrapper);
+	DEFINE_MEMBER_FN(UnregisterFromSleep_Internal, void, 0x008D4050, UInt64 handle);
+	DEFINE_MEMBER_FN(RevertGlobalData_Internal, bool, 0x008D5300);
+	DEFINE_MEMBER_FN(SaveRegSleepEventHandles_Internal, bool, 0x008CCD00, void * handleReaderWriter, void * saveStorageWrapper);
+	DEFINE_MEMBER_FN(LoadRegSleepEventHandles_Internal, bool, 0x008D31C0, void * handleReaderWriter, void * loadStorageWrapper);
 
 	void OnFormDelete_Hook(UInt64 handle);
 	void RevertGlobalData_Hook(void);
@@ -218,7 +237,7 @@ public:
 	void	Destroy(void);
 
 	MEMBER_FN_PREFIX(VMIdentifier);
-	DEFINE_MEMBER_FN(Destroy_Internal, void, 0x00C30430);
+	DEFINE_MEMBER_FN(Destroy_Internal, void, 0x00C303D0);
 };
 
 // 08
@@ -278,8 +297,8 @@ public:
 	} data;			// 04
 
 	MEMBER_FN_PREFIX(VMValue);
-	DEFINE_MEMBER_FN(Set, void, 0x00C32030, VMValue * src);
-	DEFINE_MEMBER_FN(Destroy, void, 0x00C31F30);
+	DEFINE_MEMBER_FN(Set, void, 0x00C31F70, VMValue * src);
+	DEFINE_MEMBER_FN(Destroy, void, 0x00C31E70);
 
 	void	SetNone(void)
 	{
@@ -367,7 +386,7 @@ public:
 		VMValue	* Get(UInt32 idx)	{ return (idx < m_size) ? &m_data[idx] : NULL; }
 
 		MEMBER_FN_PREFIX(Output);
-		DEFINE_MEMBER_FN(Resize, bool, 0x008C1AF0, UInt32 len);
+		DEFINE_MEMBER_FN(Resize, bool, 0x008C2050, UInt32 len);
 	};
 
 	virtual bool	Copy(Output * dst) = 0;

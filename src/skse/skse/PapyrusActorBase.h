@@ -19,6 +19,8 @@ namespace papyrusActorBase {
 
 	void SetClass(TESNPC* thisNPC, TESClass* nuClass);
 
+	float GetHeight(TESNPC* thisNPC);
+	void SetHeight(TESNPC* thisNPC, float height);
 	float GetWeight(TESNPC* thisNPC);
 	void SetWeight(TESNPC* thisNPC, float weight);
 	UInt32 GetNumHeadParts(TESNPC* thisNPC);

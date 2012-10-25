@@ -40,4 +40,9 @@ void papyrusSKSE::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0<StaticFunctionTag, UInt32>("GetVersionRelease", "SKSE", papyrusSKSE::GetVersionRelease, registry));
+
+	registry->SetFunctionFlags("SKSE", "GetVersion", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("SKSE", "GetVersionMinor", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("SKSE", "GetVersionBeta", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("SKSE", "GetVersionRelease", VMClassRegistry::kFunctionFlag_NoWait);
 }

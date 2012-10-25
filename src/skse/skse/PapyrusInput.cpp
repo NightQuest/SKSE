@@ -193,5 +193,12 @@ void papyrusInput::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, BSFixedString, SInt32> ("GetMappedControl", "Input", papyrusInput::GetMappedControl, registry));
 
-
+	registry->SetFunctionFlags("Input", "IsKeyPressed", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Input", "TapKey", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Input", "HoldKey", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Input", "ReleaseKey", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Input", "GetNumKeysPressed", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Input", "GetNthKeyPressed", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Input", "GetMappedKey", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Input", "GetMappedControl", VMClassRegistry::kFunctionFlag_NoWait);
 }

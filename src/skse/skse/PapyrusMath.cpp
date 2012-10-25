@@ -56,4 +56,10 @@ void papyrusMath::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, UInt32, UInt32>("LogicalNot", "Math", papyrusMath::LogicalNot, registry));
 
+	registry->SetFunctionFlags("Math", "LeftShift", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Math", "RightShift", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Math", "LogicalAnd", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Math", "LogicalOr", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Math", "LogicalXor", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Math", "LogicalNot", VMClassRegistry::kFunctionFlag_NoWait);
 }

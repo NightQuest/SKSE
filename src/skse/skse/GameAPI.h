@@ -11,8 +11,8 @@ class Heap
 public:
 	MEMBER_FN_PREFIX(Heap);
 	// haven't verified alignment vars
-	DEFINE_MEMBER_FN(Allocate, void *, 0x00A483E0, UInt32 size, UInt32 alignment, bool aligned);
-	DEFINE_MEMBER_FN(Free, void, 0x00A47E30, void * buf, bool aligned);
+	DEFINE_MEMBER_FN(Allocate, void *, 0x00A483D0, UInt32 size, UInt32 alignment, bool aligned);
+	DEFINE_MEMBER_FN(Free, void, 0x00A47E20, void * buf, bool aligned);
 };
 
 extern Heap * g_formHeap;

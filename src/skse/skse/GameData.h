@@ -279,43 +279,43 @@ public:
 
 	MEMBER_FN_PREFIX(BGSSaveLoadManager);
 
-	UInt32	unk00;			// 00
-	UInt32	unk04;			// 04
-	UInt32	unk08;			// 08
-	UInt32	unk0C;			// 0C
-	UInt8	unk10;			// 10
-	UInt8	unk11;			// 11
-	UInt8	pad12[2];		// 12
-	UInt32	pendingEvents;	// 14
-	UInt32	unk18;			// 18
-	UInt32	startTickCount;	// 1C - GetTickCount when constructed
-	UInt8	unk20;			// 20 - init'd to 0x01
-	UInt8	pad21[3];		// 21
-	UInt32	unk24;			// 24
-	UInt32	unk28;			// 28 - init'd to 0xFFFFFFFF
-	bool	unk2C;			// 2C
-	UInt8	pad2E[3];		// 2E
-	void	* unk30;		// 30
-	UInt8	unk34;			// 34 - init'd to 0x01
-	UInt8	unk35;			// 35
-	UInt8	pad36[2];		// 36
-	UInt32	unk38;			// 38
-	UInt32	unk3C;			// 3C
-	UInt32	unk40;			// 40
-	UInt32	unk44;			// 44
-	UInt32	unk48;			// 48
-	UInt32	unk4C;			// 4C
-	UInt32	unk50;			// 50
-	void	* unk54;		// 54
+	tList<const char*>	* saveList;			// 00
+	UInt32				unk04;				// 04
+	UInt32				unk08;				// 08
+	UInt32				unk0C;				// 0C
+	UInt8				unk10;				// 10
+	UInt8				unk11;				// 11
+	UInt8				pad12[2];			// 12
+	UInt32				pendingEvents;		// 14
+	UInt32				unk18;				// 18
+	UInt32				startTickCount;		// 1C - GetTickCount when constructed
+	UInt8				unk20;				// 20 - init'd to 0x01
+	UInt8				pad21[3];			// 21
+	UInt32				unk24;				// 24
+	UInt32				unk28;				// 28 - init'd to 0xFFFFFFFF
+	bool				unk2C;				// 2C
+	UInt8				pad2E[3];			// 2E
+	void				* unk30;			// 30
+	UInt8				unk34;				// 34 - init'd to 0x01
+	UInt8				unk35;				// 35
+	UInt8				pad36[2];			// 36
+	UInt32				unk38;				// 38
+	UInt32				unk3C;				// 3C
+	UInt32				unk40;				// 40
+	UInt32				unk44;				// 44
+	UInt32				unk48;				// 48
+	UInt32				unk4C;				// 4C
+	UInt32				unk50;				// 50
+	void				* unk54;			// 54
 
 private:
-	DEFINE_MEMBER_FN(Save_Internal, bool, 0x00680CB0, const char * name, int unk1, UInt32 unk2);
-	DEFINE_MEMBER_FN(Load_Internal, bool, 0x006819A0, const char * name, int unk1, UInt32 unk2, UInt32 unk3);
+	DEFINE_MEMBER_FN(Save_Internal, bool, 0x00681090, const char * name, int unk1, UInt32 unk2);
+	DEFINE_MEMBER_FN(Load_Internal, bool, 0x00681D60, const char * name, int unk1, UInt32 unk2, UInt32 unk3);
 
-	DEFINE_MEMBER_FN(SaveGame_HookTarget, void, 0x00678AA0, const char * fileName);
-	DEFINE_MEMBER_FN(LoadGame_HookTarget, bool, 0x0067AFC0, const char * fileName, bool unk0);
+	DEFINE_MEMBER_FN(SaveGame_HookTarget, void, 0x00678EC0, const char * fileName);
+	DEFINE_MEMBER_FN(LoadGame_HookTarget, bool, 0x0067B3E0, const char * fileName, bool unk0);
 
-	DEFINE_MEMBER_FN(ProcessEvents_Internal, void, 0x00681BE0);
+	DEFINE_MEMBER_FN(ProcessEvents_Internal, void, 0x00681FA0);
 };
 
 STATIC_ASSERT(sizeof(BGSSaveLoadManager) == 0x58);

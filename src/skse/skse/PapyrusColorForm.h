@@ -15,7 +15,6 @@ namespace papyrusColorComponent
 
 	float GetHue(StaticFunctionTag* base, UInt32 argb);
 	float GetSaturation(StaticFunctionTag* base, UInt32 argb);
-	float GetLuminosity(StaticFunctionTag* base, UInt32 argb);
 	float GetValue(StaticFunctionTag* base, UInt32 argb);
 
 	UInt32 SetColor(StaticFunctionTag* base, UInt32 red, UInt32 green, UInt32 blue, UInt32 alpha);
@@ -25,7 +24,6 @@ namespace papyrusColorComponent
 	UInt32 SetBlue(StaticFunctionTag* base, UInt32 argb, UInt32 blue);
 	UInt32 SetHue(StaticFunctionTag* base, UInt32 argb, float hue);
 	UInt32 SetSaturation(StaticFunctionTag* base, UInt32 argb, float sat);
-	UInt32 SetLuminosity(StaticFunctionTag* base, UInt32 argb, float lum);
 	UInt32 SetValue(StaticFunctionTag* base, UInt32 argb, float val);
 }
  

@@ -52,5 +52,5 @@ const char * BSString::Get(void)
 	return m_data ? m_data : "";
 }
 
-const _CRC32_Calc4 CRC32_Calc4 = (_CRC32_Calc4)0x00A49BF0;
-const _CRC32_Calc8 CRC32_Calc8 = (_CRC32_Calc8)0x00A49C50;
+const _CRC32_Calc4 CRC32_Calc4 = (_CRC32_Calc4)0x00A49BE0;
+const _CRC32_Calc8 CRC32_Calc8 = (_CRC32_Calc8)0x00A49C40;

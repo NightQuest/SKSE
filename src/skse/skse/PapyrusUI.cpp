@@ -15,9 +15,7 @@ namespace papyrusUI
 	template <> void SetGFxValue<float> (GFxValue * val, float arg)						{ val->SetNumber(arg); }
 	template <> void SetGFxValue<BSFixedString> (GFxValue * val, BSFixedString arg)
 	{
-		// ### MEMORY LEAK HERE ###
-		// we need to free this ourselves
-
+		// lifetime of this string will not be managed by the scaleform runtime
 		BSFixedString s(arg.data);
 		val->SetString(s.data);
 	}
@@ -205,4 +203,20 @@ void papyrusUI::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0 <StaticFunctionTag, bool> ("IsTextInputEnabled", "UI", papyrusUI::IsTextInputEnabled, registry));
+
+	registry->SetFunctionFlags("UI", "SetBool", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "SetNumber", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "SetString", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "GetBool", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "GetNumber", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "GetString", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "InvokeBool", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "InvokeNumber", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "InvokeString", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "InvokeBoolA", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "InvokeNumberA", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "InvokeStringA", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "InvokeForm", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "IsMenuOpen", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "IsTextInputEnabled", VMClassRegistry::kFunctionFlag_NoWait);
 }

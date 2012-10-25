@@ -8,6 +8,10 @@ Outfit Function GetOutfit(bool bSleepOutfit = false) native
 ; set the Class of the actor
 Function SetClass(Class c) native
 
+; Get/Set the actors body height
+float Function GetHeight() native
+Function SetHeight(float height) native
+
 ; Get/Set the actors body weight
 float Function GetWeight() native
 Function SetWeight(float weight) native

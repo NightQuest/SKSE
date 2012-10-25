@@ -34,5 +34,5 @@ void UIManager::ProcessCommands(void)
 
 void Hooks_UI_Commit(void)
 {
-	WriteRelCall(0x00A5CAF0 + 0x0808, GetFnAddr(&UIManager::ProcessCommands));
+	WriteRelCall(0x00A5C970 + 0x0808, GetFnAddr(&UIManager::ProcessCommands));
 }

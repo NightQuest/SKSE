@@ -41,6 +41,7 @@ namespace Serialization
 	void	HandleSaveGlobalData(void);
 	void	HandleLoadGlobalData(void);
 
+	void	HandleDeleteSave(std::string saveName);
 
 	// template helper functions
 	template <typename T>

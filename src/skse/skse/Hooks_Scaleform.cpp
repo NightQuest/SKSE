@@ -599,6 +599,118 @@ public:
 	}
 };
 
+class SKSEScaleform_GetClipboardData : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		if (! g_loadGameLock.TryEnter())
+			return;
+
+		if(OpenClipboard(NULL))
+		{
+			BOOL unicode = IsClipboardFormatAvailable(CF_UNICODETEXT);
+			BOOL utf8 = IsClipboardFormatAvailable(CF_TEXT);
+			if(unicode || utf8)
+			{
+				HANDLE	handle = GetClipboardData(unicode ? CF_UNICODETEXT : CF_TEXT);
+				if(handle)
+				{
+					LPTSTR	textData = (LPTSTR)GlobalLock(handle);
+					if(textData)
+					{
+						if(unicode)
+							args->movie->CreateWideString(args->result, (const wchar_t*)textData);
+						else
+							args->movie->CreateString(args->result, (const char*)textData);
+
+						GlobalUnlock(handle);
+					}
+				}
+			}
+
+			CloseClipboard();
+		}
+		
+		g_loadGameLock.Leave();
+	}
+};
+
+class SKSEScaleform_SetClipboardData : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		if(!g_loadGameLock.TryEnter())
+			return;
+
+		if(OpenClipboard(NULL))
+		{
+			const wchar_t	* textUnicode = args->args[0].GetWideString();
+			const char		* textUtf8 = args->args[0].GetString();
+			void			* textIn = NULL;
+
+			UInt32			size = 0;
+			if(textUnicode) {
+				size = (wcslen(textUnicode) + 1) * sizeof(wchar_t);
+				textIn = (void*)textUnicode;
+			}
+			else if(textUtf8) {
+				size = strlen(textUtf8) + 1;
+				textIn = (void*)textUtf8;
+			}
+			
+			if(textIn && size > 0)
+			{
+				HANDLE  handle = GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, size);
+				if(handle)
+				{
+					LPTSTR  textData = (LPTSTR)GlobalLock(handle);
+					if(textData)
+					{
+						memcpy(textData, textIn, size);
+						GlobalUnlock(handle);
+
+						EmptyClipboard();
+						if(SetClipboardData(textUtf8 ? CF_TEXT : CF_UNICODETEXT, handle))
+						{
+							handle = NULL;  // ownership passed to the OS
+						}
+					}
+
+					// clean up the allocation if something failed
+					if(handle)
+					{
+						GlobalFree(handle);
+					}
+				}
+			}
+
+			CloseClipboard();
+		}
+
+		g_loadGameLock.Leave();
+	}
+};
+
+class SKSEScaleform_GetPlayerSex : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		if(!g_loadGameLock.TryEnter())
+			return;
+
+		args->result->SetNull();
+
+		TESNPC * actorBase = DYNAMIC_CAST((*g_thePlayer)->baseForm, TESForm, TESNPC);
+		if(actorBase) {
+			args->result->SetNumber(CALL_MEMBER_FN(actorBase, GetSex)());
+		}
+
+		g_loadGameLock.Leave();
+	}
+};
 
 //// item card extensions
 
@@ -622,9 +734,9 @@ public:
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00841DD0, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00842520, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 
-	enum { kCtorHookAddress = 0x008430F0 + 0x0049 };
+	enum { kCtorHookAddress = 0x00843A40 + 0x0049 };
 
 	StandardItemData * ctor_Hook(GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 };
@@ -664,9 +776,9 @@ public:
 	GFxValue		fxValue;	// 10
 
 	MEMBER_FN_PREFIX(MagicItemData);
-	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x00873A10, GFxMovieView ** movieView, TESForm * pForm, int unk);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x00874070, GFxMovieView ** movieView, TESForm * pForm, int unk);
 
-	enum { kCtorHookAddress = 0x00873F80 + 0x0049 };
+	enum { kCtorHookAddress = 0x008745E0 + 0x0049 };
 
 	MagicItemData * ctor_Hook(GFxMovieView ** movieView, TESForm * pForm, int unk);
 };
@@ -697,9 +809,9 @@ public:
 	GFxValue	* fxValue;	// 08
 
 	MEMBER_FN_PREFIX(FavItemDataHook);
-	DEFINE_MEMBER_FN(Hooked, int, 0x0085BA90, TESForm * pForm);
+	DEFINE_MEMBER_FN(Hooked, int, 0x0085C5F0, TESForm * pForm);
 
-	enum { kCtorHookAddress = 0x0085C440 + 0x004F };
+	enum { kCtorHookAddress = 0x0085CFA0 + 0x004F };
 
 	int Hook(TESForm * pForm);
 };
@@ -723,9 +835,9 @@ public:
 	GFxStateBag		* stateBag;
 
 	MEMBER_FN_PREFIX(GFxLoaderHook);
-	DEFINE_MEMBER_FN(Hooked, UInt32, 0x00A608F0);
+	DEFINE_MEMBER_FN(Hooked, UInt32, 0x00A606F0);
 
-	enum { kCtorHookAddress = 0x0069CE60 + 0x07D7 };
+	enum { kCtorHookAddress = 0x0069CFB0 + 0x07D7 };
 
 	UInt32 Hook(void);
 };
@@ -775,6 +887,9 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	RegisterFunction <SKSEScaleform_RequestActivePlayerEffects>(&skse, view, "RequestActivePlayerEffects");
 	RegisterFunction <SKSEScaleform_ExtendForm>(&skse, view, "ExtendForm");
 	RegisterFunction <SKSEScaleform_RequestActorValues>(&skse, view, "RequestActorValues");
+	RegisterFunction <SKSEScaleform_GetClipboardData>(&skse, view, "GetClipboardData");
+	RegisterFunction <SKSEScaleform_SetClipboardData>(&skse, view, "SetClipboardData");
+	RegisterFunction <SKSEScaleform_GetPlayerSex>(&skse, view, "GetPlayerSex");
 
 	// version
 	GFxValue	version;
@@ -806,7 +921,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	globals.SetMember("skse", &skse);
 }
 
-static const UInt32 kInstallHooks_Base = 0x00A60590;
+static const UInt32 kInstallHooks_Base = 0x00A60390;
 static const UInt32 kInstallHooks_Entry_retn = kInstallHooks_Base + 0xBE;
 
 __declspec(naked) void InstallHooks_Entry(void)

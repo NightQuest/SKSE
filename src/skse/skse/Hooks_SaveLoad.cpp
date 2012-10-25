@@ -4,6 +4,7 @@
 #include "Serialization.h"
 #include "GlobalLocks.h"
 #include "GameData.h"
+#include "GameMenus.h"
 
 void BGSSaveLoadManager::SaveGame_Hook(const char * saveName)
 {
@@ -74,6 +75,29 @@ void BGSSaveLoadManager::ProcessEvents_Hook(void)
 	s_requestedLoad = false;
 	s_reqSaveName.clear();
 	s_reqLoadName.clear();
+}
+
+const char * GetSaveName(SInt32 saveIndex)
+{
+	BGSSaveLoadManager * saveLoadManager = BGSSaveLoadManager::GetSingleton();
+	if (!saveLoadManager || !saveLoadManager->saveList || saveIndex < 0)
+		return NULL;
+
+	const char ** pSaveName = saveLoadManager->saveList->GetNthItem(saveIndex);
+	if (!pSaveName)
+		return NULL;
+
+	return *pSaveName;
+}
+
+void UISaveLoadManager::DeleteSavegame_Hook(double saveIndex)
+{
+	// Save name before hooked call
+	std::string saveName = GetSaveName(saveIndex);
+
+	CALL_MEMBER_FN(this,DeleteSavegame_HookTarget)(saveIndex);
+
+	Serialization::HandleDeleteSave(saveName);
 }
 
 #if 0
@@ -151,7 +175,10 @@ public:
 void Hooks_SaveLoad_Commit(void)
 {
 	// Load & save
-	WriteRelCall(0x00680CB0 + 0x01E2, GetFnAddr(&BGSSaveLoadManager::SaveGame_Hook));
-	WriteRelCall(0x006819A0 + 0x00B5, GetFnAddr(&BGSSaveLoadManager::LoadGame_Hook));
-	WriteRelCall(0x0069C860 + 0x0064, GetFnAddr(&BGSSaveLoadManager::ProcessEvents_Hook));
+	WriteRelCall(0x00681090 + 0x01E2, GetFnAddr(&BGSSaveLoadManager::SaveGame_Hook));
+	WriteRelCall(0x00681D60 + 0x00B5, GetFnAddr(&BGSSaveLoadManager::LoadGame_Hook));
+	WriteRelCall(0x0069C9B0 + 0x0064, GetFnAddr(&BGSSaveLoadManager::ProcessEvents_Hook));
+
+	// Delete savegame
+	WriteRelCall(0x008770D0 + 0x001D, GetFnAddr(&UISaveLoadManager::DeleteSavegame_Hook));
 }

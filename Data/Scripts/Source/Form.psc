@@ -118,7 +118,7 @@ EndEvent
 Event OnUpdateGameTime()
 EndEvent
 
-; SKSE additions built 2012-07-24 00:32:19.171000 UTC
+; SKSE additions built 2012-08-04 05:25:04.547000 UTC
 
 ; Returns the typecode for this form object
 Int Function GetType() native
@@ -150,4 +150,36 @@ bool Function HasKeywordString(string s)
 endFunction
 
 ; upcoming support to register for OnKeyDown input events
-;Function RegisterForKey(int idx) native
+;Function RegisterForKey(int keyCode) native
+;Function UnregisterFromKey(int keyCode) native
+;Function UnregisterFromAllKeys() native
+
+; Registers for OnMenuOpen and OnMenuClose events for the given menu.
+; Registrations have to be refreshed after each game load.
+; For a list of valid menu names, see UI.psc.
+Function RegisterForMenu(string menuName) native
+Function UnregisterFromMenu(string menuName) native
+Function UnregisterFromAllMenus() native
+
+Event OnMenuOpen(string menuName)
+endEvent
+
+Event OnMenuClose(string menuName)
+endEvent
+
+; Registers a custom event callback for given event name.
+; Registrations have to be refreshed after each game load.
+;
+;	Examples:
+;		RegisterForModEvent("myCustomEvent", "MyModEventCallback")
+;
+;	Event signature of custom event callbacks:
+;		Event MyModEventCallback(string eventName, string strArg, float numArg, Form sender)
+;		endEvent
+;
+Function RegisterForModEvent(string eventName, string callbackName) native
+Function UnregisterFromModEvent(string eventName) native
+Function UnregisterFromAllModEvents() native
+
+; Sends custom event with given generic parameters.
+Function SendModEvent(string eventName, string strArg = "", float numArg = 0.0) native

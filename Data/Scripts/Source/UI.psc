@@ -1,8 +1,7 @@
 Scriptname UI Hidden
 
 ; For functions that require a menuName, potential values are
-;
-;	"Inventory Menu"
+;	"InventoryMenu"
 ;	"Console"
 ;	"Dialogue Menu"
 ;	"HUD Menu"
@@ -10,25 +9,25 @@ Scriptname UI Hidden
 ;	"MessageBoxMenu"
 ;	"Cursor Menu"
 ;	"Fader Menu"
-;	"Magic Menu"
+;	"MagicMenu"
 ;	"Top Menu"
 ;	"Overlay Menu"
 ;	"Overlay Interaction Menu"
 ;	"Loading Menu"
-;	"Tween Menu"
-;	"Barter Menu"
-;	"Gift Menu"
+;	"TweenMenu"
+;	"BarterMenu"
+;	"GiftMenu"
 ;	"Debug Text Menu"
-;	"Map Menu"
+;	"MapMenu"
 ;	"Lockpicking Menu"
 ;	"Quantity Menu"
-;	"Stats Menu"
-;	"Container Menu"
+;	"StatsMenu"
+;	"ContainerMenu"
 ;	"Sleep/Wait Menu"
 ;	"LevelUp Menu"
 ;	"Journal Menu"
 ;	"Book Menu"
-;	"Favorites Menu"
+;	"FavoritesMenu"
 ;	"RaceSex Menu"
 ;	"Crafting Menu"
 ;	"Training Menu"
@@ -37,62 +36,57 @@ Scriptname UI Hidden
 ;	"Credits Menu"
 ;	"TitleSequence Menu"
 ;	"Console Native UI Menu"
+;	"Kinect Menu"
+;
+; The target parameter requires one the following prefixes:
+;	_global		, for the default namespace;
+;	_root		, for the movie root.
 
 
 ; Returns if the menu is currently open.
 bool Function IsMenuOpen(string menuName) global native
 
-; The target parameter requires one the following prefixes:
-;	_global		, for the default namespace;
-;	_root		, for the movie root.
-;
-; To store global data that should be accessed from ActionScript, best use _global.myModName.
-; To access and manipulate existing data of a menu, access it via _root.
 
-
-; Set bool/number/string value at target location.
-; If the target object tree leading up to the value doesn't exist yet, it will be created.
+; Sets bool/number/string value at target location.
+; Target value must already exist.
 ;
 ;	Examples:
-;		UI.SetBool("Inventory Menu", "_root.Menu_mc._visible", false)
-;		UI.SetNumber("Magic Menu", "_global.myModName.myValue", 42)
-;		UI.SetString("Favorites Menu", "_root.Menu_mc.panel.message.text", "My Text")
+;		UI.SetBool("InventoryMenu", "_root.Menu_mc._visible", false)
+;		UI.SetString("FavoritesMenu", "_root.Menu_mc.panel.message.text", "My Text")
 ;
-;Function SetBool(string menuName, string target, bool value) global native
-;Function SetNumber(string menuName, string target, float value) global native
-;Function SetString(string menuName, string target, string value) global native
+Function SetBool(string menuName, string target, bool value) global native
+Function SetNumber(string menuName, string target, float value) global native
+Function SetString(string menuName, string target, string value) global native
 
 
-; Get bool/number/string from target location, or false/0/None if the value doesn't exist.
+; Gets bool/number/string from target location, or false/0/none if the value doesn't exist.
 ;
 ;	Examples:
 ;		bool	visible	= UI.GetBool("Inventory Menu", "_root.Menu_mc._visible")
 ;		float	height	= UI.GetNumber("Magic Menu", "_root.Menu_mc._height")
-;		string	myTest	= UI.GetString("Favorites Menu", "_global.a.b.c.test")
 ;
-;bool Function GetBool(string menuName, string target) global native
-;float Function GetNumber(string menuName, string target) global native
-;string Function GetString(string menuName, string target) global native
+bool	Function GetBool(string menuName, string target) global native
+float	Function GetNumber(string menuName, string target) global native
+string	Function GetString(string menuName, string target) global native
 
 
-; Invoke the ActionScript function at given target location,
-; with either no parameters, or a single bool/number/string.
+; Invokes the ActionScript function at given target location.
 ;
 ;	Examples:
-;		UI.InvokeString("Inventory Menu", "_global.skse.Log", "Printed to logfile")
+;		UI.InvokeString("InventoryMenu", "_global.skse.Log", "Printed to logfile")
+;		UI.InvokeStringA("InventoryMenu", "_global.myFunction", myArray)
 ;
-; To pass more complex parameters, first use the setters to store your data at a
-; known location, then invoke your ActionScript function, which may fetch the data
-; from there.
-;
-;	Example:
-;		UI.SetBool("Inventory Menu", "_global.myModName.functionData.func1.enabled", true)
-;		UI.SetNumber("Inventory Menu", "_global.myModName.functionData.func1.height", 800)
-;		UI.SetNumber("Inventory Menu", "_global.myModName.functionData.func1.width", 600)
-;		UI.Invoke("Inventory Menu", "_root.Menu_mc.ItemsList.func1")
-;
-;Function Invoke(string menuName, string target) global native
-;Function InvokeBool(string menuName, string target, bool arg) global native
-;Function InvokeNumber(string menuName, string target, float arg) global native
-;Function InvokeString(string menuName, string target, string arg) global native
+Function Invoke(string menuName, string target) global
+	InvokeBool(menuName, target, false)
+EndFunction
 
+Function InvokeBool(string menuName, string target, bool arg) global native
+Function InvokeNumber(string menuName, string target, float arg) global native
+Function InvokeString(string menuName, string target, string arg) global native
+
+Function InvokeBoolA(string menuName, string target, bool[] args) global native
+Function InvokeNumberA(string menuName, string target, float[] args) global native
+Function InvokeStringA(string menuName, string target, string[] args) global native
+
+; Sends Form data to Scaleform as a Flash object, FormLists included.
+Function InvokeForm(string menuName, string target, Form arg) global native

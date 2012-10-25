@@ -5,6 +5,7 @@
 #include "ScaleformCallbacks.h"
 #include "ScaleformMovie.h"
 #include "ScaleformAPI.h"
+#include "ScaleformExtendedData.h"
 #include "GameAPI.h"
 #include "GameSettings.h"
 #include "GameMenus.h"
@@ -18,61 +19,7 @@
 #include <list>
 #include "PapyrusEvents.h"
 
-//// helpers
-
-void RegisterNumber(GFxValue * dst, const char * name, double value)
-{
-	GFxValue	fxValue;
-
-	fxValue.SetNumber(value);
-
-	dst->SetMember(name, &fxValue);
-}
-
-void RegisterBool(GFxValue * dst, const char * name, bool value)
-{
-	GFxValue fxValue;
-	fxValue.SetBool(value);
-	dst->SetMember(name, &fxValue);
-}
-
-void RegisterKeywords(GFxValue * pFxVal, GFxMovieView * view, BGSKeywordForm * keywordForm)
-{
-	GFxValue	keywordRoot;
-	view->CreateObject(&keywordRoot);
-
-	// Add all keywords as boolean properties with value true
-
-	UInt32 count = keywordForm->numKeywords;
-	BGSKeyword ** keywords = keywordForm->keywords;
-	if(keywords)
-	{
-		for(int i = 0; i < count; i++)
-		{
-			BGSKeyword * pKey = keywords[i];
-			if(pKey)
-			{
-				const char * keyString = pKey->keyword.Get();
-				if(keyString)
-				{
-					RegisterBool(&keywordRoot, keyString, true);
-				}
-			}
-		}
-	}
-
-	pFxVal->SetMember("keywords", &keywordRoot);
-}
-
-double round(double r)
-{
-	return (r >= 0.0) ? floor(r + 0.5) : ceil(r - 0.5);
-}
-
 //// plugin API
-
-void RegisterNumber(GFxValue * dst, const char * name, double value);
-void RegisterBool(GFxValue * dst, const char * name, bool value);
 
 struct ScaleformPluginInfo
 {
@@ -310,13 +257,6 @@ public:
 
 //// item card extensions
 
-class StandardItemData;
-class MagicItemData;
-
-void ExtendCommonItemData(GFxValue* pFxVal, TESForm * pForm);
-void ExtendStandardItemData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerCharacter::ObjDesc * objDesc);
-void ExtendMagicItemData(GFxValue * pFxVal, TESForm * pForm);
-
 // 20
 class StandardItemData
 {
@@ -354,149 +294,15 @@ StandardItemData * StandardItemData::ctor_Hook(GFxMovieView ** movieView, Player
 
 	if(s_bExtendData)
 	{
-		ExtendCommonItemData(&result->fxValue, objDesc->form);
-		ExtendStandardItemData(&result->fxValue, *movieView, objDesc);
+		scaleformExtend::CommonItemData(&result->fxValue, objDesc->form);
+		scaleformExtend::StandardItemData(&result->fxValue, objDesc->form);
+		scaleformExtend::InventoryData(&result->fxValue, *movieView, objDesc);
 		// Calling this to set scrolls, potions, ingredients
 		// as this function is called for inventory, barter, container
-		ExtendMagicItemData(&result->fxValue, objDesc->form);
+		scaleformExtend::MagicItemData(&result->fxValue, *movieView, objDesc->form);
 	}
 
 	return result;
-}
-
-void ExtendCommonItemData(GFxValue* pFxVal, TESForm * pForm)
-{
-	if(!pFxVal || !pForm)
-		return;
-
-	RegisterBool(pFxVal, "extended", true);
-	RegisterNumber(pFxVal, "formType", (double)pForm->GetFormType());
-	RegisterNumber(pFxVal, "formId", (double)pForm->formID);
-}
-
-void ExtendStandardItemData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerCharacter::ObjDesc * objDesc)
-{
-	TESForm	* pForm = objDesc->form;
-
-	if(!pForm || !pFxVal)
-		return;
-
-	PlayerCharacter	* pPC = *g_thePlayer;
-
-	BGSKeywordForm	* keywords = DYNAMIC_CAST(pForm, TESForm, BGSKeywordForm);
-	if(keywords)
-		RegisterKeywords(pFxVal, movieView, keywords);
-
-	switch(pForm->GetFormType())
-	{
-		case kFormType_Armor:
-		{
-			TESObjectARMO * pArmor = DYNAMIC_CAST(pForm, TESForm, TESObjectARMO);
-			if(pArmor)
-			{
-				double armorValue = CALL_MEMBER_FN(pPC, GetArmorValue)(objDesc);
-				armorValue = round(armorValue);
-				RegisterNumber(pFxVal, "armor", armorValue);
-				RegisterNumber(pFxVal, "partMask", pArmor->bipedObject.data.parts);
-				RegisterNumber(pFxVal, "weightClass", pArmor->bipedObject.data.weightClass);
-			}
-		}
-		break;
-
-		case kFormType_Weapon:
-		{
-			TESObjectWEAP * pWeapon = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
-			if(pWeapon)
-			{
-				UInt8 weaponType = pWeapon->type();
-				double damage = CALL_MEMBER_FN(pPC, GetDamage)(objDesc);
-				damage = round(damage);
-
-				RegisterNumber(pFxVal, "subType", weaponType);
-				RegisterNumber(pFxVal, "damage", damage);
-				RegisterNumber(pFxVal, "speed", pWeapon->speed());
-				RegisterNumber(pFxVal, "reach", pWeapon->reach());
-				RegisterNumber(pFxVal, "stagger", pWeapon->stagger());
-				RegisterNumber(pFxVal, "critDamage", pWeapon->critDamage());
-				RegisterNumber(pFxVal, "minRange", pWeapon->minRange());
-				RegisterNumber(pFxVal, "maxRange", pWeapon->maxRange());
-			}
-		}
-		break;
-
-		case kFormType_Ammo:
-		{
-			TESAmmo * pAmmo = DYNAMIC_CAST(pForm, TESForm, TESAmmo);
-			if(pAmmo)
-			{
-				double damage = CALL_MEMBER_FN(pPC, GetDamage)(objDesc);
-				damage = round(damage);
-				RegisterNumber(pFxVal, "damage", damage);
-			}
-		}
-		break;
-
-		case kFormType_SoulGem:
-		{
-			TESSoulGem	* soulGem = DYNAMIC_CAST(pForm, TESForm, TESSoulGem);
-			if(soulGem)
-			{
-				RegisterNumber(pFxVal, "soulSize", soulGem->soulSize);
-				RegisterNumber(pFxVal, "gemSize", soulGem->gemSize);
-			}
-		}
-		break;
-		
-		case kFormType_Potion:
-		{
-			AlchemyItem * pAlchemy = DYNAMIC_CAST(pForm, TESForm, AlchemyItem);
-			if(pAlchemy)
-			{
-				RegisterNumber(pFxVal, "flags", pAlchemy->unkA4.unk00.flags);
-			}
-		}
-		break;
-	
-		case kFormType_Book:
-		{
-			TESObjectBOOK * pBook = DYNAMIC_CAST(pForm, TESForm, TESObjectBOOK);
-			if(pBook)
-			{
-				RegisterNumber(pFxVal, "bookType", pBook->data.type);
-				switch(pBook->data.GetSanitizedType())
-				{
-					case TESObjectBOOK::Data::kType_Skill:
-						RegisterNumber(pFxVal, "teachesSkill", pBook->data.teaches.skill);
-						break;
-
-					case TESObjectBOOK::Data::kType_Spell:
-					{
-						double formID = -1;
-
-						if(pBook->data.teaches.spell)
-							formID = pBook->data.teaches.spell->formID;
-
-						RegisterNumber(pFxVal, "teachesSpell", formID);
-					}
-					break;
-				}
-			}
-		}
-		break;
-
-		case kFormType_Misc:
-		{
-			TESObjectMISC * pMisc = DYNAMIC_CAST(pForm, TESForm, TESObjectMISC);
-			if(pMisc)
-			{
-				//
-			}
-		}
-		break;
-		
-		default:
-			break;
-	}
 }
 
 // 20
@@ -530,48 +336,11 @@ MagicItemData * MagicItemData::ctor_Hook(GFxMovieView ** movieView, TESForm * pF
 
 	if(s_bExtendData)
 	{
-		ExtendCommonItemData(&result->fxValue, pForm);
-		ExtendMagicItemData(&result->fxValue, pForm);
+		scaleformExtend::CommonItemData(&result->fxValue, pForm);
+		scaleformExtend::MagicItemData(&result->fxValue, *movieView, pForm);
 	}
 
 	return result;
-}
-
-void ExtendMagicItemData(GFxValue * pFxVal, TESForm * pForm)
-{
-	if(!pFxVal || !pForm)
-		return;
-	
-	switch(pForm->GetFormType())
-	{
-		case kFormType_Spell:
-		case kFormType_ScrollItem:
-		case kFormType_Ingredient:
-		case kFormType_Potion:
-		{
-			MagicItem * pMagicItem = DYNAMIC_CAST(pForm, TESForm, MagicItem);
-			if(pMagicItem)
-			{
-				MagicItem::EffectItem * pEffect = CALL_MEMBER_FN(pMagicItem, GetCostliestEffectItem)(5, false);
-				if(pEffect && pEffect->mgef)
-				{
-					UInt32 school = pEffect->mgef->school();
-					UInt32 skillLevel = pEffect->mgef->level();
-
-					RegisterNumber(pFxVal, "subType", pEffect->mgef->school());
-					RegisterNumber(pFxVal, "skillLevel", pEffect->mgef->level());
-					RegisterNumber(pFxVal, "magnitude", pEffect->magnitude);
-					RegisterNumber(pFxVal, "duration", pEffect->duration);
-					RegisterNumber(pFxVal, "actorValue", pEffect->mgef->properties.primaryValue);
-					RegisterNumber(pFxVal, "magicType", pEffect->mgef->properties.resistance);
-				}
-			}
-		}
-		break;
-
-		default:
-			break;
-	}
 }
 
 // ### todo
@@ -596,7 +365,7 @@ int FavItemDataHook::Hook(TESForm * pForm)
 
 	if(s_bExtendData)
 	{
-		ExtendCommonItemData(fxValue, pForm);
+		scaleformExtend::CommonItemData(fxValue, pForm);
 	}
 
 	return result;

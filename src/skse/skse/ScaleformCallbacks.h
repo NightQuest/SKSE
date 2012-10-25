@@ -60,9 +60,11 @@ public:
 		MEMBER_FN_PREFIX(ObjectInterface);
 		DEFINE_MEMBER_FN(HasMember, bool, 0x00917E40, void * obj, const char * name, bool isDisplayObj);
 		DEFINE_MEMBER_FN(SetMember, bool, 0x00917F10, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
-		DEFINE_MEMBER_FN(GetMember, bool, 0x0091AB60, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
 		DEFINE_MEMBER_FN(DeleteMember, bool, 0x00917FD0, void * obj, const char * name, bool isDisplayObj);
+		DEFINE_MEMBER_FN(GetMember, bool, 0x0091AB60, void * obj, const char * name, GFxValue * value, bool isDisplayObj);
 		DEFINE_MEMBER_FN(Invoke, bool, 0x0091A0D0, void * obj, GFxValue * result, const char * name, GFxValue * args, UInt32 numArgs, bool isDisplayObj);
+		DEFINE_MEMBER_FN(AttachMovie, bool, 0x0091A260, void * obj, GFxValue * value, const char * symbolName, const char * instanceName, SInt32 depth, void * initArgs);
+		DEFINE_MEMBER_FN(PushBack, bool, 0x009180E0, void * obj, GFxValue * value);
 
 		DEFINE_MEMBER_FN(ReleaseManaged_Internal, void, 0x00919850, GFxValue * value, void * obj);
 	};
@@ -93,6 +95,7 @@ public:
 	bool	GetMember(const char * name, GFxValue * value);
 	bool	DeleteMember(const char * name);
 	bool	Invoke(const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
+	bool	PushBack(GFxValue * value);
 };
 
 STATIC_ASSERT(sizeof(GFxValue) == 0x10);

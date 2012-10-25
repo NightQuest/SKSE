@@ -155,13 +155,6 @@ namespace papyrusForm
 	{
 		if (!menuName.data)
 			return;
-
-		// Will only be added once. TODO move this somewhere else.
-		MenuManager * mm = MenuManager::GetSingleton();
-		if (mm)
-			mm->MenuOpenCloseEventDispatcher()->AddEventSink(&g_skseEventHandler);
-		if (*g_inputEventDispatcher)
-			(*g_inputEventDispatcher)->AddEventSink(&g_skseEventHandler);
 		
 		g_menuOpenCloseRegs.Register(thisForm, menuName);
 	}
@@ -183,9 +176,6 @@ namespace papyrusForm
 	{
 		if (!eventName.data || !callbackName.data)
 			return;
-
-		// TODO
-		g_modCallbackEventDispatcher.AddEventSink(&g_skseEventHandler);
 
 		ModCallbackParameters params;
 		params.callbackName = callbackName;
@@ -214,6 +204,18 @@ namespace papyrusForm
 		SKSEModCallbackEvent evn(eventName, strArg, numArg, thisForm);
 		g_modCallbackEventDispatcher.SendEvent(&evn);
 	}
+}
+
+void papyrusForm::RegisterEventSinks(void)
+{
+	MenuManager * mm = MenuManager::GetSingleton();
+	if (mm)
+		mm->MenuOpenCloseEventDispatcher()->AddEventSink(&g_skseEventHandler);
+
+	g_modCallbackEventDispatcher.AddEventSink(&g_skseEventHandler);
+
+	// Has to be done later, because the pointer is not set yet.
+	//(*g_inputEventDispatcher)->AddEventSink(&g_skseEventHandler);
 }
 
 #include "PapyrusVM.h"

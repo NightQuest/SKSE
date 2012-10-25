@@ -785,9 +785,9 @@ class BGSListForm : public TESForm
 public:
 	enum { kTypeID = kFormType_List };
 
-	UnkArray	unk14;	// 14
-	UInt32	unk20;	// 20
-	UInt32	unk24;	// 24
+	tArray<TESForm*>	forms;	// 14
+	tArray<UInt32> *	addedForms;	// 20
+	UInt32				unk24;	// 24
 };
 
 // 88
@@ -2320,7 +2320,7 @@ public:
 	UInt32	unk94;	// 94
 };
 
-// 29C
+// 2BC
 class TESRace : public TESForm
 {
 public:
@@ -2354,13 +2354,13 @@ public:
 	};
 
 	// parents
-	TESFullName			fullName;		// 14
-	TESDescription		description;	// 1C
-	TESSpellList		spellList;		// 28
-	BGSSkinForm			skin;			// 30
-	BGSBipedObjectForm	biped;			// 38
-	BGSKeywordForm		keyword;		// 48
-	BGSAttackDataForm	attackData;		// 54
+	TESFullName			fullName;		// 014
+	TESDescription		description;	// 01C
+	TESSpellList		spellList;		// 028
+	BGSSkinForm			skin;			// 030
+	BGSBipedObjectForm	biped;			// 038
+	BGSKeywordForm		keyword;		// 044
+	BGSAttackDataForm	attackData;		// 050
 
 	// members
 
@@ -2413,10 +2413,10 @@ public:
 		float	unk10C;
 	};
 
-	TESModel					models[2];			// 5C
-	Data						data;				// 84
-	BGSTextureModel				textureModel[2];	// 130
-	BGSBehaviorGraphModel		behaviorGraph[2];	// Offsets following this are not named correctly
+	TESModel					models[2];			// 058
+	Data						data;				// 080
+	BGSTextureModel				textureModel[2];	// 12C
+	BGSBehaviorGraphModel		behaviorGraph[2];	// 154 - Offsets following this are not named correctly
 	StringCache::Ref			unk15C[2];			
 	StringCache::Ref			unk164[2];
 	BGSVoiceType				* voiceTypes[2];

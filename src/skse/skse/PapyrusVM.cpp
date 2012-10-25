@@ -7,7 +7,7 @@ SkyrimVM			** g_skyrimVM = (SkyrimVM **)0x0128CD1C;
 
 void SkyrimVM::OnFormDelete_Hook(UInt64 handle)
 {
-	CALL_MEMBER_FN(this, UnregisterForSleep_Internal)(handle);
+	CALL_MEMBER_FN(this, UnregisterFromSleep_Internal)(handle);
 
 	g_menuOpenCloseRegs.UnregisterFromAll(handle);
 	g_inputEventRegs.UnregisterFromAll(handle);
@@ -26,9 +26,39 @@ void SkyrimVM::RevertGlobalData_Hook(void)
 	g_inputEventRegs.Clear();
 	g_modCallbackRegs.Clear();
 
+	// For now, this is a suitable place to do this.
+	if (*g_inputEventDispatcher)
+		(*g_inputEventDispatcher)->AddEventSink(&g_skseEventHandler);
+
 #if _DEBUG
 	_MESSAGE("Executed SkyrimVM::RevertGlobalData_Hook.");
 #endif
+}
+
+bool SkyrimVM::SaveGlobalData_Hook(void * saveFileHandle, void * saveStorageWrapper)
+{
+	bool result = CALL_MEMBER_FN(this, SaveRegSleepEventHandles_Internal)(saveFileHandle, saveStorageWrapper);
+
+	// TODO
+
+#if _DEBUG
+	_MESSAGE("Executed SkyrimVM::SaveGlobalData_Hook.");
+#endif
+
+	return result;
+}
+
+bool SkyrimVM::LoadGlobalData_Hook(void * saveFileHandle, void * saveStorageWrapper)
+{
+	bool result = CALL_MEMBER_FN(this, LoadRegSleepEventHandles_Internal)(saveFileHandle, saveStorageWrapper);
+
+	// TODO
+
+#if _DEBUG
+	_MESSAGE("Executed SkyrimVM::LoadGlobalData_Hook.");
+#endif
+
+	return result;
 }
 
 

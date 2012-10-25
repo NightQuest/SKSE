@@ -5,3 +5,4 @@
 void Hooks_Scaleform_Commit(void);
 
 bool RegisterScaleformPlugin(const char * name, SKSEScaleformInterface::RegisterCallback callback);
+

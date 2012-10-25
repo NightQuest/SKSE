@@ -1,3 +1,10 @@
+1.5.11
+- BGSBipedObjectForm changed size in 1.7.7, fixed TESRace, TESObjectARMO/ARMA functions
+- moved SetGameSetting functions to Game from Utility to match 
+- more item/spell data exposed to scaleform
+- fix crash when pushing data to scaleform variables that have no data yet
+- updated docs for UI/Form functions
+
 1.5.10
 - show SKSE version in system menu
 - SKSE version/runtime/release idx table added to skse_docs.txt

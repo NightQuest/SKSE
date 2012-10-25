@@ -64,7 +64,8 @@ public:
 	BSTSmartPointer	<void>	unk04;	// 04
 };
 
-// 10
+// 10 - 1.6.89 and earlier
+// 0C - 1.7.7 and after
 class BGSBipedObjectForm : public BaseFormComponent
 {
 public:
@@ -115,9 +116,7 @@ public:
 	struct Data
 	{
 		UInt32	parts;			// 00 - init'd to 0
-		UInt8	unk04;			// 04 - init'd to 0
-		UInt8	pad05[3];		// 05
-		UInt32	weightClass;	// 08 - init'd to 2 (none)
+		UInt32	weightClass;	// 04 - init'd to 2 (none)
 	};
 
 	Data	data;	// 04
@@ -422,10 +421,10 @@ public:
 class TESEnchantableForm : public BaseFormComponent
 {
 public:
-	virtual UInt16	Unk_04(void);	// return unk08
+	virtual UInt16	Unk_04(void);		// return unk08
 
-	EnchantmentItem*	enchantment;		// 04 - init'd to 0
-	UInt16				unk08;		// 08 - init'd to 3
+	EnchantmentItem*	enchantment;	// 04 - init'd to 0
+	UInt16				unk08;			// 08 - init'd to 3
 	UInt16				maxCharge;
 };
 

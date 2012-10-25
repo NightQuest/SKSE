@@ -9,6 +9,7 @@ class VMClassRegistry;
 namespace papyrusForm
 {
 	void RegisterFuncs(VMClassRegistry* registry);
+	void RegisterEventSinks();
 
 	UInt32 GetType(TESForm* thisForm);
 	BSFixedString GetName(TESForm* thisForm);

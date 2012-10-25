@@ -63,8 +63,14 @@ Function AllowPCDialogue(bool abTalk) native
 ; default ash pile object
 Function AttachAshPile(Form akAshPileBase = None) native
 
+; Can this actor fly here?
+bool Function CanFlyHere() native
+
 ; Clears this actor's arrested state
 Function ClearArrested() native
+
+; Clears any expression override on the actor
+Function ClearExpressionOverride() native
 
 ; Clears this actor's extra arrows 3D
 Function ClearExtraArrows() native
@@ -88,6 +94,9 @@ Function DamageAV(string asValueName, float afDamage)
   DamageActorValue(asValueName, afDamage)
 EndFunction
 
+; Initiates a dismount.
+bool Function Dismount() native
+
 ; Dispel all spells from this actor
 Function DispelAllSpells() native
 
@@ -99,6 +108,9 @@ Function DoCombatSpellApply( Spell akSpell, ObjectReference akTarget ) native
 
 ; Enables or disable's this actor's AI
 Function EnableAI(bool abEnable = true) native
+
+; End the Deferred Kill state. This must only be called if StartDeferredKill was called first.
+Function EndDeferredKill() native
 
 ; Forces this actor to equip the specified item, preventing removal if requested
 Function EquipItem(Form akItem, bool abPreventRemoval = false, bool abSilent = false) native
@@ -316,6 +328,9 @@ bool Function IsArrested() native
 ; Is this actor currently arresting his target? (Must be a guard and alarmed)
 bool Function IsArrestingTarget() native
 
+; Is the actor being ridden?
+bool Function IsBeingRidden() native
+
 ; Is this actor currently bleeding out?
 bool Function IsBleedingOut() native
 
@@ -366,6 +381,9 @@ bool Function IsInKillMove() native
 
 ; Queries whether this actor has player intimidated flag set.
 bool Function IsIntimidated() native
+
+; Is the actor on a mount?
+bool Function IsOnMount() native
 
 ; Checks to see if this actor the last ridden horse of the player
 bool Function IsPlayersLastRiddenHorse() native
@@ -485,6 +503,9 @@ Function SetAlert(bool abAlerted = true) native
 ; Sets whether this actor is allowed to fly or not - if not, will land the actor
 Function SetAllowFlying(bool abAllowed = true) native
 
+; Sets whether this actor is allowed to fly or not - if not, will land the actor
+Function SetAllowFlyingEx(bool abAllowed = true, bool abAllowCrash = true, bool abAllowSearch = false) native
+
 ; Sets this actor's alpha - with an optional fade to that alpha
 ; The alpha will be clamped between 0 and 1
 Function SetAlpha(float afTargetAlpha, bool abFade = false) native
@@ -513,6 +534,21 @@ Function SetCriticalStage(int aiStage) native
 
 ; Flag this actor as currently doing a favor for the player
 Function SetDoingFavor(bool abDoingFavor = true) native
+
+; Sets an expression to override any other expression other systems may give this actor.
+;							7 - Mood Neutral
+; 0 - Dialogue Anger		8 - Mood Anger		15 - Combat Anger
+; 1 - Dialogue Fear			9 - Mood Fear		16 - Combat Shout
+; 2 - Dialogue Happy		10 - Mood Happy
+; 3 - Dialogue Sad			11 - Mood Sad
+; 4 - Dialogue Surprise		12 - Mood Surprise
+; 5 - Dialogue Puzzled		13 - Mood Puzzled
+; 6 - Dialogue Disgusted	14 - Mood Disgusted
+; aiStrength is from 0 to 100 (percent)
+Function SetExpressionOverride(int aiMood, int aiStrength = 100) native
+
+;forces the eye texture for this actor to the give texture set
+Function SetEyeTexture(TextureSet akNewTexture) native
 
 ; Sets this actor's rank with the specified faction
 Function SetFactionRank(Faction akFaction, int aiRank) native
@@ -570,6 +606,9 @@ Function SetRelationshipRank(Actor akOther, int aiRank) native
 ; Sets this actor as restrained or not
 Function SetRestrained(bool abRestrained = true) native
 
+; Set a variable on all of an actor's subgraphs
+Function SetSubGraphFloatVariable(string asVariableName, float afValue) native
+
 ; Sets this actor as unconscious or not
 Function SetUnconscious(bool abUnconscious = true) native
 
@@ -600,6 +639,9 @@ Function StartCannibal(Actor akTarget) native
 ; Starts combat with the target
 Function StartCombat(Actor akTarget) native
 
+; Start the Deferred Kill state. Be sure to call EndDeferredKill or the actor will be invulnerable.
+Function StartDeferredKill() native
+
 ; Starts vampire feed with the target
 Function StartVampireFeed(Actor akTarget) native
 
@@ -618,6 +660,9 @@ Function UnequipAll() native
 ; Unequips the specified item from this actor
 Function UnequipItem(Form akItem, bool abPreventEquip = false, bool abSilent = false) native
 
+; Unequips the all items in this slot for the actor
+Function UnequipItemSlot(int aiSlot) native
+
 ; Forces this actor to unequip the specified shout
 Function UnequipShout(Shout akShout) native
 
@@ -634,6 +679,12 @@ bool Function WillIntimidateSucceed() native
 
 ; Returns whether anything the actor is wearing has the specified keyword
 bool Function WornHasKeyword(Keyword akKeyword) native
+
+; Makes this actor start sneaking
+Function StartSneaking() native
+
+; Makes this actor draw his weapon
+Function DrawWeapon() native
 
 ; Event that is triggered when this actor's combat state against the target changes
 ; State is as follows:
@@ -689,6 +740,16 @@ EndEvent
 
 ; Event received when this actor finishes changing its race
 Event OnRaceSwitchComplete()
+EndEvent
+
+; Received when the player fires a bow. akWeapon will be a bow, akAmmo is the ammo or None, 
+; afPower will be 1.0 for a full-power shot, less for a dud, and abSunGazing will be true if the player is looking at the sun.
+Event OnPlayerBowShot(Weapon akWeapon, Ammo akAmmo, float afPower, bool abSunGazing)
+EndEvent
+
+
+; Received immediately after the player has loaded a save game. A good time to check for additional content.
+Event OnPlayerLoadGame()
 EndEvent
 
 ; Set of read-only properties to essentually make a fake enum for critical stages
@@ -757,7 +818,7 @@ Function ForceTargetAngle(float afXAngle = 0.0, float afYAngle = 0.0, float afZA
 Function ClearForcedMovement() native
 
 
-; SKSE additions built 2012-07-24 00:32:19.171000 UTC
+; SKSE additions built 2012-08-04 05:25:04.547000 UTC
 ; returns the form for the item worn at the specified slotMask
 ; use Armor.GetMaskForSlot() to generate appropriate slotMask
 Form Function GetWornForm(int slotMask) native
@@ -769,26 +830,3 @@ Int Function GetSpellCount() native
 Spell Function GetNthSpell(int n) native
 
 Function QueueNiNodeUpdate() native
-
-; functions added by BGS in 1.6.87
-Event OnPlayerBowshot(Weapon akWeapon, Ammo akAmmo, float afPower, bool abSunGazing)
-EndEvent
-
-bool Function CanFlyHere() native
-bool Function IsOnMount() native
-Function UnequipItemSlot(int aiSlot) native
-Function SetExpressionOverride(int aiMood, int aiStrength) native
-Function StartDeferredKill() native
-Function SetEyeTexture(TextureSet akNewTexture) native
-Function SetAllowFlyingEx(bool abAllowed, bool abAllowCrash, bool abAllowSearch) native
-Function DrawWeapon() native
-Function StartSneaking() native
-Function EndDeferredKill() native
-
-Event OnPlayerLoadGame()
-EndEvent
-
-bool Function IsBeingRidden() native
-Function SetSubGraphFloatVariable(string asVariableName, float afValue) native
-bool Function Dismount() native
-Function ClearExpressionOverride() native

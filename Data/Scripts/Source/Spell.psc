@@ -9,7 +9,20 @@ Function RemoteCast(ObjectReference akSource, Actor akBlameActor, ObjectReferenc
 ; Is this spell classified as hostile?
 bool Function IsHostile() native
 
-; SKSE additions built 2012-07-24 00:32:19.171000 UTC
+; Preload the art for this spell. Useful for spells you equip & unequip on the player.
+; Warning: Misuse of this function can lead to erroneous behavior as well as excessive
+; memory consumption. It's best to avoid using this. This function will likely be
+; deprecated in the future.
+Function Preload() native
+
+; Unload the art for this spell. Call this only if you've previously called Preload.
+; Warning: Misuse of this function can lead to erroneous behavior including spell art
+; being unloaded while in use, and excessive memory consumption. It's best to avoid using this.
+; This function will likely be deprecated in the future.
+Function Unload() native
+
+
+; SKSE additions built 2012-08-04 05:25:04.547000 UTC
 ; return the casting time
 float Function GetCastTime() native
 
@@ -33,10 +46,6 @@ MagicEffect Function GetNthEffectMagicEffect(int index) native
 
 ; return the index of the costliest effect
 int Function GetCostliestEffectIndex() native
-
-; functions added by BGS in 1.6.87
-Function Unload() native
-Function Preload() native
 
 ; return the magicka cost of the spell
 int Function GetMagickaCost() native

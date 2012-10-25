@@ -1,10 +1,10 @@
 #include "PapyrusUI.h"
 #include "ScaleformCallbacks.h"
 #include "ScaleformMovie.h"
+#include "ScaleformExtendedData.h"
 #include "GameMenus.h"
-#include "Utilities.h"
 #include "GameEvents.h"
-
+#include "GameForms.h"
 
 namespace papyrusUI
 {
@@ -16,38 +16,31 @@ namespace papyrusUI
 	template <> float GetGFxValue<float> (GFxValue * val)					{ return (val->GetType() == GFxValue::kType_Number ? val->GetNumber() : 0); }
 	template <> BSFixedString GetGFxValue<BSFixedString> (GFxValue * val)	{ return (val->GetType() == GFxValue::kType_String ? val->GetString() : NULL); }
 
-	bool CreateObjectRoot(GFxMovieView * view, const char * dest)
+	void InvokeForm(StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr, TESForm * form)
 	{
-		std::string s;
-		Tokenizer tokens(dest, ".");
+		if (!menuName.data || !targetStr.data)
+			return;
 
-		if (tokens.NextToken(s) == -1)
-			return false;
+		MenuManager * mm = MenuManager::GetSingleton();
+		if (!mm)
+			return;
 
-		// Invalid root?
-		if (s.compare("_global") != 0 && s.compare("_root") != 0)
-			return false;
+		GFxMovieView * view = mm->GetMovieView(&menuName);
+		if (!view)
+			return;
 
-		std::string curDest(s);
+		std::string dest, name;
+		if (! ExtractTargetData(targetStr.data, dest, name))
+			return;
 
-		while(tokens.NextToken(s) != -1)
-		{
-			GFxValue root;
-			view->GetVariable(&root, curDest.c_str());
-			const char * name = s.c_str();
+		GFxValue fxDest;
+		if (! view->GetVariable(&fxDest, dest.c_str()))
+			return;
 
-			if (! root.HasMember(name))
-			{
-				GFxValue obj;
-				view->CreateObject(&obj);
-				root.SetMember(name, &obj);
-			}
-
-			curDest.append(".");
-			curDest.append(s);
-		}
-
-		return true;
+		GFxValue args;
+		view->CreateObject(&args);
+		scaleformExtend::FormData(&args, view, form);
+		fxDest.Invoke(name.c_str(), NULL, &args, 1);
 	}
 
 	bool ExtractTargetData(const char * target, std::string & dest, std::string & name)
@@ -65,23 +58,6 @@ namespace papyrusUI
 		name = t.substr(lastDelim+1);
 
 		return true;
-	}
-
-	bool PrepareSet(const char * target, GFxMovieView * view, GFxValue * fxDest, std::string & dest, std::string & name)
-	{
-		if (! ExtractTargetData(target, dest, name))
-			return false;
-
-		// If dest exists, done
-		if (view->GetVariable(fxDest, dest.c_str()))
-			return true;
-
-		// Dest has to be created first
-		if (!CreateObjectRoot(view, dest.c_str()))
-			return false;
-
-		// Try again now
-		return view->GetVariable(fxDest, dest.c_str());
 	}
 
 	bool IsMenuOpen(StaticFunctionTag* thisInput, BSFixedString menuName)
@@ -137,6 +113,9 @@ void papyrusUI::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, VMArray<BSFixedString>> ("InvokeStringA", "UI", papyrusUI::InvokeArrayT<BSFixedString>, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, TESForm*> ("InvokeForm", "UI", papyrusUI::InvokeForm, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, bool, BSFixedString> ("IsMenuOpen", "UI", papyrusUI::IsMenuOpen, registry));

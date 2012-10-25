@@ -2,6 +2,7 @@
 
 struct StaticFunctionTag;
 class VMClassRegistry;
+class Setting;
 
 #include "GameTypes.h"
 
@@ -20,4 +21,9 @@ namespace papyrusGame
 	BSFixedString GetModDescription(StaticFunctionTag*, UInt32 index);
 	UInt32 GetModDependencyCount(StaticFunctionTag*, UInt32 index);
 	UInt32 GetNthModDependency(StaticFunctionTag*, UInt32 index, UInt32 dep_index);
+
+	void SetGameSettingFloat(StaticFunctionTag * base, BSFixedString name, float value);
+	void SetGameSettingInt(StaticFunctionTag * base, BSFixedString name, UInt32 value);
+	void SetGameSettingBool(StaticFunctionTag * base, BSFixedString name, bool value);
+	void SetGameSettingString(StaticFunctionTag * base, BSFixedString name, BSFixedString value);
 };

@@ -2,6 +2,7 @@
 #include "SafeWrite.h"
 #include <queue>
 #include "PapyrusForm.h"
+#include "Utilities.h"
 
 static const GUID GUID_SysMouse		= { 0x6F1D2B60, 0xD5A0, 0x11CF, { 0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00} };
 static const GUID GUID_SysKeyboard	= { 0x6F1D2B61, 0xD5A0, 0x11CF, { 0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00} };
@@ -233,7 +234,7 @@ static HRESULT _stdcall Hook_DirectInput8Create_Execute(HINSTANCE instance, DWOR
 
 void Hooks_DirectInput_Commit(void)
 {
-	UInt32 thunkAddress = 0x0101E01C;
+	UInt32	thunkAddress = (UInt32)GetIATAddr((UInt8 *)GetModuleHandle(NULL), "dinput8.dll", "DirectInput8Create");
 
 	DICreate_RealFunc = (CreateDInputProc)*(DWORD *)thunkAddress;
 	SafeWrite32(thunkAddress, (DWORD)Hook_DirectInput8Create_Execute);

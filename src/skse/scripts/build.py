@@ -84,6 +84,8 @@ for name in os.listdir(vanillaRoot):
 	dst = open(buildPath, "w")
 	
 	dst.writelines(src.readlines())
+	dst.close()
+	src.close()
 
 # run compiler on merged files
 print "compiling"
@@ -98,6 +100,7 @@ for name in mergedFiles:
 		"-i=" + quote(buildRoot),
 		"-o=" + quote(buildBinRoot),
 		"-f=" + quote(compilerFlagPath),
+#		"-d",
 #		"-keepasm",
 		"-op"
 	]

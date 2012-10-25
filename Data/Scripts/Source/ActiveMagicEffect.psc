@@ -332,8 +332,18 @@ EndEvent
 Event OnWardHit(ObjectReference akCaster, Spell akSpell, int aiStatus)
 EndEvent
 
+; Received when the player fires a bow. akWeapon will be a bow, akAmmo is the ammo or None, 
+; afPower will be 1.0 for a full-power shot, less for a dud, and abSunGazing will be true if the player is looking at the sun.
+Event OnPlayerBowShot(Weapon akWeapon, Ammo akAmmo, float afPower, bool abSunGazing)
+EndEvent
 
-; SKSE additions built 2012-07-24 00:32:19.171000 UTC
+; Received immediately after the player has loaded a save game. A good time to check for additional content.
+Event OnPlayerLoadGame()
+EndEvent
+
+
+
+; SKSE additions built 2012-08-04 05:25:04.547000 UTC
 ; Additional useful effect information
 float Function GetDuration() native
 float Function GetTimeElapsed() native

@@ -645,7 +645,7 @@ public:
 
 	UInt32		pad130;			// 130
 	
-	StringCache::Ref	unk134;	// 134
+	StringCache::Ref	shortName;	// 134
 	UInt32		unk138;			// 138
 	BGSOutfit*	defaultOutfit;		// 13C
 	BGSOutfit*	sleepOutfit;		// 140
@@ -924,7 +924,7 @@ public:
 
 class TESObjectARMA;
 
-// 128
+// 124
 class TESObjectARMO : public TESBoundObject
 {
 public:
@@ -934,24 +934,25 @@ public:
 	TESFullName					fullName;		// 020
 	TESRaceForm					race;			// 028
 	TESEnchantableForm			enchantable;	// 030
-	TESValueForm				value;			// 038
+	TESValueForm				value;			// 03C
 	TESWeightForm				weight;			// 044
 	BGSDestructibleObjectForm	destructible;	// 04C
 	BGSPickupPutdownSounds		pickupSounds;	// 054
 	TESBipedModelForm			bipedModel;		// 060
 	BGSEquipType				equipType;		// 0D8
 	BGSBipedObjectForm			bipedObject;	// 0E0
-	BGSBlockBashData			blockBash;		// 0F0
-	BGSKeywordForm				keyword;		// 0FC
-	TESDescription				description;	// 108
+	BGSBlockBashData			blockBash;		// 0EC
+	BGSKeywordForm				keyword;		// 0F8
+	TESDescription				description;	// 104
 
 	// members
-	UInt32						armorValTimes100;	// 114
-	tArray<TESObjectARMA*>		armorAddons;		// 118
-	UInt32						unk124;				// 124 - enchantment related?
+	UInt32						armorValTimes100;	// 110
+	tArray<TESObjectARMA *>		armorAddons;		// 114
+	UInt32						unk120;				// 120 - enchantment related?
 };
 
-STATIC_ASSERT(sizeof(TESObjectARMO) == 0x128);
+STATIC_ASSERT(offsetof(TESObjectARMO, armorValTimes100) == 0x110);
+STATIC_ASSERT(sizeof(TESObjectARMO) == 0x124);
 
 // AC
 class TESObjectBOOK : public TESBoundObject
@@ -1229,7 +1230,7 @@ public:
 
 STATIC_ASSERT(sizeof(TESObjectWEAP) == 0x134);
 
-// CC
+// C8
 class TESObjectARMA : public TESObject
 {
 public:
@@ -1254,18 +1255,18 @@ public:
 		UInt32	unk08;			// 08
 	};
 
-	Data2C						unk2C;					// 2C
-	TESModelTextureSwap			models[2][2];			// 38
+	Data2C						data;					// 28
+	TESModelTextureSwap			models[2][2];			// 34
+	UInt32						unkA4;					// A4
 	UInt32						unkA8;					// A8
 	UInt32						unkAC;					// AC
 	UInt32						unkB0;					// B0
-	UInt32						unkB4;					// B4
-	tArray<TESRace*>			additionalRaces;		// B8
-	BGSFootstepSet				* footstepSet;			// C4
-	UInt32						unkC8;					// C8
+	tArray<TESRace*>			additionalRaces;		// B4
+	BGSFootstepSet				* footstepSet;			// C0
+	UInt32						unkC4;					// C4
 };
 
-STATIC_ASSERT(sizeof(TESObjectARMA) == 0xCC);
+STATIC_ASSERT(sizeof(TESObjectARMA) == 0xC8);
 
 class ActiveEffect;
 

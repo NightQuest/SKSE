@@ -24,11 +24,8 @@ int Function GetModDependencyCount(int modIndex) native global
 ; gets the index of the nth mod dependency of the specfied mod
 int Function GetNthModDependency(int modIndex, int n) native global
 
-; functions added by BGS in 1.6.87
-float Function GetSunPositionX() global native
-float Function GetSunPositionY() global native
-float Function GetSunPositionZ() global native
-Form Function GetFormFromFile(int aiFormID, string asFilename) global native
-Function ShowLimitedRaceMenu() global native
-Function SetSunGazeImageSpaceModifier(ImageSpaceModifier apImod) global native
-bool Function IsPlayerSungazing() global native
+; GameSetting functions - SKSE 1.5.10
+Function SetGameSettingFloat(string setting, float value) global native
+Function SetGameSettingInt(string setting, int value) global native
+Function SetGameSettingBool(string setting, bool value) global native
+Function SetGameSettingString(string setting, string value) global native

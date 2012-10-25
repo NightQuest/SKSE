@@ -402,6 +402,9 @@ bool Function IsActivationBlocked() native
 ; Returns if the 3d for this object is loaded or not
 bool Function Is3DLoaded() native
 
+; Is this object currently flagged for delete?
+bool Function IsDeleted() native
+
 ; Is this object currently disabled?
 bool Function IsDisabled() native
 
@@ -756,7 +759,7 @@ int Property Motion_ThinBoxIntertia = 6 AutoReadOnly
 int Property Motion_Character = 7 AutoReadOnly
 
 
-; SKSE additions built 2012-07-24 00:32:19.171000 UTC
+; SKSE additions built 2012-08-04 05:25:04.547000 UTC
 
 ; Container-only functions
 int Function GetNumItems() native
@@ -766,9 +769,6 @@ float Function GetTotalArmorWeight() native
 
 ; Tree and Flora only functions
 bool Function IsHarvested() native
-
-; added by BGS in 1.6.87
-bool Function IsDeleted() native
 
 ; Tempering
 Function SetItemHealthPercent(float health) native

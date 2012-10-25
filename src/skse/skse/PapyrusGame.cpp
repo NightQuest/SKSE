@@ -3,6 +3,7 @@
 #include "GameAPI.h"
 #include "GameReferences.h"
 #include "GameData.h"
+#include "GameSettings.h"
 
 namespace papyrusGame
 {
@@ -90,6 +91,97 @@ namespace papyrusGame
 		return (modInfo && dep_index > 0 && dep_index < modInfo->numRefMods) ? modInfo->refModInfo[dep_index]->modIndex : 0;
 	}
 
+	void SetGameSettingFloat(StaticFunctionTag * base, BSFixedString name, float value)
+	{
+		SettingCollectionMap	* settings = *g_gameSettingCollection;
+
+		if(settings)
+		{
+			Setting	* setting = settings->Get(name.data);
+			if(setting)
+			{
+				if(!setting->SetDouble(value))
+				{
+					_WARNING("SetGameSettingFloat: %s is not a float", name.data);
+				}
+			}
+			else
+			{
+				_WARNING("SetGameSettingFloat: %s not found", name.data);
+			}
+		}
+	}
+
+	void SetGameSettingInt(StaticFunctionTag * base, BSFixedString name, UInt32 value)
+	{
+		SettingCollectionMap	* settings = *g_gameSettingCollection;
+
+		if(settings)
+		{
+			Setting	* setting = settings->Get(name.data);
+			if(setting)
+			{
+				if(setting->GetType() == Setting::kType_Integer)
+				{
+					setting->data.u32 = value;
+				}
+				else
+				{
+					_WARNING("SetGameSettingInt: %s is not an int", name.data);
+				}	
+			}
+			else
+			{
+				_WARNING("SetGameSettingInt: %s not found", name.data);
+			}
+		}
+	}
+
+	void SetGameSettingBool(StaticFunctionTag * base, BSFixedString name, bool value)
+	{
+		SettingCollectionMap	* settings = *g_gameSettingCollection;
+
+		if(settings)
+		{
+			Setting	* setting = settings->Get(name.data);
+			if(setting)
+			{
+				if(setting->GetType() == Setting::kType_Bool)
+				{
+					setting->data.u8 = value;
+				}
+				else
+				{
+					_WARNING("SetGameSettingBool: %s is not a bool", name.data);
+				}
+			}
+			else
+			{
+				_WARNING("SetGameSettingBool: %s not found", name.data);
+			}
+		}
+	}
+
+	void SetGameSettingString(StaticFunctionTag * base, BSFixedString name, BSFixedString value)
+	{
+		SettingCollectionMap	* settings = *g_gameSettingCollection;
+
+		if(settings)
+		{
+			Setting	* setting = settings->Get(name.data);
+			if(setting)
+			{
+				if(!setting->SetString(value.data))
+				{
+					_WARNING("SetGameSettingString: %s is not a string", name.data);
+				}
+			}
+			else
+			{
+				_WARNING("SetGameSettingString: %s not found", name.data);
+			}
+		}
+	}
 }
 
 #include "PapyrusVM.h"
@@ -128,5 +220,17 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction2 <StaticFunctionTag, UInt32, UInt32, UInt32>("GetNthModDependency", "Game", papyrusGame::GetNthModDependency, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, void, BSFixedString, float>("SetGameSettingFloat", "Game", papyrusGame::SetGameSettingFloat, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, void, BSFixedString, UInt32>("SetGameSettingInt", "Game", papyrusGame::SetGameSettingInt, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, void, BSFixedString, bool>("SetGameSettingBool", "Game", papyrusGame::SetGameSettingBool, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, void, BSFixedString, BSFixedString>("SetGameSettingString", "Game", papyrusGame::SetGameSettingString, registry));
 
 }

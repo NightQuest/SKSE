@@ -635,6 +635,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ScaleformExtendedData.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ScaleformExtendedData.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ScaleformMovie.cpp"
 				>
 			</File>

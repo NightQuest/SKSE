@@ -23,9 +23,7 @@ namespace papyrusUI
 
 	void RegisterFuncs(VMClassRegistry* registry);
 
-	bool CreateObjectRoot(GFxMovieView * view, const char * dest);
 	bool ExtractTargetData(const char * target, std::string & dest, std::string & name);
-	bool PrepareSet(const char * target, GFxMovieView * view, GFxValue * fxDest, std::string & dest, std::string & name);
 	
 	template <typename T>
 	void SetT(StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr, T value)
@@ -40,10 +38,16 @@ namespace papyrusUI
 		GFxMovieView * view = mm->GetMovieView(&menuName);
 		if (!view)
 			return;
+		
+		std::string valueDest, valueName;
+		if (! ExtractTargetData(targetStr.data, valueDest, valueName))
+			return;
 
 		GFxValue fxDest;
-		std::string valueDest, valueName;
-		if (!PrepareSet(targetStr.data, view, &fxDest, valueDest, valueName))
+		if (! view->GetVariable(&fxDest, valueDest.c_str()))
+			return;
+
+		if (fxDest.GetType() == GFxValue::kType_Undefined || fxDest.objectInterface == NULL)
 			return;
 
 		GFxValue fxValue;
@@ -94,6 +98,9 @@ namespace papyrusUI
 		if (! view->GetVariable(&fxDest, dest.c_str()))
 			return;
 
+		if (fxDest.GetType() == GFxValue::kType_Undefined || fxDest.objectInterface == NULL)
+			return;
+
 		GFxValue args;
 		SetGFxValue<T>(&args, arg, view);
 		fxDest.Invoke(name.c_str(), NULL, &args, 1);		
@@ -122,6 +129,9 @@ namespace papyrusUI
 
 		GFxValue fxDest;
 		if (! view->GetVariable(&fxDest, dest.c_str()))
+			return;
+
+		if (fxDest.GetType() == GFxValue::kType_Undefined || fxDest.objectInterface == NULL)
 			return;
 
 		UInt32 argCount = args.Length();

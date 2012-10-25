@@ -93,3 +93,5 @@ private:
 	size_t		m_offset;
 	std::string m_data;
 };
+
+void * GetIATAddr(UInt8 * base, const char * searchDllName, const char * searchImportName);

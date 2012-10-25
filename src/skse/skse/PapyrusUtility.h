@@ -2,7 +2,6 @@
 #include "GameTypes.h"
 
 struct StaticFunctionTag;
-class Setting;
 
 class VMClassRegistry;
 

@@ -98,6 +98,9 @@ Function ShowFirstPersonGeometry( bool abShow = true ) native global
 ; Returns the form specified by the ID
 Form Function GetForm(int aiFormID) native global
 
+; Returns the form specified by the ID originating in the given file
+Form Function GetFormFromFile(int aiFormID, string asFilename) native global
+
 ; Obtains the value of a game setting - one for each type of game setting
 float Function GetGameSettingFloat(string asGameSetting) native global
 int Function GetGameSettingInt(string asGameSetting) native global
@@ -111,6 +114,15 @@ ObjectReference Function GetPlayerGrabbedRef() native global
 
 ; Returns the horse last ridden by the player
 Actor Function GetPlayersLastRiddenHorse() native global
+
+; Returns the X position of the Sun.
+float Function GetSunPositionX() native global
+
+; Returns the Y position of the Sun.
+float Function GetSunPositionY() native global
+
+; Returns the Z position of the Sun.
+float Function GetSunPositionZ() native global
 
 ; Returns the number of days spent in play
 float Function GetRealHoursPassed() native global
@@ -147,6 +159,9 @@ bool Function IsMenuControlsEnabled() native global
 
 ; Are the movement controls enabled?
 bool Function IsMovementControlsEnabled() native global
+
+; Is the player looking at the sun?
+bool Function IsPlayerSungazing() native global
 
 ; Are the sneaking controls enabled?
 bool Function IsSneakingControlsEnabled() native global
@@ -216,11 +231,15 @@ Function ShakeController(float afSmallMotorStrength, float afBigMotorStreangth, 
 
 ; Displays the race/sex menu
 Function ShowRaceMenu() native global
+Function ShowLimitedRaceMenu() native global
 
 ; Title Sequence menu functions
 Function ShowTitleSequenceMenu() native global
 Function HideTitleSequenceMenu() native global
 Function StartTitleSequence(string asSequenceName) native global
+
+; Sets the Image Space Modifier that is triggered when the player gazes at the sun.
+Function SetSunGazeImageSpaceModifier(ImageSpaceModifier apImod = NONE ) native global
 
 ; Displays the training menu based on passed in trainer actor
 Function ShowTrainingMenu(Actor aTrainer) native global
@@ -238,7 +257,7 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2012-07-24 00:32:19.171000 UTC
+; SKSE additions built 2012-08-04 05:25:04.547000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native
@@ -265,11 +284,8 @@ int Function GetModDependencyCount(int modIndex) native global
 ; gets the index of the nth mod dependency of the specfied mod
 int Function GetNthModDependency(int modIndex, int n) native global
 
-; functions added by BGS in 1.6.87
-float Function GetSunPositionX() global native
-float Function GetSunPositionY() global native
-float Function GetSunPositionZ() global native
-Form Function GetFormFromFile(int aiFormID, string asFilename) global native
-Function ShowLimitedRaceMenu() global native
-Function SetSunGazeImageSpaceModifier(ImageSpaceModifier apImod) global native
-bool Function IsPlayerSungazing() global native
+; GameSetting functions - SKSE 1.5.10
+Function SetGameSettingFloat(string setting, float value) global native
+Function SetGameSettingInt(string setting, int value) global native
+Function SetGameSettingBool(string setting, bool value) global native
+Function SetGameSettingString(string setting, string value) global native

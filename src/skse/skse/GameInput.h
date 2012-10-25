@@ -18,7 +18,7 @@ public:
 	virtual UInt32	Unk_01(void);		// pure
 	virtual	void	Unk_02(float unk1);	// pure
 	virtual	void	Unk_03(void);		// pure
-	virtual bool	IsEnabled(void);		// Always 1 for non-gamepad?
+	virtual bool	IsEnabled(void);	// Always 1 for non-gamepad?
 	virtual			~BSInputDevice();
 	virtual void	Unk_06(void);		// pure
 };
@@ -42,8 +42,8 @@ public:
 	virtual UInt32	GetID();
 
 //	void			** _vtbl;	// 00
-	const UInt32	deviceType;	// 04
-	const UInt32	eventType;	// 08
+	UInt32			deviceType;	// 04
+	UInt32			eventType;	// 08
 	InputEvent		* next;		// 0C
 };
 
@@ -85,14 +85,6 @@ class KinectEvent : public IDEvent, public InputEvent
 {
 };
 
-template <>
-class BSTEventSink <InputEvent>
-{
-public:
-	virtual ~BSTEventSink() {}; // todo?
-	virtual	EventResult ReceiveEvent(InputEvent ** evn, EventDispatcher<InputEvent,InputEvent*> * dispatcher) = 0;
-};
-
 class InputEventDispatcher : public EventDispatcher<InputEvent,InputEvent*>
 {
 public:
@@ -106,6 +98,14 @@ public:
 STATIC_ASSERT(offsetof(InputEventDispatcher, gamepad) == 0x03C);
 
 extern InputEventDispatcher ** g_inputEventDispatcher;
+
+template <>
+class BSTEventSink <InputEvent>
+{
+public:
+	virtual ~BSTEventSink() {}; // todo?
+	virtual	EventResult ReceiveEvent(InputEvent ** evn, InputEventDispatcher * dispatcher) = 0;
+};
 
 // 9C
 class InputManager
@@ -162,3 +162,37 @@ public:
 	UInt32	GetMappedKey(const char * name, UInt32 deviceType, UInt32 contextIdx);
 };
 STATIC_ASSERT(sizeof(InputManager) == 0x9C);
+
+//?
+class PlayerControls
+{
+public:
+	virtual			~PlayerControls();
+	virtual UInt32	Unk_01();
+
+//	void			** _vtbl;		// 00
+	UInt8			pad04[0x3C];	// 04
+	bool			remapMode;		// 40 - might be named differently
+	UInt8			pad41[3];		// 41
+
+	static PlayerControls *	GetSingleton(void);
+};
+STATIC_ASSERT(offsetof(PlayerControls, remapMode) == 0x040);
+
+// ?
+class MenuControls
+{
+public:
+	virtual			~MenuControls();
+	virtual UInt32	Unk_01();
+
+//	void			** _vtbl;		// 00
+	UInt8			pad04[0x3C];	// 04
+	UInt8			pad40;			// 40
+	UInt8			pad41;			// 41
+	bool			remapMode;		// 42
+	UInt8			pad43;			// 43
+
+	static MenuControls *	GetSingleton(void);
+};
+STATIC_ASSERT(offsetof(MenuControls, remapMode) == 0x042);

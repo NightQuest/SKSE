@@ -357,7 +357,7 @@ class SKSEEventHandler :
 
 public:
 	virtual EventResult		ReceiveEvent(MenuOpenCloseEvent * evn, EventDispatcher<MenuOpenCloseEvent> * dispatcher);
-	virtual EventResult		ReceiveEvent(InputEvent ** evns, EventDispatcher<InputEvent,InputEvent*> * dispatcher);
+	virtual EventResult		ReceiveEvent(InputEvent ** evns, InputEventDispatcher * dispatcher);
 	virtual	EventResult		ReceiveEvent(SKSEModCallbackEvent * evn, EventDispatcher<SKSEModCallbackEvent> * dispatcher);
 };
 

@@ -343,7 +343,7 @@ EndEvent
 
 
 
-; SKSE additions built 2012-09-30 07:24:37.943000 UTC
+; SKSE additions built 2012-09-30 21:33:39.305000 UTC
 ; Additional useful effect information
 float Function GetDuration() native
 float Function GetTimeElapsed() native

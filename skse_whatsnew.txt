@@ -1,4 +1,7 @@
-1.6.0
+1.6.1:
+- corrected build error; I forgot to sync to latest before releasing 1.6.0
+
+1.6.0:
 - fix RemoveSlotFromMask
 - add UI.IsTextInputEnabled, ObjectReference.SetHarvested, Book.GetSkill, Game.Save/LoadGame, ObjectReference.ResetInventory
 - add UI.Get*/Set* for direct UI data manipluation

@@ -131,7 +131,7 @@ EventResult SKSEEventHandler::ReceiveEvent(MenuOpenCloseEvent * evn, EventDispat
 	return kEvent_Continue;
 }
 
-EventResult SKSEEventHandler::ReceiveEvent(InputEvent ** evns, EventDispatcher<InputEvent,InputEvent*> * dispatcher)
+EventResult SKSEEventHandler::ReceiveEvent(InputEvent ** evns, InputEventDispatcher * dispatcher)
 {
 	// Function is called periodically, if no buttons pressed/held *evns == NULL
 

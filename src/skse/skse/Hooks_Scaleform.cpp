@@ -122,6 +122,81 @@ public:
 	}
 };
 
+class SKSEScaleform_StartRemapMode : public GFxFunctionHandler
+{
+	class RemapHandler : public BSTEventSink<InputEvent>
+	{
+	public:
+		virtual EventResult ReceiveEvent(InputEvent ** evns, InputEventDispatcher * dispatcher)
+		{
+			ButtonEvent * e = (ButtonEvent*) *evns;
+
+			// Make sure this is really a button event
+			if (!e || e->eventType != InputEvent::kEventType_Button)
+				return kEvent_Continue;
+				
+			UInt32 deviceType = e->deviceType;
+
+			if ((dispatcher->IsGamepadEnabled() ^ (deviceType == kDeviceType_Gamepad)) || e->modFlags == 0 || e->timer != 0.0)
+				return kEvent_Continue;
+			
+			UInt32 keyMask = e->keyMask;
+			UInt32 keyCode;
+
+			// Mouse
+			if (deviceType == kDeviceType_Mouse)
+				keyCode = InputMap::kMacro_MouseButtonOffset + keyMask; 
+			// Gamepad
+			else if (deviceType == kDeviceType_Gamepad)
+				keyCode = InputMap::GetGamepadKeycode(keyMask);
+			// Keyboard
+			else
+				keyCode = keyMask;
+
+			// Valid scancode?
+			if (keyCode >= InputMap::kMaxMacros)
+				keyCode = -1;
+
+			GFxValue arg;
+			arg.SetNumber(keyCode);
+			scope.Invoke("EndRemapMode", NULL, &arg, 1);
+
+			MenuControls::GetSingleton()->remapMode = false;
+			PlayerControls::GetSingleton()->remapMode = false;
+
+			dispatcher->RemoveEventSink(this);
+			return kEvent_Continue;
+		}
+
+		GFxValue scope;
+	};
+
+	RemapHandler	remapHandler;
+
+public:
+	virtual void	Invoke(Args * args)
+	{
+		ASSERT(args->numArgs >= 1);
+
+		remapHandler.scope = args->args[0];
+
+		PlayerControls	* playerControls = PlayerControls::GetSingleton();
+		if (!playerControls)
+			return;
+
+		MenuControls	* menuControls = MenuControls::GetSingleton();
+		if (!menuControls)
+			return;
+
+		if (! (*g_inputEventDispatcher))
+			return;
+		
+		(*g_inputEventDispatcher)->AddEventSink(&remapHandler);
+		menuControls->remapMode = true;
+		playerControls->remapMode = true;
+	}
+};
+
 class SKSEScaleform_Log : public GFxFunctionHandler
 {
 public:
@@ -304,7 +379,6 @@ public:
 #if _DEBUG
 		_MESSAGE("scaleform: send mod event (%s, %s, %d)", eventName, strArg, numArg);
 #endif
-		
 
 		BSFixedString aEventName(eventName);
 		BSFixedString aStrArg(strArg);
@@ -481,7 +555,7 @@ public:
 			args->movie->CreateObject(&avOut);
 
 			UInt32 actorValue = val.GetNumber();
-			RegisterNumber(&avOut, "id", i);
+			RegisterNumber(&avOut, "id", actorValue);
 			RegisterNumber(&avOut, "base", actor->actorValueOwner.GetBase(actorValue));
 			RegisterNumber(&avOut, "current", actor->actorValueOwner.GetCurrent(actorValue));
 			RegisterNumber(&avOut, "maximum", actor->actorValueOwner.GetMaximum(actorValue));
@@ -656,6 +730,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	// root functions
 	RegisterFunction <SKSEScaleform_AllowTextInput>(&skse, view, "AllowTextInput");
 	RegisterFunction <SKSEScaleform_GetMappedKey>(&skse, view, "GetMappedKey");
+	RegisterFunction <SKSEScaleform_StartRemapMode>(&skse, view, "StartRemapMode");
 	RegisterFunction <SKSEScaleform_Log>(&skse, view, "Log");
 	RegisterFunction <SKSEScaleform_SetINISetting>(&skse, view, "SetINISetting");
 	RegisterFunction <SKSEScaleform_GetINISetting>(&skse, view, "GetINISetting");

@@ -90,11 +90,11 @@ namespace papyrusInput
 			// Mouse + Keyboard
 			else
 			{
-				deviceType = kDeviceType_Mouse;
+				deviceType = kDeviceType_Keyboard;
 				key = inputManager->GetMappedKey(name.data, deviceType, InputManager::kContext_Gameplay);
 				if (key == 0xFF)
 				{
-					deviceType = kDeviceType_Keyboard;
+					deviceType = kDeviceType_Mouse;
 					key = inputManager->GetMappedKey(name.data, deviceType, InputManager::kContext_Gameplay);
 				}
 			}

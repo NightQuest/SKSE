@@ -59,3 +59,13 @@ UInt32 InputManager::GetMappedKey(const char * name, UInt32 deviceType, UInt32 c
 	// Unbound
 	return 0xFF;
 }
+
+PlayerControls * PlayerControls::GetSingleton(void)
+{
+	return *((PlayerControls **)0x0128EAB4);
+}
+
+MenuControls * MenuControls::GetSingleton(void)
+{
+	return *((MenuControls **)0x01AB83BC);
+}

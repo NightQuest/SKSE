@@ -243,7 +243,8 @@ public:
 	// 0C
 	struct SpellArray
 	{
-		UInt32		allocatedCount;	// 00
+		UInt16		allocatedCount;	// 00
+		UInt16		flags;			// Invalid objects appeared when this was anything other than zero
 		SpellItem	** spells;		// 04
 		UInt32		spellCount;		// 08
 	};

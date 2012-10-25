@@ -109,6 +109,7 @@ namespace scaleformExtend
 					RegisterNumber(pFxVal, "critDamage", pWeapon->critDamage());
 					RegisterNumber(pFxVal, "minRange", pWeapon->minRange());
 					RegisterNumber(pFxVal, "maxRange", pWeapon->maxRange());
+					RegisterNumber(pFxVal, "baseDamage", pWeapon->damage.GetAttackDamage());
 				}
 			}
 			break;
@@ -366,7 +367,7 @@ namespace scaleformExtend
 					GFxValue addedSpells;
 					movieView->CreateArray(&addedSpells);
 
-					for(int i = 0; i < pActor->addedSpells.spellCount; i++)
+					for(int i = 0; i < pActor->addedSpells.spellCount && pActor->addedSpells.flags == 0; i++)
 					{
 						GFxValue spell;
 						movieView->CreateObject(&spell);

@@ -230,6 +230,29 @@ namespace papyrusGame
 		return 0;
 	}
 
+	BSFixedString GetNthTintMaskTexturePath(StaticFunctionTag * base, UInt32 n)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		TintMask * tintMask;
+		if(pPC->tintMasks.GetNthItem(n, tintMask)) {
+			if(tintMask->texture) {
+				return tintMask->texture->str;
+			}
+		}
+		return NULL;
+	}
+
+	void SetNthTintMaskTexturePath(StaticFunctionTag * base, BSFixedString path, UInt32 n)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		TintMask * tintMask;
+		if(pPC->tintMasks.GetNthItem(n, tintMask)) {
+			if(tintMask->texture) {
+				tintMask->texture->str = path;
+			}
+		}
+	}
+
 	void SetNthTintMaskColor(StaticFunctionTag * base, UInt32 n, UInt32 color)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
@@ -342,6 +365,28 @@ namespace papyrusGame
 			//CALL_MEMBER_FN(pPC, QueueNiNodeUpdate)(true); // Call this explicitly incase multiple tints are changed simultanenously
 		}
 	}
+
+	BSFixedString GetTintMaskTexturePath(StaticFunctionTag * base, UInt32 tintType, UInt32 index)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
+		TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(tintType, index);
+		if(tintMask && tintMask->texture) {
+			return tintMask->texture->str;
+		}
+
+		return NULL;
+	}
+
+	void SetTintMaskTexturePath(StaticFunctionTag * base, BSFixedString path, UInt32 tintType, UInt32 index)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(tintType, index);
+		TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
+		if(tintMask && tintMask->texture) {
+			tintMask->texture->str = path;
+		}
+	}
 }
 
 #include "PapyrusVM.h"
@@ -408,10 +453,16 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <StaticFunctionTag, UInt32, UInt32>("GetNthTintMaskColor", "Game", papyrusGame::GetNthTintMaskColor, registry));
 
 	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, void, UInt32, UInt32>("SetNthTintMaskColor", "Game", papyrusGame::SetNthTintMaskColor, registry));
+
+	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, UInt32, UInt32>("GetNthTintMaskType", "Game", papyrusGame::GetNthTintMaskType, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, void, UInt32, UInt32>("SetNthTintMaskColor", "Game", papyrusGame::SetNthTintMaskColor, registry));
+		new NativeFunction1 <StaticFunctionTag, BSFixedString, UInt32>("GetNthTintMaskTexturePath", "Game", papyrusGame::GetNthTintMaskTexturePath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, void, BSFixedString, UInt32>("SetNthTintMaskTexturePath", "Game", papyrusGame::SetNthTintMaskTexturePath, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, UInt32, UInt32>("GetNumTintsByType", "Game", papyrusGame::GetNumTintMasksByType, registry));
@@ -421,6 +472,12 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction3 <StaticFunctionTag, void, UInt32, UInt32, UInt32>("SetTintMaskColor", "Game", papyrusGame::SetTintMaskColor, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, BSFixedString, UInt32, UInt32>("GetTintMaskTexturePath", "Game", papyrusGame::GetTintMaskTexturePath, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, UInt32, UInt32>("SetTintMaskTexturePath", "Game", papyrusGame::SetTintMaskTexturePath, registry));
 
 	registry->SetFunctionFlags("Game", "GetModCount", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetModByName", VMClassRegistry::kFunctionFlag_NoWait);
@@ -435,4 +492,16 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Game", "SetGameSettingString", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "SaveGame", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "LoadGame", VMClassRegistry::kFunctionFlag_NoWait);
+
+	registry->SetFunctionFlags("Game", "GetNumTintMasks", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "GetNthTintMaskColor", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "SetNthTintMaskColor", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "GetNthTintMaskType", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "GetNthTintMaskTexturePath", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "SetNthTintMaskTexturePath", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "GetNumTintsByType", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "GetTintMaskColor", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "SetTintMaskColor", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "GetTintMaskTexturePath", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "SetTintMaskTexturePath", VMClassRegistry::kFunctionFlag_NoWait);
 }

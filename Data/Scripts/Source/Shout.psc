@@ -1,6 +1,6 @@
 Scriptname Shout extends Form Hidden
 
-; SKSE additions built 2012-10-25 03:42:32.926000 UTC
+; SKSE additions built 2012-11-03 15:21:56.149000 UTC
 WordOfPower Function GetNthWordOfPower(int n) native
 Spell Function GetNthSpell(int n) native
 float Function GetNthRecoveryTime(int n) native

@@ -5,6 +5,7 @@
 #include "skse/GameEvents.h"
 #include "skse/Utilities.h"
 #include "skse/Hooks_UI.h"
+#include "skse/GameCamera.h"
 
 class TESObjectREFR;
 
@@ -66,6 +67,36 @@ class BarterMenu : public IMenu
 	GFxValue	* root;		// 1C
 	// ...
 	UInt8		unk34;		// 34
+};
+
+class BGSHeadPart;
+class TESRace;
+
+class RaceSexMenu : public IMenu
+{
+public:
+	void					* menuHandler;
+	UInt32					unk20;
+	UInt32					unk24;
+	tArray<BGSHeadPart*>	hairline;
+	tArray<BGSHeadPart*>	head;
+	tArray<BGSHeadPart*>	eyes;
+	tArray<BGSHeadPart*>	hair;
+	tArray<BGSHeadPart*>	beard;
+	tArray<BGSHeadPart*>	scars;
+	tArray<BGSHeadPart*>	brows;
+	RaceSexCamera			camera;
+
+	float					unk94[0x07];
+
+	struct RaceComponent
+	{
+		TESRace				* race;
+		UInt32				unk04[4];
+	};
+
+	tArray<RaceComponent>	race1;
+	tArray<RaceComponent>	race2;
 };
 
 //// menu management
@@ -381,6 +412,7 @@ public:
 	}
 
 	bool				IsMenuOpen(BSFixedString * menuName);
+	IMenu *				GetMenu(BSFixedString * menuName);
 	GFxMovieView *		GetMovieView(BSFixedString * menuName);
 };
 STATIC_ASSERT(sizeof(MenuManager) == 0x11C);

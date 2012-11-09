@@ -13,6 +13,7 @@ namespace papyrusUI
 {
 	template <> void SetGFxValue<bool> (GFxValue * val, bool arg)						{ val->SetBool(arg); }
 	template <> void SetGFxValue<float> (GFxValue * val, float arg)						{ val->SetNumber(arg); }
+	template <> void SetGFxValue<UInt32> (GFxValue * val, UInt32 arg)							{ val->SetNumber(arg); }
 	template <> void SetGFxValue<BSFixedString> (GFxValue * val, BSFixedString arg)
 	{
 		// lifetime of this string will not be managed by the scaleform runtime
@@ -22,6 +23,7 @@ namespace papyrusUI
 
 	template <> bool GetGFxValue<bool> (GFxValue * val)						{ return (val->GetType() == GFxValue::kType_Bool ? val->GetBool() : false); }
 	template <> float GetGFxValue<float> (GFxValue * val)					{ return (val->GetType() == GFxValue::kType_Number ? val->GetNumber() : 0); }
+	template <> UInt32 GetGFxValue<UInt32> (GFxValue * val)						{ return (val->GetType() == GFxValue::kType_Number ? (UInt32)val->GetNumber() : 0); }
 	template <> BSFixedString GetGFxValue<BSFixedString> (GFxValue * val)
 	{
 		return (val->GetType() == GFxValue::kType_String ? BSFixedString(val->GetString()) : BSFixedString());
@@ -163,7 +165,10 @@ void papyrusUI::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, bool> ("SetBool", "UI", papyrusUI::SetT<bool>, registry));
 	
 	registry->RegisterFunction(
-		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, float> ("SetNumber", "UI", papyrusUI::SetT<float>, registry));
+		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, UInt32> ("SetInt", "UI", papyrusUI::SetT<UInt32>, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, float> ("SetFloat", "UI", papyrusUI::SetT<float>, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, BSFixedString> ("SetString", "UI", papyrusUI::SetT<BSFixedString>, registry));
@@ -172,7 +177,10 @@ void papyrusUI::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction2 <StaticFunctionTag, bool, BSFixedString, BSFixedString> ("GetBool", "UI", papyrusUI::GetT<bool>, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, float, BSFixedString, BSFixedString> ("GetNumber", "UI", papyrusUI::GetT<float>, registry));
+		new NativeFunction2 <StaticFunctionTag, UInt32, BSFixedString, BSFixedString> ("GetInt", "UI", papyrusUI::GetT<UInt32>, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, float, BSFixedString, BSFixedString> ("GetFloat", "UI", papyrusUI::GetT<float>, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction2 <StaticFunctionTag, BSFixedString, BSFixedString, BSFixedString> ("GetString", "UI", papyrusUI::GetT<BSFixedString>, registry));
@@ -181,7 +189,10 @@ void papyrusUI::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, bool> ("InvokeBool", "UI", papyrusUI::InvokeArgT<bool>, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, float> ("InvokeNumber", "UI", papyrusUI::InvokeArgT<float>, registry));
+		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, float> ("InvokeFloat", "UI", papyrusUI::InvokeArgT<float>, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, UInt32> ("InvokeInt", "UI", papyrusUI::InvokeArgT<UInt32>, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, BSFixedString> ("InvokeString", "UI", papyrusUI::InvokeArgT<BSFixedString>, registry));
@@ -190,7 +201,10 @@ void papyrusUI::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, VMArray<bool>> ("InvokeBoolA", "UI", papyrusUI::InvokeArrayT<bool>, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, VMArray<float>> ("InvokeNumberA", "UI", papyrusUI::InvokeArrayT<float>, registry));
+		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, VMArray<UInt32>> ("InvokeIntA", "UI", papyrusUI::InvokeArrayT<UInt32>, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, VMArray<float>> ("InvokeFloatA", "UI", papyrusUI::InvokeArrayT<float>, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, BSFixedString, VMArray<BSFixedString>> ("InvokeStringA", "UI", papyrusUI::InvokeArrayT<BSFixedString>, registry));
@@ -205,16 +219,20 @@ void papyrusUI::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction0 <StaticFunctionTag, bool> ("IsTextInputEnabled", "UI", papyrusUI::IsTextInputEnabled, registry));
 
 	registry->SetFunctionFlags("UI", "SetBool", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "SetNumber", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "SetInt", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "SetFloat", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "SetString", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "GetBool", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "GetNumber", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "GetInt", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "GetFloat", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "GetString", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "InvokeBool", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "InvokeNumber", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "InvokeInt", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "InvokeFloat", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "InvokeString", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "InvokeBoolA", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "InvokeNumberA", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "InvokeIntA", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("UI", "InvokeFloatA", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "InvokeStringA", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "InvokeForm", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "IsMenuOpen", VMClassRegistry::kFunctionFlag_NoWait);

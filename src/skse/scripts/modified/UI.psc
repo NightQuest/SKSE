@@ -55,9 +55,12 @@ bool Function IsMenuOpen(string menuName) global native
 ;		UI.SetString("FavoritesMenu", "_root.Menu_mc.panel.message.text", "My Text")
 ;
 Function SetBool(string menuName, string target, bool value) global native
-Function SetNumber(string menuName, string target, float value) global native
+Function SetInt(string menuName, string target, int value) global native
+Function SetFloat(string menuName, string target, float value) global native
 Function SetString(string menuName, string target, string value) global native
-
+Function SetNumber(string menuName, string target, float value) global ; DEPRECIATED
+	SetFloat(menuName, target, value)
+EndFunction
 
 ; Gets bool/number/string from target location, or false/0/none if the value doesn't exist.
 ;
@@ -66,8 +69,12 @@ Function SetString(string menuName, string target, string value) global native
 ;		float	height	= UI.GetNumber("Magic Menu", "_root.Menu_mc._height")
 ;
 bool	Function GetBool(string menuName, string target) global native
-float	Function GetNumber(string menuName, string target) global native
+int		Function GetInt(string menuName, string target) global native
+float	Function GetFloat(string menuName, string target) global native
 string	Function GetString(string menuName, string target) global native
+float	Function GetNumber(string menuName, string target) global ; DEPRECIATED
+	return GetFloat(menuName, target)
+EndFunction
 
 
 ; Invokes the ActionScript function at given target location.
@@ -81,12 +88,20 @@ Function Invoke(string menuName, string target) global
 EndFunction
 
 Function InvokeBool(string menuName, string target, bool arg) global native
-Function InvokeNumber(string menuName, string target, float arg) global native
+Function InvokeInt(string menuName, string target, int arg) global native
+Function InvokeFloat(string menuName, string target, float arg) global native
 Function InvokeString(string menuName, string target, string arg) global native
+Function InvokeNumber(string menuName, string target, float arg) global ; DEPRECIATED
+	InvokeFloat(menuName, target, arg)
+EndFunction
 
 Function InvokeBoolA(string menuName, string target, bool[] args) global native
-Function InvokeNumberA(string menuName, string target, float[] args) global native
+Function InvokeIntA(string menuName, string target, int[] args) global native
+Function InvokeFloatA(string menuName, string target, float[] args) global native
 Function InvokeStringA(string menuName, string target, string[] args) global native
+Function InvokeNumberA(string menuName, string target, float[] args) global ; DEPRECIATED
+	InvokeFloatA(menuName, target, args)
+EndFunction
 
 ; Sends Form data to Scaleform as a Flash object, FormLists included.
 Function InvokeForm(string menuName, string target, Form arg) global native

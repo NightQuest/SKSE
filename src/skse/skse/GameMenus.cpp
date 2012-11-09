@@ -7,6 +7,15 @@ bool MenuManager::IsMenuOpen(BSFixedString * menuName)
 
 GFxMovieView * MenuManager::GetMovieView(BSFixedString * menuName)
 {
+	IMenu * menu = GetMenu(menuName);
+	if (!menu)
+		return NULL;
+
+	return menu->view;
+}
+
+IMenu * MenuManager::GetMenu(BSFixedString * menuName)
+{
 	if (!menuName->data)
 		return NULL;
 
@@ -16,8 +25,8 @@ GFxMovieView * MenuManager::GetMovieView(BSFixedString * menuName)
 		return NULL;
 
 	IMenu * menu = item->menuInstance;
-	if (!menu)
+	if(!menu)
 		return NULL;
 
-	return menu->view;
+	return menu;
 }

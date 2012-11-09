@@ -31,8 +31,12 @@ namespace papyrusGame
 	UInt32 GetNthTintMaskColor(StaticFunctionTag * base, UInt32 n);
 	void SetNthTintMaskColor(StaticFunctionTag * base, UInt32 n, UInt32 color);
 	UInt32 GetNthTintMaskType(StaticFunctionTag * base, UInt32 n);
+	BSFixedString GetNthTintMaskTexturePath(StaticFunctionTag * base, UInt32 n);
+	void SetNthTintMaskTexturePath(StaticFunctionTag * base, BSFixedString path, UInt32 n);
 
 	UInt32 GetNumTintMasksByType(StaticFunctionTag * base, UInt32 tintType);
 	UInt32 GetTintMaskColor(StaticFunctionTag * base, UInt32 tintType, UInt32 index);
 	void SetTintMaskColor(StaticFunctionTag * base, UInt32 color, UInt32 tintType, UInt32 index);
+	BSFixedString GetTintMaskTexturePath(StaticFunctionTag * base, UInt32 tintType, UInt32 index);
+	void SetTintMaskTexturePath(StaticFunctionTag * base, BSFixedString path, UInt32 tintType, UInt32 index);
 };

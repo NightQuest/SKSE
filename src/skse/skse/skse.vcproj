@@ -547,6 +547,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GameCamera.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GameCamera.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GameData.cpp"
 				>
 			</File>

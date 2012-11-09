@@ -13,6 +13,12 @@ Function SetRaceFlag(int n) native
 ; clears the specified race flag
 Function ClearRaceFlag(int n) native
 
+; Returns the number of playable races
+int Function GetNumPlayableRaces() native global
+
+; Returns the nth playable race
+Race Function GetNthPlayableRace(int n) native global
+
 ; race flags for previous functions
 int property kRace_Playable						= 0x00000001 AutoReadOnly
 int property kRace_FaceGenHead					= 0x00000002 AutoReadOnly

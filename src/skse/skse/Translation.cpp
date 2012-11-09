@@ -93,24 +93,31 @@ namespace Translation
 		modlistPath += "\\Skyrim\\plugins.txt";
 
 		// Parse mod list file to acquire translation filenames
-		IFileStream modlistFile = IFileStream();
+		IFileStream modlistFile;
 		if(modlistFile.Open(modlistPath.c_str()))
 		{
 			while(!modlistFile.HitEOF())
 			{
 				char buf[512];
 				modlistFile.ReadString(buf, 512, '\n', '\r');
-				std::string line = buf;
+
+				// skip comments
+				if(buf[0] == '#')
+					continue;
 
 				// Determine extension type
-				UInt32 lastDelim = line.rfind('.');
-				std::string ext = line.substr(lastDelim);
-
-				if(_stricmp(ext.c_str(), ".ESM") == 0 || _stricmp(ext.c_str(),".ESP") == 0)
+				std::string line = buf;
+				std::string::size_type lastDelim = line.rfind('.');
+				if(lastDelim != std::string::npos)
 				{
-					std::string name = line.substr(0, lastDelim);
-					ParseTranslation(translator, name);
-				}	
+					std::string ext = line.substr(lastDelim);
+
+					if(_stricmp(ext.c_str(), ".ESM") == 0 || _stricmp(ext.c_str(),".ESP") == 0)
+					{
+						std::string name = line.substr(0, lastDelim);
+						ParseTranslation(translator, name);
+					}
+				}
 			}
 		}
 

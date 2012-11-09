@@ -1,5 +1,10 @@
+1.6.4:
+- fix crash on startup when a line in plugins.txt does not contain a period
+- some other stuff
+
 1.6.3:
 - support for runtime version 1.8.151
+- some other stuff
 
 1.6.2:
 - add Input.GetMappedControl to return name of control bound to given keycode

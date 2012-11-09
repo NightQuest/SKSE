@@ -556,12 +556,20 @@ public:
 	// members
 
 	// 0C
-	struct Data8C
+	struct AmmoSettings
 	{
-		UInt8	unk00[0x0C];	// 00
+		BGSProjectile	* projectile;
+		UInt32			flags;
+		float			damage;
 	};
 
-	Data8C				unk8C;	// 8C
+	enum {
+		kFlag_Bolt = 0x04
+	};
+
+	bool isBolt() { return (settings.flags & 0x4) != 0; }
+
+	AmmoSettings		settings;	// 8C
 	StringCache::Ref	unk98;	// 98
 };
 
@@ -1166,6 +1174,7 @@ public:
 			kType_TwoHandAxe,
 			kType_Bow,
 			kType_Staff,
+			kType_CrossBow,
 			kType_H2H,
 			kType_1HS,
 			kType_1HD,
@@ -1174,7 +1183,8 @@ public:
 			kType_2HS,
 			kType_2HA,
 			kType_Bow2,
-			kType_Staff2
+			kType_Staff2,
+			kType_CBow
 		};
 
 		UInt32	unk00;	// 00

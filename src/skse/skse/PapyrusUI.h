@@ -15,11 +15,13 @@ namespace papyrusUI
 	template <typename T> void SetGFxValue(GFxValue * val, T arg);
 	template <> void SetGFxValue<bool> (GFxValue * val, bool arg);
 	template <> void SetGFxValue<float> (GFxValue * val, float arg);
+	template <> void SetGFxValue<UInt32> (GFxValue * val, UInt32 arg);
 	template <> void SetGFxValue<BSFixedString> (GFxValue * val, BSFixedString arg);
 
 	template <typename T> T GetGFxValue(GFxValue * val);
 	template <> bool GetGFxValue<bool> (GFxValue * val);
 	template <> float GetGFxValue<float> (GFxValue * val);
+	template <> UInt32 GetGFxValue<UInt32> (GFxValue * val);
 	template <> BSFixedString GetGFxValue<BSFixedString> (GFxValue * val);
 
 	void RegisterFuncs(VMClassRegistry* registry);

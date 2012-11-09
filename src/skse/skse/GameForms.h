@@ -2394,6 +2394,10 @@ public:
 
 	// members
 
+	enum {
+		kRace_NumSkillBonuses = 7
+	};
+
 	// 84
 	struct Data
 	{
@@ -2402,7 +2406,7 @@ public:
 			UInt8 skill;
 			UInt8 bonus;
 		};
-		SkillBonus skillBonus[7];
+		SkillBonus skillBonus[kRace_NumSkillBonuses];
 		UInt8	pad0E[2];			// 0E
 		float	height[2];			// 10
 		float	weight[2];			// 18

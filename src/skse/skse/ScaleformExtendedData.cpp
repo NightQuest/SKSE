@@ -96,6 +96,16 @@ namespace scaleformExtend
 			}
 			break;
 
+		case kFormType_Ammo:
+			{
+				TESAmmo * pAmmo = DYNAMIC_CAST(pForm, TESForm, TESAmmo);
+				if(pAmmo)
+				{
+					RegisterNumber(pFxVal, "flags", pAmmo->settings.flags);
+				}
+			}
+			break;
+
 		case kFormType_Weapon:
 			{
 				TESObjectWEAP * pWeapon = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
@@ -304,6 +314,18 @@ namespace scaleformExtend
 						shouts.PushBack(&shout);
 					}
 					pFxVal->SetMember("shouts", &shouts);
+
+					GFxValue bonuses;
+					movieView->CreateArray(&bonuses);
+					for(int i = 0; i < TESRace::kRace_NumSkillBonuses; i++)
+					{
+						GFxValue skillBonus;
+						movieView->CreateObject(&skillBonus);
+						RegisterNumber(&skillBonus, "skill", pRace->data.skillBonus[i].skill);
+						RegisterNumber(&skillBonus, "bonus", pRace->data.skillBonus[i].bonus);
+						bonuses.PushBack(&skillBonus);
+					}
+					pFxVal->SetMember("skillBonuses", &bonuses);
 				}
 			}
 			break;
@@ -514,6 +536,7 @@ namespace scaleformExtend
 					}
 
 					pFxVal->SetMember("buttons", &btnArray);
+					RegisterString(pFxVal, movieView, "message", message->GetDescription().c_str());
 				}
 			}
 			break;

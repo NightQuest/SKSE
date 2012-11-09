@@ -1,6 +1,6 @@
 Scriptname Race extends Form Hidden
 
-; SKSE additions built 2012-10-25 03:42:32.926000 UTC
+; SKSE additions built 2012-11-03 15:21:56.149000 UTC
 ; returns the number of spells for the race
 int Function GetSpellCount() native
 
@@ -15,6 +15,12 @@ Function SetRaceFlag(int n) native
 
 ; clears the specified race flag
 Function ClearRaceFlag(int n) native
+
+; Returns the number of playable races
+int Function GetNumPlayableRaces() native global
+
+; Returns the nth playable race
+Race Function GetNthPlayableRace(int n) native global
 
 ; race flags for previous functions
 int property kRace_Playable						= 0x00000001 AutoReadOnly

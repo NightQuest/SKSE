@@ -110,6 +110,8 @@ UInt32 IDataStream::ReadString(char * buf, UInt32 bufLength, char altTerminator,
 
 	for(UInt32 i = 0; i < bufLength; i++)
 	{
+		if(HitEOF()) break;
+
 		UInt8	data = Read8();
 
 		if(breakOnReturns)

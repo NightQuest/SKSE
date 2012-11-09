@@ -48,6 +48,12 @@ int Function GetNthTintMaskType(int n) native global
 ; Sets the color of the Nth tint mask
 Function SetNthTintMaskColor(int n, int color) native global
 
+; Returns the texture path of the Nth tint mask
+string Function GetNthTintMaskTexturePath(int n) native global
+
+; Sets the texturepath of the Nth tint mask
+Function SetNthTintMaskTexturePath(string path, int n) native global
+
 ; Types
 ; 0 - Frekles
 ; 1 - Lips
@@ -68,8 +74,14 @@ Function SetNthTintMaskColor(int n, int color) native global
 ; Returns how many indexes there are for this type
 int Function GetNumTintsByType(int type) native global
 
+; Returns the color for the particular tintMask type and index
+int Function GetTintMaskColor(int type, int index) global native
+
 ; Sets the tintMask color for the particular type and index
 Function SetTintMaskColor(int color, int type, int index) global native
 
-; Returns the color for the particular tintMask type and index
-int Function GetTintMaskColor(int type, int index) global native
+; Returns the texture path for the particular tintMask type and index
+string Function GetTintMaskTexturePath(int type, int index) global native
+
+; Sets the tintMask texture for the particular type and index
+Function SetTintMaskTexturePath(string path, int type, int index) global native

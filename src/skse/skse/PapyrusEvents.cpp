@@ -173,7 +173,7 @@ EventResult InputEventHandler::ReceiveEvent(InputEvent ** evns, InputEventDispat
 		if (isDown)
 		{
 			// Used by scaleform skse.GetLastControl
-			SetLastControlDown(control.data);
+			SetLastControlDown(control.data, keyCode);
 
 			g_inputKeyEventRegs.ForEach(
 				keyCode,
@@ -186,7 +186,7 @@ EventResult InputEventHandler::ReceiveEvent(InputEvent ** evns, InputEventDispat
 		}
 		else if (isUp)
 		{
-			SetLastControlUp(control.data);
+			SetLastControlUp(control.data, keyCode);
 
 			g_inputKeyEventRegs.ForEach(
 				keyCode,

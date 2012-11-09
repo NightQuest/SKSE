@@ -119,8 +119,8 @@ public:
 	virtual void	Unk_6C(void);
 	virtual void	Unk_6D(void);
 	virtual void	Unk_6E(void);
-	virtual NiNode *	GetNiNode(void);	// possibly the face only?
-	virtual void	Unk_70(void);
+	virtual void	Unk_6F(void);
+	virtual NiNode *	GetNiNode(void);	// Root of the skeleton
 	virtual void	Unk_71(void);
 	virtual void	Unk_72(void);
 	virtual void	Unk_73(void);
@@ -296,7 +296,9 @@ public:
 	BSTEventSource <void *>	actorDeathEventSource;		// 1D8 .?AV?$BSTEventSource@UBGSActorDeathEvent@@@@
 	BSTEventSource <void *>	positionPlayerEventSource;	// 208 .?AV?$BSTEventSource@UPositionPlayerEvent@@@@
 
-	UInt32	pad238[(0x6E0 - 0x238) >> 2];	// 238
+	UInt32	pad238[(0x5AC - 0x238) >> 2];	// 238
+	UInt32	lastRiddenHorse;
+	UInt32	pad5B0[(0x6E0 - 0x5B0) >> 2];
 	UInt8	unk6E0;							// 6E0
 	UInt8	numPerkPoints;					// 6E1
 	UInt16  unk6E2;							// 6E2
@@ -367,6 +369,7 @@ STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1A4);
 STATIC_ASSERT(offsetof(PlayerCharacter, numPerkPoints) == 0x6E1);
 STATIC_ASSERT(offsetof(PlayerCharacter, tintMasks) == 0x6E8);
 STATIC_ASSERT(offsetof(PlayerCharacter, overlayTintMasks) == 0x6F4);
+STATIC_ASSERT(offsetof(PlayerCharacter, lastRiddenHorse) == 0x5AC);
 
 // D8
 class Explosion : public TESObjectREFR

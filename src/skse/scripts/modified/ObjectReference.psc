@@ -18,3 +18,12 @@ float Function GetItemCharge() native
 Function SetItemCharge(float charge) native
 
 Function ResetInventory() native
+
+; NiNode Manipulation
+float Function GetNiNodePositionX(string node) native
+float Function GetNiNodePositionY(string node) native
+float Function GetNiNodePositionZ(string node) native
+
+; Sets the scale of a particular Nif node
+float Function GetNiNodeScale(string node) native
+Function SetNiNodeScale(string node, float scale) native

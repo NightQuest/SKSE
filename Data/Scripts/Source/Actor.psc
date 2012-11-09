@@ -535,6 +535,9 @@ Function SetCriticalStage(int aiStage) native
 ; Flag this actor as currently doing a favor for the player
 Function SetDoingFavor(bool abDoingFavor = true) native
 
+; Sets this actor as "don't move" or not
+Function SetDontMove(bool abDontMove = true) native
+
 ; Sets an expression to override any other expression other systems may give this actor.
 ;							7 - Mood Neutral
 ; 0 - Dialogue Anger		8 - Mood Anger		15 - Combat Anger
@@ -818,7 +821,7 @@ Function ForceTargetAngle(float afXAngle = 0.0, float afYAngle = 0.0, float afZA
 Function ClearForcedMovement() native
 
 
-; SKSE additions built 2012-11-03 15:21:56.149000 UTC
+; SKSE additions built 2012-11-09 03:10:57.178000 UTC
 ; returns the form for the item worn at the specified slotMask
 ; use Armor.GetMaskForSlot() to generate appropriate slotMask
 Form Function GetWornForm(int slotMask) native

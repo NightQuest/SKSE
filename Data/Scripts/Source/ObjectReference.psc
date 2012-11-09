@@ -759,7 +759,7 @@ int Property Motion_ThinBoxIntertia = 6 AutoReadOnly
 int Property Motion_Character = 7 AutoReadOnly
 
 
-; SKSE additions built 2012-11-03 15:21:56.149000 UTC
+; SKSE additions built 2012-11-09 03:10:57.178000 UTC
 
 ; Container-only functions
 int Function GetNumItems() native
@@ -780,3 +780,12 @@ float Function GetItemCharge() native
 Function SetItemCharge(float charge) native
 
 Function ResetInventory() native
+
+; NiNode Manipulation
+float Function GetNiNodePositionX(string node) native
+float Function GetNiNodePositionY(string node) native
+float Function GetNiNodePositionZ(string node) native
+
+; Sets the scale of a particular Nif node
+float Function GetNiNodeScale(string node) native
+Function SetNiNodeScale(string node, float scale) native

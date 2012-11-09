@@ -2,8 +2,8 @@
 
 #include "skse/PluginAPI.h"
 
-void SetLastControlDown(const char * control);
-void SetLastControlUp(const char * control);
+void SetLastControlDown(const char * control, UInt32 keycode);
+void SetLastControlUp(const char * control, UInt32 keycode);
 
 void Hooks_Scaleform_Commit(void);
 

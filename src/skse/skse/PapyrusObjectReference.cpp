@@ -7,6 +7,8 @@
 #include "GameObjects.h"
 #include "GameExtraData.h"
 
+#include "NiNodes.h"
+
 #include <vector>
 #include <map>
 
@@ -348,6 +350,69 @@ namespace papyrusObjectReference
 	{
 		obj->ResetInventory(false);
 	}
+
+	float GetNiNodePositionX(TESObjectREFR * obj, BSFixedString nodeName)
+	{
+		NiNode * node = obj->GetNiNode();
+		if(!node)
+			return 0.0;
+
+		NiAVObject * object = node->GetObjectByName(&nodeName.data);
+		if(!object)
+			return 0.0;
+
+		return object->m_worldTransform.pos.x;
+	}
+
+	float GetNiNodePositionY(TESObjectREFR * obj, BSFixedString nodeName)
+	{
+		NiNode * node = obj->GetNiNode();
+		if(!node)
+			return 0.0;
+
+		NiAVObject * object = node->GetObjectByName(&nodeName.data);
+		if(!object)
+			return 0.0;
+
+		return object->m_worldTransform.pos.y;
+	}
+
+	float GetNiNodePositionZ(TESObjectREFR * obj, BSFixedString nodeName)
+	{
+		NiNode * node = obj->GetNiNode();
+		if(!node)
+			return 0.0;
+
+		NiAVObject * object = node->GetObjectByName(&nodeName.data);
+		if(!object)
+			return 0.0;
+
+		return object->m_worldTransform.pos.z;
+	}
+
+	float GetNiNodeScale(TESObjectREFR * obj, BSFixedString nodeName)
+	{
+		NiNode * node = obj->GetNiNode();
+		if(!node)
+			return 0.0;
+
+		NiAVObject * object = node->GetObjectByName(&nodeName.data);
+		if(!object)
+			return 0.0;
+
+		return object->m_localTransform.scale;
+	}
+
+	void SetNiNodeScale(TESObjectREFR * obj, BSFixedString nodeName, float value)
+	{
+		NiNode * node = obj->GetNiNode();
+		if(node) {
+			NiAVObject * object = node->GetObjectByName(&nodeName.data);
+			if(object) {
+				object->m_localTransform.scale = value;
+			}
+		}
+	}
 };
 
 #include "PapyrusVM.h"
@@ -388,4 +453,26 @@ void papyrusObjectReference::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0<TESObjectREFR, void>("ResetInventory", "ObjectReference", papyrusObjectReference::ResetInventory, registry));
+
+	// NiNode Manipulation
+	registry->RegisterFunction(
+		new NativeFunction1<TESObjectREFR, float, BSFixedString>("GetNiNodePositionX", "ObjectReference", papyrusObjectReference::GetNiNodePositionX, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<TESObjectREFR, float, BSFixedString>("GetNiNodePositionY", "ObjectReference", papyrusObjectReference::GetNiNodePositionY, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<TESObjectREFR, float, BSFixedString>("GetNiNodePositionZ", "ObjectReference", papyrusObjectReference::GetNiNodePositionZ, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<TESObjectREFR, float, BSFixedString>("GetNiNodeScale", "ObjectReference", papyrusObjectReference::GetNiNodeScale, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2<TESObjectREFR, void, BSFixedString, float>("SetNiNodeScale", "ObjectReference", papyrusObjectReference::SetNiNodeScale, registry));
+
+	registry->SetFunctionFlags("ObjectReference", "GetNiNodePositionX", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ObjectReference", "GetNiNodePositionY", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ObjectReference", "GetNiNodePositionZ", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ObjectReference", "GetNiNodeScale", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ObjectReference", "SetNiNodeScale", VMClassRegistry::kFunctionFlag_NoWait);
 }

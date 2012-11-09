@@ -3,6 +3,9 @@ Scriptname Game Hidden
 ; Adds the specified achievement to the player's profile
 Function AddAchievement(int aiAchievementID) native global
 
+; Add the specified number of perk points to the player
+Function AddPerkPoints(int aiPerkPoints) native global
+
 ; Advance the given skill on the player by the provided amount of skill usage
 Function AdvanceSkill(string asSkillName, float afMagnitude) native global
 
@@ -142,6 +145,9 @@ bool Function IsActivateControlsEnabled() native global
 ; Are the camera switch controls enabled?
 bool Function IsCamSwitchControlsEnabled() native global
 
+; Is fast travel controls enabled? Returns false if EnableFastTravel(false) has been called
+bool Function IsFastTravelControlsEnabled() native global
+
 ; Is fast travel enabled?
 bool Function IsFastTravelEnabled() native global
 
@@ -238,6 +244,9 @@ Function ShowTitleSequenceMenu() native global
 Function HideTitleSequenceMenu() native global
 Function StartTitleSequence(string asSequenceName) native global
 
+; Allow or disallow player requests to have a flying mount land.
+Function SetAllowFlyingMountLandingRequests(bool abAllow) native global
+
 ; Sets the Image Space Modifier that is triggered when the player gazes at the sun.
 Function SetSunGazeImageSpaceModifier(ImageSpaceModifier apImod = NONE ) native global
 
@@ -257,7 +266,7 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2012-11-03 15:21:56.149000 UTC
+; SKSE additions built 2012-11-09 03:10:57.178000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native

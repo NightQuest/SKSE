@@ -1,5 +1,7 @@
 #pragma once
 
+#include "GameTypes.h"
+
 class TESObjectREFR;
 class TESForm;
 class VMClassRegistry;
@@ -18,4 +20,10 @@ namespace papyrusObjectReference
 	void SetItemCharge(TESObjectREFR* object, float value);
 
 	bool IsHarvested(TESObjectREFR* pProduceRef);
+
+	float GetNiNodePositionX(TESObjectREFR * obj, BSFixedString nodeName);
+	float GetNiNodePositionY(TESObjectREFR * obj, BSFixedString nodeName);
+	float GetNiNodePositionZ(TESObjectREFR * obj, BSFixedString nodeName);
+	float GetNiNodeScale(TESObjectREFR * obj, BSFixedString nodeName);
+	void SetNiNodeScale(TESObjectREFR * obj, BSFixedString nodeName, float value);
 }

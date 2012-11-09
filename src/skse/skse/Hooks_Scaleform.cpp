@@ -199,17 +199,21 @@ public:
 	}
 };
 
-const char * s_lastControlDown;
-const char * s_lastControlUp;
+const char *	s_lastControlDown;
+const char *	s_lastControlUp;
+UInt32			s_lastKeycodeDown;
+UInt32			s_lastKeycodeUp;
 
-void SetLastControlDown(const char * control)
+void SetLastControlDown(const char * control, UInt32 keycode)
 {
 	s_lastControlDown = control;
+	s_lastKeycodeDown = keycode;
 }
 
-void SetLastControlUp(const char * control)
+void SetLastControlUp(const char * control, UInt32 keycode)
 {
 	s_lastControlUp = control;
+	s_lastKeycodeUp = keycode;
 }
 
 class SKSEScaleform_GetLastControl : public GFxFunctionHandler
@@ -225,6 +229,22 @@ public:
 			args->result->SetString(s_lastControlDown);
 		else
 			args->result->SetString(s_lastControlUp);
+	}
+};
+
+class SKSEScaleform_GetLastKeycode : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		ASSERT(args->numArgs >= 1);
+
+		bool isKeyDown = args->args[0].GetBool();
+
+		if (isKeyDown)
+			args->result->SetNumber(s_lastKeycodeDown);
+		else
+			args->result->SetNumber(s_lastKeycodeUp);
 	}
 };
 
@@ -876,6 +896,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	RegisterFunction <SKSEScaleform_GetMappedKey>(&skse, view, "GetMappedKey");
 	RegisterFunction <SKSEScaleform_StartRemapMode>(&skse, view, "StartRemapMode");
 	RegisterFunction <SKSEScaleform_GetLastControl>(&skse, view, "GetLastControl");
+	RegisterFunction <SKSEScaleform_GetLastKeycode>(&skse, view, "GetLastKeycode");
 	RegisterFunction <SKSEScaleform_Log>(&skse, view, "Log");
 	RegisterFunction <SKSEScaleform_SetINISetting>(&skse, view, "SetINISetting");
 	RegisterFunction <SKSEScaleform_GetINISetting>(&skse, view, "GetINISetting");

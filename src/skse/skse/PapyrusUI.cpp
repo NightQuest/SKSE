@@ -218,14 +218,6 @@ void papyrusUI::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction0 <StaticFunctionTag, bool> ("IsTextInputEnabled", "UI", papyrusUI::IsTextInputEnabled, registry));
 
-	registry->SetFunctionFlags("UI", "SetBool", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "SetInt", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "SetFloat", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "SetString", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "GetBool", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "GetInt", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "GetFloat", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "GetString", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "InvokeBool", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "InvokeInt", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "InvokeFloat", VMClassRegistry::kFunctionFlag_NoWait);
@@ -235,6 +227,5 @@ void papyrusUI::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("UI", "InvokeFloatA", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "InvokeStringA", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "InvokeForm", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("UI", "IsMenuOpen", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UI", "IsTextInputEnabled", VMClassRegistry::kFunctionFlag_NoWait);
 }

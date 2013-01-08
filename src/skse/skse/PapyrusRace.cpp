@@ -9,19 +9,52 @@
 #include "common/ICriticalSection.h"
 
 UInt32 g_invalidatePlayableRaceCache = 0;
+UInt32 g_invalidateRaceCache = 0;
 
 namespace papyrusRace
 {
-	typedef std::vector<TESRace*> PlayableRaceCache;
+	typedef std::map<BSFixedString, TESRace*> RaceCache;
 	static ICriticalSection	s_raceCacheLock;
-	static PlayableRaceCache s_raceCache;
+	static RaceCache s_raceCache;
 
-	UInt32 GetNumPlayableRaces(StaticFunctionTag * base)
+	TESRace* GetRace(StaticFunctionTag*, BSFixedString editorID)
 	{
 		s_raceCacheLock.Enter();
 
-		if(g_invalidatePlayableRaceCache == 1) {
+		if(g_invalidateRaceCache == 1) {
 			s_raceCache.clear();
+			g_invalidateRaceCache = 0;
+		}
+
+		if (s_raceCache.empty()) {
+			DataHandler* pDataHandler = DataHandler::GetSingleton();
+			tArray<TESRace*>& races = pDataHandler->races;
+			for (UInt32 n = 0; n < 	races.count; n++) {
+				TESRace* pRace = NULL;
+				races.GetNthItem(n, pRace);
+				if (pRace) {
+					s_raceCache.insert(RaceCache::value_type(pRace->editorId, pRace));
+				}
+			}
+		}
+
+		s_raceCacheLock.Leave();
+
+		RaceCache::iterator it = s_raceCache.find(editorID);
+		TESRace* pRace = (it != s_raceCache.end()) ? it->second : NULL;
+		return pRace;
+	}
+
+	typedef std::vector<TESRace*> PlayableRaceCache;
+	static ICriticalSection	s_playableRaceCacheLock;
+	static PlayableRaceCache s_playableRaceCache;
+
+	UInt32 GetNumPlayableRaces(StaticFunctionTag * base)
+	{
+		s_playableRaceCacheLock.Enter();
+
+		if(g_invalidatePlayableRaceCache == 1) {
+			s_playableRaceCache.clear();
 			g_invalidatePlayableRaceCache = 0;
 		}
 
@@ -32,13 +65,13 @@ namespace papyrusRace
 				TESRace* pRace = NULL;
 				races.GetNthItem(n, pRace);
 				if (pRace && IsRaceFlagSet(pRace, TESRace::kRace_Playable)) {
-					s_raceCache.push_back(pRace);
+					s_playableRaceCache.push_back(pRace);
 				}
 			}
 		}
 
-		s_raceCacheLock.Leave();
-		return s_raceCache.size();
+		s_playableRaceCacheLock.Leave();
+		return s_playableRaceCache.size();
 	}
 
 	TESRace * GetNthPlayableRace(StaticFunctionTag * base, UInt32 n)
@@ -47,27 +80,27 @@ namespace papyrusRace
 			return NULL;
 		}
 
-		s_raceCacheLock.Enter();
+		s_playableRaceCacheLock.Enter();
 
 		if(g_invalidatePlayableRaceCache == 1) {
-			s_raceCache.clear();
+			s_playableRaceCache.clear();
 			g_invalidatePlayableRaceCache = 0;
 		}
 
-		if (s_raceCache.empty()) {
+		if (s_playableRaceCache.empty()) {
 			DataHandler* pDataHandler = DataHandler::GetSingleton();
 			tArray<TESRace*>& races = pDataHandler->races;
 			for (UInt32 n = 0; n < 	races.count; n++) {
 				TESRace* pRace = NULL;
 				races.GetNthItem(n, pRace);
 				if (pRace && IsRaceFlagSet(pRace, TESRace::kRace_Playable)) {
-					s_raceCache.push_back(pRace);
+					s_playableRaceCache.push_back(pRace);
 				}
 			}
 		}
 
-		s_raceCacheLock.Leave();
-		return (n < s_raceCache.size()) ? s_raceCache.at(n) : NULL;
+		s_playableRaceCacheLock.Leave();
+		return (n < s_playableRaceCache.size()) ? s_playableRaceCache.at(n) : NULL;
 	}
 
 	UInt32 GetSpellCount(TESRace* thisRace)
@@ -102,6 +135,18 @@ namespace papyrusRace
 				g_invalidatePlayableRaceCache = 1;
 		}
 	}
+
+	BGSVoiceType* GetDefaultVoiceType(TESRace* thisRace, bool female)
+	{
+		return thisRace ? thisRace->voiceTypes[female] : NULL;
+	}
+
+	void SetDefaultVoiceType(TESRace* thisRace, bool female, BGSVoiceType* voiceType)
+	{
+		if(thisRace) {
+			thisRace->voiceTypes[female] = voiceType;
+		}
+	}
 }
 
 #include "PapyrusVM.h"
@@ -124,6 +169,15 @@ void papyrusRace::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESRace, void, UInt32>("ClearRaceFlag", "Race", papyrusRace::ClearRaceFlag, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESRace, BGSVoiceType*, bool>("GetDefaultVoiceType", "Race", papyrusRace::GetDefaultVoiceType, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <TESRace, void, bool, BGSVoiceType*>("SetDefaultVoiceType", "Race", papyrusRace::SetDefaultVoiceType, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, TESRace*, BSFixedString>("GetRace", "Race", papyrusRace::GetRace, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0 <StaticFunctionTag, UInt32>("GetNumPlayableRaces", "Race", papyrusRace::GetNumPlayableRaces, registry));

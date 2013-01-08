@@ -10,3 +10,8 @@ int Function GetVersionBeta() global native
 ; get the release index of SKSE.  This number is incremented every time
 ; SKSE is released outside of the development team
 int Function GetVersionRelease() global native
+; get the release index of this script file.
+; Can be used to detect a script/runtime version mismatch
+int Function GetScriptVersionRelease() global
+	return 34
+endFunction

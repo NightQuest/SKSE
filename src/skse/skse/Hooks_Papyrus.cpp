@@ -46,6 +46,8 @@
 #include "PapyrusWeather.h"
 #include "PapyrusShout.h"
 #include "PapyrusUtility.h"
+#include "PapyrusNetImmerse.h"
+#include "PapyrusTextureSet.h"
 
 #define LOG_PAPYRUS_FUNCTIONS 0
 
@@ -202,6 +204,12 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 
 	// Weather
 	papyrusWeather::RegisterFuncs(registry);
+
+	// NetImmerse
+	papyrusNetImmerse::RegisterFuncs(registry);
+
+	// TextureSet
+	papyrusTextureSet::RegisterFuncs(registry);
 
 #ifdef _PPAPI
 	// Plugins

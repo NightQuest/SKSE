@@ -2,7 +2,6 @@
 
 #include "Utilities.h"
 #include "GameTypes.h"
-#include "PapyrusVM.h"
 
 template <typename T> class BSTEventSink;
 
@@ -83,14 +82,14 @@ struct MenuModeChangeEvent
 {
 };
 
-class Character;
+class TESObjectREFR;
 class TESForm;
 class ActiveEffect;
 
 struct TESActiveEffectApplyRemoveEvent
 {
-	Character		* caster;
-	Character		* target;
+	TESObjectREFR	* caster;
+	TESObjectREFR	* target;
 	UInt32			unk08;
 	UInt32			unk0C;
 	UInt32			unk10;
@@ -380,6 +379,13 @@ struct ShoutMastered
 	};
 };
 
+struct TESHitEvent
+{
+	TESObjectREFR	* target;
+	TESObjectREFR	* caster;
+	void			* unk08[10];
+};
+
 template <>
 class BSTEventSink <TESSleepStartEvent>
 {
@@ -420,8 +426,17 @@ public:
 	virtual	EventResult ReceiveEvent(TESHarvestEvent::ItemHarvested * evn, EventDispatcher<TESHarvestEvent::ItemHarvested> * dispatcher) = 0;
 };
 
+template <>
+class BSTEventSink <TESHitEvent>
+{
+public:
+	virtual ~BSTEventSink() {}; // todo?
+	virtual	EventResult ReceiveEvent(TESHitEvent * evn, EventDispatcher<TESHitEvent> * dispatcher) = 0;
+};
+
 // For testing
 //extern EventDispatcher<TESSleepStartEvent> * g_sleepStartEventDispatcher;
 extern EventDispatcher<TESQuestStageEvent> * g_questStageEventDispatcher;
 extern EventDispatcher<TESHarvestEvent::ItemHarvested> * g_harvestEventDispatcher;
 extern EventDispatcher<LevelIncrease::Event> * g_levelIncreaseEventDispatcher;
+extern EventDispatcher<TESHitEvent> * g_hitEventDispatcher;

@@ -121,13 +121,27 @@ public:
 		T* entries;
 		UInt32	capacity;
 
-		Array() : entries(NULL), capacity(0) {};
+		Array() : entries(NULL), capacity(0) {}
 	};
 
 	Array arr;		// 00
 	UInt32 count;	// 08
 
-	tArray() : count(0) {};
+	tArray() : count(0) {}
+
+	bool Allocate(UInt32 numEntries)
+	{
+		arr.entries = (T *)FormHeap_Allocate(sizeof(T) * numEntries);
+		if(!arr.entries) return false;
+
+		for(UInt32 i = 0; i < numEntries; i++)
+			new (&arr.entries[i]) T;
+
+		arr.capacity = numEntries;
+		count = numEntries;
+
+		return true;
+	}
 	
 	bool GetNthItem(UInt32 index, T& pT)
 	{
@@ -190,6 +204,29 @@ class tList
 
 
 private:
+
+	Item * AddFront(void)
+	{
+		Item	* item = (Item *)FormHeap_Allocate(sizeof(Item));
+		if(!item) return NULL;
+
+		new (item) Item;
+
+		// add new node if we aren't empty
+		if(m_listHead->item)
+		{
+			// copy head in to new node
+			_Node	* node = (_Node *)FormHeap_Allocate(sizeof(_Node));
+			ASSERT(node);
+
+			node->item = m_listHead->item;
+			node->next = m_listHead->next;
+
+			m_listHead->next = node;
+		}
+
+		m_listHead->item = item;
+	}
 
 	template <class Op>
 	UInt32 FreeNodes(_Node* node, Op &compareOp) const

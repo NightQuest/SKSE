@@ -362,6 +362,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusNetImmerse.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusNetImmerse.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusObjectReference.cpp"
 					>
 				</File>
@@ -447,6 +455,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusStringUtil.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusTextureSet.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusTextureSet.h"
 					>
 				</File>
 				<File
@@ -731,11 +747,27 @@
 			Name="hooks"
 			>
 			<File
+				RelativePath=".\Hooks_Debug.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_Debug.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Hooks_DirectInput8Create.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Hooks_DirectInput8Create.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_DX9Renderer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_DX9Renderer.h"
 				>
 			</File>
 			<File
@@ -862,6 +894,14 @@
 		<Filter
 			Name="netimmerse"
 			>
+			<File
+				RelativePath=".\NiGeometry.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NiGeometry.h"
+				>
+			</File>
 			<File
 				RelativePath=".\NiInterpolators.cpp"
 				>

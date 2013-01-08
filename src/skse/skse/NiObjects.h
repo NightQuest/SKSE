@@ -2,6 +2,7 @@
 
 #include "skse/NiRTTI.h"
 #include "skse/NiTypes.h"
+#include "skse/Utilities.h"
 
 // NiRefObject/NiObject and important children
 // generally other children should go in other files
@@ -13,6 +14,7 @@ class NiObjectGroup;
 class NiExtraData;
 class NiTimeController;
 class NiNode;
+class NiGeometry;
 
 // 08
 class NiRefObject
@@ -43,7 +45,7 @@ public:
 	virtual UInt32			Unk_04(void);
 	virtual UInt32			Unk_05(void);
 	virtual UInt32			Unk_06(void);
-	virtual UInt32			Unk_07(void);
+	virtual NiGeometry *	GetAsNiGeometry(void); // This could also be NiTriBasedGeom or another sub class
 	virtual UInt32			Unk_08(void);
 	virtual UInt32			Unk_09(void);
 	virtual UInt32			Unk_0A(void);
@@ -155,6 +157,9 @@ public:
 	UInt32		unkA0;				// A0
 	UInt8		unkA4;				// A4
 	UInt8		unkA5;				// A5 - bitfield
+
+	MEMBER_FN_PREFIX(NiAVObject);
+	DEFINE_MEMBER_FN(UpdateNode, void, 0x00AAE690, NiAVObject * node);
 };
 
 STATIC_ASSERT(sizeof(NiAVObject) == 0xA8);

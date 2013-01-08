@@ -43,7 +43,7 @@ Function SetProtected(bool abProtected = true) native
 Function SetOutfit( Outfit akOutfit, bool abSleepOutfit = false ) native
 
 
-; SKSE additions built 2012-11-09 03:10:57.178000 UTC
+; SKSE additions built 2013-01-07 17:38:10.814000 UTC
 ; get/set the CombatStyle of the actor
 CombatStyle Function GetCombatStyle() native
 Function SetCombatStyle(CombatStyle cs) native
@@ -66,6 +66,7 @@ Function SetWeight(float weight) native
 int Function GetNumHeadParts() native
 HeadPart Function GetNthHeadPart(int slotPart) native
 Function SetNthHeadPart(HeadPart headPart, int slotPart) native
+int Function GetIndexOfHeadPartByType(int type) native
 
 ; Get/Set actors face morph value by index
 float Function GetFaceMorph(int index) native
@@ -87,3 +88,7 @@ int Function GetSpellCount() native
 
 ; returns the specified spell defined in the base actor  form
 Spell Function GetNthSpell(int n) native
+
+; returns the face textureset of the actor (Player Only?)
+TextureSet Function GetFaceTextureSet() native
+Function SetFaceTextureSet(TextureSet textures) native

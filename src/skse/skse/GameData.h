@@ -319,3 +319,35 @@ private:
 };
 
 STATIC_ASSERT(sizeof(BGSSaveLoadManager) == 0x58);
+
+class MiscStatManager
+{
+public:
+	static MiscStatManager *	GetSingleton(void);
+
+	// 14
+	struct MiscStat
+	{
+		const char	* name;		// 00
+		const char	* unk04;	// 04
+		UInt32		value;		// 08
+		UInt32		unk0C;		// 0C
+		UInt8		unk10;		// 10
+		UInt8		pad11[3];	// 11
+	};
+
+	class Visitor
+	{
+	public:
+		virtual void	Visit(MiscStat * stat, void * stat_unk04, UInt32 stat_unk0C, UInt32 value, UInt32 stat_unk10) = 0;
+	};
+
+	MEMBER_FN_PREFIX(MiscStatManager);
+	DEFINE_MEMBER_FN(Visit, void, 0x00487B50, Visitor ** visitor);
+
+	MiscStat	* m_stats;	// 00
+	UInt32		unk04;		// 04
+	UInt32		m_numStats;	// 08
+
+	MiscStat *	Get(const char * name);
+};

@@ -1,4 +1,4 @@
-Skyrim Script Extender v1.6.5
+Skyrim Script Extender v1.6.6
 by Ian Patterson and Stephen Abel
 (ianpatt and behippo)
 Thanks to: Paul Connelly (scruggsywuggsy the ferret), gibbed, Purple Lunchbox, snakster
@@ -7,15 +7,15 @@ The Skyrim Script Extender, or SKSE for short, is a modder's resource that expan
 
 Compatibility:
 
-SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.8.151.0). When a new version is released, we will update as soon as possible; please be patient. The editor does not appear to need modification, however a custom set of .pex/psc files must be installed.
+SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.8.151.0.*). When a new version is released, we will update as soon as possible; please be patient. The editor does not appear to need modification, however a custom set of .pex/psc files must be installed.
 
 [ Installation ]
 
 1. Copy the .dll and .exe files to your Skyrim directory. This is usually in your Program Files folder under Steam\SteamApps\common\skyrim\. If you see files named TESV and SkyrimLauncher, this is the correct folder. Do not copy these files to the Data folder as with a normal mod. The "src" folder is only useful for programmers, most users can ignore it.
 
-2. Copy the .pex files in Data\Scripts\ into the Data\Scripts\ folder of your installation.  The .pex files are needed by all users of SKSE. 
+2. Copy the .pex files in Data\Scripts\ into the Data\Scripts\ folder of your installation. The .pex files are needed by all users of SKSE. 
 
-3. Copy the .psc files in Data\Scripts\Source\ into the Data\Scripts\Source\ folder of your installation.  The .psc files are only needed if you have the CreationKit installed and intend to create or compile Papyrus scripts.
+3. Copy the .psc files in Data\Scripts\Source\ into the Data\Scripts\Source\ folder of your installation. The .psc files are only needed if you have the CreationKit installed and intend to create or compile Papyrus scripts.
 
 4. Launch the game via running skse_loader.exe. Steam must be running before launching Skyrim.
 
@@ -37,7 +37,7 @@ If your mod requires SKSE, please provide a link to the main SKSE website <http:
  - It is not a virus. To extend Skyrim and the editor, we use a technique called DLL injection to load our code. Since this technique can also be used by viruses, some badly-written virus scanners assume that any program doing it is a virus. Adding an exception to your scanner's rules may be necessary.
 
 * I've followed the directions, but Skyrim still seems to launch without SKSE!
-- Try running skse_loader.exe as an Administrator.  Sometimes that is necessary for people, but we haven't determined why exactly.  Right-click on skse_loader.exe and select Run As Administrator.
+- Try running skse_loader.exe as an Administrator by right-clicking on skse_loader.exe and selecting "Run As Administrator". This can be enabled as a compatibility option in the program's properties window.
  
 * Can I modify and release my own version of SKSE based on the included source code?
  - No; the suggested method for extending SKSE is to write a plugin. If this does not meet your needs, please email the contact addresses listed below.
@@ -46,7 +46,7 @@ If your mod requires SKSE, please provide a link to the main SKSE website <http:
  - If you've properly installed the .psc files from Data\Scripts\Source you can simply use the new functions listed.
  
 * How do I know what SKSE functions have been added?
- - Look at the included .psc files in Data\Scripts\Source\.  At the bottom of each .psc file is a label that shows the SKSE functions which have been added.  Most have comments describing their purpose, if it is not obvious from the name.
+ - Look at the included .psc files in Data\Scripts\Source\. At the bottom of each .psc file is a label that shows the SKSE functions which have been added. Most have comments describing their purpose, if it is not obvious from the name.
 
 * How do I write a plugin for SKSE?
  - See PluginAPI.h for instructions, as well as the example plugin project included with the rest of the source code.

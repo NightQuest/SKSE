@@ -2,6 +2,7 @@
 
 #include "skse/Utilities.h"
 #include "skse/GameTypes.h"
+#include "skse/GameEvents.h"
 
 class IFunction;
 class VMIdentifier;
@@ -186,7 +187,7 @@ public:
 
 //	void	** _vtbl;	// 0000
 
-	UInt32	pad0004[(0x0100 - 0x0004) >> 2];	// 0004
+	BSTEventSink<void> eventSinks[63];	// 0004
 
 	VMClassRegistry	* m_classRegistry;	// 0100
 

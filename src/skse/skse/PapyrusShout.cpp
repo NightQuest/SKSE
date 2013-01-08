@@ -5,32 +5,32 @@ namespace papyrusShout
 {
 	TESWordOfPower * GetNthWordOfPower(TESShout * thisShout, UInt32 n)
 	{
-		return (n >= 0 && n < TESShout::Words::kNumWords) ? thisShout->words[n].word : NULL;
+		return (n < TESShout::Words::kNumWords) ? thisShout->words[n].word : NULL;
 	}
 	SpellItem * GetNthSpell(TESShout * thisShout, UInt32 n)
 	{
-		return (n >= 0 && n < TESShout::Words::kNumWords) ? thisShout->words[n].spell : NULL;
+		return (n < TESShout::Words::kNumWords) ? thisShout->words[n].spell : NULL;
 	}
 	float GetNthRecoveryTime(TESShout * thisShout, UInt32 n)
 	{
-		return (n >= 0 && n < TESShout::Words::kNumWords) ? thisShout->words[n].recoverytime : 0.0;
+		return (n < TESShout::Words::kNumWords) ? thisShout->words[n].recoverytime : 0.0;
 	}
 
 	void SetNthWordOfPower(TESShout * thisShout, UInt32 n, TESWordOfPower * woop)
 	{
-		if(n >= 0 && n < TESShout::Words::kNumWords) {
+		if(n < TESShout::Words::kNumWords) {
 			thisShout->words[n].word = woop;
 		}
 	}
 	void SetNthSpell(TESShout * thisShout, UInt32 n, SpellItem * spell)
 	{
-		if(n >= 0 && n < TESShout::Words::kNumWords) {
+		if(n < TESShout::Words::kNumWords) {
 			thisShout->words[n].spell = spell;
 		}
 	}
 	void SetNthRecoveryTime(TESShout * thisShout, UInt32 n, float time)
 	{
-		if(n >= 0 && n < TESShout::Words::kNumWords) {
+		if(n < TESShout::Words::kNumWords) {
 			thisShout->words[n].recoverytime = time;
 		}
 	}

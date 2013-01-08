@@ -65,16 +65,13 @@ namespace papyrusActorBase
 
 	BGSHeadPart* GetNthHeadPart(TESNPC* thisNPC, UInt32 n)
 	{
-		if (!thisNPC || n >= thisNPC->numHeadParts)
-			return NULL;
-
-		return thisNPC->headparts[n];
+		return (thisNPC && thisNPC->headparts && n < thisNPC->numHeadParts) ? thisNPC->headparts[n] : NULL;
 	}
 
 	void SetNthHeadPart(TESNPC* thisNPC, BGSHeadPart* headPart, UInt32 n )
 	{
-		if (thisNPC  && n < thisNPC->numHeadParts) {
-			if (headPart) {
+		if (thisNPC && n < thisNPC->numHeadParts) {
+			if (headPart && thisNPC->headparts) {
 				thisNPC->headparts[n] = headPart;
 				// Invoke Actor Member that updates FaceGen for head parts
 				// Alternatively there is probably a member that already does this as the race menu needs a way to do the same thing
@@ -82,14 +79,28 @@ namespace papyrusActorBase
 		}
 	}
 
+	// Convenience function to return a headPart's index by type
+	UInt32 GetIndexOfHeadPartByType(TESNPC* thisNPC, UInt32 type)
+	{
+		if (thisNPC && thisNPC->headparts) {
+			for(int i = 0; i < thisNPC->numHeadParts; i++) {
+				if(thisNPC->headparts[i] && thisNPC->headparts[i]->type == type) {
+					return i;
+				}
+			}
+		}
+
+		return -1;
+	}
+
 	float GetFaceMorph(TESNPC* thisNPC, UInt32 index)
 	{
-		return (thisNPC && index < TESNPC::FaceMorphs::kNumOptions) ? thisNPC->faceMorph->option[index] : 0.0;
+		return (thisNPC && thisNPC->faceMorph && index < TESNPC::FaceMorphs::kNumOptions) ? thisNPC->faceMorph->option[index] : 0.0;
 	}
 
 	void SetFaceMorph(TESNPC* thisNPC, float value, UInt32 index)
 	{
-		if (thisNPC && index < TESNPC::FaceMorphs::kNumOptions) {
+		if (thisNPC && thisNPC->faceMorph && index < TESNPC::FaceMorphs::kNumOptions) {
 			thisNPC->faceMorph->option[index] = value;
 			// Invoke Actor Member that updates FaceGen (SetNPCWeight should have it)
 			// Alternatively there is probably a member that already does this as the race menu needs a way to do the same thing
@@ -98,12 +109,12 @@ namespace papyrusActorBase
 
 	UInt32 GetFacePreset(TESNPC* thisNPC, UInt32 index)
 	{
-		return (thisNPC && index < TESNPC::FaceMorphs::kNumPresets) ? thisNPC->faceMorph->presets[index] : 0;
+		return (thisNPC && thisNPC->faceMorph && index < TESNPC::FaceMorphs::kNumPresets) ? thisNPC->faceMorph->presets[index] : 0;
 	}
 
 	void SetFacePreset(TESNPC* thisNPC, UInt32 value, UInt32 index)
 	{
-		if (thisNPC && index < TESNPC::FaceMorphs::kNumPresets) {
+		if (thisNPC && thisNPC->faceMorph && index < TESNPC::FaceMorphs::kNumPresets) {
 			thisNPC->faceMorph->presets[index] = value;
 			// Invoke Actor Member that updates FaceGen for presets
 			// Alternatively there is probably a member that already does this as the race menu needs a way to do the same thing
@@ -113,19 +124,31 @@ namespace papyrusActorBase
 	// Hair Color
 	BGSColorForm* GetHairColor(TESNPC* thisNPC)
 	{
-		return thisNPC->headData->hairColor;
+		return (thisNPC && thisNPC->headData) ? thisNPC->headData->hairColor : NULL;
 	}
 
 	void SetHairColor(TESNPC* thisNPC, BGSColorForm* colorForm)
 	{
-		if(colorForm) {
+		if(thisNPC && colorForm && thisNPC->headData) {
 			thisNPC->headData->hairColor = colorForm;
+		}
+	}
+
+	BGSTextureSet * GetFaceTextureSet(TESNPC* thisNPC)
+	{
+		return (thisNPC && thisNPC->headData) ? thisNPC->headData->headTexture : NULL;
+	}
+
+	void SetFaceTextureSet(TESNPC* thisNPC, BGSTextureSet * textureSet)
+	{
+		if(thisNPC && thisNPC->headData) {
+			thisNPC->headData->headTexture = textureSet;
 		}
 	}
 
 	UInt32 GetSpellCount(TESNPC* thisNPC)
 	{
-		return (thisNPC)? thisNPC->spellList.GetSpellCount() : 0;
+		return (thisNPC) ? thisNPC->spellList.GetSpellCount() : 0;
 	}
 
 	SpellItem* GetNthSpell(TESNPC* thisNPC, UInt32 n)
@@ -176,6 +199,9 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction2 <TESNPC, void, BGSHeadPart*, UInt32>("SetNthHeadPart", "ActorBase", papyrusActorBase::SetNthHeadPart, registry));
 
 	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, UInt32, UInt32>("GetIndexOfHeadPartByType", "ActorBase", papyrusActorBase::GetIndexOfHeadPartByType, registry));
+
+	registry->RegisterFunction(
 		new NativeFunction1 <TESNPC, float, UInt32>("GetFaceMorph", "ActorBase", papyrusActorBase::GetFaceMorph, registry));
 
 	registry->RegisterFunction(
@@ -199,4 +225,9 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <TESNPC, SpellItem*, UInt32>("GetNthSpell", "ActorBase", papyrusActorBase::GetNthSpell, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, BGSTextureSet*>("GetFaceTextureSet", "ActorBase", papyrusActorBase::GetFaceTextureSet, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, void, BGSTextureSet*>("SetFaceTextureSet", "ActorBase", papyrusActorBase::SetFaceTextureSet, registry));
 }

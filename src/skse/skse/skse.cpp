@@ -21,24 +21,14 @@ STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_8_151_0);
 #include "Hooks_Papyrus.h"
 #include "Hooks_SaveLoad.h"
 #include "Hooks_UI.h"
+#include "Hooks_DX9Renderer.h"
+#include "Hooks_Debug.h"
 
 #else
 
 const char * kLogPath = "\\My Games\\Skyrim\\SKSE\\skse_editor.log";
 
 #endif
-
-void ApplyPatch(UInt32 base, UInt8 * buf, UInt32 len)
-{
-	for(UInt32 i = 0; i < len; i++)
-		SafeWrite8(base + i, buf[i]);
-}
-
-void FixCoopLevel(void)
-{
-	SafeWrite8(0x00A69560 + 0x71 + 1, 0x06);
-	SafeWrite8(0x00A6A650 + 0x4C + 1, 0x16);
-}
 
 void WaitForDebugger(void)
 {
@@ -80,22 +70,25 @@ void SKSE_Initialize(void)
 #ifdef _DEBUG
 		SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
 
-		FixCoopLevel();
-		WaitForDebugger();
+//		WaitForDebugger();
 #endif
 
 //		Commands_Dump();
 
+		Hooks_Debug_Init();
 		Hooks_ObScript_Init();
 		Hooks_Papyrus_Init();
+		Hooks_DX9Renderer_Init();
 
 		g_pluginManager.Init();
 
+		Hooks_Debug_Commit();
 		Hooks_Scaleform_Commit();
 		Hooks_Gameplay_Commit();
 		Hooks_ObScript_Commit();
 		Hooks_Papyrus_Commit();
 		Hooks_UI_Commit();
+		Hooks_DX9Renderer_Commit();
 
 		Hooks_SaveLoad_Commit();
 		Init_CoreSerialization_Callbacks();

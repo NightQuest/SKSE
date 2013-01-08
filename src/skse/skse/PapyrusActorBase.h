@@ -1,13 +1,14 @@
 #pragma once
 
+class VMClassRegistry;
 class TESForm;
 class TESNPC;
 class TESCombatStyle;
 class BGSOutfit;
 class TESClass;
 class SpellItem;
-class VMClassRegistry;
 class BGSHeadPart;
+class BGSTextureSet;
 
 namespace papyrusActorBase {
 	void RegisterFuncs(VMClassRegistry* registry);
@@ -26,8 +27,12 @@ namespace papyrusActorBase {
 	UInt32 GetNumHeadParts(TESNPC* thisNPC);
 	BGSHeadPart* GetNthHeadPart(TESNPC* thisNPC, UInt32 n);
 	void SetNthHeadPart(TESNPC* thisNPC, BGSHeadPart* headPart, UInt32 n );
+	UInt32 GetIndexOfHeadPartByType(TESNPC* thisNPC, UInt32 type);
 	float GetFaceMorph(TESNPC* thisNPC, UInt32 index);
 	void SetFaceMorph(TESNPC* thisNPC, float value, UInt32 index);
+	BGSTextureSet * GetFaceTextureSet(TESNPC* thisNPC);
+	void SetFaceTextureSet(TESNPC* thisNPC, BGSTextureSet * textureSet);
+
 	UInt32 GetSpellCount(TESNPC* thisNPC);
 	SpellItem* GetNthSpell(TESNPC* thisNPC, UInt32 n);
 };

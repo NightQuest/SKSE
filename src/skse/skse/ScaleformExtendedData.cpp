@@ -73,7 +73,6 @@ namespace scaleformExtend
 		if(!pFxVal || !pForm)
 			return;
 
-		RegisterBool(pFxVal, "extended", true);
 		RegisterNumber(pFxVal, "formType", (double)pForm->GetFormType());
 		RegisterNumber(pFxVal, "formId", (double)pForm->formID);
 	}
@@ -111,8 +110,8 @@ namespace scaleformExtend
 				TESObjectWEAP * pWeapon = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
 				if(pWeapon)
 				{
-					UInt8 weaponType = pWeapon->type();
-					RegisterNumber(pFxVal, "subType", weaponType);
+					RegisterNumber(pFxVal, "subType", pWeapon->type()); // DEPRECATED
+					RegisterNumber(pFxVal, "weaponType", pWeapon->type());
 					RegisterNumber(pFxVal, "speed", pWeapon->speed());
 					RegisterNumber(pFxVal, "reach", pWeapon->reach());
 					RegisterNumber(pFxVal, "stagger", pWeapon->stagger());
@@ -140,7 +139,7 @@ namespace scaleformExtend
 				AlchemyItem * pAlchemy = DYNAMIC_CAST(pForm, TESForm, AlchemyItem);
 				if(pAlchemy)
 				{
-					RegisterNumber(pFxVal, "flags", pAlchemy->unkA4.unk00.flags);
+					RegisterNumber(pFxVal, "flags", pAlchemy->itemData.flags);
 				}
 			}
 			break;
@@ -150,6 +149,7 @@ namespace scaleformExtend
 				TESObjectBOOK * pBook = DYNAMIC_CAST(pForm, TESForm, TESObjectBOOK);
 				if(pBook)
 				{
+					RegisterNumber(pFxVal, "flags", pBook->data.flags);
 					RegisterNumber(pFxVal, "bookType", pBook->data.type);
 					switch(pBook->data.GetSanitizedType())
 					{
@@ -214,6 +214,17 @@ namespace scaleformExtend
 					RegisterNumber(pFxVal, "spellType", pSpellItem->data.type);
 					RegisterNumber(pFxVal, "trueCost", pSpellItem->GetMagickaCost());
 				}
+
+				AlchemyItem * pAlchemyItem = DYNAMIC_CAST(pMagicItem, MagicItem, AlchemyItem);
+				if(pAlchemyItem)
+				{
+					if(pAlchemyItem->itemData.useSound) {
+						GFxValue useSound;
+						movieView->CreateObject(&useSound);
+						scaleformExtend::FormData(&useSound, movieView, pAlchemyItem->itemData.useSound, bRecursive ? bExtra : false, bRecursive);
+						pFxVal->SetMember("useSound", &useSound);
+					}
+				}
 			}
 			break;
 
@@ -225,8 +236,9 @@ namespace scaleformExtend
 					if(pEffectSetting->fullName.name.data)
 						RegisterString(pFxVal, movieView, "effectName", pEffectSetting->fullName.name.data);
 
+					RegisterNumber(pFxVal, "subType", pEffectSetting->school()); // DEPRECATED
 					RegisterNumber(pFxVal, "effectFlags", pEffectSetting->properties.flags);
-					RegisterNumber(pFxVal, "subType", pEffectSetting->school());
+					RegisterNumber(pFxVal, "school", pEffectSetting->school());
 					RegisterNumber(pFxVal, "skillLevel", pEffectSetting->level());
 					RegisterNumber(pFxVal, "archetype", pEffectSetting->properties.archetype);
 					RegisterNumber(pFxVal, "deliveryType", pEffectSetting->properties.deliveryType);
@@ -290,6 +302,9 @@ namespace scaleformExtend
 				{
 					if(pRace->fullName.name.data)
 						RegisterString(pFxVal, movieView, "fullName", pRace->fullName.name.data);
+
+					if(pRace->editorId.data)
+						RegisterString(pFxVal, movieView, "editorId", pRace->editorId.data);
 
 					// Spells
 					GFxValue spells;
@@ -568,6 +583,24 @@ namespace scaleformExtend
 					}
 
 					pFxVal->SetMember("aliases", &aliasArray);
+				}
+			}
+			break;
+		case kFormType_TextureSet:
+			{
+				BGSTextureSet * textureSet = DYNAMIC_CAST(pForm, TESForm, BGSTextureSet);
+				if(textureSet)
+				{
+					GFxValue textureArray;
+					movieView->CreateArray(&textureArray);
+					for(int i = 0; i < BGSTextureSet::kNumTextures; i++)
+					{
+						GFxValue strArg;
+						movieView->CreateString(&strArg, textureSet->texturePaths[i].str.data);
+						textureArray.PushBack(&strArg);
+					}
+
+					pFxVal->SetMember("textures", &textureArray);
 				}
 			}
 			break;

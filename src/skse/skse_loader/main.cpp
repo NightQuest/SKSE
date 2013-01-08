@@ -53,6 +53,7 @@ int main(int argc, char ** argv)
 	// get process/dll names
 	bool		dllHasFullPath = false;
 	const char	* baseDllName = g_options.m_launchCS ? "skse_editor" : "skse";
+	bool		usedCustomRuntimeName = false;
 
 	std::string	procName;
 
@@ -64,7 +65,10 @@ int main(int argc, char ** argv)
 	{
 		procName = GetConfigOption("Loader", "RuntimeName");
 		if(!procName.empty())
+		{
 			_MESSAGE("using runtime name from config: %s", procName.c_str());
+			usedCustomRuntimeName = true;
+		}
 		else
 			procName = "TESV.exe";
 	}
@@ -107,6 +111,13 @@ int main(int argc, char ** argv)
 	if(!IdentifyEXE(procPath.c_str(), g_options.m_launchCS, &dllSuffix, &procHookInfo))
 	{
 		_ERROR("unknown exe");
+
+		if(usedCustomRuntimeName)
+		{
+			// hurr durr
+			PrintLoaderError("You have customized the runtime name via SKSE's .ini file. Version errors can usually be fixed by removing the RuntimeName line from the .ini file.");
+		}
+
 		return 1;
 	}
 

@@ -24,4 +24,5 @@ namespace papyrusAlias
 	void RegisterForModEvent(BGSBaseAlias * thisAlias, BSFixedString eventName, BSFixedString callbackName);
 	void UnregisterForModEvent(BGSBaseAlias * thisAlias, BSFixedString eventName);
 	void UnregisterForAllModEvents(BGSBaseAlias * thisAlias);
+	void SendModEvent(BGSBaseAlias * thisAlias, BSFixedString eventName, BSFixedString strArg, float numArg);
 }

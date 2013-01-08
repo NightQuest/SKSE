@@ -34,7 +34,7 @@ namespace papyrusConstructibleObject
 
 	void SetResultQuantity(BGSConstructibleObject* recipe, UInt32 quantity)
 	{
-		if(recipe && quantity > 0 && quantity < 65535) {
+		if(recipe && quantity < 65535) {
 			recipe->quantity = quantity;
 		}
 	}

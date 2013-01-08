@@ -4,19 +4,12 @@
 #include "skse/ScaleformCallbacks.h"
 #include "skse/ScaleformMovie.h"
 #include "skse/GameAPI.h"
-#ifdef _PPAPI
-#include "skse/PapyrusVM.h"
-#include "skse/PapyrusNativeFunctions.h"
-#endif
 
 IDebugLog	gLog("skse_example_plugin.log");
 
 PluginHandle	g_pluginHandle = kPluginHandle_Invalid;
 
 SKSEScaleformInterface	* scaleform = NULL;
-#ifdef _PPAPI
-SKSEPapyrusInterface * papyrus = NULL;
-#endif
 
 void ApplyPatch(UInt32 base, UInt8 * buf, UInt32 len)
 {
@@ -33,7 +26,9 @@ void GameplayPatches(void)
 		0xC3							// retn
 	};
 
-	ApplyPatch(0x00598AD0, kPickpocketChance, sizeof(kPickpocketChance));
+	ApplyPatch(0x00598620, kPickpocketChance, sizeof(kPickpocketChance));
+
+	SafeWrite8(0x008EFAF0, 0xC3);	// disable achievements
 }
 
 class SKSEScaleform_ExampleFunction : public GFxFunctionHandler
@@ -51,24 +46,6 @@ bool RegisterScaleform(GFxMovieView * view, GFxValue * root)
 
 	return true;
 }
-
-#ifdef _PPAPI
-namespace papyrusPlugin
-{
-	UInt32 TestValue(StaticFunctionTag*)
-	{
-		return 12345;
-	}
-};
-
-bool RegisterPapyrus(VMClassRegistry * registry)
-{
-	registry->RegisterFunction(
-		new NativeFunction0<StaticFunctionTag, UInt32>("TestValue", "PapyrusExample", papyrusPlugin::TestValue, registry));
-
-	return true;
-}
-#endif
 
 extern "C"
 {
@@ -91,7 +68,7 @@ bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info)
 
 		return false;
 	}
-	else if(skse->runtimeVersion != RUNTIME_VERSION_1_8_145_0)
+	else if(skse->runtimeVersion != RUNTIME_VERSION_1_8_151_0)
 	{
 		_MESSAGE("unsupported runtime version %08X", skse->runtimeVersion);
 
@@ -114,22 +91,6 @@ bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info)
 		return false;
 	}
 
-#ifdef _PPAPI
-	papyrus = (SKSEPapyrusInterface *)skse->QueryInterface(kInterface_Papyrus);
-	if(!papyrus)
-	{
-		_MESSAGE("couldn't get papyrus interface");
-		return false;
-	}
-
-	if(papyrus->interfaceVersion < SKSEPapyrusInterface::kInterfaceVersion)
-	{
-		_MESSAGE("papyrus interface too old (%d expected %d)", papyrus->interfaceVersion, SKSEPapyrusInterface::kInterfaceVersion);
-		return false;
-	}
-#endif
-
-
 	// ### do not do anything else in this callback
 	// ### only fill out PluginInfo and return true/false
 
@@ -146,9 +107,6 @@ bool SKSEPlugin_Load(const SKSEInterface * skse)
 
 	// register scaleform callbacks
 	scaleform->Register("example_plugin", RegisterScaleform);
-#ifdef _PPAPI
-	papyrus->Register(RegisterPapyrus);
-#endif
 
 	return true;
 }

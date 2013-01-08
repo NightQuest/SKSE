@@ -393,6 +393,14 @@ class AlchemyItem : public MagicItem
 public:
 	enum { kTypeID = kFormType_Potion };
 
+	enum
+	{
+		kFlag_ManualCalc =	0x00000001,
+		kFlag_Food =		0x00000002,
+		kFlag_Medicine =	0x00010000,
+		kFlag_Poison =		0x00020000,
+	};
+
 	// parents
 	TESModelTextureSwap	texSwap;		// 50
 	TESIcon				icon;			// 6C
@@ -407,22 +415,17 @@ public:
 	// 14
 	struct Data
 	{
-		struct Data0
-		{
-			UInt32	value;	// 00
-			UInt32	flags;	// 04  0x20000 = harmful, food: 0x3
-		};
-
-		Data0	unk00;	// 00
-		UInt32	unk08;	// 08
-		UInt32	unk0C;	// 0C
+		UInt32	value;	// 00
+		UInt32	flags;	// 04
+		UInt32	unk08;	// 08 addiction (legacy?)
+		UInt32	unk0C;	// 0C addiction chance (legacy?)
 		BGSSoundDescriptorForm *	useSound;	// 10
 	};
 
-	Data	unkA4;	// A4
-	TESIcon	unkB8;	// B8
+	Data	itemData;	// A4
+	TESIcon	unkB8;		// B8
 
-	bool IsFood() { return (unkA4.unk00.flags & 0x3) != 0; }
+	bool IsFood() { return (itemData.flags & kFlag_Food) != 0; }
 };
 
 // 74
@@ -563,11 +566,22 @@ public:
 		float			damage;
 	};
 
+	/*
+		6 - None
+		2 - Bolt
+		4 - Playable
+		7 - Ignores Resist
+		0 - Playable Bolt
+		1 - Ignores Resist, Playable, Bolt
+		5 - Ignores Resist, Playable
+		3 - Ignores Resist, Bolt
+	*/
+
 	enum {
 		kFlag_Bolt = 0x04
 	};
 
-	bool isBolt() { return (settings.flags & 0x4) != 0; }
+	bool isBolt() { return (settings.flags >= 0 && settings.flags <= 3); }
 
 	AmmoSettings		settings;	// 8C
 	StringCache::Ref	unk98;	// 98
@@ -987,14 +1001,18 @@ public:
 	// members
 	struct Data
 	{
-		enum	// type - these are technically flags but are mutually exclusive
+		enum	// type - these are technically flags
 		{
-			kType_None =	0,
+			kType_None	=	0,
 			kType_Skill =	1 << 0,
+			kType_Unk01	=	1 << 1,
 			kType_Spell =	1 << 2,	// takes priority over skill
+			kType_Read	=	1 << 3, // set once the book is equipped by the player, along with the CHANGE_BOOK_READ (0x40) change flag
 		};
 
-		UInt32	type;		// 0
+		UInt8	flags;		// 0
+		UInt8	type;		// 1
+		UInt16	unk02;		// 2, probably padding too
 		union
 		{
 			UInt32		skill;

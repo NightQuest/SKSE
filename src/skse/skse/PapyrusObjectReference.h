@@ -21,6 +21,7 @@ namespace papyrusObjectReference
 
 	bool IsHarvested(TESObjectREFR* pProduceRef);
 
+	bool HasNiNode(TESObjectREFR * obj, BSFixedString nodeName);
 	float GetNiNodePositionX(TESObjectREFR * obj, BSFixedString nodeName);
 	float GetNiNodePositionY(TESObjectREFR * obj, BSFixedString nodeName);
 	float GetNiNodePositionZ(TESObjectREFR * obj, BSFixedString nodeName);

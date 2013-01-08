@@ -366,7 +366,7 @@ public:
 	virtual void			Unk_24(UInt32 arg);
 	virtual bool			Unk_25(void);
 	virtual bool			Unk_26(void);
-	virtual bool			Unk_27(void);
+	virtual bool			Has3D(void);
 	virtual bool			Unk_28(void);
 	virtual UInt32			Unk_29(void);
 	virtual UInt32			Unk_2A(void);
@@ -671,7 +671,7 @@ public:
 	TESModelTri				unk50[3];		// 50
 	UInt32					unk8C;          // 8C
 	BGSListForm *			validRaces;		// 90
-	StringCache::Ref		unk94;			// 94
+	StringCache::Ref		partName;		// 94
 };
 
 // 78
@@ -1425,7 +1425,7 @@ public:
 
 	UInt8		unk14;		// 14
 	UInt8		pad15[3];	// 15
-	BSString	unk18;		// 18
+	BSString	editorId;		// 18
 };
 
 // F4
@@ -1952,19 +1952,19 @@ class TESIdleForm : public TESForm
 public:
 	enum { kTypeID = kFormType_Idle };
 
-	void				* unk14;	// 14 - linked list
-	UInt8				unk18;		// 18
-	UInt8				unk19;		// 19
-	UInt8				unk1A;		// 1A
-	UInt8				pad1B;		// 1B
-	UInt16				unk1C;		// 1C
-	UInt8				pad1E[2];	// 1E
-	UInt32				unk20;		// 20
-	UInt32				unk24;		// 24
-	UInt32				unk28;		// 28
-	StringCache::Ref	unk2C;		// 2C
-	StringCache::Ref	unk30;		// 30
-	BSString			unk34;		// 34
+	void				* unk14;			// 14 - linked list
+	UInt8				loopMin;			// 18
+	UInt8				loopMax;			// 19
+	UInt8				flags;				// 1A
+	UInt8				group;				// 1B
+	UInt16				unk1C;				// 1C
+	UInt8				pad1E[2];			// 1E
+	UInt32				unk20;				// 20 - NiFormArray
+	TESIdleForm			* relatedIdle1;		// 24
+	TESIdleForm			* relatedIdle2;		// 28
+	StringCache::Ref	fileName;			// 2C
+	StringCache::Ref	animationEvent;		// 30
+	BSString			editorId;			// 34
 };
 
 // 64
@@ -2379,6 +2379,8 @@ public:
 		kRace_NoKnockdowns					= 0x00400000,
 		kRace_AllowPickpocket				= 0x00800000,
 		kRace_AlwaysUseProxyController		= 0x01000000,
+		kRace_OverlayHeadParts				= 0x04000000,
+		kRace_OverrideHeadParts				= 0x08000000,
 		kRace_AllowMultipleMembraneShaders	= 0x20000000,
 		kRace_AvoidsRoads					= 0x80000000,
 	};
@@ -2466,16 +2468,16 @@ public:
 	BGSSoundDescriptorForm		* openCorpseSound;
 	BGSSoundDescriptorForm		* closeCorpseSound;
 	StringCache::Ref			bipedObjectNames[0x20];
-	UnkArray					unk248;
-	UInt32						unk254;
-	BGSEquipSlot				* unk258;
-	UInt32						unk25C;
-	UInt32						unk260;
-	UnkArray					unk264;
-	UnkArray					unk270;
-	UInt8						unk27C[0x18];
-	void						* unk294;
-	void						* unk298;
+	tArray<BGSEquipSlot*>		slotRestrictions;
+	UInt32						unk274;
+	BGSEquipSlot				* unarmedEquipSlot;
+	UInt32						unk27C;
+	UInt32						unk280;
+	UnkArray					unk284;
+	UnkArray					unk290;
+	UInt8						unk29C[0x18];
+	void						* unk2B4;
+	void						* unk2B8;
 };
 
 //STATIC_ASSERT(offsetof(TESRace, unk1B0) == 0x1B0);

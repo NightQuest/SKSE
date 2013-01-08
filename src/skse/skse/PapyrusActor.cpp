@@ -69,7 +69,7 @@ namespace papyrusActor
 
 	SpellItem* GetNthSpell(Actor* thisActor, UInt32 n)
 	{
-		if (thisActor && n < thisActor->addedSpells.spellCount)
+		if (thisActor && thisActor->addedSpells.spells && n < thisActor->addedSpells.spellCount)
 		{
 			return thisActor->addedSpells.spells[n];
 		}

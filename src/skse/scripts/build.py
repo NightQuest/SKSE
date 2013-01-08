@@ -90,10 +90,10 @@ for name in os.listdir(vanillaRoot):
 # run compiler on merged files
 print "compiling"
 
+erroringClasses = []
+
 for name in mergedFiles:
 	className = name[:name.find(".")]
-	print "building class: " + className
-	
 	argList = [
 		compilerPath,
 		className,
@@ -105,4 +105,8 @@ for name in mergedFiles:
 		"-op"
 	]
 	
-	subprocess.call(argList)
+	if subprocess.call(argList) != 0:
+		erroringClasses.append(className)
+
+if len(erroringClasses) > 0:
+	print "### error building classes: ", erroringClasses

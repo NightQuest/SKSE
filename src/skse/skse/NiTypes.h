@@ -60,6 +60,16 @@ public:
 STATIC_ASSERT(sizeof(NiTransform) == 0x34);
 
 // 10
+class NiBound
+{
+public:
+	NiPoint3	pos;
+	float		radius;
+};
+
+STATIC_ASSERT(sizeof(NiBound) == 0x10);
+
+// 10
 // derives from NiTMapBase, we don't bother
 template <typename T_key, typename T_data>
 class NiTMap
@@ -130,3 +140,19 @@ public:
 };
 
 STATIC_ASSERT(sizeof(NiTArray <void *>) == 0x10);
+
+// 18
+template <typename T>
+class NiTLargeArray
+{
+public:
+	NiTLargeArray();
+	virtual ~NiTLargeArray();
+
+//	void	** _vtbl;			// 00
+	T		* m_data;			// 04
+	UInt32	m_arrayBufLen;		// 08 - max elements storable in m_data
+	UInt32	m_emptyRunStart;	// 0C - index of beginning of empty slot run
+	UInt32	m_size;				// 10 - number of filled slots
+	UInt32	m_growSize;			// 14 - number of slots to grow m_data by
+};

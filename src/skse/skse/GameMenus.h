@@ -416,22 +416,3 @@ public:
 	GFxMovieView *		GetMovieView(BSFixedString * menuName);
 };
 STATIC_ASSERT(sizeof(MenuManager) == 0x11C);
-
-// ?
-class UISaveLoadManager
-{
-public:
-	virtual ~UISaveLoadManager();
-
-	// See Hooks_SaveLoad
-	void DeleteSavegame_Hook(double saveIndex);
-
-	static UISaveLoadManager * GetSingleton(void)
-	{
-		return *((UISaveLoadManager **)0x01B0FFCC);
-	}
-
-private:
-	MEMBER_FN_PREFIX(UISaveLoadManager);
-	DEFINE_MEMBER_FN(DeleteSavegame_HookTarget, void, 0x00897EF0, double saveIndex);
-};

@@ -2,6 +2,7 @@
 
 class TESRace;
 class SpellItem;
+class BGSVoiceType;
 class VMClassRegistry;
 struct StaticFunctionTag;
 
@@ -18,4 +19,7 @@ namespace papyrusRace
 
 	UInt32 GetNumPlayableRaces(StaticFunctionTag * base);
 	TESRace * GetNthPlayableRace(StaticFunctionTag * base, UInt32 n);
+
+	BGSVoiceType* GetDefaultVoiceType(TESRace* thisRace, bool female);
+	void SetDefaultVoiceType(TESRace* thisRace, bool female, BGSVoiceType* voiceType);
 }

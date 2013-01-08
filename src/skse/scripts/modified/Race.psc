@@ -13,11 +13,20 @@ Function SetRaceFlag(int n) native
 ; clears the specified race flag
 Function ClearRaceFlag(int n) native
 
+; Returns the races default voice type
+VoiceType Function GetDefaultVoiceType(bool female) native
+
+; Sets the races default voice type
+Function SetDefaultVoiceType(bool female, VoiceType voice) native
+
 ; Returns the number of playable races
 int Function GetNumPlayableRaces() native global
 
 ; Returns the nth playable race
 Race Function GetNthPlayableRace(int n) native global
+
+; Returns a race by it's editorId name
+Race Function GetRace(string editorId) native global
 
 ; race flags for previous functions
 int property kRace_Playable						= 0x00000001 AutoReadOnly

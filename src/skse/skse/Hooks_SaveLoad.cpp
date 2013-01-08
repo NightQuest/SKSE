@@ -77,25 +77,14 @@ void BGSSaveLoadManager::ProcessEvents_Hook(void)
 	s_reqLoadName.clear();
 }
 
-const char * GetSaveName(SInt32 saveIndex)
+typedef void * (__stdcall * _DeleteSavegame_Hooked)(const char * saveName, UInt32 unk1);
+_DeleteSavegame_Hooked DeleteSavegame_Hooked = (_DeleteSavegame_Hooked)0x0067FF10;
+
+void __stdcall DeleteSavegame_Hook(const char * saveNameIn, UInt32 unk1)
 {
-	BGSSaveLoadManager * saveLoadManager = BGSSaveLoadManager::GetSingleton();
-	if (!saveLoadManager || !saveLoadManager->saveList || saveIndex < 0)
-		return NULL;
+	std::string saveName = saveNameIn;
 
-	const char ** pSaveName = saveLoadManager->saveList->GetNthItem(saveIndex);
-	if (!pSaveName)
-		return NULL;
-
-	return *pSaveName;
-}
-
-void UISaveLoadManager::DeleteSavegame_Hook(double saveIndex)
-{
-	// Save name before hooked call
-	std::string saveName = GetSaveName(saveIndex);
-
-	CALL_MEMBER_FN(this,DeleteSavegame_HookTarget)(saveIndex);
+	DeleteSavegame_Hooked(saveNameIn, unk1);
 
 	Serialization::HandleDeleteSave(saveName);
 }
@@ -180,5 +169,6 @@ void Hooks_SaveLoad_Commit(void)
 	WriteRelCall(0x0069C9B0 + 0x0064, GetFnAddr(&BGSSaveLoadManager::ProcessEvents_Hook));
 
 	// Delete savegame
-	WriteRelCall(0x008770D0 + 0x001D, GetFnAddr(&UISaveLoadManager::DeleteSavegame_Hook));
+	WriteRelCall(0x006772A0, (UInt32)DeleteSavegame_Hook); // DeleteGame
+	WriteRelCall(0x00677593, (UInt32)DeleteSavegame_Hook); // SaveGame overwrite (= delete+new)
 }

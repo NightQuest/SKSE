@@ -8,6 +8,15 @@
 #include "GameSettings.h"
 #include "GameForms.h"
 
+typedef UInt32 (* _UpdatePlayerTints)();
+_UpdatePlayerTints UpdatePlayerTints = (_UpdatePlayerTints)0x0087F190;
+
+typedef void * (* _UpdatePlayerSkin)(PlayerCharacter*, NiColorA*);
+_UpdatePlayerSkin UpdatePlayerSkin = (_UpdatePlayerSkin)0x005A9C60;
+
+typedef void * (* _UpdatePlayerHair)(PlayerCharacter*, NiColorA*);
+_UpdatePlayerHair UpdatePlayerHair = (_UpdatePlayerHair)0x005A9C90;
+
 namespace papyrusGame
 {
 	UInt32 GetPerkPoints(StaticFunctionTag*)
@@ -51,7 +60,7 @@ namespace papyrusGame
 
 	BSFixedString GetModName(StaticFunctionTag*, UInt32 index)
 	{
-		if(index < 0 || index > 255)
+		if(index > 255)
 			return NULL;
 		DataHandler* pDataHandler = DataHandler::GetSingleton();
 		ModInfo* modInfo = pDataHandler->modList.modInfoList.GetNthItem(index);
@@ -60,7 +69,7 @@ namespace papyrusGame
 
 	BSFixedString GetModAuthor(StaticFunctionTag*, UInt32 index)
 	{
-		if(index < 0 || index > 255)
+		if(index > 255)
 			return NULL;
 		DataHandler* pDataHandler = DataHandler::GetSingleton();
 		ModInfo* modInfo = pDataHandler->modList.modInfoList.GetNthItem(index);
@@ -69,7 +78,7 @@ namespace papyrusGame
 
 	BSFixedString GetModDescription(StaticFunctionTag*, UInt32 index)
 	{
-		if(index < 0 || index > 255)
+		if(index > 255)
 			return NULL;
 		DataHandler* pDataHandler = DataHandler::GetSingleton();
 		ModInfo* modInfo = pDataHandler->modList.modInfoList.GetNthItem(index);
@@ -78,7 +87,7 @@ namespace papyrusGame
 
 	UInt32 GetModDependencyCount(StaticFunctionTag*, UInt32 index)
 	{
-		if(index < 0 || index > 255)
+		if(index > 255)
 			return NULL;
 		DataHandler* pDataHandler = DataHandler::GetSingleton();
 		ModInfo* modInfo = pDataHandler->modList.modInfoList.GetNthItem(index);
@@ -87,11 +96,11 @@ namespace papyrusGame
 
 	UInt32 GetNthModDependency(StaticFunctionTag*, UInt32 index, UInt32 dep_index)
 	{
-		if(index < 0 || index > 255)
+		if(index > 255)
 			return NULL;
 		DataHandler* pDataHandler = DataHandler::GetSingleton();
 		ModInfo* modInfo = pDataHandler->modList.modInfoList.GetNthItem(index);
-		return (modInfo && dep_index > 0 && dep_index < modInfo->numRefMods) ? modInfo->refModInfo[dep_index]->modIndex : 0;
+		return (modInfo && dep_index < modInfo->numRefMods) ? modInfo->refModInfo[dep_index]->modIndex : 0;
 	}
 
 	void SetGameSettingFloat(StaticFunctionTag * base, BSFixedString name, float value)
@@ -387,6 +396,60 @@ namespace papyrusGame
 			tintMask->texture->str = path;
 		}
 	}
+
+	void UpdateTintMaskColors(StaticFunctionTag * base)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(TintMask::kMaskType_SkinTone, 0);
+		if(tintMask) {
+			NiColorA val;
+			val.r = tintMask->color.red / 255.0;
+			val.g = tintMask->color.green / 255.0;
+			val.b = tintMask->color.blue / 255.0;
+			UpdatePlayerSkin(pPC, &val);
+		}
+
+		UpdatePlayerTints();
+	}
+
+	void UpdateHairColor(StaticFunctionTag * base)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
+		if(npc && npc->headData) {
+			BGSColorForm * hairColor = npc->headData->hairColor;
+			if(hairColor) {
+				NiColorA val;
+				val.r = hairColor->color.red / 128.0;
+				val.g = hairColor->color.green / 128.0;
+				val.b = hairColor->color.blue / 128.0;
+				UpdatePlayerHair(pPC, &val);
+			}
+		}
+	}
+
+	UInt32 GetMiscStat(StaticFunctionTag * base, BSFixedString name)
+	{
+		MiscStatManager::MiscStat	* stat = MiscStatManager::GetSingleton()->Get(name.data);
+
+		if(stat)
+			return stat->value;
+		else
+		{
+			_MESSAGE("GetMiscStat: could not find stat (%s)", name.data);
+			return 0;
+		}
+	}
+
+	void SetMiscStat(StaticFunctionTag * base, BSFixedString name, UInt32 value)
+	{
+		MiscStatManager::MiscStat	* stat = MiscStatManager::GetSingleton()->Get(name.data);
+
+		if(stat)
+			stat->value = value;
+		else
+			_MESSAGE("SetMiscStat: could not find stat (%s)", name.data);
+	}
 }
 
 #include "PapyrusVM.h"
@@ -479,6 +542,18 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction3 <StaticFunctionTag, void, BSFixedString, UInt32, UInt32>("SetTintMaskTexturePath", "Game", papyrusGame::SetTintMaskTexturePath, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction0 <StaticFunctionTag, void>("UpdateTintMaskColors", "Game", papyrusGame::UpdateTintMaskColors, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <StaticFunctionTag, void>("UpdateHairColor", "Game", papyrusGame::UpdateHairColor, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, UInt32, BSFixedString>("GetMiscStat", "Game", papyrusGame::GetMiscStat, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, void, BSFixedString, UInt32>("SetMiscStat", "Game", papyrusGame::SetMiscStat, registry));
+
 	registry->SetFunctionFlags("Game", "GetModCount", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetModByName", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetModName", VMClassRegistry::kFunctionFlag_NoWait);
@@ -504,4 +579,9 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Game", "SetTintMaskColor", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetTintMaskTexturePath", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "SetTintMaskTexturePath", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "GetMiscStat", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "SetMiscStat", VMClassRegistry::kFunctionFlag_NoWait);
+
+	//registry->SetFunctionFlags("Game", "UpdateTintMaskColors", VMClassRegistry::kFunctionFlag_NoWait);
+	//registry->SetFunctionFlags("Game", "UpdateHairColor", VMClassRegistry::kFunctionFlag_NoWait);
 }

@@ -266,7 +266,7 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2012-11-09 03:10:57.178000 UTC
+; SKSE additions built 2013-01-07 17:38:10.814000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native
@@ -354,3 +354,15 @@ string Function GetTintMaskTexturePath(int type, int index) global native
 
 ; Sets the tintMask texture for the particular type and index
 Function SetTintMaskTexturePath(string path, int type, int index) global native
+
+; Updates tintMask colors without updating the entire model
+Function UpdateTintMaskColors() global native
+
+; Updates the players hair color immediately
+Function UpdateHairColor() global native
+
+; return a misc stat value
+int Function GetMiscStat(string name) global native
+
+; set a misc stat value
+Function SetMiscStat(string name, int value) global native

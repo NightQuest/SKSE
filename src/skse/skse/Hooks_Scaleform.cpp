@@ -18,6 +18,7 @@
 #include <new>
 #include <list>
 #include "PapyrusEvents.h"
+#include "PapyrusVM.h"
 #include "ScaleformState.h"
 #include "Translation.h"
 #include "GlobalLocks.h"
@@ -731,6 +732,191 @@ public:
 		g_loadGameLock.Leave();
 	}
 };
+/*
+class GetScriptVariableFunctor : public IForEachScriptObjectFunctor
+{
+public:
+	GetScriptVariableFunctor(VMClassRegistry * registry, UInt64 handle, BSFixedString var)
+	{
+		m_registry = registry;
+		m_handle = handle;
+		m_variable = var;
+	}
+	virtual ~GetScriptVariableFunctor(){}
+
+	virtual bool Visit(VMScriptInstance * script, void * arg2)
+	{
+		UInt32 variableId = CALL_MEMBER_FN(script->classInfo, GetVariable)(&m_variable);
+		if(variableId == -1) {
+			return true;
+		}
+		if(m_registry->ExtractValue(m_handle, &script->classInfo->name, variableId, &m_result))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	VMValue * getResult() { return m_result.type == VMValue::kType_None ? NULL : &m_result; }
+
+private:
+	VMClassRegistry	* m_registry;
+	BSFixedString	m_variable;
+	UInt64			m_handle;
+	VMValue			m_result;
+};
+
+#include "PapyrusArgs.h"
+
+class SKSEScaleform_GetVMVariable : public GFxFunctionHandler
+{
+	virtual void	Invoke(Args * args)
+	{
+		if(!g_loadGameLock.TryEnter())
+			return;
+
+		ASSERT(args->numArgs >= 1);
+		ASSERT(args->args[0].GetType() == GFxValue::kType_Number);
+		ASSERT(args->args[1].GetType() == GFxValue::kType_String);
+
+		const char * varName = args->args[1].GetString();
+		BSFixedString variableName(varName);
+
+		UInt32		formId;
+		TESForm		* form = NULL;
+
+
+		if (args->numArgs >= 1) {
+			formId = (UInt32)args->args[0].GetNumber();
+			if(formId > 0)
+				form = LookupFormByID(formId);
+		}
+
+		args->result->SetNull();
+
+		if(form) {
+			VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
+			IObjectHandlePolicy	* policy =		registry->GetHandlePolicy();
+
+			UInt64 handle = policy->Create(form->formType, form);
+			if (handle != policy->GetInvalidHandle())
+			{
+				GetScriptVariableFunctor scriptVariable(registry, handle, variableName);
+				registry->VisitScripts(handle, &scriptVariable);
+				VMValue * retValue;
+				if((retValue = scriptVariable.getResult()) != NULL)
+				{
+					if(retValue->IsIdentifier())
+					{
+						TESForm * retForm;
+						UnpackValue<TESForm>(&retForm, retValue);
+						if(retForm) {
+							args->movie->CreateObject(args->result);
+							scaleformExtend::FormData(args->result, args->movie, retForm, false, false);
+						}
+					}
+					else
+					{
+						switch(retValue->type)
+						{
+						case VMValue::kType_Bool:
+							{
+								bool b;
+								UnpackValue<bool>(&b, retValue);
+								args->result->SetNumber(b);
+							}
+							break;
+						case VMValue::kType_Int:
+							{
+								SInt32 i;
+								UnpackValue<SInt32>(&i, retValue);
+								args->result->SetNumber(i);
+							}
+							break;
+						case VMValue::kType_Float:
+							{
+								float f;
+								UnpackValue<float>(&f, retValue);
+								args->result->SetNumber(f);
+							}
+							break;
+						case VMValue::kType_String:
+							{
+								BSFixedString str;
+								UnpackValue<BSFixedString>(&str, retValue);
+								args->movie->CreateString(args->result, str.data);
+							}
+							break;
+						case VMValue::kType_BoolArray:
+							{
+								VMArray<bool> bArray;
+								UnpackValue<VMArray<bool>>(&bArray, retValue);
+								args->movie->CreateArray(args->result);
+
+								bool tmp;
+								for(int i = 0; i < bArray.Length(); i++) {
+									GFxValue gfxValue;
+									bArray.Get(&tmp, i);
+									gfxValue.SetNumber(tmp);
+									args->result->PushBack(&gfxValue);
+								}
+							}
+							break;
+						case VMValue::kType_IntArray:
+							{
+								VMArray<SInt32> iArray;
+								UnpackValue<VMArray<SInt32>>(&iArray, retValue);
+								args->movie->CreateArray(args->result);
+
+								SInt32 tmp;
+								for(int i = 0; i < iArray.Length(); i++) {
+									GFxValue gfxValue;
+									iArray.Get(&tmp, i);
+									gfxValue.SetNumber(tmp);
+									args->result->PushBack(&gfxValue);
+								}
+							}
+							break;
+						case VMValue::kType_FloatArray:
+							{
+								VMArray<float> fArray;
+								UnpackValue<VMArray<float>>(&fArray, retValue);
+								args->movie->CreateArray(args->result);
+
+								float tmp;
+								for(int i = 0; i < fArray.Length(); i++) {
+									GFxValue gfxValue;
+									fArray.Get(&tmp, i);
+									gfxValue.SetNumber(tmp);
+									args->result->PushBack(&gfxValue);
+								}
+							}
+							break;
+						case VMValue::kType_StringArray:
+							{
+								VMArray<BSFixedString> sArray;
+								UnpackValue<VMArray<BSFixedString>>(&sArray, retValue);
+								args->movie->CreateArray(args->result);
+
+								BSFixedString tmp;
+								for(int i = 0; i < sArray.Length(); i++) {
+									GFxValue gfxValue;
+									sArray.Get(&tmp, i);
+									args->movie->CreateString(&gfxValue, tmp.data);
+									args->result->PushBack(&gfxValue);
+								}
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		g_loadGameLock.Leave();
+	}
+};*/
 
 //// item card extensions
 
@@ -911,6 +1097,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	RegisterFunction <SKSEScaleform_GetClipboardData>(&skse, view, "GetClipboardData");
 	RegisterFunction <SKSEScaleform_SetClipboardData>(&skse, view, "SetClipboardData");
 	RegisterFunction <SKSEScaleform_GetPlayerSex>(&skse, view, "GetPlayerSex");
+	//RegisterFunction <SKSEScaleform_GetVMVariable>(&skse, view, "GetVMVariable");
 
 	// version
 	GFxValue	version;

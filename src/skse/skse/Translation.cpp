@@ -14,7 +14,7 @@ namespace Translation
 		wchar_t buf[512];
 		UInt32 ret = 0;
 
-		Setting	* setting = GetINISetting("sLanguage");
+		Setting	* setting = GetINISetting("sLanguage:General");
 		std::string path = "Interface\\Translations\\";
 
 		// Construct translation filename

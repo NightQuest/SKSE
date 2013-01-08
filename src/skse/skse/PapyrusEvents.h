@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include "Serialization.h"
+#include "PapyrusVM.h"
 
 // crashes otherwise
 #pragma pack (push, 4)

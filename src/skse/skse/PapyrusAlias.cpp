@@ -104,6 +104,15 @@ namespace papyrusAlias
 	{
 		g_modCallbackRegs.UnregisterAll<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisAlias);
 	}
+
+	void SendModEvent(BGSBaseAlias * thisAlias, BSFixedString eventName, BSFixedString strArg, float numArg)
+	{
+		if (!thisAlias || !eventName.data)
+			return;
+
+		SKSEModCallbackEvent evn(eventName, strArg, numArg, thisAlias->owner);
+		g_modCallbackEventDispatcher.SendEvent(&evn);
+	}
 }
 
 
@@ -146,6 +155,9 @@ void papyrusAlias::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllModEvents", "Alias", papyrusAlias::UnregisterForAllModEvents, registry));
 
 	registry->RegisterFunction(
+		new NativeFunction3 <BGSBaseAlias, void, BSFixedString, BSFixedString, float> ("SendModEvent", "Alias", papyrusAlias::SendModEvent, registry));
+
+	registry->RegisterFunction(
 		new NativeFunction1 <BGSBaseAlias, void, BSFixedString> ("RegisterForControl", "Alias", papyrusAlias::RegisterForControl, registry));
 
 	registry->RegisterFunction(
@@ -162,6 +174,7 @@ void papyrusAlias::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Alias", "UnregisterForAllMenus", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "RegisterForModEvent", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "UnregisterForAllModEvents", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "SendModEvent", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "RegisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "UnregisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "UnregisterForAllControls", VMClassRegistry::kFunctionFlag_NoWait);

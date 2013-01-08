@@ -2,6 +2,25 @@
 
 #include "GameTypes.h"
 
+class TESCamera;
+class NiNode;
+
+class PlayerInputHandler
+{
+public:
+	PlayerInputHandler();
+	virtual ~PlayerInputHandler();
+
+	virtual void Unk_01();
+	virtual void Unk_02();
+	virtual void Unk_03();
+	virtual void Unk_04();
+
+	UInt32	unk04;
+	NiNode	* cameraNode;
+	NiNode	* controllerNode;
+};
+
 class TESCameraState
 {
 public:
@@ -17,7 +36,10 @@ public:
 	virtual void Unk_07();
 	virtual void Unk_08();
 
-	BSIntrusiveRefCounted refCount;
+	BSIntrusiveRefCounted	refCount;
+	TESCamera				* camera;
+	UInt32					unk0C;
+	PlayerInputHandler		inputHandler;
 };
 
 class TweenMenuCameraState : public TESCameraState
@@ -81,10 +103,9 @@ public:
 	virtual ~PlayerCameraTransitionState();
 };
 
-class NiNode;
-
 class TESCamera
 {
+public:
 	TESCamera();
 	virtual ~TESCamera();
 

@@ -222,9 +222,11 @@ namespace papyrusColorForm
 
 	void SetColor(BGSColorForm* colorForm, UInt32 color)
 	{
-		colorForm->color.red = (color & 0x00FF0000) >> 16;
-		colorForm->color.green = (color & 0x0000FF00) >> 8;
-		colorForm->color.blue = (color & 0x000000FF);
+		if(colorForm) {
+			colorForm->color.red = (color & 0x00FF0000) >> 16;
+			colorForm->color.green = (color & 0x0000FF00) >> 8;
+			colorForm->color.blue = (color & 0x000000FF);
+		}
 	}
 }
 

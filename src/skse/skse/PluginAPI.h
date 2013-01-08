@@ -13,9 +13,7 @@ enum
 {
 	kInterface_Invalid = 0,
 	kInterface_Scaleform,
-#ifdef _PPAPI
 	kInterface_Papyrus,
-#endif
 	kInterface_Max,
 };
 

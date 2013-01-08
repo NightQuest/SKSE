@@ -1,3 +1,21 @@
+1.6.6:
+- fix Potion::IsFood
+- fix crash in Actor.GetNthSpell when called on actors with no spells
+- cosaves are deleted properly when overwriting existing saves
+- cosave path now respects sLocalSavePath config setting
+- steam_loader no longer uses current working directory
+- automatic translation loader correctly derives current language
+- set [Debug] WriteMinidumps=1 in the .ini file to write a minidump to <My Documents>\My Games\Skyrim\SKSE\Minidumps\ when the game crashes
+- set [Display] iTintTextureResolution=<number> to pick the size of dynamically built tint textures (default is 256)
+- ActiveEffects may now register for and send events
+- Alias.SendModEvent
+- Game.Get/SetMiscStat
+- Race.GetRace, Race::Get/SetDefaultVoiceType
+- Game.UpdateTintMaskColors, UpdateHairColor
+- TextureSet.Get/SetNthTexturePath
+- ActorBase.Get/SetFaceTextureSet
+- added NetImmerse class with various NiNode manipulation functions
+
 1.6.5:
 - add ActionScript function GetLastKeycode to return the last pressed/released SKSE keycode
 - disabled non-delayed execution for UI.Get/Set/IsMenuOpen because of stability issues

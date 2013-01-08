@@ -7,10 +7,11 @@
 #include <shlobj.h>
 #include "GameData.h"
 #include "InternalSerialization.h"
+#include "GameSettings.h"
 
 namespace Serialization
 {
-	const char * kSavegamePath = "\\My Games\\Skyrim\\Saves\\";
+	const char * kSavegamePath = "\\My Games\\Skyrim\\";
 
 	// file format internals
 
@@ -80,6 +81,13 @@ namespace Serialization
 
 		std::string	result = path;
 		result += kSavegamePath;
+		Setting* localSavePath = GetINISetting("sLocalSavePath:General");
+		if(localSavePath && (localSavePath->GetType() == Setting::kType_String))
+			result += localSavePath->data.s;
+		else
+			result += "Saves\\";
+
+		result += "\\";
 		result += name;
 		if (extension)
 			result += extension;
@@ -347,7 +355,6 @@ namespace Serialization
 
 		if(!s_currentFile.Open(s_savePath.c_str()))
 		{
-			_MESSAGE("HandleLoadGame: couldn't open file (%s), probably doesn't exist", s_savePath.c_str());
 			return;
 		}
 

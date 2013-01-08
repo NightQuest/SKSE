@@ -53,3 +53,6 @@ endEvent
 Function RegisterForModEvent(string eventName, string callbackName) native
 Function UnregisterForModEvent(string eventName) native
 Function UnregisterForAllModEvents() native
+
+; Sends custom event with given generic parameters.
+Function SendModEvent(string eventName, string strArg = "", float numArg = 0.0) native

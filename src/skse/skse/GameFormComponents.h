@@ -15,6 +15,9 @@ class TESShout;
 class IngredientItem;
 class TESRace;
 class EnchantmentItem;
+class TESFaction;
+class BGSVoiceType;
+class BGSEquipSlot;
 
 //// root
 
@@ -160,10 +163,10 @@ public:
 class BGSEquipType : public BaseFormComponent
 {
 public:
-	virtual	UInt32	GetEquipType(void);
-	virtual void	SetEquipType(UInt32 type);
+	virtual	BGSEquipSlot *	GetEquipSlot(void);
+	virtual void			SetEquipSlot(BGSEquipSlot * type);
 
-	UInt32	unk04;	// 04
+	BGSEquipType * unk04;	// 04
 };
 
 // 10
@@ -279,22 +282,22 @@ public:
 	virtual bool	Unk_07(void);
 	virtual UInt32	GetUnk20(void);
 
-	UInt32	flags;	// 04 - init'd to 0
-	UInt16	unk08;	// 08 - init'd to 0
-	UInt16	unk0A;	// 0A - init'd to 0
-	UInt16	unk0C;	// 0C - init'd to 1
-	UInt16	unk0E;	// 0E - init'd to 0
-	UInt16	unk10;	// 10 - init'd to 0
-	UInt16	unk12;	// 12 - init'd to 0x64 (100)
-	UInt16	unk14;	// 14 - init'd to iBaseDisposition (35)
-	UInt16	unk16;	// 16 - init'd to 0
-	UInt16	unk18;	// 18 - init'd to 0
-	UInt16	unk1A;	// 1A - init'd to 0
-	UInt32	unk1C;	// 1C
-	UInt32	unk20;	// 20
-	UInt32	unk24;	// 24
-	UInt32	unk28;	// 28 - init'd to 0
-	UnkArray	unk2C;	// 2C
+	UInt32				flags;	// 04 - init'd to 0
+	UInt16				unk08;	// 08 - init'd to 0
+	UInt16				unk0A;	// 0A - init'd to 0
+	UInt16				unk0C;	// 0C - init'd to 1
+	UInt16				unk0E;	// 0E - init'd to 0
+	UInt16				unk10;	// 10 - init'd to 0
+	UInt16				unk12;	// 12 - init'd to 0x64 (100)
+	UInt16				unk14;	// 14 - init'd to iBaseDisposition (35)
+	UInt16				unk16;	// 16 - init'd to 0
+	UInt16				unk18;	// 18 - init'd to 0
+	UInt16				unk1A;	// 1A - init'd to 0
+	UInt32				unk1C;	// 1C
+	BGSVoiceType		* voiceType;	// 20
+	UInt32				unk24;	// 24
+	UInt32				unk28;	// 28 - init'd to 0
+	tArray<TESFaction*>	unk2C;	// 2C
 };
 
 // 8

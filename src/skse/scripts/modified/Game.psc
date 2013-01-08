@@ -85,3 +85,15 @@ string Function GetTintMaskTexturePath(int type, int index) global native
 
 ; Sets the tintMask texture for the particular type and index
 Function SetTintMaskTexturePath(string path, int type, int index) global native
+
+; Updates tintMask colors without updating the entire model
+Function UpdateTintMaskColors() global native
+
+; Updates the players hair color immediately
+Function UpdateHairColor() global native
+
+; return a misc stat value
+int Function GetMiscStat(string name) global native
+
+; set a misc stat value
+Function SetMiscStat(string name, int value) global native

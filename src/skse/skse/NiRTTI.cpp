@@ -1,4 +1,15 @@
 #include "NiRTTI.h"
+#include "NiObjects.h"
+
+NiObject * DoNiRTTICast(NiObject * src, const NiRTTI * typeInfo)
+{
+	if(src)
+		for(NiRTTI * iter = src->GetRTTI(); iter; iter = iter->parent)
+			if(iter == typeInfo)
+				return src;
+
+	return NULL;
+}
 
 const NiRTTI *	NiRTTI_BGSDecalNode = (NiRTTI *)0x012E4DDC;
 const NiRTTI *	NiRTTI_BSAnimGroupSequence = (NiRTTI *)0x012E4EE4;

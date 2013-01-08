@@ -21,15 +21,6 @@ HANDLE		g_dllHandle;
 
 static void OnAttach(void);
 
-std::string GetCWD(void)
-{
-	char	cwd[4096];
-
-	ASSERT(_getcwd(cwd, sizeof(cwd)));
-
-	return cwd;
-}
-
 std::string GetAppPath(void)
 {
 	char	appPath[4096];
@@ -37,6 +28,17 @@ std::string GetAppPath(void)
 	ASSERT(GetModuleFileName(GetModuleHandle(NULL), appPath, sizeof(appPath)));
 
 	return appPath;
+}
+
+std::string GetAppDir(void)
+{
+	std::string	appPath = GetAppPath();
+
+	std::string::size_type slashOffset = appPath.rfind('\\');
+	if(slashOffset == std::string::npos)
+		return appPath;
+
+	return appPath.substr(0, slashOffset);
 }
 
 BOOL WINAPI DllMain(HANDLE procHandle, DWORD reason, LPVOID reserved)
@@ -148,9 +150,7 @@ void InstallHook(void * retaddr, UInt32 hookSrc)
 	}
 
 	// build full path to our dll
-	std::string	dllPath;
-
-	g_dllPath = GetCWD() + "\\skse_" + dllSuffix + ".dll";
+	g_dllPath = GetAppDir() + "\\skse_" + dllSuffix + ".dll";
 
 	_MESSAGE("dll = %s", g_dllPath.c_str());
 

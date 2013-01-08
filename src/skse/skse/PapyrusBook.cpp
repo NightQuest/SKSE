@@ -6,7 +6,7 @@ namespace papyrusBook
 {
 	UInt32 GetSkill(TESObjectBOOK * thisBook)
 	{
-		if(thisBook->data.GetSanitizedType() == TESObjectBOOK::Data::kType_Skill)
+		if(thisBook && thisBook->data.GetSanitizedType() == TESObjectBOOK::Data::kType_Skill)
 			return thisBook->data.teaches.skill;
 
 		return 0;
@@ -14,10 +14,15 @@ namespace papyrusBook
 
 	SpellItem * GetSpell(TESObjectBOOK * thisBook)
 	{
-		if(thisBook->data.GetSanitizedType() == TESObjectBOOK::Data::kType_Spell)
+		if(thisBook && thisBook->data.GetSanitizedType() == TESObjectBOOK::Data::kType_Spell)
 			return thisBook->data.teaches.spell;
 
 		return NULL;
+	}
+
+	bool IsRead(TESObjectBOOK * thisBook)
+	{
+		return thisBook ? ((thisBook->data.type & TESObjectBOOK::Data::kType_Read) == TESObjectBOOK::Data::kType_Read) : false;
 	}
 }
 
@@ -31,4 +36,7 @@ void papyrusBook::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0<TESObjectBOOK, SpellItem *>("GetSpell", "Book", papyrusBook::GetSpell, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectBOOK, bool>("IsRead", "Book", papyrusBook::IsRead, registry));
 }

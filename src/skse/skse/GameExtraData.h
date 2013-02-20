@@ -37,21 +37,35 @@ public:
 
 	typedef tList<BaseExtraList> ExtendDataList;
 
-	struct EntryData
+	class EntryData
 	{
+	public:
 		TESForm* type;
 		ExtendDataList* extendDataList;
 		SInt32 countDelta;
+
+		static EntryData * Create(TESForm * item, UInt32 count);
+
+		void Delete(void);
+
+		void GetExtraWornBaseLists(BaseExtraList ** pWornBaseListOut, BaseExtraList ** pWornLeftBaseListOut) const;
 	};
 
 	typedef tList<EntryData> EntryDataList;
 
-	struct Data
+	class Data
 	{
+	public:
 		EntryDataList*	objList;
 		TESObjectREFR*	owner;
 		float			totalWeight;
 		float			armorWeight;
+
+		EntryData * FindItemEntry(TESForm * item) const;
+
+		// Allocate new entry data as a merge between base container data and extra data
+		// Uses BaseExtraList*'s from original extra data and combined count
+		EntryData * CreateEquipEntryData(TESForm * item);
 	};
 
 	Data * data;
@@ -156,7 +170,16 @@ public:
  //	ExtraDroppedItemList
  //	ExtraRandomTeleportMarker
  //	ExtraSavedHavokData
- //	ExtraCannotWear
+class ExtraCannotWear : public BSExtraData
+{
+public:
+	ExtraCannotWear();
+	virtual ~ExtraCannotWear();
+
+	UInt32	unk08;
+
+	static ExtraCannotWear* Create();
+};
  //	ExtraPoison
  //	ExtraLastFinishedSequence
  //	ExtraSavedAnimation
@@ -166,7 +189,16 @@ public:
  //	ExtraHeadingTarget
  //	ExtraRefractionProperty
  //	ExtraStartingWorldOrCell
- //	ExtraHotkey
+class ExtraHotkey : public BSExtraData
+{
+public:
+	ExtraHotkey();
+	virtual ~ExtraHotkey();
+
+	SInt32	hotkey;	// 08 (1 to 8, -1 unbound)
+
+	static ExtraHotkey* Create();
+};
  //	ExtraEditiorRefMoveData
  //	ExtraInfoGeneralTopic
  //	ExtraHasNoRumors
@@ -227,22 +259,9 @@ public:
 	ExtraCollisionData();
 	virtual ~ExtraCollisionData();
 
-	enum {
-		kCollisionLayer_Trigger = 0x0C,
-		kCollisionLayer_NonCollidable = 0x0F,
-		kCollisionLayer_ActorZone = 0x16,
-		kCollisionLayer_ProjectileZone = 0x17,
-		kCollisionLayer_GasTrap = 0x18,		
-		kCollisionLayer_DeadActorZone = 0x2F,
-		kCollisionLayer_TriggerFallingTrap = 0x30,
-		kCollisionLayer_SpellTrigger = 0x33,
-		kCollisionLayer_LivingAndDead = 0x34,
-		kCollisionLayer_TrapTrigger = 0x36
-	};
-
 	struct Data
 	{
-		UInt32	collisionLayer;
+		UInt32	collisionLayer; // LayerId
 	};
 
 	Data	* data;

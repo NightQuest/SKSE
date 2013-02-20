@@ -9,7 +9,6 @@ class VMClassRegistry;
 namespace papyrusForm
 {
 	void RegisterFuncs(VMClassRegistry* registry);
-	void RegisterEventSinks();
 
 	UInt32 GetType(TESForm* thisForm);
 	BSFixedString GetName(TESForm* thisForm);
@@ -40,4 +39,10 @@ namespace papyrusForm
 	void RegisterForControl(TESForm * thisForm, BSFixedString control);
 	void UnregisterForControl(TESForm * thisForm, UInt32 control);
 	void UnregisterForAllControls(TESForm * thisForm);
+
+	void RegisterForCameraState(TESForm * thisForm);
+	void UnregisterForCameraState(TESForm * thisForm);
+
+	void RegisterForCrosshairRef(TESForm * thisForm);
+	void UnregisterForCrosshairRef(TESForm * thisForm);
 }

@@ -5,6 +5,23 @@ class VMClassRegistry;
 class Setting;
 
 #include "GameTypes.h"
+#include "Hooks_UI.h"
+
+class TintUpdateDelegate : public UIDelegate
+{
+public:
+	TintUpdateDelegate() {}
+	virtual void Run();
+	virtual void Dispose(void);
+};
+
+class HairUpdateDelegate : public UIDelegate
+{
+public:
+	HairUpdateDelegate() {}
+	virtual void Run();
+	virtual void Dispose(void);
+};
 
 namespace papyrusGame
 {

@@ -22,7 +22,7 @@ namespace papyrusBook
 
 	bool IsRead(TESObjectBOOK * thisBook)
 	{
-		return thisBook ? ((thisBook->data.type & TESObjectBOOK::Data::kType_Read) == TESObjectBOOK::Data::kType_Read) : false;
+		return thisBook ? ((thisBook->data.flags & TESObjectBOOK::Data::kType_Read) == TESObjectBOOK::Data::kType_Read) : false;
 	}
 }
 

@@ -113,6 +113,38 @@ namespace papyrusAlias
 		SKSEModCallbackEvent evn(eventName, strArg, numArg, thisAlias->owner);
 		g_modCallbackEventDispatcher.SendEvent(&evn);
 	}
+
+	void RegisterForCameraState(BGSBaseAlias * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_cameraEventRegs.Register<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisForm);
+	}
+
+	void UnregisterForCameraState(BGSBaseAlias * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_cameraEventRegs.Unregister<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisForm);
+	}
+
+	void RegisterForCrosshairRef(BGSBaseAlias * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_crosshairRefEventRegs.Register<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisForm);
+	}
+
+	void UnregisterForCrosshairRef(BGSBaseAlias * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_crosshairRefEventRegs.Unregister<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisForm);
+	}
 }
 
 
@@ -166,6 +198,18 @@ void papyrusAlias::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForAllControls", "Alias", papyrusAlias::UnregisterForAllControls, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSBaseAlias, void> ("RegisterForCameraState", "Alias", papyrusAlias::RegisterForCameraState, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForCameraState", "Alias", papyrusAlias::UnregisterForCameraState, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSBaseAlias, void> ("RegisterForCrosshairRef", "Alias", papyrusAlias::RegisterForCrosshairRef, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForCrosshairRef", "Alias", papyrusAlias::UnregisterForCrosshairRef, registry));
+
 	registry->SetFunctionFlags("Alias", "RegisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "UnregisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "UnregisterForAllKeys", VMClassRegistry::kFunctionFlag_NoWait);
@@ -178,4 +222,8 @@ void papyrusAlias::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Alias", "RegisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "UnregisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "UnregisterForAllControls", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "RegisterForCameraState", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "UnregisterForCameraState", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "RegisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "UnregisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
 }

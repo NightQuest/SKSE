@@ -62,3 +62,37 @@ MiscStatManager::MiscStat * MiscStatManager::Get(const char * name)
 
 	return NULL;
 }
+
+EquipManager * EquipManager::GetSingleton(void)
+{
+	return *((EquipManager **)0x012E51AC);
+}
+
+const _GetEitherHandSlot GetEitherHandSlot = (_GetEitherHandSlot)0x0054BD70;
+const _GetRightHandSlot GetRightHandSlot = (_GetRightHandSlot)0x0054BD40;
+const _GetLeftHandSlot GetLeftHandSlot = (_GetLeftHandSlot)0x0049D0D0;
+
+
+const _LookupActorValueByName LookupActorValueByName = (_LookupActorValueByName)0x005AD770;
+
+ActorValueList * ActorValueList::GetSingleton(void)
+{
+	return *((ActorValueList **)0x012E1DDC);
+}
+
+ActorValueInfo * ActorValueList::GetActorValue(UInt32 id)
+{
+	return (id < kNumActorValues) ? actorValues[id] : NULL;
+}
+
+
+const _ChangeActorHeadPart ChangeActorHeadPart = (_ChangeActorHeadPart)0x005AA6C0; // Changes one HeadPart to another
+const _UpdatePlayerTints UpdatePlayerTints = (_UpdatePlayerTints)0x0087F190; // Regenerates dynamic tints
+
+FaceGen * FaceGen::GetSingleton(void)
+{
+	return *((FaceGen **)0x012E2738);
+}
+
+const _GetActorBaseOverlays GetActorBaseOverlays = (_GetActorBaseOverlays)0x005679D0;
+const _GetNumActorBaseOverlays GetNumActorBaseOverlays = (_GetNumActorBaseOverlays)0x00567A40;

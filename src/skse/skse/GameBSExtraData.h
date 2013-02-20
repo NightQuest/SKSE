@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Utilities.h"
+
 enum ExtraDataType
 {
 	kExtraData_Havok			= 0x1,
@@ -234,9 +236,15 @@ public:
 	bool Remove(UInt8 type, BSExtraData* toRemove);
 	bool Add(UInt8 type, BSExtraData* toAdd);
 
+	bool CheckContainerExtraData(bool isEquipped);
+
 	BSExtraData* GetByType(UInt32 type) const;
 	BSExtraData			* m_data;		// 00
 	PresenceBitfield	* m_presence;	// 04
+
+private:
+	MEMBER_FN_PREFIX(BaseExtraList);
+	DEFINE_MEMBER_FN(CheckContainerExtraData_Internal, bool, 0x0040AA80, bool isEquipped);	
 };
 
 STATIC_ASSERT(sizeof(BaseExtraList) == 0x08);

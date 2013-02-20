@@ -821,7 +821,7 @@ Function ForceTargetAngle(float afXAngle = 0.0, float afYAngle = 0.0, float afZA
 Function ClearForcedMovement() native
 
 
-; SKSE additions built 2013-01-07 17:38:10.814000 UTC
+; SKSE additions built 2013-02-20 11:33:33.219000 UTC
 ; returns the form for the item worn at the specified slotMask
 ; use Armor.GetMaskForSlot() to generate appropriate slotMask
 Form Function GetWornForm(int slotMask) native
@@ -834,3 +834,13 @@ Spell Function GetNthSpell(int n) native
 
 ; Updates an Actors meshes (Used for Armor mesh/texture changes and face changes)
 Function QueueNiNodeUpdate() native
+
+int Property EquipSlot_Default = 0 AutoReadOnly
+int Property EquipSlot_RightHand = 1 AutoReadOnly
+int Property EquipSlot_LeftHand = 2 AutoReadOnly
+
+; equips item at the given slot
+Function EquipItemEx(Form item, int equipSlot = 0, bool preventUnequip = false, bool equipSound = true) native
+
+; unequips item at the given slot
+Function UnequipItemEx(Form item, int equipSlot = 0, bool preventEquip = false) native

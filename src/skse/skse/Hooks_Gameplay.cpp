@@ -1,6 +1,8 @@
 #include "Hooks_Gameplay.h"
 #include "SafeWrite.h"
 #include "Utilities.h"
+#include "PapyrusEvents.h"
+#include "GameReferences.h"
 #include "skse_version.h"
 
 static UInt32 g_forceContainerCategorization = 0;
@@ -77,6 +79,45 @@ static void __declspec(naked) Hook_ShowVersion(void)
 	}
 }
 
+bool __cdecl Hook_Crosshair_LookupREFRByHandle(UInt32 * refHandle, TESObjectREFR ** refrOut)
+{
+	bool result = LookupREFRByHandle(refHandle, refrOut);
+
+	if (refrOut)
+	{
+		SKSECrosshairRefEvent evn(*refrOut);
+		g_crosshairRefEventDispatcher.SendEvent(&evn);
+	}
+
+	return result;
+}
+
+static UInt8 s_disableMapMenuMouseWheel = 1;
+static const UInt32 kHook_MapMenuMouseWheel_Base = 0x008996C0;
+static const UInt32 kHook_MapMenuMouseWheel_Enter = kHook_MapMenuMouseWheel_Base + 0x169;
+static const UInt32 kHook_MapMenuMouseWheel_Return = kHook_MapMenuMouseWheel_Base + 0x16F;
+
+static void __declspec(naked) Hook_MapMenuMouseWheel(void)
+{
+	__asm
+	{
+		mov		al, s_disableMapMenuMouseWheel
+
+		// Original code
+		pop     edi
+		pop     esi
+		pop     ebp
+		pop     ebx
+
+		jmp		[kHook_MapMenuMouseWheel_Return]
+	}
+}
+
+void Hooks_Gameplay_EnableMapMenuMouseWheel(bool enable)
+{
+	s_disableMapMenuMouseWheel = enable ? 0 : 1;
+}
+
 void Hooks_Gameplay_Commit(void)
 {
 	// optionally force containers in to "npc" mode, showing categories
@@ -98,4 +139,11 @@ void Hooks_Gameplay_Commit(void)
 
 	// hook BGSKeyword ctor so we can rebuild the lookup table
 	WriteRelJump(kHook_BGSKeyword_Base, (UInt32)Hook_BGSKeyword_Create);
+
+	// hook crosshair ref update
+	WriteRelCall(0x00739B10 + 0x64, (UInt32) &Hook_Crosshair_LookupREFRByHandle);
+
+	// change return value of LocalMapMenu::InputHandler::HandleMouseMoveEvent
+	// for zoomIn/out case so it passes on the event to flash
+	WriteRelJump(kHook_MapMenuMouseWheel_Enter, (UInt32)Hook_MapMenuMouseWheel);
 }

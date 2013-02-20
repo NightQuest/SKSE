@@ -15,6 +15,7 @@ Options::Options()
 ,m_launchSteam(false)
 ,m_noTimeout(false)
 ,m_fpsLimit(0)
+,m_affinity(0)
 {
 	//
 }
@@ -176,6 +177,25 @@ bool Options::Read(int argc, char ** argv)
 				{
 					m_noTimeout = true;
 				}
+				else if(!_stricmp(arg, "affinity"))
+				{
+					if(argc >= 1)
+					{
+						const char	* maskStr = *argv++;
+						argc--;
+
+						if(sscanf_s(maskStr, "%I64i", &m_affinity) != 1)
+						{
+							_ERROR("couldn't read affinity mask as an integer (%s)", maskStr);
+							return false;
+						}
+					}
+					else
+					{
+						_ERROR("affinity mask not specified");
+						return false;
+					}
+				}
 				else
 				{
 					_ERROR("unknown switch (%s)", arg);
@@ -230,6 +250,7 @@ void Options::PrintUsage(void)
 	_MESSAGE("  -noskiplauncher - does not skip the default Bethesda launcher window");
 	_MESSAGE("                    note: specifying this option may cause compatibility problems");
 	_MESSAGE("  -launchsteam - attempt to launch steam if it is not running");
+	_MESSAGE("  -affinity <mask> - set the processor affinity mask");
 }
 
 bool Options::Verify(void)

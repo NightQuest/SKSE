@@ -56,3 +56,17 @@ Function UnregisterForAllModEvents() native
 
 ; Sends custom event with given generic parameters.
 Function SendModEvent(string eventName, string strArg = "", float numArg = 0.0) native
+
+; See Form.psc
+Function RegisterForCameraState() native
+Function UnregisterForCameraState() native
+
+Event OnPlayerCameraState(int oldState, int newState)
+EndEvent
+
+; See Form.psc
+Function RegisterForCrosshairRef() native
+Function UnregisterForCrosshairRef() native
+	
+Event OnCrosshairRefChange(ObjectReference ref)
+EndEvent

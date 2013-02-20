@@ -4,6 +4,7 @@
 #include "GameTypes.h"
 #include "GameEvents.h"
 #include "GameInput.h"
+#include "GameCamera.h"
 #include <map>
 #include <set>
 #include "Serialization.h"
@@ -323,11 +324,173 @@ public:
 	}
 };
 
+template <typename D = NullParameters>
+class RegistrationSetHolder : public SafeDataHolder<std::set<EventRegistration<D>>>
+{
+	typedef std::set<EventRegistration<D>>	RegSet;
+
+public:
+
+	void Register(UInt64 handle, D * params = NULL)
+	{
+		VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
+		IObjectHandlePolicy	* policy =		registry->GetHandlePolicy();
+
+		EventRegistration<D> reg;
+		reg.handle = handle;
+		if (params)
+			reg.params = *params;
+		
+		Lock();
+
+		if (m_data.insert(reg).second)
+			policy->AddRef(handle);
+
+		Release();
+	}
+
+	template <typename T>
+	void Register(UInt32 type, T * classType, D * params = NULL)
+	{
+		VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
+		IObjectHandlePolicy	* policy =		registry->GetHandlePolicy();
+
+		EventRegistration<D> reg;
+		reg.handle = policy->Create(type, (void *)classType);
+		if (params)
+			reg.params = *params;
+		
+		Lock();
+
+		if (m_data.insert(reg).second)
+			policy->AddRef(reg.handle);
+
+		Release();
+	}
+
+	void Unregister(UInt64 handle)
+	{
+		VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
+		IObjectHandlePolicy	* policy =		registry->GetHandlePolicy();
+
+		EventRegistration<D> reg;
+		reg.handle = handle;
+
+		Lock();
+
+		if (m_data.erase(reg))
+			policy->Release(handle);
+
+		Release();
+	}
+
+	template <typename T>
+	void Unregister(UInt32 type, T * classType)
+	{
+		VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
+		IObjectHandlePolicy	* policy =		registry->GetHandlePolicy();
+
+		EventRegistration<D> reg;
+		reg.handle = policy->Create(type, (void *)classType);
+
+		Lock();
+
+		if (m_data.erase(reg))
+			policy->Release(reg.handle);
+
+		Release();
+	}
+
+	template <typename F>
+	void ForEach(F & functor)
+	{
+		Lock();
+
+		for (RegSet::iterator iter = m_data.begin(); iter != m_data.end(); ++iter)
+			functor(*iter);
+
+		Release();
+	}
+
+	void Clear(void)
+	{
+		Lock();
+		m_data.clear();
+		Release();
+	}
+
+	bool Save(SKSESerializationInterface * intfc, UInt32 type, UInt32 version)
+	{
+		intfc->OpenRecord(type, version);
+
+		Lock();
+
+		UInt32 numRegs = m_data.size();
+
+		// Reg count
+		intfc->WriteRecordData(&numRegs, sizeof(numRegs));
+			
+		// Regs
+		for (RegSet::iterator iter = m_data.begin(); iter != m_data.end(); ++iter)
+			iter->Save(intfc, version);
+
+		Release();
+
+		return true;
+	}
+
+	bool Load(SKSESerializationInterface* intfc, UInt32 version)
+	{
+		// Reg count
+		UInt32 numRegs = 0;
+		if (! intfc->ReadRecordData(&numRegs, sizeof(numRegs)))
+		{
+			_MESSAGE("Error loading reg count");
+			return false;
+		}
+
+		for (UInt32 i=0; i<numRegs; i++)
+		{
+			EventRegistration<D> reg;
+			if (reg.Load(intfc, version))
+			{
+				VMClassRegistry		* registry =	(*g_skyrimVM)->GetClassRegistry();
+				IObjectHandlePolicy	* policy =		registry->GetHandlePolicy();
+
+				UInt64 newHandle = 0;
+
+				// Skip if handle is no longer valid.
+				if (! intfc->ResolveHandle(reg.handle, &newHandle))
+					continue;
+
+				reg.handle = newHandle;
+
+				Lock();
+
+				if (m_data.insert(reg).second)
+					policy->AddRef(reg.handle);
+
+				Release();
+				
+			}
+			else
+			{
+				_MESSAGE("Error loading regs");
+				return false;
+			}
+		}
+
+		return true;
+	}
+};
+
 extern RegistrationMapHolder<BSFixedString>							g_menuOpenCloseRegs;
 extern RegistrationMapHolder<UInt32>								g_inputKeyEventRegs;
 extern RegistrationMapHolder<BSFixedString>							g_inputControlEventRegs;
 extern RegistrationMapHolder<BSFixedString,ModCallbackParameters>	g_modCallbackRegs;
 
+extern RegistrationSetHolder<NullParameters>						g_cameraEventRegs;
+extern RegistrationSetHolder<NullParameters>						g_crosshairRefEventRegs;
 
 struct SKSEModCallbackEvent
 {
@@ -350,6 +513,42 @@ public:
 
 extern EventDispatcher<SKSEModCallbackEvent> g_modCallbackEventDispatcher;
 
+struct SKSECameraEvent
+{
+	TESCameraState * oldState;
+	TESCameraState * newState;
+
+	SKSECameraEvent(TESCameraState * a_oldState, TESCameraState * a_newState) :
+		oldState(a_oldState), newState(a_newState) {}
+};
+
+template <>
+class BSTEventSink <SKSECameraEvent>
+{
+public:
+	virtual ~BSTEventSink() {}; // todo?
+	virtual	EventResult ReceiveEvent(SKSECameraEvent * evn, EventDispatcher<SKSECameraEvent> * dispatcher) = 0;
+};
+
+extern EventDispatcher<SKSECameraEvent> g_cameraEventDispatcher;
+
+struct SKSECrosshairRefEvent
+{
+	TESObjectREFR *		crosshairRef;
+
+	SKSECrosshairRefEvent(TESObjectREFR * a_crosshairRef) : crosshairRef(a_crosshairRef) {}
+};
+
+template <>
+class BSTEventSink <SKSECrosshairRefEvent>
+{
+public:
+	virtual ~BSTEventSink() {}; // todo?
+	virtual	EventResult ReceiveEvent(SKSECrosshairRefEvent * evn, EventDispatcher<SKSECrosshairRefEvent> * dispatcher) = 0;
+};
+
+extern EventDispatcher<SKSECrosshairRefEvent> g_crosshairRefEventDispatcher;
+
 
 class MenuEventHandler : public BSTEventSink <MenuOpenCloseEvent>
 {
@@ -369,6 +568,20 @@ public:
 	virtual	EventResult		ReceiveEvent(SKSEModCallbackEvent * evn, EventDispatcher<SKSEModCallbackEvent> * dispatcher);
 };
 
-extern MenuEventHandler			g_menuEventHandler;
-extern InputEventHandler		g_inputEventHandler;
-extern ModCallbackEventHandler	g_modCallbackEventHandler;
+class CameraEventHandler :	public BSTEventSink <SKSECameraEvent>
+{
+public:
+	virtual	EventResult		ReceiveEvent(SKSECameraEvent * evn, EventDispatcher<SKSECameraEvent> * dispatcher);
+};
+
+class CrosshairRefEventHandler : public BSTEventSink <SKSECrosshairRefEvent>
+{
+public:
+	virtual	EventResult		ReceiveEvent(SKSECrosshairRefEvent * evn, EventDispatcher<SKSECrosshairRefEvent> * dispatcher);
+};
+
+extern MenuEventHandler				g_menuEventHandler;
+extern InputEventHandler			g_inputEventHandler;
+extern ModCallbackEventHandler		g_modCallbackEventHandler;
+extern CameraEventHandler			g_cameraEventHandler;
+extern CrosshairRefEventHandler		g_crosshairRefEventHandler;

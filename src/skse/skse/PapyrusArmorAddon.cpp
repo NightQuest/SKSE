@@ -6,61 +6,63 @@ namespace papyrusArmorAddon
 {
 	BSFixedString GetModelPath(TESObjectARMA* thisArmorAddon, bool bFirst, bool bFemale)
 	{
-		return (thisArmorAddon) ? thisArmorAddon->models[bFirst ? 1 : 0][bFemale ? 1 : 0].GetModelName() : NULL;
+		return thisArmorAddon ? thisArmorAddon->models[bFirst][bFemale].GetModelName() : NULL;
 	}
 
 	void SetModelPath(TESObjectARMA* thisArmorAddon, BSFixedString nuPath, bool bFirst, bool bFemale)
 	{
-		if (!thisArmorAddon)
+		if(!thisArmorAddon)
 			return;
 
-		thisArmorAddon->models[bFirst ? 1 : 0][bFemale ? 1 : 0].SetModelName(nuPath.data);
+		thisArmorAddon->models[bFirst][bFemale].SetModelName(nuPath.data);
 	}
 
 	UInt32 GetModelNumTextureSets(TESObjectARMA* thisArmorAddon, bool bFirst, bool bFemale)
 	{
-		return (thisArmorAddon) ? thisArmorAddon->models[bFirst ? 1 : 0][bFemale ? 1 : 0].count : 0;
+		return thisArmorAddon ? thisArmorAddon->models[bFirst][bFemale].count : 0;
 	}
 
 	BGSTextureSet* GetModelNthTextureSet(TESObjectARMA* thisArmorAddon, UInt32 n, bool bFirst, bool bFemale)
 	{
-		if(!thisArmorAddon || n < 0)
+		if(!thisArmorAddon)
 			return NULL;
 
-		if(!thisArmorAddon->models[bFirst ? 1 : 0][bFemale ? 1 : 0].textureSets || n > thisArmorAddon->models[bFirst ? 1 : 0][bFemale ? 1 : 0].count)
+		TESModelTextureSwap	* tex = &thisArmorAddon->models[bFirst][bFemale];
+
+		if(!tex->swaps || n >= tex->count)
 			return NULL;
 
-		return thisArmorAddon->models[bFirst ? 1 : 0][bFemale ? 1 : 0].textureSets[n];
+		return tex->swaps[n].textureSet;
 	}
 
 	void SetModelNthTextureSet(TESObjectARMA* thisArmorAddon, BGSTextureSet* textureSet, UInt32 n, bool bFirst, bool bFemale)
 	{
-		if(!thisArmorAddon || !textureSet || n < 0)
+		if(!thisArmorAddon || !textureSet)
 			return;
 
-		if(!thisArmorAddon->models[bFirst ? 1 : 0][bFemale ? 1 : 0].textureSets || n > thisArmorAddon->models[bFirst ? 1 : 0][bFemale ? 1 : 0].count)
+		TESModelTextureSwap	* tex = &thisArmorAddon->models[bFirst][bFemale];
+
+		if(!tex->swaps || n >= tex->count)
 			return;
 
-		thisArmorAddon->models[bFirst ? 1 : 0][bFemale ? 1 : 0].textureSets[n] = textureSet;
+		tex->swaps[n].textureSet = textureSet;
 	}
-
 
 	UInt32 GetNumAdditionalRaces(TESObjectARMA* thisArmorAddon)
 	{
-		return (thisArmorAddon) ? thisArmorAddon->additionalRaces.count : 0;
+		return thisArmorAddon ? thisArmorAddon->additionalRaces.count : 0;
 	}
 
 	TESRace* GetNthAdditionalRace(TESObjectARMA* thisArmorAddon, UInt32 n)
 	{
-		if(!thisArmorAddon || n < 0)
+		if(!thisArmorAddon || (n >= thisArmorAddon->additionalRaces.count))
 			return NULL;
 
-		if(n > thisArmorAddon->additionalRaces.count)
+		TESRace * race = NULL;
+		if(!thisArmorAddon->additionalRaces.GetNthItem(n, race))
 			return NULL;
 
-		TESRace* race = NULL;
-		thisArmorAddon->additionalRaces.GetNthItem(n, race);
-		return (race) ? race : NULL;
+		return race;
 	}
 }
 

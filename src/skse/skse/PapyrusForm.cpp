@@ -235,6 +235,38 @@ namespace papyrusForm
 		g_modCallbackEventDispatcher.SendEvent(&evn);
 	}
 
+	void RegisterForCameraState(TESForm * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_cameraEventRegs.Register<TESForm>(thisForm->GetFormType(), thisForm);
+	}
+
+	void UnregisterForCameraState(TESForm * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_cameraEventRegs.Unregister<TESForm>(thisForm->GetFormType(), thisForm);
+	}
+
+	void RegisterForCrosshairRef(TESForm * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_crosshairRefEventRegs.Register<TESForm>(thisForm->GetFormType(), thisForm);
+	}
+
+	void UnregisterForCrosshairRef(TESForm * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_crosshairRefEventRegs.Unregister<TESForm>(thisForm->GetFormType(), thisForm);
+	}
+
 	TESForm * TempClone(TESForm * thisForm)
 	{
 		TESForm	* result = NULL;
@@ -263,18 +295,6 @@ namespace papyrusForm
 
 		return result;
 	}
-}
-
-void papyrusForm::RegisterEventSinks(void)
-{
-	MenuManager * mm = MenuManager::GetSingleton();
-	if (mm)
-		mm->MenuOpenCloseEventDispatcher()->AddEventSink(&g_menuEventHandler);
-
-	g_modCallbackEventDispatcher.AddEventSink(&g_modCallbackEventHandler);
-
-	// Has to be done later, because the pointer is not set yet.
-	//(*g_inputEventDispatcher)->AddEventSink(&g_inputEventHandler);
 }
 
 #include "PapyrusVM.h"
@@ -348,6 +368,18 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction0 <TESForm, void> ("UnregisterForAllControls", "Form", papyrusForm::UnregisterForAllControls, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, void> ("RegisterForCameraState", "Form", papyrusForm::RegisterForCameraState, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, void> ("UnregisterForCameraState", "Form", papyrusForm::UnregisterForCameraState, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, void> ("RegisterForCrosshairRef", "Form", papyrusForm::RegisterForCrosshairRef, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, void> ("UnregisterForCrosshairRef", "Form", papyrusForm::UnregisterForCrosshairRef, registry));
+
 	registry->SetFunctionFlags("Form", "RegisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Form", "UnregisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Form", "UnregisterForAllKeys", VMClassRegistry::kFunctionFlag_NoWait);
@@ -360,4 +392,8 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Form", "RegisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Form", "UnregisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Form", "UnregisterForAllControls", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "RegisterForCameraState", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "UnregisterForCameraState", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "RegisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "UnregisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
 }

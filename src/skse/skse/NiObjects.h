@@ -81,6 +81,12 @@ public:
 
 	// begin bethesda extensions? possibly just stuff we can't match up
 	virtual UInt32			Unk_20(void);
+
+	// PLB: Still not quite sure what this is exactly
+	static NiObject *	GetPlayerMaskObject(void)
+	{
+		return *((NiObject **)0x01B3F044);
+	}
 };
 
 STATIC_ASSERT(sizeof(NiObject) == 0x08);

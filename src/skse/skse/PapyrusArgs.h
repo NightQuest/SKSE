@@ -27,6 +27,11 @@ public:
 	VMValue::ArrayData	* arr;
 	UInt32 Length() const				{ return arr ? arr->len : 0; }
 	void Get(T * dst, const UInt32 idx)	{ UnpackValue<T>(dst, arr->GetData()+idx); }
+	void Set(T * src, const UInt32 idx)
+	{
+		VMClassRegistry * registry = (*g_skyrimVM)->GetClassRegistry();
+		PackValue<T>(arr->GetData()+idx, src, registry);
+	}
 };
 
 template <typename T>

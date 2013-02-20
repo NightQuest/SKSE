@@ -13,5 +13,5 @@ int Function GetVersionRelease() global native
 ; get the release index of this script file.
 ; Can be used to detect a script/runtime version mismatch
 int Function GetScriptVersionRelease() global
-	return 34
+	return 36
 endFunction

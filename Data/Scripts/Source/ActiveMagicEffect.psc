@@ -343,7 +343,7 @@ EndEvent
 
 
 
-; SKSE additions built 2013-01-07 17:38:10.814000 UTC
+; SKSE additions built 2013-02-20 11:33:33.219000 UTC
 ; Additional useful effect information
 float Function GetDuration() native
 float Function GetTimeElapsed() native
@@ -400,3 +400,17 @@ Function UnregisterForAllModEvents() native
 
 ; Sends custom event with given generic parameters.
 Function SendModEvent(string eventName, string strArg = "", float numArg = 0.0) native
+
+; See Form.psc
+Function RegisterForCameraState() native
+Function UnregisterForCameraState() native
+
+Event OnPlayerCameraState(int oldState, int newState)
+EndEvent
+
+; See Form.psc
+Function RegisterForCrosshairRef() native
+Function UnregisterForCrosshairRef() native
+	
+Event OnCrosshairRefChange(ObjectReference ref)
+EndEvent

@@ -298,6 +298,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusFlora.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusFlora.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusForm.cpp"
 					>
 				</File>
@@ -375,6 +383,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusObjectReference.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusPerk.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusPerk.h"
 					>
 				</File>
 				<File
@@ -507,6 +523,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusArgs.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusClass.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusClass.h"
 					>
 				</File>
 				<File
@@ -747,6 +771,14 @@
 			Name="hooks"
 			>
 			<File
+				RelativePath=".\Hooks_Camera.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_Camera.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Hooks_Debug.cpp"
 				>
 			</File>
@@ -763,11 +795,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Hooks_DX9Renderer.cpp"
+				RelativePath=".\Hooks_Event.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Hooks_DX9Renderer.h"
+				RelativePath=".\Hooks_Event.h"
 				>
 			</File>
 			<File
@@ -776,6 +808,14 @@
 			</File>
 			<File
 				RelativePath=".\Hooks_Gameplay.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_NetImmerse.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_NetImmerse.h"
 				>
 			</File>
 			<File
@@ -822,6 +862,14 @@
 		<Filter
 			Name="internals"
 			>
+			<File
+				RelativePath=".\Colors.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Colors.h"
+				>
+			</File>
 			<File
 				RelativePath=".\GlobalLocks.cpp"
 				>

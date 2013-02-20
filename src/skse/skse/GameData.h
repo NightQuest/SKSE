@@ -351,3 +351,63 @@ public:
 
 	MiscStat *	Get(const char * name);
 };
+ 
+class EquipManager
+{
+public:
+	virtual ~EquipManager();
+ 
+	static EquipManager *   GetSingleton(void);
+
+	MEMBER_FN_PREFIX(EquipManager);
+	DEFINE_MEMBER_FN(EquipItem, void, 0x006EEEB0, Actor * actor, TESForm * item, BaseExtraList * extraData, SInt32 count, BGSEquipSlot * equipSlot, bool withEquipSound, bool preventUnequip, bool showMsg, void * unk);
+	DEFINE_MEMBER_FN(UnequipItem, bool, 0x006EE030, Actor * actor, TESForm * item, BaseExtraList * extraData, SInt32 count, BGSEquipSlot * equipSlot, bool unkFlag1 , bool preventEquip, bool unkFlag2, bool unkFlag3, void * unk);
+};
+
+typedef BGSEquipSlot * (* _GetEitherHandSlot)();
+extern const _GetEitherHandSlot GetEitherHandSlot;
+ 
+typedef BGSEquipSlot * (* _GetRightHandSlot)();
+extern const _GetRightHandSlot GetRightHandSlot;
+ 
+typedef BGSEquipSlot * (* _GetLeftHandSlot)();
+extern const _GetLeftHandSlot GetLeftHandSlot;
+
+typedef UInt32 (* _LookupActorValueByName)(const char * name);
+extern const _LookupActorValueByName LookupActorValueByName;
+
+class ActorValueList
+{
+public:
+	enum {
+		kNumActorValues = 164
+	};
+
+	static ActorValueList * GetSingleton(void);
+	ActorValueInfo * GetActorValue(UInt32 id);
+
+private:
+	UInt32 unk04;
+	ActorValueInfo * actorValues[kNumActorValues];
+};
+
+class FaceGen
+{
+public:
+	static FaceGen *	GetSingleton(void);
+
+	MEMBER_FN_PREFIX(FaceGen);
+	DEFINE_MEMBER_FN(RegenerateHead, void, 0x005A4D60, BSFaceGenNiNode * headNode, BGSHeadPart * head, TESNPC * npc);
+};
+
+typedef void (* _ChangeActorHeadPart)(Character*, BGSHeadPart* oldPart, BGSHeadPart* newPart);
+extern const _ChangeActorHeadPart ChangeActorHeadPart;
+
+typedef UInt32 (* _UpdatePlayerTints)();
+extern const _UpdatePlayerTints UpdatePlayerTints;
+
+typedef BGSHeadPart ** (* _GetActorBaseOverlays)(TESNPC * npc);
+extern const _GetActorBaseOverlays GetActorBaseOverlays;
+
+typedef UInt32 (* _GetNumActorBaseOverlays)(TESNPC * npc);
+extern const _GetNumActorBaseOverlays GetNumActorBaseOverlays;

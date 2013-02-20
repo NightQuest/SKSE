@@ -8,7 +8,7 @@ Function SendStoryEvent(Location akLoc = None, ObjectReference akRef1 = None, Ob
 bool Function SendStoryEventAndWait(Location akLoc = None, ObjectReference akRef1 = None, ObjectReference akRef2 = None, \
 	int aiValue1 = 0, int aiValue2 = 0) native
 
-; SKSE additions built 2013-01-07 17:38:10.814000 UTC
+; SKSE additions built 2013-02-20 11:33:33.219000 UTC
 ; return the keyword with the specified key
 Keyword Function GetKeyword(string key) global native
 

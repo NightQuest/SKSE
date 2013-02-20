@@ -1,5 +1,13 @@
 Scriptname HeadPart extends Form Hidden
 
+int Property kTypeMisc = 0 AutoReadOnly
+int Property kTypeFace = 1 AutoReadOnly
+int Property kTypeEyes = 2 AutoReadOnly
+int Property kTypeHair = 3 AutoReadOnly
+int Property kTypeFacialHair = 4 AutoReadOnly
+int Property kTypeScar = 5 AutoReadOnly
+int Property kTypeBrows = 6 AutoReadOnly
+
 ; Returns the head part type
 int Function GetType() native
 

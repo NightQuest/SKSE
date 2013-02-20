@@ -21,8 +21,10 @@ STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_8_151_0);
 #include "Hooks_Papyrus.h"
 #include "Hooks_SaveLoad.h"
 #include "Hooks_UI.h"
-#include "Hooks_DX9Renderer.h"
+#include "Hooks_NetImmerse.h"
 #include "Hooks_Debug.h"
+#include "Hooks_Event.h"
+#include "Hooks_Camera.h"
 
 #else
 
@@ -70,7 +72,7 @@ void SKSE_Initialize(void)
 #ifdef _DEBUG
 		SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
 
-//		WaitForDebugger();
+		WaitForDebugger();
 #endif
 
 //		Commands_Dump();
@@ -78,7 +80,7 @@ void SKSE_Initialize(void)
 		Hooks_Debug_Init();
 		Hooks_ObScript_Init();
 		Hooks_Papyrus_Init();
-		Hooks_DX9Renderer_Init();
+		Hooks_NetImmerse_Init();
 
 		g_pluginManager.Init();
 
@@ -88,12 +90,14 @@ void SKSE_Initialize(void)
 		Hooks_ObScript_Commit();
 		Hooks_Papyrus_Commit();
 		Hooks_UI_Commit();
-		Hooks_DX9Renderer_Commit();
+		Hooks_Camera_Commit();
+		Hooks_NetImmerse_Commit();
 
 		Hooks_SaveLoad_Commit();
 		Init_CoreSerialization_Callbacks();
 
 		Hooks_DirectInput_Commit();
+		Hooks_Event_Commit();
 
 		FlushInstructionCache(GetCurrentProcess(), NULL, 0);
 

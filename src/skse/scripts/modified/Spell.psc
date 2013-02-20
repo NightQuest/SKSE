@@ -22,5 +22,8 @@ MagicEffect Function GetNthEffectMagicEffect(int index) native
 ; return the index of the costliest effect
 int Function GetCostliestEffectIndex() native
 
-; return the magicka cost of the spell
+; return the base magicka cost of the spell
 int Function GetMagickaCost() native
+
+; return the effective magicka cost of the spell for given caster
+int Function GetEffectiveMagickaCost(Actor caster) native

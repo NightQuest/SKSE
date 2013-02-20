@@ -129,6 +129,8 @@ public:
 
 	tArray() : count(0) {}
 
+	T& operator[] (UInt32 index) { return arr.entries[index]; }
+
 	bool Allocate(UInt32 numEntries)
 	{
 		arr.entries = (T *)FormHeap_Allocate(sizeof(T) * numEntries);
@@ -143,7 +145,7 @@ public:
 		return true;
 	}
 	
-	bool GetNthItem(UInt32 index, T& pT)
+	bool GetNthItem(UInt32 index, T& pT) const
 	{
 		if (index < count) {
 			pT = arr.entries[index];
@@ -152,7 +154,7 @@ public:
 		return false;
 	}
 
-	UInt32 GetItemIndex(T pFind)
+	SInt32 GetItemIndex(T & pFind) const
 	{
 		for (UInt32 n = 0; n < count; n++) {
 			T& pT = arr.entries[n];
@@ -166,112 +168,152 @@ public:
 typedef tArray<UInt32> UnkArray;
 typedef tArray<TESForm*> UnkFormArray;
 
+// Returns if/where the element was found, otherwise indexOut can be used as insert position
+template <typename T>
+bool GetSortIndex(tArray<T> & arr, T & elem, SInt32 & indexOut)
+{
+	UInt32 count = arr.count;
+	if (count == 0)
+	{
+		indexOut = 0;
+		return false;
+	}
+	
+	SInt32 leftIdx = 0;
+	SInt32 rightIdx = count - 1;
+
+	while (true)
+	{
+		UInt32 pivotIdx = leftIdx + ((rightIdx - leftIdx) / 2);
+
+		T & p = arr[pivotIdx];
+		
+		if (elem == p)
+		{
+			indexOut = pivotIdx;
+			return true;
+		}
+		else if (elem > p)
+		{
+			leftIdx = pivotIdx + 1;
+		}
+		else
+		{
+			rightIdx = pivotIdx - 1;
+		}
+
+		if (leftIdx > rightIdx)
+		{
+			indexOut = leftIdx;
+			return false;
+		}
+	}
+}
+
 enum {
 	eListCount = -3,
 	eListEnd = -2,
 	eListInvalid = -1,		
 };
 
-template <class Item>
+// 08
+template <class T>
 class tList
 {
-	typedef Item tItem;
-	struct _Node {
+	struct _Node
+	{
 		
-		tItem*	item;
-		_Node*	next;
+		T *		item;	// 00
+		_Node*	next;	// 04
 
-		tItem* Item() const { return item; }
-		_Node* Next() const { return next; }
+		T *		Item() const { return item; }
+		_Node*	Next() const { return next; }
 
-		// become the next entry and return my item
-		tItem* RemoveMe() {
-			tItem* pRemoved = item;
-			_Node* pNext = next;
-			if (pNext) {
+		T *		Remove(_Node * pred)
+		{
+			T * pRemoved = item;
+			_Node * pNext = next;
+
+			// become the next entry and return my item
+			if (pNext)
+			{
 				item = pNext->item;
 				next = pNext->next;
 				FormHeap_Free(pNext);
-			} else {
+			}
+			// tail?
+			else
+			{
 				item = NULL;
 				next = NULL;
+
+				// has precedessor, so tail != head
+				if (pred)
+				{
+					pred->next = NULL;
+					FormHeap_Free(this);
+				}
 			}
 			return pRemoved;
 		}
 	};
 
-	_Node m_listHead;
-
+	_Node m_listHead;	// 00
 
 private:
 
-	Item * AddFront(void)
+	_Node * Head() const { return const_cast<_Node*>(&m_listHead); }
+
+	_Node * Tail() const
 	{
-		Item	* item = (Item *)FormHeap_Allocate(sizeof(Item));
-		if(!item) return NULL;
+		_Node * node = const_cast<_Node*>(&m_listHead);
 
-		new (item) Item;
-
-		// add new node if we aren't empty
-		if(m_listHead->item)
-		{
-			// copy head in to new node
-			_Node	* node = (_Node *)FormHeap_Allocate(sizeof(_Node));
-			ASSERT(node);
-
-			node->item = m_listHead->item;
-			node->next = m_listHead->next;
-
-			m_listHead->next = node;
-		}
-
-		m_listHead->item = item;
+		if (node)
+			while (node->next) node = node->next;
+		
+		return node;
 	}
 
 	template <class Op>
-	UInt32 FreeNodes(_Node* node, Op &compareOp) const
+	UInt32 FreeNodes(Op &compareOp)
 	{
-		static UInt32 nodeCount = 0;
-		static UInt32 numFreed = 0;
-		static _Node* lastNode = NULL;
-		static bool bRemovedNext = false;
+		UInt32 numFreed = 0;
 
-		if (node->Next())
-		{
-			nodeCount++;
-			FreeNodes(node->Next(), compareOp);
-			nodeCount--;
-		}
+		_Node * pPred = NULL;
+		_Node * pCur = Head();
 
-		if (compareOp.Accept(node->Item()))
+		while (pCur)
 		{
-			if (nodeCount)
-				node->Delete();
+			if (pCur->next)
+			{
+				if (compareOp.Accept(pCur->item))
+				{
+					pCur->Remove(pPred);
+					numFreed++;
+				}
+				else
+				{
+					pPred = pCur;
+					pCur = pCur->next;
+				}
+			}
+			// List Tail?
 			else
-				node->DeleteHead(lastNode);
-			numFreed++;
-			bRemovedNext = true;
-		}
-		else
-		{
-			if (bRemovedNext)
-				node->SetNext(lastNode);
-			bRemovedNext = false;
-			lastNode = node;
-		}
-
-		if (!nodeCount)	//reset vars after recursing back to head
-		{
-			numFreed = 0;
-			lastNode = NULL;
-			bRemovedNext = false;
+			{
+				if (compareOp.Accept(pCur->item))
+				{
+					pCur->Remove(pPred);
+					numFreed++;
+				}
+				break;
+			}
 		}
 
 		return numFreed;
 	}
 
-
-	struct NodePos {
+	struct NodePos
+	{
 		NodePos(): node(NULL), index(eListInvalid) {}
 
 		_Node*	node;
@@ -279,12 +321,14 @@ private:
 	};
 
 
-	NodePos GetNthNode(SInt32 index) const {
+	NodePos GetNthNode(SInt32 index) const
+	{
 		NodePos pos;
 		SInt32 n = 0;
 		_Node* pCur = Head();
 
-		while (pCur && pCur->Item()) {
+		while (pCur && pCur->Item())
+		{
 			if (n == index) break;
 			if (eListEnd == index && !pCur->Next()) break;
 			pCur = pCur->Next();
@@ -299,44 +343,135 @@ private:
 
 public:
 
-	_Node* Head() const { return const_cast<_Node*>(&m_listHead); }
+	// Allocate list as a single empty node
+	static tList<T> * Create(void)
+	{
+		tList<T> * p = (tList<T> *)FormHeap_Allocate(sizeof(tList<T>));
+		ASSERT(p);
+
+		p->m_listHead.item = NULL;
+		p->m_listHead.next = NULL;
+
+		return p;
+	}
+
+	void Delete(void)
+	{
+		RemoveAll();
+		FormHeap_Free(&m_listHead);
+	}
 
 	class Iterator
 	{
-		_Node*	m_cur;
+		_Node *	m_cur;
 	public:
 		Iterator() : m_cur(NULL) {}
 		Iterator(_Node* node) : m_cur(node) { }
 		Iterator operator++()	{ if (!End()) m_cur = m_cur->Next(); return *this;}
 		bool End()	{	return m_cur == NULL;	}
-		const Item* operator->() { return (m_cur) ? m_cur->Item() : NULL; }
-		const Item* operator*() { return (m_cur) ? m_cur->Item() : NULL; }
+		const T * operator->() { return (m_cur) ? m_cur->Item() : NULL; }
+		const T * operator*() { return (m_cur) ? m_cur->Item() : NULL; }
 		const Iterator& operator=(const Iterator& rhs) {
 			m_cur = rhs.m_cur;
 			return *this;
 		}
-		Item* Get() { return (m_cur) ? m_cur->Item() : NULL; }
+		T * Get() { return (m_cur) ? m_cur->Item() : NULL; }
 	};
 	
 	const Iterator Begin() const { return Iterator(Head()); }
 
+	void Insert(T * item)
+	{
+		// add new node if we aren't empty
+		if (m_listHead.item)
+		{
+			// copy head in to new node
+			_Node	* node = (_Node *)FormHeap_Allocate(sizeof(_Node));
+			ASSERT(node);
 
-	UInt32 Count() const {
+			node->item = m_listHead.item;
+			node->next = m_listHead.next;
+
+			m_listHead.next = node;
+		}
+
+		m_listHead.item = item;
+	}
+
+	void Push(T * item)
+	{
+		_Node * tail = Tail();
+		
+		// add new node if we aren't empty
+		if (tail->item)
+		{
+			_Node * node = (_Node *)FormHeap_Allocate(sizeof(_Node));
+			ASSERT(node);
+
+			tail->next = node;
+
+			node->item = item;
+			node->next = NULL;
+		}
+		else
+		{
+			tail->item = item;
+		}
+	}
+
+	T * AddFront(void)
+	{
+		T	* item = (T *)FormHeap_Allocate(sizeof(T));
+		if(!item)
+			return NULL;
+
+		new (item) T;
+
+		Insert(item);
+		return item;
+	}
+
+	T * AddBack(void)
+	{
+		T	* item = (T *)FormHeap_Allocate(sizeof(T));
+		if(!item)
+			return NULL;
+
+		new (item) T;
+
+		Push(item);
+		return item;
+	}
+
+	void Append(Iterator source)
+	{
+		while (!source.End())
+		{
+			Push(source.Get());
+			++source;
+		}
+	}
+
+	UInt32 Count() const
+	{
 		NodePos pos = GetNthNode(eListCount);
 		return (pos.index > 0) ? pos.index : 0;
 	};
 
-	Item* GetNthItem(SInt32 n) const {
+	T * GetNthItem(SInt32 n) const
+	{
 		NodePos pos = GetNthNode(n);
 		return (pos.index == n && pos.node) ? pos.node->Item() : NULL;
 	}
 
-	Item* GetLastItem() const {
+	T * GetLastItem() const
+	{
 		NodePos pos = GetNthNode(eListEnd);
 		return pos.node->Item();
 	}
 
-	SInt32 AddAt(Item* item, SInt32 index) {
+	SInt32 AddAt(T * item, SInt32 index)
+	{
 		if (!m_listHead.item) {
 			m_listHead.item = item;
 			return 0;
@@ -374,7 +509,7 @@ public:
 	}
 
 	template <class Op>
-	Item* Find(Op& op) const
+	T * Find(Op& op) const
 	{
 		const _Node* pCur = Head(); 
 
@@ -400,7 +535,7 @@ public:
 		bool bFound = false;
 		
 		while(!curIt.End() && !bFound) {
-			const tItem * pCur = *curIt;
+			const T * pCur = *curIt;
 			if (pCur) {
 				bFound = op.Accept(pCur);
 			}
@@ -432,17 +567,17 @@ public:
 
 	class AcceptAll {
 	public:
-		bool Accept(Item* item) {
+		bool Accept(T * item) {
 			return true;
 		}
 	};
 
-	void RemoveAll() const
+	void RemoveAll()
 	{
-		FreeNodes(const_cast<_Node*>(Head()), AcceptAll());
+		FreeNodes(AcceptAll());
 	}
 
-	Item* RemoveNth(SInt32 n) 
+	T * RemoveNth(SInt32 n) 
 	{
 		Item* pRemoved = NULL;
 		if (n == 0) {
@@ -456,7 +591,7 @@ public:
 		return pRemoved;
 	};
 
-	Item* ReplaceNth(SInt32 n, tItem* item) 
+	T * ReplaceNth(SInt32 n, T* item) 
 	{
 		Item* pReplaced = NULL;
 		NodePos nodePos = GetNthNode(n);
@@ -470,7 +605,7 @@ public:
 	template <class Op>
 	UInt32 RemoveIf(Op& op)
 	{
-		return FreeNodes(const_cast<_Node*>(Head()), op);
+		return FreeNodes(op);
 	}
 
 	template <class Op>
@@ -492,18 +627,38 @@ public:
 
 	class AcceptEqual {
 	public:
-		Item * item;
+		T * item;
 
-		AcceptEqual(Item * a_item) : item(a_item) {}
+		AcceptEqual(T * a_item) : item(a_item) {}
 
-		bool Accept(Item * a_item) {
+		bool Accept(T * a_item) {
 			return *item == *a_item;
 		}
 	};
 
-	bool Contains(Item * item) const
+	bool Contains(T * item) const
 	{
 		return Find(AcceptEqual(item)) != NULL;
+	}
+	
+	void	Dump(void)
+	{
+		_MESSAGE("tList:");
+		_MESSAGE("> count: %d", Count());
+
+		const _Node* pCur = Head();
+		UInt32 i = 0;
+		while (pCur)
+		{
+			_MESSAGE("* %d :", i);
+			//_MESSAGE("\t\titem: %08X", pCur->item);
+			if (pCur->item)
+				_MESSAGE("\t\t*item: %d", *pCur->item);
+			_MESSAGE("\t\tnext: %08X", pCur->next);
+
+			i++;
+			pCur = pCur->next;
+		}
 	}
 };
 
@@ -517,25 +672,29 @@ typedef void (__cdecl * _CRC32_Calc8)(UInt32 * out, UInt64 data);
 extern const _CRC32_Calc8 CRC32_Calc8;
 
 // 01C
-// How to default/copy-construct in insert/grow still needs some work for items that have an overloaded assignment operator (like STL-types)
+// Note: I'm pretty sure that the current implemenation is not safe for refcounted Item types and the like.
 template <typename Item, typename Key = Item>
 class tHashSet
 {
-	struct _Entry
+	class _Entry
 	{
+	public:
 		Item	item;
 		_Entry	* next;
 
-		bool		IsFree() const	{ return next == NULL; }
-		void		Free()			{ next = NULL; }
+		_Entry() : next(NULL) {}
 
-		void Dump(void)
+		bool	IsFree() const	{ return next == NULL; }
+		void	SetFree()		{ next = NULL; }
+
+		void	Dump(void)
 		{
 			item.Dump();
 			_MESSAGE("\t\tnext: %08X", next);
 		}
 	};
 
+	// When creating a new tHashSet, init sentinel pointer with address of this entry
 	static _Entry sentinel;
 
 	UInt32		unk_000;		// 000
@@ -552,6 +711,11 @@ class tHashSet
 		return (_Entry*) (((UInt32) m_entries) + sizeof(_Entry) * (hash & (m_size - 1)));
 	}
 
+	_Entry * GetEntryAt(UInt32 index) const
+	{
+		return (_Entry*) (((UInt32) m_entries) + sizeof(_Entry) * index);
+	}
+
 	_Entry * NextFreeEntry(void)
 	{
 		_Entry * result = NULL;
@@ -562,7 +726,7 @@ class tHashSet
 		do
 		{
 			m_freeOffset = (m_size - 1) & (m_freeOffset - 1);
-			_Entry * entry = (_Entry*) (((UInt32) m_entries) + sizeof(_Entry) * m_freeOffset);
+			_Entry * entry = GetEntryAt(m_freeOffset);
 
 			if (entry->IsFree())
 				result = entry;
@@ -574,23 +738,29 @@ class tHashSet
 		return result;
 	}
 
-	// 0: Out of space, -1: Already included, 1: Success
-	SInt32 Insert(Item * item)
+	enum InsertResult
+	{
+		kInsert_Duplicate = -1,
+		kInsert_OutOfSpace = 0,
+		kInsert_Success = 1
+	};
+
+	InsertResult Insert(Item * item)
 	{
 		if (! m_entries)
-			return 0;
+			return kInsert_OutOfSpace;
 
 		Key k = (Key)*item;
 		_Entry * targetEntry = GetEntry(Item::GetHash(&k));
 
 		// Case 1: Target entry is free
-		if (!targetEntry->next)
+		if (targetEntry->IsFree())
 		{
 			targetEntry->item = *item;
 			targetEntry->next = m_eolPtr;
 			--m_freeCount;
 
-			return 1;
+			return kInsert_Success;
 		}
 
 		// -- Target entry is already in use
@@ -600,7 +770,7 @@ class tHashSet
 		do
 		{
 			if (p->item == *item)
-				return -1;
+				return kInsert_Duplicate;
 			p = p->next;
 		}
 		while (p != m_eolPtr);
@@ -610,8 +780,9 @@ class tHashSet
 		_Entry * freeEntry = NextFreeEntry();
 		// No more space?
 		if (!freeEntry)
-			return 0;
+			return kInsert_OutOfSpace;
 
+		// Original position of the entry that currently uses the target position
 		k = (Key)targetEntry->item;
 		p = GetEntry(Item::GetHash(&k));
 
@@ -622,21 +793,25 @@ class tHashSet
 			freeEntry->next = targetEntry->next;
 			targetEntry->next = freeEntry;
 
-			return 1;
+			return kInsert_Success;
         }
 		// Case 3b: Bucket overlap
-		while (p->next != targetEntry)
-			p = p->next;
+		else
+		{
+			while (p->next != targetEntry)
+				p = p->next;
 
-        memcpy_s(freeEntry, sizeof(_Entry), targetEntry, sizeof(_Entry));
-        p->next = freeEntry;
-		targetEntry->item = *item;
-		targetEntry->next = m_eolPtr;
+			freeEntry->item = targetEntry->item;
+			freeEntry->next = targetEntry->next;
 
-		return 1;
+			p->next = freeEntry;
+			targetEntry->item = *item;
+			targetEntry->next = m_eolPtr;
+
+			return kInsert_Success;
+		}
 	}
 
-	// Should this rather use memcpy?
 	bool CopyEntry(_Entry * sourceEntry)
 	{
 		if (! m_entries)
@@ -692,17 +867,15 @@ class tHashSet
 
 		_Entry * oldEntries = m_entries;
 		_Entry * newEntries = (_Entry*)FormHeap_Allocate(newSize * sizeof(_Entry));
+		ASSERT(newEntries);
 		
 		m_entries = newEntries;
 		m_size = m_freeCount = m_freeOffset = newSize;
 
 		// Initialize new table data (clear next pointers)
-		if (newEntries)
-		{
-			_Entry * p = newEntries;
-			for (UInt32 i = 0; i < newSize; i++, p++)
-				p->next = NULL;
-		}
+		_Entry * p = newEntries;
+		for (UInt32 i = 0; i < newSize; i++, p++)
+			p->SetFree();
 
 		// Copy old entries, free old table data
 		if (oldEntries)
@@ -744,12 +917,12 @@ public:
 
 	bool Add(Item * item)
 	{
-		UInt32 status = 0;
+		InsertResult result;
 
-		for (status = Insert(item); !status; status = Insert(item))
+		for (result = Insert(item); result == kInsert_OutOfSpace; result = Insert(item))
 			Grow();
 
-		return status == 1;
+		return result == kInsert_Success;
 	}
 
 	bool Remove(Key * key)
@@ -811,14 +984,16 @@ public:
 			return;
 
 		_Entry * cur	= m_entries;
-		_Entry * end	= (_Entry*) (((UInt32) m_entries) + sizeof(_Entry) * m_size);
+		_Entry * end	= GetEntryAt(m_size); // one index beyond the entries data to check if we reached that point
 
 		if (cur == end)
 			return;
 
 		if (cur->IsFree())
 		{
-			do cur++; while (cur != end && cur->IsFree());
+			// Forward to first non-free entry
+			do cur++;
+			while (cur != end && cur->IsFree());
 		}
 
 		do
@@ -826,9 +1001,11 @@ public:
 			if (! functor(&cur->item))
 				return;
 
-			do cur++; while (cur != end && cur->IsFree());
+			// Forward to next non-free entry
+			do cur++;
+			while (cur != end && cur->IsFree());
+
 		} while (cur != end);
-		
 	}
 
 	void Dump(void)
@@ -864,4 +1041,34 @@ public:
 
 	void	Lock(void) { m_lock.Lock(); }
 	void	Release(void) { m_lock.Release(); }
+};
+
+// 0C
+// Some generic type but I haven't figured it out yet
+class UpdateRegistrationHolder
+{
+	// 018
+	class Registration
+	{
+	public:
+		volatile SInt32	refCount;	// 00
+		bool			runOnce;	// 04
+		UInt8			pad05;		// 05
+		UInt16			pad06;		// 06
+		UInt32			schedTime;	// 08
+		UInt32			interval;	// 0C
+		UInt64			handle;		// 10
+
+		void Release(void)
+		{
+			if (InterlockedDecrement(&refCount) == 0) FormHeap_Free(this);
+		}
+	};
+
+	tArray<Registration*>	m_regs;	// 00
+
+	void	Order(UInt32 index);
+
+public:
+	bool	Remove(UInt64 & handle);
 };

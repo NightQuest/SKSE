@@ -83,6 +83,12 @@ void Core_SaveCallback(SKSESerializationInterface * intfc)
 
 	_MESSAGE("Saving mod callback event registrations...");
 	g_modCallbackRegs.Save(intfc, 'MCBR', 1);
+
+	_MESSAGE("Saving crosshair ref event registrations...");
+	g_crosshairRefEventRegs.Save(intfc, 'CHRR', 1);
+
+	_MESSAGE("Saving camera event registrations...");
+	g_cameraEventRegs.Save(intfc, 'CAMR', 1);
 }
 
 void Core_LoadCallback(SKSESerializationInterface * intfc)
@@ -121,6 +127,18 @@ void Core_LoadCallback(SKSESerializationInterface * intfc)
 		case 'MCBR':
 			_MESSAGE("Loading mod callback event registrations...");
 			g_modCallbackRegs.Load(intfc, 1);
+			break;
+
+		// Crosshair rev events
+		case 'CHRR':
+			_MESSAGE("Loading crosshair ref event registrations...");
+			g_crosshairRefEventRegs.Load(intfc, 1);
+			break;
+
+		// Camera events
+		case 'CAMR':
+			_MESSAGE("Loading camera event registrations...");
+			g_cameraEventRegs.Load(intfc, 1);
 			break;
 
 		default:

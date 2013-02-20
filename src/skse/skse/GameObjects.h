@@ -488,6 +488,8 @@ public:
 	DataA8	unkA8;
 };
 
+class Character;
+
 // 90
 class SpellItem : public MagicItem
 {
@@ -522,7 +524,10 @@ public:
 
 	Data	data;	// 6C
 
-	UInt32 GetMagickaCost() { return data.unk00.cost; }
+	UInt32	GetMagickaCost() { return data.unk00.cost; }
+
+	MEMBER_FN_PREFIX(SpellItem);
+	DEFINE_MEMBER_FN(GetEffectiveMagickaCost, double, 0x00406D10, Character* caster);
 };
 
 // D0
@@ -688,9 +693,15 @@ public:
 	UInt32		unk160;			// 160
 
 	MEMBER_FN_PREFIX(TESNPC);
-	DEFINE_MEMBER_FN(GetHeadPartByType, BGSHeadPart *, 0x00560A30, int);
+	DEFINE_MEMBER_FN(GetHeadPartByType, BGSHeadPart *, 0x00560A30, UInt32);
 	DEFINE_MEMBER_FN(GetSex, char, 0x0055ABD0);
-	//DEFINE_MEMBER_FN(GetUnk04, int, 0x00563BB0, Character * actor, void * val, TintMask * tint, char i, UInt32 k);
+	DEFINE_MEMBER_FN(ChangeHeadPart, void, 0x00567430, BGSHeadPart *);
+	DEFINE_MEMBER_FN(HasOverlays, bool, 0x00567910);
+	
+	BGSHeadPart * GetHeadPartOverlayByType(UInt32 type);
+	//DEFINE_MEMBER_FN(SetHeadPart, void, 0x00567680, UInt32); // Not sure what this one does exactly
+	//DEFINE_MEMBER_FN(GetMorph, float, 0x00560990, UInt32 index);
+	//DEFINE_MEMBER_FN(GetPreset, float, 0x005609F0, UInt32 index);
 };
 
 STATIC_ASSERT(sizeof(TESNPC) == 0x164);

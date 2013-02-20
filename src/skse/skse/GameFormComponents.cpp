@@ -37,3 +37,33 @@ TESShout* TESSpellList::GetNthShout(UInt32 n) const
 	}
 	else return NULL;
 }
+
+class ItemCounter
+{
+	UInt32	m_count;
+	TESForm	* m_item;
+
+public:
+	ItemCounter(TESForm * item) : m_count(0), m_item(item) {}
+
+	bool Accept(TESContainer::Entry * entry)
+	{
+		if (entry->form == m_item)
+			m_count += entry->count;
+		return true;
+	}
+
+	UInt32 Count() const	{ return m_count; }
+};
+
+UInt32 TESContainer::CountItem(TESForm * item) const
+{
+	ItemCounter v(item);
+	Visit(v);
+	return v.Count();
+}
+
+UInt32 TintMask::ToARGB()
+{
+	return MAKE_COLOR((UInt32)(alpha * 255), color.red, color.green, color.blue);
+}

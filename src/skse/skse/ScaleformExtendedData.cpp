@@ -1,6 +1,7 @@
 #include "ScaleformCallbacks.h"
 #include "ScaleformMovie.h"
 #include "ScaleformExtendedData.h"
+#include "GameData.h"
 #include "GameForms.h"
 #include "GameObjects.h"
 #include "GameReferences.h"
@@ -70,7 +71,7 @@ namespace scaleformExtend
 {
 	void CommonItemData(GFxValue* pFxVal, TESForm * pForm)
 	{
-		if(!pFxVal || !pForm)
+		if(!pFxVal || !pForm || !pFxVal->IsObject())
 			return;
 
 		RegisterNumber(pFxVal, "formType", (double)pForm->GetFormType());
@@ -79,7 +80,7 @@ namespace scaleformExtend
 
 	void StandardItemData(GFxValue * pFxVal, TESForm * pForm)
 	{
-		if(!pForm || !pFxVal)
+		if(!pForm || !pFxVal || !pFxVal->IsObject())
 			return;
 
 		switch(pForm->GetFormType())
@@ -180,7 +181,7 @@ namespace scaleformExtend
 
 	void MagicItemData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive)
 	{
-		if(!pFxVal || !pForm)
+		if(!pFxVal || !pForm || !pFxVal->IsObject())
 			return;
 
 		switch(pForm->GetFormType())
@@ -290,7 +291,7 @@ namespace scaleformExtend
 
 	void ActorData(GFxValue * pFxVal,  GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive)
 	{
-		if(!pForm || !pFxVal)
+		if(!pForm || !pFxVal || !pFxVal->IsObject())
 			return;
 
 		switch(pForm->GetFormType())
@@ -447,7 +448,7 @@ namespace scaleformExtend
 					GFxValue actorValues;
 					movieView->CreateArray(&actorValues);
 
-					for(int i = 0; i < ActorValueOwner::kNumActorValues; i++)
+					for(int i = 0; i < ActorValueList::kNumActorValues; i++)
 					{
 						GFxValue actorValue;
 						movieView->CreateObject(&actorValue);
@@ -474,7 +475,7 @@ namespace scaleformExtend
 
 	void FormListData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive)
 	{
-		if(!pForm || !pFxVal)
+		if(!pForm || !pFxVal || !pFxVal->IsObject())
 			return;
 
 		switch(pForm->GetFormType())
@@ -527,7 +528,7 @@ namespace scaleformExtend
 
 	void MiscData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive)
 	{
-		if(!pForm || !pFxVal)
+		if(!pForm || !pFxVal || !pFxVal->IsObject())
 			return;
 
 		switch(pForm->GetFormType())
@@ -614,7 +615,7 @@ namespace scaleformExtend
 	// bRecursive - Processes child forms
 	void FormData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive)
 	{
-		if(!pForm || !pFxVal)
+		if(!pForm || !pFxVal || !pFxVal->IsObject())
 			return;
 
 		scaleformExtend::CommonItemData(pFxVal, pForm);
@@ -631,7 +632,7 @@ namespace scaleformExtend
 	{
 		TESForm	* pForm = objDesc->form;
 
-		if(!pForm || !pFxVal)
+		if(!pForm || !pFxVal || !pFxVal->IsObject())
 			return;
 
 		PlayerCharacter	* pPC = *g_thePlayer;

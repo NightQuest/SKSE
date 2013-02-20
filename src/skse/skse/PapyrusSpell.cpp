@@ -1,6 +1,7 @@
 #include "PapyrusSpell.h"
 
 #include "GameObjects.h"
+#include "GameReferences.h"
 
 namespace papyrusSpell
 {
@@ -35,6 +36,14 @@ namespace papyrusSpell
 	UInt32 GetMagickaCost(SpellItem* thisSpell)
 	{
 		return (thisSpell) ? thisSpell->GetMagickaCost() : 0;
+	}
+
+	UInt32 GetEffectiveMagickaCost(SpellItem* thisSpell, Character* caster)
+	{
+		if (!thisSpell)
+			return 0;
+
+		return CALL_MEMBER_FN(thisSpell,GetEffectiveMagickaCost)(caster);
 	}
 }
 
@@ -126,4 +135,7 @@ void papyrusSpell::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0<SpellItem, UInt32>("GetMagickaCost", "Spell", papyrusSpell::GetMagickaCost, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<SpellItem, UInt32, Character*>("GetEffectiveMagickaCost", "Spell", papyrusSpell::GetEffectiveMagickaCost, registry));
 }

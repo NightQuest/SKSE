@@ -23,3 +23,15 @@ public:
 };
 
 STATIC_ASSERT(sizeof(NiNode) == 0xB8);
+
+class BSFaceGenNiNode : public NiNode
+{
+public:
+	// Nothing yet
+};
+
+typedef UInt32 (* _UpdateModelSkin)(NiNode*, NiColorA**);
+extern _UpdateModelSkin UpdateModelSkin;
+
+typedef UInt32 (* _UpdateModelHair)(NiNode*, NiColorA**);
+extern _UpdateModelHair UpdateModelHair;

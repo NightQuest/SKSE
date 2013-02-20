@@ -8,6 +8,8 @@
 
 class BSAnimationGraphEvent;
 class NiNode;
+class TESObjectREFR;
+class BSFaceGenNiNode;
 
 // TESObjectREFR and child classes
 
@@ -15,7 +17,32 @@ class NiNode;
 class BSHandleRefObject : public NiRefObject
 {
 public:
+	enum
+	{
+		kMask_RefCount = 0x3FF
+	};
+
+	UInt32 GetRefCount() const
+	{
+		return m_uiRefCount & 0x3FF;
+	}
 };
+
+// The refHandle is stored in BSHandleRefObject.m_uiRefCount
+// Bits:
+//	01 - 10	ref count
+//	11		isHandleSet
+//	12 - ??	handle (seems to be divided in two parts, 0xFFFFF and 0x3F00000)
+
+// Adds entry to lookup table if not yet there
+typedef void (* _CreateRefHandleByREFR)(UInt32 * refHandleOut, TESObjectREFR * refr);
+extern const _CreateRefHandleByREFR CreateRefHandleByREFR;
+
+// Note: May set refHandle to 0
+typedef bool (* _LookupREFRByHandle)(UInt32 * refHandle, TESObjectREFR ** refrOut);
+extern const _LookupREFRByHandle LookupREFRByHandle;
+
+extern const UInt32 * g_invalidRefHandle;
 
 // 4
 class IAnimationGraphManagerHolder
@@ -105,7 +132,7 @@ public:
 	virtual void	Unk_5E(void);
 	virtual void	Unk_5F(void);
 	virtual void	Unk_60(void);
-	virtual void	Unk_61(void);
+	virtual BSFaceGenNiNode *	GetFaceGenNiNode(void);
 	virtual void	Unk_62(void);
 	virtual void	Unk_63(void);
 	virtual void	Unk_64(void);
@@ -198,6 +225,8 @@ public:
 	BaseExtraList	extraData;		// 48
 	UInt32			unk50;			// flags?
 
+	UInt32 CreateRefHandle(void);
+
 	MEMBER_FN_PREFIX(TESObjectREFR);
 	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D4450);
 };
@@ -252,15 +281,27 @@ public:
 		UInt32		spellCount;		// 08
 	};
 
+	enum Flags1 {
+		kFlags_IsPlayerTeammate = 0x4000000
+	};
+	enum Flags2 {
+		kFlags_CanDoFavor = 0x80
+	};
+
 	MagicTarget		magicTarget;					// 054
 	ActorValueOwner	actorValueOwner;				// 060
 	ActorState		actorState;						// 064
 	BSTEventSink<void*>	transformDeltaEvent;		// 070 .?AV?$BSTEventSink@VBSTransformDeltaEvent@@@@
 	BSTEventSink<void*>	characterMoveFinishEvent;	// 074 .?AV?$BSTEventSink@VbhkCharacterMoveFinishEvent@@@@
 	IPostAnimationChannelUpdateFunctor	unk078;		// 078 IPostAnimationChannelUpdateFunctor
-	UInt32	unk07C[(0x0FC - 0x07C) >> 2];			// 07C
+	UInt32	flags1;									// 07C
+	UInt32	unk080[(0x0FC - 0x080) >> 2];			// 080
 	SpellArray	addedSpells;						// 0FC
-	UInt32	unk108[(0x19C - 0x108) >> 2];			// 108
+	UInt32	unk108[(0x130 - 0x108) >> 2];			// 108
+	TESRace			* race;							// 130
+	UInt32	unk134;									// 134
+	UInt32	flags2;									// 138
+	UInt32	unk13C[(0x19C - 0x13C) >> 2];
 };
 
 STATIC_ASSERT(offsetof(Actor, magicTarget) == 0x54);
@@ -273,9 +314,9 @@ STATIC_ASSERT(sizeof(Actor) == 0x19C);
 // 19C
 class Character : public Actor
 {
+public:
 	enum { kTypeID = kFormType_Character };
 
-public:
 	MEMBER_FN_PREFIX(Character);
 	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x007309B0, bool);
 };
@@ -296,9 +337,13 @@ public:
 	BSTEventSource <void *>	actorDeathEventSource;		// 1D8 .?AV?$BSTEventSource@UBGSActorDeathEvent@@@@
 	BSTEventSource <void *>	positionPlayerEventSource;	// 208 .?AV?$BSTEventSource@UPositionPlayerEvent@@@@
 
-	UInt32	pad238[(0x5AC - 0x238) >> 2];	// 238
-	UInt32	lastRiddenHorse;
-	UInt32	pad5B0[(0x6E0 - 0x5B0) >> 2];
+	UInt32	pad238[(0x58C - 0x238) >> 2];	// 238
+	NiNode	* firstPersonSkeleton;			// 58C
+	UInt32	pad590[(0x5AC - 0x590) >> 2];
+	UInt32	lastRiddenHorse;				// 5AC
+	UInt32	pad5B0[(0x648 - 0x5B0) >> 2];
+	UInt32	numTeammates;					// 648
+	UInt32	pad64C[(0x6E0 - 0x64C) >> 2];
 	UInt8	unk6E0;							// 6E0
 	UInt8	numPerkPoints;					// 6E1
 	UInt16  unk6E2;							// 6E2
@@ -307,46 +352,13 @@ public:
 	tArray <TintMask *>	tintMasks;			// 6E8		// These are the actual tints
 	tArray <TintMask *>	* overlayTintMasks;	// 6F4		// These apply when the Race's FaceGen Head is off
 
-	// Use these to modify the overlay, but it gets reset frequently so its pointless
-	/*TintMask * GetOverlayTintMask(UInt32 tintType, UInt32 index)
-	{
-		UInt32 curIndex = 0;
-		if(!overlayTintMasks)
-			return NULL;
+	// Overlayed tints should be the same as original tints
+	// occasionally they can have no type so index matching
+	// is required to set anything on the tint
+	TintMask * GetOverlayTintMask(TintMask * original);
 
-		for(int i = 0; i < overlayTintMasks->count; i++)
-		{
-			TintMask * tintMask;
-			overlayTintMasks->GetNthItem(i, tintMask);
-			if(tintMask && tintMask->tintType == tintType) {
-				if(index == curIndex)
-					return tintMask;
-				else
-					++curIndex;
-			}
-		}
-
-		return NULL;
-	}
-
-	UInt32 GetNumOverlayTints(UInt32 tintType)
-	{
-		UInt32 count = 0;
-		if(!overlayTintMasks)
-			return NULL;
-
-		for(int i = 0; i < overlayTintMasks->count; i++)
-		{
-			TintMask * tintMask;
-			overlayTintMasks->GetNthItem(i, tintMask);
-			if(tintMask && tintMask->tintType == tintType) {
-				count++;
-			}
-		}
-
-		return count;
-	}*/
-
+	void UpdateSkinColor();
+	void UpdateHairColor();
 
 	// Confirmed - Same as ExtraContainerChanges::EntryData
 	// This type is used by scaleform to extend data
@@ -359,6 +371,7 @@ public:
 	};
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
+	DEFINE_MEMBER_FN(GetTintList, tArray <TintMask *> *, 0x0055F750);
 	DEFINE_MEMBER_FN(GetNumTints, UInt32, 0x007359A0, UInt32 tintType);
 	DEFINE_MEMBER_FN(GetTintMask, TintMask *, 0x00735960, UInt32 tintType, UInt32 index);
 	DEFINE_MEMBER_FN(GetDamage, double, 0x007302E0, ObjDesc * pForm);
@@ -435,4 +448,21 @@ class MissileProjectile : public Projectile
 class ArrowProjectile : public MissileProjectile
 {
 	enum { kTypeID = kFormType_Arrow };
+};
+
+// This does alot more, but no idea what it is yet
+// ??
+class CrosshairRefHandleHolder
+{
+	UInt32	unk00;					// 00
+	UInt32	crosshairRefHandle;		// 04
+	// ...
+
+public:
+	static CrosshairRefHandleHolder * GetSingleton(void)
+	{
+		return *((CrosshairRefHandleHolder **)0x1B107D8);
+	}
+
+	UInt32 CrosshairRefHandle(void) const		{ return crosshairRefHandle; }
 };

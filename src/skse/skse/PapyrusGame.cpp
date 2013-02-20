@@ -7,15 +7,45 @@
 #include "GameData.h"
 #include "GameSettings.h"
 #include "GameForms.h"
+#include "GameCamera.h"
 
-typedef UInt32 (* _UpdatePlayerTints)();
-_UpdatePlayerTints UpdatePlayerTints = (_UpdatePlayerTints)0x0087F190;
+#include "NiNodes.h"
 
-typedef void * (* _UpdatePlayerSkin)(PlayerCharacter*, NiColorA*);
-_UpdatePlayerSkin UpdatePlayerSkin = (_UpdatePlayerSkin)0x005A9C60;
+#include "Colors.h"
+#include "GameMenus.h"
 
-typedef void * (* _UpdatePlayerHair)(PlayerCharacter*, NiColorA*);
-_UpdatePlayerHair UpdatePlayerHair = (_UpdatePlayerHair)0x005A9C90;
+#include "common/IMemPool.h"
+
+IThreadSafeBasicMemPool<TintUpdateDelegate,16>		s_tintUpdateDelegatePool;
+IThreadSafeBasicMemPool<HairUpdateDelegate,16>		s_hairUpdateDelegatePool;
+
+void TintUpdateDelegate::Run()
+{
+	PlayerCharacter* pPC = (*g_thePlayer);
+	if(!pPC)
+		return;
+
+	pPC->UpdateSkinColor();
+	UpdatePlayerTints();
+}
+void TintUpdateDelegate::Dispose(void)
+{
+	s_tintUpdateDelegatePool.Free(this);
+}
+
+void HairUpdateDelegate::Run()
+{
+	PlayerCharacter* pPC = (*g_thePlayer);
+	if(!pPC)
+		return;
+
+	pPC->UpdateHairColor();
+}
+
+void HairUpdateDelegate::Dispose(void)
+{
+	s_hairUpdateDelegatePool.Free(this);
+}
 
 namespace papyrusGame
 {
@@ -216,15 +246,21 @@ namespace papyrusGame
 	UInt32 GetNumTintMasks(StaticFunctionTag * base)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
+		if(!pPC) {
+			return 0;
+		}
 		return pPC->tintMasks.count;
 	}
 
 	UInt32 GetNthTintMaskColor(StaticFunctionTag * base, UInt32 n)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
-		TintMask * tintMask;
+		if(!pPC) {
+			return 0;
+		}
+		TintMask * tintMask = NULL;
 		if(pPC->tintMasks.GetNthItem(n, tintMask)) {
-			return (((UInt32)(tintMask->alpha * 255)) << 24) | tintMask->color.red << 16 | tintMask->color.green << 8 | tintMask->color.blue;
+			return tintMask->ToARGB();
 		}
 		return 0;
 	}
@@ -232,7 +268,10 @@ namespace papyrusGame
 	UInt32 GetNthTintMaskType(StaticFunctionTag * base, UInt32 n)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
-		TintMask * tintMask;
+		if(!pPC) {
+			return 0;
+		}
+		TintMask * tintMask = NULL;
 		if(pPC->tintMasks.GetNthItem(n, tintMask)) {
 			return tintMask->tintType;
 		}
@@ -242,58 +281,82 @@ namespace papyrusGame
 	BSFixedString GetNthTintMaskTexturePath(StaticFunctionTag * base, UInt32 n)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
-		TintMask * tintMask;
+		if(!pPC) {
+			return NULL;
+		}
+		TintMask * tintMask = NULL;
 		if(pPC->tintMasks.GetNthItem(n, tintMask)) {
 			if(tintMask->texture) {
 				return tintMask->texture->str;
 			}
 		}
+	
 		return NULL;
 	}
 
 	void SetNthTintMaskTexturePath(StaticFunctionTag * base, BSFixedString path, UInt32 n)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
-		TintMask * tintMask;
-		if(pPC->tintMasks.GetNthItem(n, tintMask)) {
-			if(tintMask->texture) {
-				tintMask->texture->str = path;
+		if(pPC) {
+			TintMask * tintMask = NULL;
+			if(pPC->tintMasks.GetNthItem(n, tintMask)) {
+				if(tintMask->texture) {
+					tintMask->texture->str = path;
+				}
 			}
+			if(pPC->overlayTintMasks) {
+				if(pPC->overlayTintMasks->GetNthItem(n, tintMask)) {
+					if(tintMask->texture) {
+						tintMask->texture->str = path;
+					}
+				}
+			}
+		}
+	}
+
+	void SetPlayerTintMaskColor(TESNPC* actorBase, TintMask * tintMask, UInt32 argb)
+	{
+		ARGBColor color(argb);
+		float alpha = color.GetAlpha() / 255.0;
+		if(alpha > 1.0)
+			alpha = 1.0;
+		if(alpha < 0.0)
+			alpha = 0.0;
+
+		// Skin tones must have full alpha, use the alpha channel for saturation instead
+		if(tintMask->tintType == TintMask::kMaskType_SkinTone) {
+			double saturation = color.GetSaturation();
+			color.SetSaturation(alpha * saturation);
+			tintMask->color.red = color.GetRed();
+			tintMask->color.green = color.GetGreen();
+			tintMask->color.blue = color.GetBlue();
+			actorBase->color.red = tintMask->color.red;
+			actorBase->color.green = tintMask->color.green;
+			actorBase->color.blue = tintMask->color.blue;
+			tintMask->alpha = 1.0;
+		} else {
+			tintMask->color.red = color.GetRed();
+			tintMask->color.green = color.GetGreen();
+			tintMask->color.blue = color.GetBlue();
+			tintMask->alpha = alpha;
 		}
 	}
 
 	void SetNthTintMaskColor(StaticFunctionTag * base, UInt32 n, UInt32 color)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
-		TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
-		TintMask * tintMask;
-		if(pPC->tintMasks.GetNthItem(n, tintMask)) {
-			float alpha = ((color & 0xFF000000) >> 24) / 255.0;
-			UInt8 red = (color & 0x00FF0000) >> 16;
-			UInt8 green = (color & 0x0000FF00) >> 8;
-			UInt8 blue = color & 0x000000FF;
-
-			if(alpha > 1.0)
-				alpha = 1.0;
-			if(alpha < 0.0)
-				alpha = 0.0;
-
-			// Skin tones must have full alpha, use the alpha channel for saturation instead
-			if(tintMask->tintType == TintMask::kMaskType_SkinTone) {
-				float saturation = papyrusColorComponent::GetSaturation(NULL, color);
-				UInt32 outColor = papyrusColorComponent::SetSaturation(NULL, color, alpha * saturation);
-				tintMask->color.red = (outColor & 0xFF0000) >> 16;
-				tintMask->color.green = (outColor & 0x00FF00) >> 8;
-				tintMask->color.blue = (outColor & 0x0000FF);
-				npc->color.red = tintMask->color.red;
-				npc->color.green = tintMask->color.green;
-				npc->color.blue = tintMask->color.blue;
-				tintMask->alpha = 1.0;
-			} else {
-				tintMask->color.red = red;
-				tintMask->color.green = green;
-				tintMask->color.blue = blue;
-				tintMask->alpha = alpha;
+		if(pPC) {
+			TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
+			if(npc) {
+				TintMask * tintMask = NULL;
+				if(pPC->tintMasks.GetNthItem(n, tintMask)) {
+					SetPlayerTintMaskColor(npc, tintMask, color);
+				}
+				if(pPC->overlayTintMasks) {
+					if(pPC->overlayTintMasks->GetNthItem(n, tintMask)) {
+						SetPlayerTintMaskColor(npc, tintMask, color);
+					}
+				}
 			}
 		}
 	}
@@ -301,18 +364,25 @@ namespace papyrusGame
 	UInt32 GetNumTintMasksByType(StaticFunctionTag * base, UInt32 tintType)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
+		if(!pPC) {
+			return 0;
+		}
 		return CALL_MEMBER_FN(pPC, GetNumTints)(tintType);
 	}
 
 	UInt32 GetTintMaskColor(StaticFunctionTag * base, UInt32 tintType, UInt32 index)
 	{
-		UInt32 color = 0;
 		PlayerCharacter* pPC = (*g_thePlayer);
-		TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
+		if(!pPC) {
+			return 0;
+		}
+
+		UInt32 color = 0;
 		TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(tintType, index);
 		if(tintMask) {
-			color = (((UInt32)(tintMask->alpha * 255)) << 24) | tintMask->color.red << 16 | tintMask->color.green << 8 | tintMask->color.blue;
+			color = tintMask->ToARGB();
 		}
+
 
 		return color;
 	}
@@ -320,65 +390,29 @@ namespace papyrusGame
 	void SetTintMaskColor(StaticFunctionTag * base, UInt32 color, UInt32 tintType, UInt32 index)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
-		TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(tintType, index);
-		TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
-		if(tintMask) {
-			float alpha = ((color & 0xFF000000) >> 24) / 255.0;
-			UInt8 red = (color & 0x00FF0000) >> 16;
-			UInt8 green = (color & 0x0000FF00) >> 8;
-			UInt8 blue = color & 0x000000FF;
-
-			if(alpha > 1.0)
-				alpha = 1.0;
-			if(alpha < 0.0)
-				alpha = 0.0;
-
-			// Apply to overlay if there is one
-			/*if(pPC->overlayTintMasks) {
-				TintMask * overlayMask = pPC->GetOverlayTintMask(tintType, index);
-				if(overlayMask && overlayMask->tintType == tintType) {
-					if(tintType == TintMask::kMaskType_SkinTone) {
-						float saturation = papyrusColorComponent::GetSaturation(NULL, color);
-						UInt32 outColor = papyrusColorComponent::SetSaturation(NULL, color, alpha * saturation);
-						overlayMask->color.red = (outColor & 0xFF0000) >> 16;
-						overlayMask->color.green = (outColor & 0x00FF00) >> 8;
-						overlayMask->color.blue = (outColor & 0x0000FF);
-						overlayMask->alpha = 1.0;
-					} else {
-						overlayMask->color.red = red;
-						overlayMask->color.green = green;
-						overlayMask->color.blue = blue;
-						overlayMask->alpha = alpha;
+		if(pPC) {
+			TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
+			if(npc) {
+				TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(tintType, index);
+				if(tintMask) {
+					SetPlayerTintMaskColor(npc, tintMask, color);
+				}
+				if(pPC->overlayTintMasks) { // Overlays don't always have types for some dumb reason
+					TintMask * overlayMask = pPC->GetOverlayTintMask(tintMask);
+					if(overlayMask) {
+						SetPlayerTintMaskColor(npc, overlayMask, color);
 					}
 				}
-			}*/
-
-			// Skin tones must have full alpha, use the alpha channel for saturation instead
-			if(tintType == TintMask::kMaskType_SkinTone) {
-				float saturation = papyrusColorComponent::GetSaturation(NULL, color);
-				UInt32 outColor = papyrusColorComponent::SetSaturation(NULL, color, alpha * saturation);
-				tintMask->color.red = (outColor & 0xFF0000) >> 16;
-				tintMask->color.green = (outColor & 0x00FF00) >> 8;
-				tintMask->color.blue = (outColor & 0x0000FF);
-				npc->color.red = tintMask->color.red;
-				npc->color.green = tintMask->color.green;
-				npc->color.blue = tintMask->color.blue;
-				tintMask->alpha = 1.0;
-			} else {
-				tintMask->color.red = red;
-				tintMask->color.green = green;
-				tintMask->color.blue = blue;
-				tintMask->alpha = alpha;
 			}
-
-			//CALL_MEMBER_FN(pPC, QueueNiNodeUpdate)(true); // Call this explicitly incase multiple tints are changed simultanenously
 		}
 	}
 
 	BSFixedString GetTintMaskTexturePath(StaticFunctionTag * base, UInt32 tintType, UInt32 index)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
-		TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
+		if(!pPC) {
+			return NULL;
+		}
 		TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(tintType, index);
 		if(tintMask && tintMask->texture) {
 			return tintMask->texture->str;
@@ -390,55 +424,97 @@ namespace papyrusGame
 	void SetTintMaskTexturePath(StaticFunctionTag * base, BSFixedString path, UInt32 tintType, UInt32 index)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
-		TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(tintType, index);
-		TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
-		if(tintMask && tintMask->texture) {
-			tintMask->texture->str = path;
-		}
-	}
-
-	void UpdateTintMaskColors(StaticFunctionTag * base)
-	{
-		PlayerCharacter* pPC = (*g_thePlayer);
-		TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(TintMask::kMaskType_SkinTone, 0);
-		if(tintMask) {
-			NiColorA val;
-			val.r = tintMask->color.red / 255.0;
-			val.g = tintMask->color.green / 255.0;
-			val.b = tintMask->color.blue / 255.0;
-			UpdatePlayerSkin(pPC, &val);
-		}
-
-		UpdatePlayerTints();
-	}
-
-	void UpdateHairColor(StaticFunctionTag * base)
-	{
-		PlayerCharacter* pPC = (*g_thePlayer);
-		TESNPC* npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
-		if(npc && npc->headData) {
-			BGSColorForm * hairColor = npc->headData->hairColor;
-			if(hairColor) {
-				NiColorA val;
-				val.r = hairColor->color.red / 128.0;
-				val.g = hairColor->color.green / 128.0;
-				val.b = hairColor->color.blue / 128.0;
-				UpdatePlayerHair(pPC, &val);
+		if(pPC) {
+			TintMask * tintMask = CALL_MEMBER_FN(pPC, GetTintMask)(tintType, index);
+			if(tintMask && tintMask->texture) {
+				tintMask->texture->str = path;
+			}
+			if(pPC->overlayTintMasks) {
+				TintMask * overlayMask = pPC->GetOverlayTintMask(tintMask);
+				if(overlayMask && overlayMask->texture) {
+					overlayMask->texture->str = path;
+				}
 			}
 		}
 	}
 
-	UInt32 GetMiscStat(StaticFunctionTag * base, BSFixedString name)
+	// PLB: A bit hacky to delegate these to the UIManager but at least they don't crash
+	void UpdateTintMaskColors(StaticFunctionTag * base)
 	{
-		MiscStatManager::MiscStat	* stat = MiscStatManager::GetSingleton()->Get(name.data);
+		UIManager * uiManager = UIManager::GetSingleton();
+		if (!uiManager)
+			return;
 
-		if(stat)
-			return stat->value;
-		else
-		{
-			_MESSAGE("GetMiscStat: could not find stat (%s)", name.data);
-			return 0;
+		PlayerCharacter* pPC = (*g_thePlayer);
+		if(!pPC)
+			return;
+
+		// PLB: This object doesn't exist at the beginning of a game session
+		// UpdatePlayerTints will create this object, however
+		if(NiObject::GetPlayerMaskObject()) {
+			TintUpdateDelegate * cmd = s_tintUpdateDelegatePool.Allocate();
+			if (!cmd) {
+				_MESSAGE("Failed to allocate TintUpdateDelegate, skipping invoke");
+				return;
+			}
+			uiManager->QueueCommand(cmd);
+		} else {
+			TESNPC * npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
+			BSFaceGenNiNode * faceNode = pPC->GetFaceGenNiNode();
+			BGSHeadPart * facePart = NULL;
+			if(CALL_MEMBER_FN(npc, HasOverlays)()) {
+				facePart = npc->GetHeadPartOverlayByType(BGSHeadPart::kTypeFace);
+			} else {
+				facePart = CALL_MEMBER_FN(npc, GetHeadPartByType)(BGSHeadPart::kTypeFace);
+			}
+			if(npc && faceNode && facePart) {
+				pPC->UpdateSkinColor();
+				CALL_MEMBER_FN(FaceGen::GetSingleton(), RegenerateHead)(faceNode, facePart, npc);
+			}
 		}
+	}
+
+#ifdef PAPYRUS_CUSTOM_CLASS
+	TintMask * GetNthTintMask(StaticFunctionTag * base, UInt32 n)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		if(pPC) {
+			TintMask * tintMask = NULL;
+			if(pPC->tintMasks.GetNthItem(n, tintMask)) {
+				return tintMask;
+			}
+		}
+
+		return NULL;
+	}
+#endif
+
+	void UpdateHairColor(StaticFunctionTag * base)
+	{
+		UIManager * uiManager = UIManager::GetSingleton();
+		if (!uiManager)
+			return;
+
+		HairUpdateDelegate * cmd = s_hairUpdateDelegatePool.Allocate();
+		if (!cmd) {
+			_MESSAGE("Failed to allocate HairUpdateDelegate, skipping invoke");
+			return;
+		}
+
+		uiManager->QueueCommand(cmd);
+	}
+
+	SInt32 GetCameraState(StaticFunctionTag * base)
+	{
+		PlayerCamera * playerCamera = PlayerCamera::GetSingleton();
+		if(playerCamera) {
+			for(int i = 0; i < PlayerCamera::kNumCameraStates; i++) {
+				if(playerCamera->cameraState == playerCamera->cameraStates[i])
+					return i;
+			}
+		}
+
+		return -1;
 	}
 
 	void SetMiscStat(StaticFunctionTag * base, BSFixedString name, UInt32 value)
@@ -548,11 +624,16 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction0 <StaticFunctionTag, void>("UpdateHairColor", "Game", papyrusGame::UpdateHairColor, registry));
 
+#ifdef PAPYRUS_CUSTOM_CLASS
 	registry->RegisterFunction(
-		new NativeFunction1 <StaticFunctionTag, UInt32, BSFixedString>("GetMiscStat", "Game", papyrusGame::GetMiscStat, registry));
+		new NativeFunction1 <StaticFunctionTag, TintMask*, UInt32>("GetNthTintMask", "Game", papyrusGame::GetNthTintMask, registry));
+#endif
 
 	registry->RegisterFunction(
 		new NativeFunction2 <StaticFunctionTag, void, BSFixedString, UInt32>("SetMiscStat", "Game", papyrusGame::SetMiscStat, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <StaticFunctionTag, SInt32>("GetCameraState", "Game", papyrusGame::GetCameraState, registry));
 
 	registry->SetFunctionFlags("Game", "GetModCount", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetModByName", VMClassRegistry::kFunctionFlag_NoWait);
@@ -579,8 +660,13 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Game", "SetTintMaskColor", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetTintMaskTexturePath", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "SetTintMaskTexturePath", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("Game", "GetMiscStat", VMClassRegistry::kFunctionFlag_NoWait);
+
 	registry->SetFunctionFlags("Game", "SetMiscStat", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "GetCameraState", VMClassRegistry::kFunctionFlag_NoWait);
+
+#ifdef PAPYRUS_CUSTOM_CLASS
+	registry->SetFunctionFlags("Game", "GetNthTintMask", VMClassRegistry::kFunctionFlag_NoWait);
+#endif
 
 	//registry->SetFunctionFlags("Game", "UpdateTintMaskColors", VMClassRegistry::kFunctionFlag_NoWait);
 	//registry->SetFunctionFlags("Game", "UpdateHairColor", VMClassRegistry::kFunctionFlag_NoWait);

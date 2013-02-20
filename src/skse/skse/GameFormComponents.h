@@ -333,8 +333,16 @@ public:
 class TESModelTextureSwap : public TESModel
 {
 public:
-	BGSTextureSet	** textureSets;	// 14
-	UInt32			count;			// 18
+	// 0C
+	struct SwapInfo
+	{
+		BGSTextureSet	* textureSet;	// 00
+		UInt32			unk04;			// 04 - index?
+		BSFixedString	name;			// 08
+	};
+
+	SwapInfo		* swaps;	// 14
+	UInt32			count;		// 18
 };
 
 // 14
@@ -405,13 +413,14 @@ public:
 	void Visit(Op& op) const {
 		bool bContinue = true;
 		for (UInt32 n = 0; n < numEntries && bContinue; n++) {
-			pEntry = entries[n];
+			Entry* pEntry = entries[n];
 			if (pEntry) {
 				bContinue = op.Accept(pEntry);
 			}
 		}
 	}
 
+	UInt32 CountItem(TESForm* item) const;
 };
 
 // 0C
@@ -652,18 +661,14 @@ class ActorValueOwner
 public:
 	virtual ~ActorValueOwner();
 
-	enum {
-		kNumActorValues = 164
-	};
-
 	// Argument is the ActorValue ID
 	virtual float	GetCurrent(UInt32 arg);
 	virtual float	GetMaximum(UInt32 arg);
 	virtual float	GetBase(UInt32 arg);
-	virtual void	Unk_04(UInt32 arg0, UInt32 arg1);
-	virtual void	Unk_05(UInt32 arg0, UInt32 arg1);
-	virtual void	Unk_06(UInt32 arg0, UInt32 arg1, UInt32 arg2);
-	virtual void	Unk_07(UInt32 arg0, UInt32 arg1);
+	virtual void	SetBase(UInt32 arg0, float arg1);
+	virtual void	ModBase(UInt32 arg0, float arg1);
+	virtual void	Unk_06(UInt32 arg0, UInt32 arg1, UInt32 arg2); // Force/Mod AV?
+	virtual void	SetCurrent(UInt32 arg0, float arg1);
 	virtual bool	Unk_08(void);
 
 //	void	** _vtbl;	// 00
@@ -899,13 +904,14 @@ public:
 		kComparisonFlag_LessEqual = 0xA0
 	};
 	enum ReferenceTypes {
-		kReferenceType_Target = 0x01,
-		kReferenceType_Reference = 0x02,
-		kReferenceType_CombatTarget = 0x03,
-		kReferenceType_LinkedRef = 0x04,
-		kReferenceType_Alias = 0x05,
-		kReferenceType_PackageData = 0x06,
-		kReferenceType_EventData = 0x07
+		kReferenceType_None = 0,
+		kReferenceType_Target,
+		kReferenceType_Reference,
+		kReferenceType_CombatTarget,
+		kReferenceType_LinkedRef,
+		kReferenceType_Alias,
+		kReferenceType_PackageData,
+		kReferenceType_EventData
 	};
 	Condition	* next;					// 00
 	UInt32		compareValue;			// 04
@@ -929,22 +935,26 @@ public:
 	TintMask();
 	~TintMask();
 
+#ifdef PAPYRUS_CUSTOM_CLASS
+	enum { kTypeID = 300 };
+#endif
+
 	enum {
 		kMaskType_Frekles = 0,
-		kMaskType_Lips = 1,
-		kMaskType_Cheeks = 2,
-		kMaskType_Eyeliner = 3,
-		kMaskType_UpperEyeSocket = 4,
-		kMaskType_LowerEyeSocket = 5,
-		kMaskType_SkinTone = 6,
-		kMaskType_WarPaint = 7,
-		kMaskType_FrownLines = 8,
-		kMaskType_LowerCheeks = 9,
-		kMaskType_Nose = 10,
-		kMaskType_Chin = 11,
-		kMaskType_Neck = 12,
-		kMaskType_Forehead = 13,
-		kMaskType_Dirt = 14
+		kMaskType_Lips,
+		kMaskType_Cheeks,
+		kMaskType_Eyeliner,
+		kMaskType_UpperEyeSocket,
+		kMaskType_LowerEyeSocket,
+		kMaskType_SkinTone,
+		kMaskType_WarPaint,
+		kMaskType_FrownLines,
+		kMaskType_LowerCheeks,
+		kMaskType_Nose,
+		kMaskType_Chin,
+		kMaskType_Neck,
+		kMaskType_Forehead,
+		kMaskType_Dirt
 	};
 	TESTexture	* texture;
 
@@ -957,4 +967,6 @@ public:
 
 	float		alpha;
 	UInt32		tintType;
+
+	UInt32 ToARGB();
 };

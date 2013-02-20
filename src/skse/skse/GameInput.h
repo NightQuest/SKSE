@@ -182,6 +182,11 @@ public:
 	UInt8			pad41[3];		// 41
 
 	static PlayerControls *	GetSingleton(void);
+
+	// used by Hooks_Event
+	PlayerControls * ctor_Hook(void);
+	MEMBER_FN_PREFIX(PlayerControls);
+	DEFINE_MEMBER_FN(ctor, PlayerControls *, 0x0087A440);
 };
 STATIC_ASSERT(offsetof(PlayerControls, remapMode) == 0x040);
 

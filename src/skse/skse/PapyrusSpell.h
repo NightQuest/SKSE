@@ -5,6 +5,7 @@ class MagicItem;
 class BGSPerk;
 class EffectSetting;
 class VMClassRegistry;
+class Character;
 
 namespace papyrusSpell
 {
@@ -21,6 +22,7 @@ namespace papyrusSpell
 	EffectSetting* GetNthEffectMagicEffect(SpellItem* thisMagic, UInt32 index);
 	UInt32 GetCostliestEffectIndex(SpellItem* thisMagic);
 	UInt32 GetMagickaCost(SpellItem* thisMagic);
+	UInt32 GetEffectiveMagickaCost(SpellItem* thisSpell, Character* caster);
 };
 
 namespace magicItemUtils {

@@ -26,6 +26,8 @@ public:
 
 	UInt32	m_fpsLimit;
 
+	UInt64	m_affinity;
+
 	std::string	m_altEXE;
 	std::string	m_altDLL;
 

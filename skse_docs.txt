@@ -162,6 +162,12 @@ dynamic intrinsic class skse
 	// gets the last keycode detected by the SKSE input handler
 	// bKeyDown specifies whether it's the last pressed or released key
 	function GetLastKeycode(bKeyDown : Boolean) : Number;
+
+	// enables mouse wheel events to trigger onMouseWheel for the MapMenu
+	function EnableMapMenuMouseWheel(enable : Boolean) : Void;
+
+	// centers map on the marker with the given index. only works if the map is open
+	function ShowOnMap(markerIndex : Number) : Void;
 	
 	dynamic intrinsic class version
 	{
@@ -213,3 +219,5 @@ dynamic intrinsic class skse
 //	1.6.4	1.8.151.0	32
 //	1.6.5	1.8.151.0	33
 //	1.6.6	1.8.151.0	34
+//	1.6.7	1.8.151.0	35
+//	1.6.8	1.8.151.0	36

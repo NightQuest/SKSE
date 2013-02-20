@@ -16,17 +16,30 @@ public:
 	virtual ~IObjectHandlePolicy();
 
 	// this code heavily uses 64-bit values, so many of these arguments may be paired 64-bit (eax/edx)
-	virtual bool	IsType(UInt32 typeID, UInt64 handle);
-	virtual bool	Unk_02(UInt64 handle);
+	virtual bool	IsType(UInt32 typeID, UInt64 handle); // sub_8B30C0
+	virtual bool	Unk_02(UInt64 handle);	// sub_8B3300
 	virtual UInt64	GetInvalidHandle(void);
-	virtual UInt64	Create(UInt32 typeID, void * srcData);
+	virtual UInt64	Create(UInt32 typeID, void * srcData);	// sub_8B38B0
 	virtual bool	IsREFR(UInt64 handle);	// return IsType(TESObjectREFR::kTypeID, handle);
 	virtual UInt64	Unk_06(UInt32 unk0, UInt32 unk1);
 	virtual UInt64	Unk_07(UInt32 unk0, UInt32 unk1);
-	virtual void *	Resolve(UInt32 typeID, UInt64 handle);
+	virtual void *	Resolve(UInt32 typeID, UInt64 handle);	// sub_8B33D0
 	virtual void	AddRef(UInt64 handle);
 	virtual void	Release(UInt64 handle);
 	virtual void	GetName(UInt64 handle, void * outStr);
+
+#ifdef PAPYRUS_CUSTOM_CLASS
+	MEMBER_FN_PREFIX(IObjectHandlePolicy);
+	DEFINE_MEMBER_FN(Unk_02_Origin, bool, 0x008B3300, UInt64 handle);
+	DEFINE_MEMBER_FN(IsType_Origin, bool, 0x008B30C0, UInt32 typeID, UInt64 handle);
+	DEFINE_MEMBER_FN(Create_Origin, UInt64, 0x008B38B0, UInt32 typeID, void * srcData);
+	DEFINE_MEMBER_FN(Resolve_Origin, void *, 0x008B33D0, UInt32 typeID, UInt64 handle);
+
+	bool Unk_02_Hook(UInt64 handle);
+	bool IsType_Hook(UInt32 typeID, UInt64 handle);
+	void * Resolve_Hook(UInt32 typeID, UInt64 handle);
+	UInt64	Create_Hook(UInt32 typeID, void * srcData);
+#endif
 
 //	void	** _vtbl;	// 00
 };
@@ -185,13 +198,16 @@ public:
 
 	virtual void	Unk_01(void);
 
-//	void	** _vtbl;	// 0000
+//	void						** _vtbl;				// 0000
+	BSTEventSink<void>			eventSinks[63];			// 0004
+	VMClassRegistry				* m_classRegistry;		// 0100
+	UInt8						pad104[0x46C - 0x104];	// 0104
+	SimpleLock					m_updateLock;			// 046C
+	UpdateRegistrationHolder	m_updateRegHolder;		// 0474
 
-	BSTEventSink<void> eventSinks[63];	// 0004
+	VMClassRegistry	*	GetClassRegistry(void)	{ return m_classRegistry; }
 
-	VMClassRegistry	* m_classRegistry;	// 0100
-
-	VMClassRegistry	* GetClassRegistry(void)	{ return m_classRegistry; }
+	UInt32				ClearInvalidRegistrations(void);
 
 	MEMBER_FN_PREFIX(SkyrimVM);
 

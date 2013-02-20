@@ -115,6 +115,38 @@ namespace papyrusActiveMagicEffect
 		SKSEModCallbackEvent evn(eventName, strArg, numArg, NULL);
 		g_modCallbackEventDispatcher.SendEvent(&evn);
 	}
+
+	void RegisterForCameraState(ActiveEffect * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_cameraEventRegs.Register<ActiveEffect>(ActiveEffect::kTypeID, thisForm);
+	}
+
+	void UnregisterForCameraState(ActiveEffect * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_cameraEventRegs.Unregister<ActiveEffect>(ActiveEffect::kTypeID, thisForm);
+	}
+
+	void RegisterForCrosshairRef(ActiveEffect * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_crosshairRefEventRegs.Register<ActiveEffect>(ActiveEffect::kTypeID, thisForm);
+	}
+
+	void UnregisterForCrosshairRef(ActiveEffect * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_crosshairRefEventRegs.Unregister<ActiveEffect>(ActiveEffect::kTypeID, thisForm);
+	}
 }
  
 #include "PapyrusVM.h"
@@ -167,6 +199,18 @@ void papyrusActiveMagicEffect::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction0 <ActiveEffect, void> ("UnregisterForAllControls", "ActiveMagicEffect", papyrusActiveMagicEffect::UnregisterForAllControls, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction0 <ActiveEffect, void> ("RegisterForCameraState", "ActiveMagicEffect", papyrusActiveMagicEffect::RegisterForCameraState, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <ActiveEffect, void> ("UnregisterForCameraState", "ActiveMagicEffect", papyrusActiveMagicEffect::UnregisterForCameraState, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <ActiveEffect, void> ("RegisterForCrosshairRef", "ActiveMagicEffect", papyrusActiveMagicEffect::RegisterForCrosshairRef, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <ActiveEffect, void> ("UnregisterForCrosshairRef", "ActiveMagicEffect", papyrusActiveMagicEffect::UnregisterForCrosshairRef, registry));
+
 	registry->SetFunctionFlags("ActiveMagicEffect", "RegisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForAllKeys", VMClassRegistry::kFunctionFlag_NoWait);
@@ -179,4 +223,8 @@ void papyrusActiveMagicEffect::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("ActiveMagicEffect", "RegisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForControl", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForAllControls", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActiveMagicEffect", "RegisterForCameraState", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForCameraState", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActiveMagicEffect", "RegisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
 }

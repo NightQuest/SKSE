@@ -1,163 +1,47 @@
 #include "PapyrusColorForm.h"
+
+#include "Colors.h"
  
 #include "GameForms.h"
 #include "GameObjects.h"
 #include "GameRTTI.h"
- 
-#define MIN3(x,y,z)  ((y) <= (z) ? ((x) <= (y) ? (x) : (y)) : ((x) <= (z) ? (x) : (z)))
-#define MAX3(x,y,z)  ((y) >= (z) ? ((x) >= (y) ? (x) : (y)) : ((x) >= (z) ? (x) : (z)))
- 
-struct HSVColor {
-	double	h; // Hue between 0 and 1.0
-	double	s; // Saturation between 0 and 1.0
-	double	v; // Lum between 0 and 1.0
-	double	a; // Alpha between 0 and 1.0
-};
-
-struct RGBColor {
-	UInt8 a;
-	UInt8 r;
-	UInt8 g;
-	UInt8 b;
-};
-
-HSVColor GetHSV(RGBColor rgb)
-{
-	double r,g,b, rgb_max, rgb_min, delta, h, s;
-	r = rgb.r / 255.0;
-	g = rgb.g / 255.0;
-	b = rgb.b / 255.0;
-	rgb_max = MAX3(r, g, b);
-	rgb_min = MIN3(r, g, b);
-	delta = rgb_max - rgb_min;
-	h = 0;
-	s = 0;
-
-	if ( rgb_max != 0.0 )
-		s = delta / rgb_max;
-
-	if ( s != 0.0 )
-	{
-		double rc = (rgb_max - r) / delta;
-		double gc = (rgb_max - g) / delta;
-		double bc = (rgb_max - b) / delta;
-
-		if ( r == rgb_max )
-			h = bc - gc;
-		else if ( g == rgb_max )
-			h = 2.0f + rc - bc;
-		else if ( b == rgb_max )
-			h = 4.0f + gc - rc;
-
-		h *= 60.0f;
-		if ( h < 0.0 )
-			h += 360.0f;
-	}
-
-	HSVColor out;
-	out.a = rgb.a / 255.0;
-	out.h = h;
-	out.s = s;
-	out.v = rgb_max;
-	return out;
-}
-
-RGBColor GetRGBFromHSV(HSVColor hsv)
-{
-	double h,s,v;
-	double r,g,b,a;
-
-	a = hsv.a;
-	h = hsv.h;
-	s = hsv.s;
-	v = hsv.v;
-
-	if (h < 0.0)
-		h += 360.0;
-
-	if (s != 0.0) {
-		double f, p, q, t;
-		if (h == 360.0)
-			h = 0.0;
-		h /= 60.0;
-
-		int i = (int)h;
-		f = h - i;
-		p = v * (1.0 - s);
-		q = v * (1.0 - (s * f));
-		t = v * (1.0 - (s * (1.0 - f)));
-
-		switch (i) {
-			case 0: r = v;	g = t;	b = p;	break;
-			case 1: r = q;	g = v;	b = p;	break;
-			case 2: r = p;	g = v;	b = t;	break;
-			case 3: r = p;	g = q;	b = v;	break;
-			case 4: r = t;	g = p;	b = v;	break;
-			case 5: r = v;	g = p;	b = q;	break;
-		}
-	}
-	else {
-		r = v;
-		g = v;
-		b = v;
-	}
-
-	RGBColor out;
-	out.a = a * 255;
-	out.r = r * 255;
-	out.g = g * 255;
-	out.b = b * 255;
-	return out;
-}
 
 namespace papyrusColorComponent
 {
 	UInt32 GetAlpha(StaticFunctionTag* base, UInt32 argb)
 	{
-		return (argb & 0xFF000000) >> 24;
+		return COLOR_ALPHA(argb);
 	}
 	UInt32 GetRed(StaticFunctionTag* base, UInt32 argb)
 	{
-		return (argb & 0x00FF0000) >> 16;
+		return COLOR_RED(argb);
 	}
 	UInt32 GetGreen(StaticFunctionTag* base, UInt32 argb)
 	{
-		return (argb & 0x0000FF00) >> 8;
+		return COLOR_GREEN(argb);
 	}
 	UInt32 GetBlue(StaticFunctionTag* base, UInt32 argb)
 	{
-		return (argb & 0x000000FF);
+		return COLOR_BLUE(argb);
 	}
 	float GetHue(StaticFunctionTag* base, UInt32 argb)
 	{
-		RGBColor rgb;
-		rgb.r = GetRed(NULL, argb);
-		rgb.g = GetGreen(NULL, argb);
-		rgb.b = GetBlue(NULL, argb);
-		HSVColor hsl = GetHSV(rgb);
-		return hsl.h;
+		ARGBColor rgb(argb);
+		return rgb.GetHue();
 	}
 	float GetSaturation(StaticFunctionTag* base, UInt32 argb)
 	{
-		RGBColor rgb;
-		rgb.r = GetRed(NULL, argb);
-		rgb.g = GetGreen(NULL, argb);
-		rgb.b = GetBlue(NULL, argb);
-		HSVColor hsl = GetHSV(rgb);
-		return hsl.s;
+		ARGBColor color(argb);
+		return color.GetSaturation();
 	}
 	float GetValue(StaticFunctionTag* base, UInt32 argb)
 	{
-		RGBColor rgb;
-		rgb.r = GetRed(NULL, argb);
-		rgb.g = GetGreen(NULL, argb);
-		rgb.b = GetBlue(NULL, argb);
-		HSVColor hsv = GetHSV(rgb);
-		return hsv.v;
+		ARGBColor color(argb);
+		return color.GetValue();
 	}
 	UInt32 SetColor(StaticFunctionTag* base, UInt32 red, UInt32 green, UInt32 blue, UInt32 alpha)
 	{
-		return (alpha << 24) | (red << 16) | (green << 8) | blue;
+		return MAKE_COLOR(alpha, red, green, blue);
 	}
 	UInt32 SetAlpha(StaticFunctionTag* base, UInt32 argb, UInt32 alpha)
 	{
@@ -177,39 +61,21 @@ namespace papyrusColorComponent
 	}
 	UInt32 SetHue(StaticFunctionTag* base, UInt32 argb, float hue)
 	{
-		RGBColor rgb;
-		rgb.r = GetRed(NULL, argb);
-		rgb.g = GetGreen(NULL, argb);
-		rgb.b = GetBlue(NULL, argb);
-		rgb.a = GetAlpha(NULL, argb);
-		HSVColor hsl = GetHSV(rgb);
-		hsl.h = hue;
-		RGBColor newRgb = GetRGBFromHSV(hsl);
-		return (newRgb.a << 24 | newRgb.r << 16 | newRgb.g << 8 | newRgb.b);
+		ARGBColor color(argb);
+		color.SetHue(hue);
+		return color.GetColor();
 	}
 	UInt32 SetSaturation(StaticFunctionTag* base, UInt32 argb, float sat)
 	{
-		RGBColor rgb;
-		rgb.r = GetRed(NULL, argb);
-		rgb.g = GetGreen(NULL, argb);
-		rgb.b = GetBlue(NULL, argb);
-		rgb.a = GetAlpha(NULL, argb);
-		HSVColor hsv = GetHSV(rgb);
-		hsv.s = sat;
-		RGBColor newRgb = GetRGBFromHSV(hsv);
-		return (newRgb.a << 24 | newRgb.r << 16 | newRgb.g << 8 | newRgb.b);
+		ARGBColor color(argb);
+		color.SetSaturation(sat);
+		return color.GetColor();
 	}
 	UInt32 SetValue(StaticFunctionTag* base, UInt32 argb, float val)
 	{
-		RGBColor rgb;
-		rgb.r = GetRed(NULL, argb);
-		rgb.g = GetGreen(NULL, argb);
-		rgb.b = GetBlue(NULL, argb);
-		rgb.a = GetAlpha(NULL, argb);
-		HSVColor hsv = GetHSV(rgb);
-		hsv.v = val;
-		RGBColor newRgb = GetRGBFromHSV(hsv);
-		return (newRgb.a << 24 | newRgb.r << 16 | newRgb.g << 8 | newRgb.b);
+		ARGBColor color(argb);
+		color.SetValue(val);
+		return color.GetColor();
 	}
 };
 
@@ -223,9 +89,9 @@ namespace papyrusColorForm
 	void SetColor(BGSColorForm* colorForm, UInt32 color)
 	{
 		if(colorForm) {
-			colorForm->color.red = (color & 0x00FF0000) >> 16;
-			colorForm->color.green = (color & 0x0000FF00) >> 8;
-			colorForm->color.blue = (color & 0x000000FF);
+			colorForm->color.red = COLOR_RED(color);
+			colorForm->color.green = COLOR_GREEN(color);
+			colorForm->color.blue = COLOR_BLUE(color);
 		}
 	}
 }

@@ -1,5 +1,34 @@
+1.6.8:
+- back out partially committed change to NetImmerse papyrus functions, fixes RaceMenu
+
+1.6.7:
+- removed Game.GetMiscStat (use vanilla badly-named QueryStat)
+- add console command ClearInvalidRegistrations to remove invalid OnUpdate() registrations
+	This prevents orphaned OnUpdate() events and the resulting bloated/broken saves when removing certain mods.
+	When applied to an already bloated save, it will stop growing further and instead shrink over time
+	as the game processes all queued events. This may take hours depending on the amount of bloat.
+	To execute automatically after each reload, add this to \Data\SKSE\skse.ini:
+	[General]
+	ClearInvalidRegistrations=1
+- add Spell.GetEffectiveMagickaCost to get actual spell cost after applying perk modifiers etc.
+- loader can set runtime's processor affinity: pass "-affinity <mask>" as a command line argument
+- add Actor.Equip/UnequipItemEx to equip/unequip an item in a specific hand
+- add Form/Alias/ActiveMagicEffect.RegisterForCameraState to receive OnPlayerCameraState events
+- add Form/Alias/ActiveMagicEffect.RegisterForCrosshairRef to receive OnCrosshairRefChange events
+- add ActionScript functions: ShowOnMap, EnableMapMenuMouseWheel
+- fixed SKSE key events not being generated until a game had been loaded at least once
+- fixed TESModelTextureSwap structure (solves a crash in Get/SetModelNthTexture when requesting swaps past the first)
+- added SKSE.GetScriptVersionRelease, a function stored in the psc/pex returning the current release version. this may be used to detect if a user has mismatched scripts and runtime.
+- ActorBase.GetIndexOfHeadPartsByType
+- fixed crashdump logger
+- fixed Book.IsRead
+- moved tintmask update handler to increase stability
+- add Game.GetCameraState
+- add Flora.Get/SetIngredient/SoundDescriptor
+- added Perk functions (see Perk.psc)
+
 1.6.6:
-- fix Potion::IsFood
+- fix Potion.IsFood
 - fix crash in Actor.GetNthSpell when called on actors with no spells
 - cosaves are deleted properly when overwriting existing saves
 - cosave path now respects sLocalSavePath config setting
@@ -10,10 +39,11 @@
 - ActiveEffects may now register for and send events
 - Alias.SendModEvent
 - Game.Get/SetMiscStat
-- Race.GetRace, Race::Get/SetDefaultVoiceType
+- Race.GetRace, Race.Get/SetDefaultVoiceType
 - Game.UpdateTintMaskColors, UpdateHairColor
 - TextureSet.Get/SetNthTexturePath
 - ActorBase.Get/SetFaceTextureSet
+- Book.IsRead
 - added NetImmerse class with various NiNode manipulation functions
 
 1.6.5:

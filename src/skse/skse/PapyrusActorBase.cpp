@@ -230,4 +230,27 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESNPC, void, BGSTextureSet*>("SetFaceTextureSet", "ActorBase", papyrusActorBase::SetFaceTextureSet, registry));
+
+	registry->SetFunctionFlags("ActorBase", "GetCombatStyle", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "SetCombatStyle", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetOutfit", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "SetClass", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetHeight", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "SetHeight", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetWeight", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "SetWeight", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetNumHeadParts", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetNthHeadPart", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "SetNthHeadPart", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetIndexOfHeadPartByType", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetFaceMorph", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "SetFaceMorph", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetFacePreset", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "SetFacePreset", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "SetHairColor", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetHairColor", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetSpellCount", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetNthSpell", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetFaceTextureSet", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "SetFaceTextureSet", VMClassRegistry::kFunctionFlag_NoWait);
 }

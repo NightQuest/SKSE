@@ -322,6 +322,10 @@ kFormType_ConstructibleObject,	//	COBJ	BGSConstructibleObject
 	kFormType_LocationAlias,	//			BGSLocAlias
 	kFormType_ActiveMagicEffect,//			ActiveMagicEffect
 
+#ifdef PAPYRUS_CUSTOM_CLASS
+	kFormType_TintMask = 300,
+#endif
+
 	kFormType_Max =				kFormType_ReverbParam	// max of standard types
 };
 
@@ -416,12 +420,12 @@ public:
 	UInt32				unk40;			// 40
 	UInt32				unk44;			// 44
 	UInt32				unk48[0x0F];	// 48 - init'd to 0xA4
-	UInt32				unk84;			// 84
-	UInt32				unk88[0x0A];	// 88 - init'd to 0
+	UInt32				numSubTypes;			// 84
+	const char *		subTypes[0x0A];	// 88 - init'd to 0
 	void				* unkB0;		// B0
 	UInt32				unkB4;			// B4
 	UInt32				unkB8;			// B8
-	UInt32				unkBC;			// BC
+	UInt32				unkBC;			// BC - BGSSkillPerkTreeNode
 
 	UInt8	padC0[8];	// C0 - ? not initialized
 };
@@ -515,15 +519,73 @@ class BGSCollisionLayer : public TESForm
 public:
 	enum { kTypeID = kFormType_CollisionLayer };
 
+	enum {
+		kCollisionLayer_Unidentified = 0x00,
+		kCollisionLayer_Static,
+		kCollisionLayer_AnimStatic,
+		kCollisionLayer_Transparent,
+		kCollisionLayer_Clutter,
+		kCollisionLayer_Weapon,
+		kCollisionLayer_Projectile,
+		kCollisionLayer_Spell,
+		kCollisionLayer_Biped,
+		kCollisionLayer_Trees,
+		kCollisionLayer_Props,
+		kCollisionLayer_Water,
+		kCollisionLayer_Trigger,
+		kCollisionLayer_Terrain,
+		kCollisionLayer_Trap,
+		kCollisionLayer_NonCollidable,
+		kCollisionLayer_CloudTrap,
+		kCollisionLayer_Ground,
+		kCollisionLayer_Portal,
+		kCollisionLayer_DebrisSmall,
+		kCollisionLayer_DebrisLarge,
+		kCollisionLayer_AcousticSpace,
+		kCollisionLayer_ActorZone,
+		kCollisionLayer_ProjectileZone,
+		kCollisionLayer_GasTrap,
+		kCollisionLayer_Shellcasing,
+		kCollisionLayer_TransparentSmall,
+		kCollisionLayer_InvisibleWall,
+		kCollisionLayer_TransparentSmallAnim,
+		kCollisionLayer_Ward,
+		kCollisionLayer_CharController,
+		kCollisionLayer_StairHelper,
+		kCollisionLayer_DeadBip,
+		kCollisionLayer_BipedNoCC,
+		kCollisionLayer_AvoidBox,
+		kCollisionLayer_CollisionBox,
+		kCollisionLayer_CameraSphere,
+		kCollisionLayer_DoorDetection,
+		kCollisionLayer_ConeProjectile,
+		kCollisionLayer_Camera,
+		kCollisionLayer_ItemPicker,
+		kCollisionLayer_Los,
+		kCollisionLayer_PathingPick,
+		kCollisionLayer_CustomPick1,
+		kCollisionLayer_CustomPick2,
+		kCollisionLayer_SpellExplosion,
+		kCollisionLayer_DroppingPick,
+		kCollisionLayer_DeadActorZone,
+		kCollisionLayer_TriggerFallingTrap,
+		kCollisionLayer_Navcut,
+		kCollisionLayer_Critter,
+		kCollisionLayer_SpellTrigger,
+		kCollisionLayer_LivingAndDeadActors,
+		kCollisionLayer_Detection,
+		kCollisionLayer_TrapTrigger
+	};
+
 	// parents
 	TESDescription				description;	// 14
 
 	// members
-	UInt32						unk20;	// 20
-	UInt32						unk24;	// 24
+	UInt32						layerId;	// 20
+	UInt32						flags;	// 24
 	UInt32						unk28;	// 28
-	StringCache::Ref			unk2C;	// 2C
-	UnkArray	unk30;	// 30 - really?
+	StringCache::Ref			name;	// 2C
+	tArray<BGSCollisionLayer*>	interactables;	// 30 - really?
 };
 
 // 24
@@ -2382,6 +2444,7 @@ public:
 		kRace_OverlayHeadParts				= 0x04000000,
 		kRace_OverrideHeadParts				= 0x08000000,
 		kRace_AllowMultipleMembraneShaders	= 0x20000000,
+		kRace_CanDualWield					= 0x40000000,
 		kRace_AvoidsRoads					= 0x80000000,
 	};
 

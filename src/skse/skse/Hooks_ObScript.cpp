@@ -2,6 +2,7 @@
 #include "CommandTable.h"
 #include "GameAPI.h"
 #include "skse_version.h"
+#include "PapyrusVM.h"
 
 CommandTable	g_commandTable;
 
@@ -213,6 +214,27 @@ bool Cmd_GetSKSERelease_Execute(COMMAND_ARGS)
 	return Cmd_GetSKSERelease_Eval(thisObj, 0, 0, result);
 }
 
+bool Cmd_ClearInvalidRegistrations_Eval(COMMAND_ARGS_EVAL)
+{
+
+	UInt32 count = (*g_skyrimVM)->ClearInvalidRegistrations();
+	
+
+	if(IsConsoleMode())
+	{
+		Console_Print("Removed %d invalid OnUpdate registration(s)", count);
+	}
+
+	*result = count;
+
+	return true;
+}
+
+bool Cmd_ClearInvalidRegistrations_Execute(COMMAND_ARGS)
+{
+	return Cmd_ClearInvalidRegistrations_Eval(thisObj, 0, 0, result);
+}
+
 #include "GameData.h"
 #include "GameObjects.h"
 #include "GameAPI.h"
@@ -228,133 +250,7 @@ bool Cmd_GetSKSERelease_Execute(COMMAND_ARGS)
 
 bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 {
-
-	if(thisObj) {
-		Actor* actor = DYNAMIC_CAST(thisObj, TESObjectREFR, Actor);
-		if(actor) {
-			tList<ActiveEffect> * effects = actor->magicTarget.GetActiveEffects();
-			for(int i = 0; i < effects->Count(); i++)
-			{
-				ActiveEffect* effect = effects->GetNthItem(i);
-				_MESSAGE("%s", effect->item->fullName.name);
-				DumpClass(effect, 50);
-			}
-		}
-		/*Console_Print("%f", papyrusObjectReference::GetCharge(thisObj));
-
-		if(TESObjectWEAP* weapon = DYNAMIC_CAST(thisObj->baseForm, TESForm, TESObjectWEAP)) {
-			EnchantmentItem* item = weapon->enchantable.enchantment;
-			ExtraEnchantment* extraEnch = static_cast<ExtraEnchantment*>(thisObj->extraData.GetByType(kExtraData_Enchantment));
-			if(!item && extraEnch) {
-				item = extraEnch->enchant;
-			}
-			if(item) {
-				DumpClass(item);
-				Console_Print("%f", papyrusObjectReference::GetMaximumCharge(thisObj));
-			}
-		}*/
-	}
-//	PlayerCharacter* pPC = *(g_thePlayer);
-////	DumpClass(pPC);
-//	TESForm* pPlayerForm = pPC->baseForm;
-//
-//	//UInt32 numItems = papyrusObjectReference::GetNumItems(pPC);
-//	//TESForm* pItem = papyrusObjectReference::GetNthForm(pPC, 0);
-//
-//	UInt8 perkPoints = pPC->numPerkPoints;
-//	_MESSAGE("PerkPoints: %d", perkPoints);
-//
-//	BSFixedString sGold("Gold");
-//	BSFixedString sGoldOreVein("Gold Ore Vein");
-//
-//	_MESSAGE("sGold: %s sGoldOreVein: %s", sGold.data, sGoldOreVein.data);
-//	SInt32 pos = papyrusStringUtil::Find(NULL, sGoldOreVein, sGold);
-//
-//	//Actor* pActor = DYNAMIC_CAST(thisObj, TESObjectREFR, Actor);
-//	//if (pActor)
-//	//	DumpClass(pActor);
-//
-//	for (UInt32 n = 0; n < pPC->addedSpells.spellCount; n++)
-//	{
-//		SpellItem* pSpell = pPC->addedSpells.spells[n];
-//		_MESSAGE("%d> %s", n, pSpell->fullName.name.data);
-//		//for (UInt32 x = 0; x < pSpell->effectItemList.count; x++) {
-//		//	MagicItem::EffectItem* pEI = NULL;
-//		//	pSpell->effectItemList.GetNthItem(x, pEI);
-//		//	if (pEI)
-//		//		DumpClass(pEI->mgef);
-//		//}
-//		//DumpClass(pSpell);
-//	}
-
-	//const char* oldName = papyrusForm::GetName(pPlayerForm).data;
-	//papyrusForm::SetName(pPlayerForm, BSFixedString("Bob"));
-	//const char* nuName = papyrusForm::GetName(pPlayerForm).data;
-	//Console_Print("OldName: %s NuName: %s", oldName, nuName);
-
-	//DataHandler* handler = DataHandler::GetSingleton();
-	//
-	//UInt32 keywords = handler->keywords.count;
-	//for (UInt32 k = 0; k < keywords; k++) {
-	//	BGSKeyword* pKeyword = NULL;
-	//	handler->keywords.GetNthItem(k, pKeyword);
-	//	if (pKeyword) {
-	//		_MESSAGE("%d: %s\n", k, pKeyword->keyword.Get());
-	//	}
-	//}
-
-	//const char* wts = "WeapTypeSword";
-	//BSFixedString weapTypeSword("WeapTypeSword");
-	//const char* bsf = weapTypeSword.data;
-	//BSFixedString bfsWTS(wts);
-	//const char* bsf2 = bfsWTS.data;
-	//BGSKeyword* pKeyword = papyrusKeyword::GetKeyword(NULL, weapTypeSword);
-	//const char* key = pKeyword->keyword.Get();
-	//
-	//BGSKeyword* pKeywordMissing = papyrusKeyword::GetKeyword(NULL, "BobsYourUncle");
-
-	//Console_Print("wts: %X (%s) bsf: %X (%s) bsf2: %X (%s)", wts, wts, bsf, bsf, bsf2, bsf2); 
-	//Console_Print("pKeyword: %X pKeywordMissing: %X", pKeyword, pKeywordMissing);
-
-	//PlayerCharacter *pPC = (*g_thePlayer);
-
-
-	/*TESForm* pForm = LookupFormByID(0x0010fdd4);
-	EffectSetting* pME = DYNAMIC_CAST(pForm, TESForm, EffectSetting);
-
-
-	TESForm* pForm1 = LookupFormByID(0xe52);
-	SpellItem* pSpellF = DYNAMIC_CAST(pForm1, TESForm, SpellItem);
-	if (pSpellF) {
-		MagicItem::EffectItem* pEI = NULL;
-		pSpellF->effectItemList.GetNthItem(0, pEI);
-		UInt32 cost = pSpellF->GetMagickaCost();
-	}*/
-
-
-	//TESObjectWEAP* pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
-
-	//pForm = LookupFormByID(0x58F5E);
-	//pWeap = DYNAMIC_CAST(pForm, TESForm, TESObjectWEAP);
-	//DumpClass(pWeap, 1024);
-
-	//pForm = LookupFormByID(0x73F4C);
-	//AlchemyItem* pPotion = DYNAMIC_CAST(pForm, TESForm, AlchemyItem);
-	//DumpClass(pPotion);
-	//ASSERT(pPotion->IsFood() == false);
-
-	//TESForm* pForm2 = LookupFormByID(0x3AC2E);
-	//AlchemyItem* pPotion2 = DYNAMIC_CAST(pForm2, TESForm, AlchemyItem);
-	//ASSERT(pPotion2->IsFood() == false);
-
-	//TESForm* pForm3 = LookupFormByID(0x65C99);
-	//AlchemyItem* pPotion3 = DYNAMIC_CAST(pForm3, TESForm, AlchemyItem);
-	//ASSERT(pPotion3->IsFood() == true);
-
-	//pForm = LookupFormByID(0x1CE1E);
-	//TESClass* pClass = DYNAMIC_CAST(pForm, TESForm, TESClass);
-	//if (pClass)
-	//	DumpClass(pClass);
+	TESObjectSTAT	* stat = (TESObjectSTAT *)LookupFormByID(0x0005C09F);
 
 	return true;	
 }
@@ -368,6 +264,7 @@ DEFINE_CMD_COND(GetSKSEVersion, "returns the major SKSE version number", false, 
 DEFINE_CMD_COND(GetSKSEVersionMinor, "returns the minor SKSE version number", false, NULL);
 DEFINE_CMD_COND(GetSKSEVersionBeta, "returns the beta SKSE version number", false, NULL);
 DEFINE_CMD_COND(GetSKSERelease, "returns the SKSE release number", false, NULL);
+DEFINE_CMD_COND(ClearInvalidRegistrations, "clears invalid event registrations", false, NULL);
 DEFINE_CMD_COND(SKSETestFunc, "", false, NULL);
 
 void Hooks_ObScript_Init(void)
@@ -389,6 +286,7 @@ void Hooks_ObScript_Init(void)
 	CMD(GetSKSEVersionMinor);
 	CMD(GetSKSEVersionBeta);
 	CMD(GetSKSERelease);
+	CMD(ClearInvalidRegistrations);
 
 #ifdef _DEBUG
 	CMD(SKSETestFunc);

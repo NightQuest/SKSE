@@ -2,6 +2,7 @@
 #include "GameBSExtraData.h"
 #include "GameRTTI.h"
 #include "GameAPI.h"
+#include "GameData.h"
 
 
 extern const void* RTTIForExtraType[0xB4] = 
@@ -195,6 +196,9 @@ static const UInt32 s_ExtraTextDisplayVtbl =		0x01078508;
 static const UInt32 s_ExtraSoulVtbl =				0x01078D44;
 static const UInt32 s_ExtraOwnershipVtbl =			0x01078168;
 static const UInt32 s_ExtraAliasInstanceArrayVtbl = 0x01078A98;
+static const UInt32 s_ExtraCannotWearVtbl =			0x010781C8;
+static const UInt32 s_ExtraHotkeyVtbl =				0x01078238;
+
 
 BSExtraData* BaseExtraList::GetByType(UInt32 type) const {
 	if (!HasType(type)) return NULL;
@@ -249,6 +253,11 @@ bool BaseExtraList::Add(UInt8 type, BSExtraData* toAdd)
 	return true;
 }
 
+bool BaseExtraList::CheckContainerExtraData(bool isEquipped)
+{
+	return CALL_MEMBER_FN(this, CheckContainerExtraData_Internal)(isEquipped);
+}
+
 BSExtraData* BSExtraData::Create(UInt32 size, UInt32 vtbl)
 {
 	void* memory = FormHeap_Allocate(size);
@@ -270,6 +279,20 @@ ExtraCharge* ExtraCharge::Create()
 	ExtraCharge* xCharge = (ExtraCharge*)BSExtraData::Create(sizeof(ExtraCharge), s_ExtraChargeVtbl);
 	xCharge->charge = 0;
 	return xCharge;
+}
+
+ExtraCannotWear* ExtraCannotWear::Create() 
+{
+	ExtraCannotWear* xCannotWear = (ExtraCannotWear*)BSExtraData::Create(sizeof(ExtraCannotWear), s_ExtraCannotWearVtbl);
+	xCannotWear->unk08 = 0;
+	return xCannotWear;
+}
+
+ExtraHotkey* ExtraHotkey::Create()
+{
+	ExtraHotkey* xHotkey = (ExtraHotkey*)BSExtraData::Create(sizeof(ExtraHotkey), s_ExtraHotkeyVtbl);
+	xHotkey->hotkey = -1;
+	return xHotkey;
 }
 
 ExtraCount* ExtraCount::Create()
@@ -327,7 +350,6 @@ struct GetMatchingEquipped {
 	}
 };
 
-
 EquipData ExtraContainerChanges::FindEquipped(FormMatcher& matcher) const
 {
 	FoundEquipData equipData;
@@ -339,3 +361,128 @@ EquipData ExtraContainerChanges::FindEquipped(FormMatcher& matcher) const
 	return equipData;
 };
 
+ExtraContainerChanges::EntryData * ExtraContainerChanges::EntryData::Create(TESForm * item, UInt32 count)
+{
+	EntryData * p = (EntryData *)FormHeap_Allocate(sizeof(EntryData));
+	ASSERT(p);
+
+	new (p) EntryData;
+	p->type = item;
+	p->countDelta = count;
+	p->extendDataList = ExtendDataList::Create();
+
+	return p;
+}
+
+void ExtraContainerChanges::EntryData::Delete(void)
+{
+	if (extendDataList)
+	{
+		extendDataList->Delete();
+		extendDataList = NULL;
+	}
+	FormHeap_Free(this);
+}
+
+void ExtraContainerChanges::EntryData::GetExtraWornBaseLists(BaseExtraList ** pWornBaseListOut, BaseExtraList ** pWornLeftBaseListOut) const
+{
+	bool checkWorn = pWornBaseListOut != NULL;
+	bool checkWornLeft = pWornLeftBaseListOut != NULL;
+
+	if (!extendDataList)
+		return;
+
+	if (!checkWorn && !checkWornLeft)
+		return;
+
+	for (ExtendDataList::Iterator it = extendDataList->Begin(); !it.End(); ++it)
+	{
+		BaseExtraList * xList = it.Get();
+		if (!xList)
+			continue;
+
+		if (checkWorn && xList->HasType(kExtraData_Worn))
+		{
+			checkWorn = false;
+			*pWornBaseListOut = xList;
+
+			if (!checkWornLeft)
+				break;
+		}
+
+		if (checkWornLeft && xList->HasType(kExtraData_WornLeft))
+		{
+			checkWornLeft = false;
+			*pWornLeftBaseListOut = xList;
+
+			if (!checkWorn)
+				break;
+		}
+	}
+}
+
+ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::FindItemEntry(TESForm * item) const
+{
+	typedef ExtraContainerChanges::EntryDataList::Iterator	EntryDataIterator;
+
+	if (!objList)
+		return NULL;
+
+	for (EntryDataIterator it = objList->Begin(); !it.End(); ++it)
+	{
+		EntryData * e = it.Get();
+		if (e && e->type == item)
+			return e;
+	}
+
+	return NULL;
+}
+
+ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::CreateEquipEntryData(TESForm * item)
+{
+	EntryData * newEntryData = NULL;
+
+	// Get count from baseForm container
+	UInt32 baseCount = 0;
+	if (owner && owner->baseForm)
+	{
+		TESContainer * container = DYNAMIC_CAST(owner->baseForm, TESForm, TESContainer);
+		if (container)
+			baseCount = container->CountItem(item);
+	}
+
+	// Find existing entryData for this item
+	EntryData * curEntryData = FindItemEntry(item);
+
+	if (curEntryData)
+	{
+		newEntryData = EntryData::Create(item, baseCount + curEntryData->countDelta);
+		
+		ExtendDataList * curExtendDataList = curEntryData->extendDataList;
+		ExtendDataList * newExtendDataList = newEntryData->extendDataList;
+
+		if (curExtendDataList)
+		{
+			BaseExtraList * head =  curExtendDataList->GetNthItem(0);
+			if (head && (! head->CheckContainerExtraData(true)))
+				newExtendDataList->Insert(head);
+			else
+				newExtendDataList->Append(curExtendDataList->Begin());
+		}
+		else
+		{
+			// Native func does this, though the entryData is deleted later anyway...
+			newExtendDataList->Delete();
+			newEntryData->extendDataList = NULL;
+		}
+	}
+	else
+	{
+		if (baseCount > 0)
+		{
+			newEntryData = EntryData::Create(item, baseCount);
+		}
+	}
+
+	return newEntryData;
+}

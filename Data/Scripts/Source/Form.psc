@@ -118,7 +118,7 @@ EndEvent
 Event OnUpdateGameTime()
 EndEvent
 
-; SKSE additions built 2013-01-07 17:38:10.814000 UTC
+; SKSE additions built 2013-02-20 11:33:33.219000 UTC
 
 ; Returns the typecode for this form object
 Int Function GetType() native
@@ -201,6 +201,21 @@ Function UnregisterForAllModEvents() native
 
 ; Sends custom event with given generic parameters.
 Function SendModEvent(string eventName, string strArg = "", float numArg = 0.0) native
+
+; Registers for OnPlayerCameraState events
+Function RegisterForCameraState() native
+Function UnregisterForCameraState() native
+
+Event OnPlayerCameraState(int oldState, int newState)
+EndEvent
+
+; Registers for OnCrosshairRefChange events
+Function RegisterForCrosshairRef() native
+Function UnregisterForCrosshairRef() native
+
+; Note: ref is none for no target
+Event OnCrosshairRefChange(ObjectReference ref)
+EndEvent
 
 ; Returns a temporary clone of this form
 Form Function TempClone() native

@@ -85,6 +85,8 @@ public:
 	UInt32	GetType(void) const		{ return type & kMask_Type; }
 	bool	IsManaged(void) const	{ return (type & kTypeFlag_Managed) != 0; }
 	void	CleanManaged(void);
+
+	bool	IsObject(void) const		{ return GetType() == kType_Object; }
 	bool	IsDisplayObject(void) const	{ return GetType() == kType_DisplayObject; }
 
 	bool			GetBool(void);
@@ -98,8 +100,6 @@ public:
 	void	SetNumber(double value);
 	void	SetString(const char * value);
 	void	SetWideString(const wchar_t * value);
-
-	MEMBER_FN_PREFIX(GFxValue);
 
 	UInt32	GetArraySize();
 	bool	GetElement(UInt32 index, GFxValue * value);

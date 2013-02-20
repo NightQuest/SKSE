@@ -732,6 +732,64 @@ public:
 		g_loadGameLock.Leave();
 	}
 };
+
+class SKSEScaleform_EnableMapMenuMouseWheel : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		if(!g_loadGameLock.TryEnter())
+			return;
+
+		ASSERT(args->numArgs >= 1);
+
+		bool enable = args->args[0].GetBool();
+
+		Hooks_Gameplay_EnableMapMenuMouseWheel(enable);
+
+		g_loadGameLock.Leave();
+	}
+};
+
+class SKSEScaleform_ShowOnMap : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		if(!g_loadGameLock.TryEnter())
+			return;
+
+		ASSERT(args->numArgs >= 1);
+
+		UInt32			index = args->args[0].GetNumber();
+		UIStringHolder	* stringHolder = UIStringHolder::GetSingleton();
+		MenuManager		* mm = MenuManager::GetSingleton();
+
+		if (index >= 0 && mm->IsMenuOpen(&stringHolder->mapMenu))
+		{
+			MapMenu * mapMenu = static_cast<MapMenu*>(mm->GetMenu(&stringHolder->mapMenu));
+
+			if (mapMenu && index < mapMenu->markers.count)
+			{
+				MapMenu::MarkerData & marker = mapMenu->markers[index];
+				UInt32 refHandle = marker.refHandle;
+
+				if (refHandle)
+				{
+					RefHandleUIData	* msgData = (RefHandleUIData*) CreateUIMessageData(&stringHolder->refHandleUIData);
+
+					if (msgData)
+					{
+						msgData->refHandle = refHandle;
+						CALL_MEMBER_FN(UIManager::GetSingleton(), AddMessage)(&stringHolder->mapMenu, UIMessage::kMessage_Refresh, msgData);
+					}
+				}
+			}
+		}
+
+		g_loadGameLock.Leave();
+	}
+};
 /*
 class GetScriptVariableFunctor : public IForEachScriptObjectFunctor
 {
@@ -1010,9 +1068,9 @@ MagicItemData * MagicItemData::ctor_Hook(GFxMovieView ** movieView, TESForm * pF
 class FavItemDataHook
 {
 public:
-	UInt32		unk00;		// 00
-	UInt32		unk04;		// 04
-	GFxValue	* fxValue;	// 08
+	GFxMovieView	* movieView;	// 00
+	UInt32			unk04;			// 04
+	GFxValue		* fxValue;		// 08
 
 	MEMBER_FN_PREFIX(FavItemDataHook);
 	DEFINE_MEMBER_FN(Hooked, int, 0x0085C5F0, TESForm * pForm);
@@ -1098,6 +1156,8 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	RegisterFunction <SKSEScaleform_SetClipboardData>(&skse, view, "SetClipboardData");
 	RegisterFunction <SKSEScaleform_GetPlayerSex>(&skse, view, "GetPlayerSex");
 	//RegisterFunction <SKSEScaleform_GetVMVariable>(&skse, view, "GetVMVariable");
+	RegisterFunction <SKSEScaleform_EnableMapMenuMouseWheel>(&skse, view, "EnableMapMenuMouseWheel");
+	RegisterFunction <SKSEScaleform_ShowOnMap>(&skse, view, "ShowOnMap");
 
 	// version
 	GFxValue	version;
@@ -1158,7 +1218,9 @@ void Hooks_Scaleform_Commit(void)
 	// item card data creation hook
 	WriteRelCall(StandardItemData::kCtorHookAddress, GetFnAddr(&StandardItemData::ctor_Hook));
 	WriteRelCall(MagicItemData::kCtorHookAddress, GetFnAddr(&MagicItemData::ctor_Hook));
-	WriteRelCall(FavItemDataHook::kCtorHookAddress, GetFnAddr(&FavItemDataHook::Hook));
+	
+	// Disabled - only extended a subset of the entries, wasn't used by anyone yet
+	//WriteRelCall(FavItemDataHook::kCtorHookAddress, GetFnAddr(&FavItemDataHook::Hook));
 
 	// gfxloader creation hook
 	WriteRelCall(GFxLoaderHook::kCtorHookAddress, GetFnAddr(&GFxLoaderHook::Hook));

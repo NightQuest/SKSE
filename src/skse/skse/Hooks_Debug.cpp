@@ -2,6 +2,7 @@
 #include "common/IInterlockedLong.h"
 #include "common/IFileStream.h"
 #include "Utilities.h"
+#include "SafeWrite.h"
 #include <dbghelp.h>
 #include <shlobj.h>
 
@@ -45,7 +46,7 @@ LONG WINAPI ExceptionFilter(EXCEPTION_POINTERS * info)
 		}
 		else
 		{
-			_ERROR("Unable to open minidump.");
+			_ERROR("Unable to open minidump. (%08X)", GetLastError());
 		}
 
 		s_inExceptionFilter.Release();
@@ -56,6 +57,13 @@ LONG WINAPI ExceptionFilter(EXCEPTION_POINTERS * info)
 	}
 
 	return EXCEPTION_EXECUTE_HANDLER;
+}
+
+LPTOP_LEVEL_EXCEPTION_FILTER WINAPI SetUnhandledExceptionFilter_Hook(__in LPTOP_LEVEL_EXCEPTION_FILTER lpTopLevelExceptionFilter)
+{
+	_MESSAGE("SetUnhandledExceptionFilter_Hook: %08X", lpTopLevelExceptionFilter);
+
+	return NULL;
 }
 
 void Hooks_Debug_Init(void)
@@ -89,7 +97,7 @@ void Hooks_Debug_Init(void)
 			char	myDocumentsPath[MAX_PATH];
 			ASSERT(SUCCEEDED(SHGetFolderPath(NULL, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, myDocumentsPath)));
 
-			sprintf_s(s_crashDumpPath, sizeof(s_crashDumpPath), "%s\\My Games\\Skyrim\\SKSE\\Crashdumps\\%04d-%02d-%02d_%02d:%02d:%02d.dmp", myDocumentsPath,
+			sprintf_s(s_crashDumpPath, sizeof(s_crashDumpPath), "%s\\My Games\\Skyrim\\SKSE\\Crashdumps\\%04d-%02d-%02d_%02d.%02d.%02d.dmp", myDocumentsPath,
 				s_launchTime.wYear, s_launchTime.wMonth, s_launchTime.wDay,
 				s_launchTime.wHour, s_launchTime.wMinute, s_launchTime.wSecond);
 
@@ -98,6 +106,10 @@ void Hooks_Debug_Init(void)
 			// replace previous exception filter
 			s_oldExceptionFilter = SetUnhandledExceptionFilter(ExceptionFilter);
 			_MESSAGE("old exception filter = %08X", s_oldExceptionFilter);
+
+			// disable game overwriting exception filter
+			UInt32	thunkAddress = (UInt32)GetIATAddr((UInt8 *)GetModuleHandle(NULL), "kernel32.dll", "SetUnhandledExceptionFilter");
+			SafeWrite32(thunkAddress, (UInt32)SetUnhandledExceptionFilter_Hook);
 		}
 	}
 }

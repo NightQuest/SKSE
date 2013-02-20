@@ -1,5 +1,6 @@
 #include "PapyrusEvents.h"
 #include "GameMenus.h"
+#include "GameReferences.h"
 #include "GameRTTI.h"
 #include <set>
 #include "PapyrusArgs.h"
@@ -13,16 +14,27 @@ RegistrationMapHolder<UInt32>								g_inputKeyEventRegs;
 RegistrationMapHolder<BSFixedString>						g_inputControlEventRegs;
 RegistrationMapHolder<BSFixedString,ModCallbackParameters>	g_modCallbackRegs;
 
-EventDispatcher<SKSEModCallbackEvent>	g_modCallbackEventDispatcher;
+RegistrationSetHolder<NullParameters>						g_cameraEventRegs;
+RegistrationSetHolder<NullParameters>						g_crosshairRefEventRegs;
 
-MenuEventHandler		g_menuEventHandler;
-InputEventHandler		g_inputEventHandler;
-ModCallbackEventHandler	g_modCallbackEventHandler;
+EventDispatcher<SKSEModCallbackEvent>	g_modCallbackEventDispatcher;
+EventDispatcher<SKSECameraEvent>		g_cameraEventDispatcher;
+EventDispatcher<SKSECrosshairRefEvent>	g_crosshairRefEventDispatcher;
+
+MenuEventHandler			g_menuEventHandler;
+InputEventHandler			g_inputEventHandler;
+ModCallbackEventHandler		g_modCallbackEventHandler;
+CameraEventHandler			g_cameraEventHandler;
+CrosshairRefEventHandler	g_crosshairRefEventHandler;
 
 
 //// Generic functors
 
-template <typename T> void SetVMValue(VMValue * val, T arg);
+template <typename T> void SetVMValue(VMValue * val, T arg)
+{
+	VMClassRegistry * registry = (*g_skyrimVM)->GetClassRegistry();
+	PackValue(val, &arg, registry);
+}
 
 template <> void SetVMValue<bool> (VMValue * val, bool arg)						{ val->SetBool(arg); }
 template <> void SetVMValue<SInt32> (VMValue * val, SInt32 arg)					{ val->SetInt(arg); }
@@ -209,6 +221,37 @@ EventResult ModCallbackEventHandler::ReceiveEvent(SKSEModCallbackEvent * evn, Ev
 	g_modCallbackRegs.ForEach(
 		evn->eventName,
 		ModCallbackEventFunctor(evn->eventName, evn->sender, evn->strArg, evn->numArg)
+	);
+
+	return kEvent_Continue;
+}
+
+EventResult CameraEventHandler::ReceiveEvent(SKSECameraEvent * evn, EventDispatcher<SKSECameraEvent> * dispatcher)
+{
+	SInt32 oldState = -1;
+	SInt32 newState = -1;
+
+	PlayerCamera * playerCamera = PlayerCamera::GetSingleton();
+	if(playerCamera) {
+		for(int i = 0; i < PlayerCamera::kNumCameraStates; i++) {
+			if(evn->oldState == playerCamera->cameraStates[i])
+				oldState = i;
+			if(evn->newState == playerCamera->cameraStates[i])
+				newState = i;
+		}
+	}
+
+	g_cameraEventRegs.ForEach(
+		EventQueueFunctor2<SInt32, SInt32>(BSFixedString("OnPlayerCameraState"), oldState, newState)
+	);
+
+	return kEvent_Continue;
+}
+
+EventResult CrosshairRefEventHandler::ReceiveEvent(SKSECrosshairRefEvent * evn, EventDispatcher<SKSECrosshairRefEvent> * dispatcher)
+{
+	g_crosshairRefEventRegs.ForEach(
+		EventQueueFunctor1<TESObjectREFR*>(BSFixedString("OnCrosshairRefChange"), evn->crosshairRef)
 	);
 
 	return kEvent_Continue;

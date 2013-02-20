@@ -8,6 +8,7 @@
 #include "skse/GameCamera.h"
 
 class TESObjectREFR;
+class TESFullName;
 
 //// menu implementations
 
@@ -75,19 +76,19 @@ class TESRace;
 class RaceSexMenu : public IMenu
 {
 public:
-	void					* menuHandler;
-	UInt32					unk20;
-	UInt32					unk24;
-	tArray<BGSHeadPart*>	hairline;
-	tArray<BGSHeadPart*>	head;
-	tArray<BGSHeadPart*>	eyes;
-	tArray<BGSHeadPart*>	hair;
-	tArray<BGSHeadPart*>	beard;
-	tArray<BGSHeadPart*>	scars;
-	tArray<BGSHeadPart*>	brows;
-	RaceSexCamera			camera;
+	void					* menuHandler;	// 1C
+	UInt32					unk20;			// 20
+	UInt32					unk24;			// 24
+	tArray<BGSHeadPart*>	hairline;		// 28
+	tArray<BGSHeadPart*>	head;			// 34
+	tArray<BGSHeadPart*>	eyes;			// 40
+	tArray<BGSHeadPart*>	hair;			// 4C
+	tArray<BGSHeadPart*>	beard;			// 58
+	tArray<BGSHeadPart*>	scars;			// 64
+	tArray<BGSHeadPart*>	brows;			// 70
+	RaceSexCamera			camera;			// 7C
 
-	float					unk94[0x07];
+	float					unk94[0x07];	// 94
 
 	struct RaceComponent
 	{
@@ -97,6 +98,32 @@ public:
 
 	tArray<RaceComponent>	race1;
 	tArray<RaceComponent>	race2;
+};
+
+class MapMenu : public IMenu
+{
+public:
+	enum
+	{
+		kMarkerType_Location = 0
+	};
+
+	// 20
+	struct MarkerData
+	{
+		TESFullName * name;			// 00
+		UInt32		refHandle;		// 04
+		void		* unk08;		// 08
+		UInt32		type;			// 0C
+		UInt32		unk10;			// 10
+		UInt32		unk14;			// 14
+		UInt32		unk18;			// 18
+		UInt32		unk1C;			// 1C
+	};
+
+	UInt32				pad01C[(0x2F0-0x01C) >> 2];	// 01C
+	tArray<MarkerData>	markers;					// 2F0
+	// ..
 };
 
 //// menu management
@@ -121,6 +148,16 @@ public:
 	StringCache::Ref	unk0C;		// 0C
 	UInt32				unk10;		// 10
 };
+
+// 0C
+class RefHandleUIData : public IUIMessageData
+{
+public:
+	UInt32	refHandle;	// 08
+};
+
+typedef void * (* _CreateUIMessageData)(BSFixedString * name);
+extern const _CreateUIMessageData CreateUIMessageData;
 
 // 10
 // ### pool added in 1.3 (or maybe 1.2)
@@ -342,11 +379,10 @@ public:
 	}
 };
 
-typedef tHashSet<MenuTableItem,BSFixedString> MenuTable;
-
 // 11C
 class MenuManager
 {
+	typedef tHashSet<MenuTableItem,BSFixedString> MenuTable;
 
 	// 030
 	struct Unknown3
@@ -416,3 +452,23 @@ public:
 	GFxMovieView *		GetMovieView(BSFixedString * menuName);
 };
 STATIC_ASSERT(sizeof(MenuManager) == 0x11C);
+
+// 20
+class MagicFavorites
+{
+//	void			** _vtbl;	// 00
+	UInt32			unk004;		// 04
+	UnkFormArray	spells;		// 08
+	UnkFormArray	hotkeys;	// 14
+
+public:
+	virtual	~MagicFavorites();
+
+	void	SetHotkey(TESForm * form, SInt8 idx);
+	void	ClearHotkey(SInt8 idx);
+
+	static MagicFavorites * GetSingleton(void)
+	{
+		return *((MagicFavorites **)0x01B2D68C);
+	}
+};

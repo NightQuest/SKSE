@@ -48,6 +48,12 @@
 #include "PapyrusUtility.h"
 #include "PapyrusNetImmerse.h"
 #include "PapyrusTextureSet.h"
+#include "PapyrusFlora.h"
+#include "PapyrusPerk.h"
+
+#ifdef PAPYRUS_CUSTOM_CLASS
+#include "PapyrusTintMask.h"
+#endif
 
 #define LOG_PAPYRUS_FUNCTIONS 0
 
@@ -72,7 +78,7 @@ struct VTableProxy
 
 	void RegisterFunction_Hook(IFunction * fn)
 	{
-		_MESSAGE("%s %s", fn->GetClassName()->data, fn->GetName()->data);
+		_MESSAGE("%s\t%s\tStr10: %s\tStr28: %s\tisNative: %d\tUnk20: %d\tUnk21: %d\tUnk0A: %d\tUnk0B: %d\tUnk24: %d", fn->GetClassName()->data, fn->GetName()->data, fn->GetStr10()->data, fn->GetStr28()->data, fn->IsNative(), fn->GetUnk20(), fn->GetUnk21(), fn->Unk_0A(), fn->Unk_0B(), fn->GetUnk24());
 	}
 };
 #endif
@@ -99,7 +105,6 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	papyrusSKSE::RegisterFuncs(registry);
 
 	// TESForm
-	papyrusForm::RegisterEventSinks();
 	papyrusForm::RegisterFuncs(registry);
 
 	// ColorForm
@@ -175,6 +180,11 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// ConstructibleObject
 	papyrusConstructibleObject::RegisterFuncs(registry);
 
+#ifdef PAPYRUS_CUSTOM_CLASS
+	// TintMask
+	papyrusTintMask::RegisterFuncs(registry);
+#endif
+
 	// Game
 	papyrusGame::RegisterFuncs(registry);
 
@@ -211,6 +221,12 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// TextureSet
 	papyrusTextureSet::RegisterFuncs(registry);
 
+	// Flora
+	papyrusFlora::RegisterFuncs(registry);
+
+	// Perk
+	papyrusPerk::RegisterFuncs(registry);
+
 #ifdef _PPAPI
 	// Plugins
 	for(PapyrusPluginList::iterator iter = s_pap_plugins.begin(); iter != s_pap_plugins.end(); ++iter)
@@ -230,6 +246,9 @@ void SkyrimVM::OnFormDelete_Hook(UInt64 handle)
 	g_inputKeyEventRegs.UnregisterAll(handle);
 	g_inputControlEventRegs.UnregisterAll(handle);
 	g_modCallbackRegs.UnregisterAll(handle);
+	
+	g_cameraEventRegs.Unregister(handle);
+	g_crosshairRefEventRegs.Unregister(handle);
 }
 
 void SkyrimVM::RevertGlobalData_Hook(void)
@@ -237,10 +256,6 @@ void SkyrimVM::RevertGlobalData_Hook(void)
 	CALL_MEMBER_FN(this, RevertGlobalData_Internal)();
 
 	Serialization::HandleRevertGlobalData();
-
-	// For now, this is a suitable place to do this.
-	if (*g_inputEventDispatcher)
-		(*g_inputEventDispatcher)->AddEventSink(&g_inputEventHandler);
 }
 
 bool SkyrimVM::SaveGlobalData_Hook(void * handleReaderWriter, void * saveStorageWrapper)
@@ -264,6 +279,13 @@ void Hooks_Papyrus_Init(void)
 
 void Hooks_Papyrus_Commit(void)
 {
+#ifdef PAPYRUS_CUSTOM_CLASS
+	SafeWrite32(0x010EAA64, GetFnAddr(&IObjectHandlePolicy::Unk_02_Hook));
+	SafeWrite32(0x010EAA60, GetFnAddr(&IObjectHandlePolicy::IsType_Hook));
+	SafeWrite32(0x010EAA6C, GetFnAddr(&IObjectHandlePolicy::Create_Hook));
+	SafeWrite32(0x010EAA7C, GetFnAddr(&IObjectHandlePolicy::Resolve_Hook));
+#endif
+
 	WriteRelCall(0x008D7130 + 0x098B, (UInt32)RegisterPapyrusFunctions_Hook);
 
 	// GlobalData / event regs

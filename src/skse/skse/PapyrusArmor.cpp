@@ -130,12 +130,11 @@ namespace papyrusArmor
 		if(!thisArmor)
 			return NULL;
 
-		if(n < 0 || n > thisArmor->armorAddons.count)
-			return NULL;
-			
-		TESObjectARMA* addon = NULL;
-		thisArmor->armorAddons.GetNthItem(n, addon);
-		return (addon) ? addon : NULL;
+		TESObjectARMA	* addon = NULL;
+		if(thisArmor->armorAddons.GetNthItem(n, addon))
+			return addon;
+
+		return NULL;
 	}
 }
 

@@ -70,7 +70,22 @@ int main(int argc, char ** argv)
 			usedCustomRuntimeName = true;
 		}
 		else
+		{
 			procName = "TESV.exe";
+
+			// simple check to see if someone kludge-patched the EXE
+			// don't kludge the EXE, use the .ini file RIGHT ABOVE HERE
+			UInt32	procNameCheck =
+				(procName[0] <<  8) |
+				(procName[1] << 24) |
+				(procName[2] << 16) |
+				(procName[3] <<  0);
+
+			if(procNameCheck != 'ESTV')
+			{
+				_ERROR("### someone kludged the default process name to (%s), don't ask me for support with your install ###", procName.c_str());
+			}
+		}
 	}
 
 	const std::string & runtimeDir = GetRuntimeDirectory();
@@ -210,6 +225,17 @@ int main(int argc, char ** argv)
 	}
 
 	_MESSAGE("main thread id = %d", procInfo.dwThreadId);
+
+	// set affinity if requested
+	if(g_options.m_affinity)
+	{
+		_MESSAGE("setting affinity mask to %016I64X", g_options.m_affinity);
+
+		if(!SetProcessAffinityMask(procInfo.hProcess, g_options.m_affinity))
+		{
+			_WARNING("couldn't set affinity mask (%08X)", GetLastError());
+		}
+	}
 
 	bool	injectionSucceeded = false;
 

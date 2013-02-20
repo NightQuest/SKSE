@@ -266,7 +266,7 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2013-01-07 17:38:10.814000 UTC
+; SKSE additions built 2013-02-20 11:33:33.219000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native
@@ -361,8 +361,22 @@ Function UpdateTintMaskColors() global native
 ; Updates the players hair color immediately
 Function UpdateHairColor() global native
 
-; return a misc stat value
-int Function GetMiscStat(string name) global native
+; Returns the character's current camera state
+; 0 - first person
+; 1 - auto vanity
+; 2 - VATS
+; 3 - free
+; 4 - iron sights
+; 5 - furniture
+; 6 - transition
+; 7 - tweenmenu
+; 8 - third person 1
+; 9 - third person 2
+; 10 - horse
+; 11 - bleedout
+; 12 - dragon
+int Function GetCameraState() global native
 
 ; set a misc stat value
+; use QueryStat to read the value
 Function SetMiscStat(string name, int value) global native

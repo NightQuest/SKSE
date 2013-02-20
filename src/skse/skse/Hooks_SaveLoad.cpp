@@ -5,6 +5,7 @@
 #include "GlobalLocks.h"
 #include "GameData.h"
 #include "GameMenus.h"
+#include "PapyrusVM.h"
 
 void BGSSaveLoadManager::SaveGame_Hook(const char * saveName)
 {
@@ -34,6 +35,18 @@ bool BGSSaveLoadManager::LoadGame_Hook(const char * saveName, bool unk1)
 	Serialization::SetSaveName(NULL);
 
 	g_loadGameLock.Leave();
+
+	// Clear invalid handles in OnUpdate event registration list
+	UInt32	enableClearRegs = 0;
+	if(GetConfigOption_UInt32("General", "ClearInvalidRegistrations", &enableClearRegs))
+	{
+		if(enableClearRegs)
+		{
+			UInt32 count = (*g_skyrimVM)->ClearInvalidRegistrations();
+			if (count > 0)
+				_MESSAGE("ClearInvalidRegistrations: Removed %d invalid OnUpdate registration(s)", count);
+		}
+	}
 
 #ifdef DEBUG
 	_MESSAGE("Executed BGSSaveLoadManager::LoadGame_Hook.");

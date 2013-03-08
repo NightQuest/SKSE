@@ -46,3 +46,6 @@ Spell Function GetNthSpell(int n) native
 ; returns the face textureset of the actor (Player Only?)
 TextureSet Function GetFaceTextureSet() native
 Function SetFaceTextureSet(TextureSet textures) native
+
+VoiceType Function GetVoiceType() native
+Function SetVoiceType(VoiceType nVoice) native

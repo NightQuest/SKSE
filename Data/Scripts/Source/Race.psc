@@ -1,6 +1,6 @@
 Scriptname Race extends Form Hidden
 
-; SKSE additions built 2013-02-20 11:33:33.219000 UTC
+; SKSE additions built 2013-02-21 07:54:52.626000 UTC
 ; returns the number of spells for the race
 int Function GetSpellCount() native
 

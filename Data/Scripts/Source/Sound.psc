@@ -15,5 +15,5 @@ Function SetInstanceVolume(int aiPlaybackInstance, float afVolume) native global
 
 
 
-; SKSE additions built 2013-02-20 11:33:33.219000 UTC
+; SKSE additions built 2013-02-21 07:54:52.626000 UTC
 SoundDescriptor Function GetDescriptor() native

@@ -23,19 +23,33 @@ public:
 
 namespace papyrusNetImmerse
 {
-	bool HasNode(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName)
+	bool HasNode(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
 	{
+		if(!obj)
+			return false;
+
 		NiNode * node = obj->GetNiNode();
+		PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
+		if(player && player->loadedState)
+			node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
+
 		if(!node)
-			return NULL;
+			return 0.0;
 
 		NiAVObject * object = node->GetObjectByName(&nodeName.data);
 		return (object != NULL);
 	}
 
-	float GetNodePositionX(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName)
+	float GetNodePositionX(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
 	{
+		if(!obj)
+			return 0.0;
+
 		NiNode * node = obj->GetNiNode();
+		PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
+		if(player && player->loadedState)
+			node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
+
 		if(!node)
 			return 0.0;
 
@@ -46,9 +60,16 @@ namespace papyrusNetImmerse
 		return object->m_worldTransform.pos.x;
 	}
 
-	float GetNodePositionY(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName)
+	float GetNodePositionY(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
 	{
+		if(!obj)
+			return 0.0;
+
 		NiNode * node = obj->GetNiNode();
+		PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
+		if(player && player->loadedState)
+			node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
+
 		if(!node)
 			return 0.0;
 
@@ -59,9 +80,16 @@ namespace papyrusNetImmerse
 		return object->m_worldTransform.pos.y;
 	}
 
-	float GetNodePositionZ(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName)
+	float GetNodePositionZ(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
 	{
+		if(!obj)
+			return 0.0;
+
 		NiNode * node = obj->GetNiNode();
+		PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
+		if(player && player->loadedState)
+			node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
+
 		if(!node)
 			return 0.0;
 
@@ -72,9 +100,16 @@ namespace papyrusNetImmerse
 		return object->m_worldTransform.pos.z;
 	}
 
-	float GetNodeScale(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName)
+	float GetNodeScale(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
 	{
+		if(!obj)
+			return 0.0;
+
 		NiNode * node = obj->GetNiNode();
+		PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
+		if(player && player->loadedState)
+			node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
+	
 		if(!node)
 			return 0.0;
 
@@ -85,31 +120,39 @@ namespace papyrusNetImmerse
 		return object->m_localTransform.scale;
 	}
 
-	void SetNodeScale(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, float value)
+	void SetNodeScale(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, float value, bool firstPerson)
 	{
-		NiNode * node = obj->GetNiNode();
-		if(node) {
-			NiAVObject * object = node->GetObjectByName(&nodeName.data);
-			if(object) {
-				object->m_localTransform.scale = value;
-				NiAVObject::ControllerUpdateContext ctx;
-				object->UpdateWorldData(&ctx);
+		if(obj) {
+			NiNode * node = obj->GetNiNode();
+			PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
+			if(player && player->loadedState)
+				node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
+
+			if(node) {
+				NiAVObject * object = node->GetObjectByName(&nodeName.data);
+				if(object) {
+					object->m_localTransform.scale = value;
+					NiAVObject::ControllerUpdateContext ctx;
+					object->UpdateWorldData(&ctx);
+				}
 			}
 		}
 	}
 
-	void SetNodeTextureSet(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, BGSTextureSet * textureSet)
+	void SetNodeTextureSet(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, BGSTextureSet * textureSet, bool firstPerson)
 	{
-		if(!textureSet)
-			return;
+		if(obj && textureSet) {
+			NiNode * node = obj->GetNiNode();
+			PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
+			if(player && player->loadedState)
+				node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
 
-		NiNode * node = obj->GetNiNode();
-		if(node) {
-			NiAVObject * object = node->GetObjectByName(&nodeName.data);
-			if(object) {
-				NiGeometry * geometry = object->GetAsNiGeometry();
-				if(geometry) {
-					CALL_MEMBER_FN(UnkNiClass::GetSingleton(), SetNiGeometryTexture)(geometry, textureSet);
+			if(node) {
+				NiAVObject * object = node->GetObjectByName(&nodeName.data);
+				if(object) {
+					NiGeometry * geometry = object->GetAsNiGeometry();
+					if(geometry)
+						CALL_MEMBER_FN(UnkNiClass::GetSingleton(), SetNiGeometryTexture)(geometry, textureSet);
 				}
 			}
 		}
@@ -123,25 +166,25 @@ void papyrusNetImmerse::RegisterFuncs(VMClassRegistry* registry)
 {
 	// NiNode Manipulation
 	registry->RegisterFunction(
-		new NativeFunction2<StaticFunctionTag, bool, TESObjectREFR*, BSFixedString>("HasNode", "NetImmerse", papyrusNetImmerse::HasNode, registry));
+		new NativeFunction3<StaticFunctionTag, bool, TESObjectREFR*, BSFixedString, bool>("HasNode", "NetImmerse", papyrusNetImmerse::HasNode, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2<StaticFunctionTag, float, TESObjectREFR*, BSFixedString>("GetNodePositionX", "NetImmerse", papyrusNetImmerse::GetNodePositionX, registry));
+		new NativeFunction3<StaticFunctionTag, float, TESObjectREFR*, BSFixedString, bool>("GetNodePositionX", "NetImmerse", papyrusNetImmerse::GetNodePositionX, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2<StaticFunctionTag, float, TESObjectREFR*, BSFixedString>("GetNodePositionY", "NetImmerse", papyrusNetImmerse::GetNodePositionY, registry));
+		new NativeFunction3<StaticFunctionTag, float, TESObjectREFR*, BSFixedString, bool>("GetNodePositionY", "NetImmerse", papyrusNetImmerse::GetNodePositionY, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2<StaticFunctionTag, float, TESObjectREFR*, BSFixedString>("GetNodePositionZ", "NetImmerse", papyrusNetImmerse::GetNodePositionZ, registry));
+		new NativeFunction3<StaticFunctionTag, float, TESObjectREFR*, BSFixedString, bool>("GetNodePositionZ", "NetImmerse", papyrusNetImmerse::GetNodePositionZ, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2<StaticFunctionTag, float, TESObjectREFR*, BSFixedString>("GetNodeScale", "NetImmerse", papyrusNetImmerse::GetNodeScale, registry));
+		new NativeFunction3<StaticFunctionTag, float, TESObjectREFR*, BSFixedString, bool>("GetNodeScale", "NetImmerse", papyrusNetImmerse::GetNodeScale, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction3<StaticFunctionTag, void, TESObjectREFR*, BSFixedString, float>("SetNodeScale", "NetImmerse", papyrusNetImmerse::SetNodeScale, registry));
+		new NativeFunction4<StaticFunctionTag, void, TESObjectREFR*, BSFixedString, float, bool>("SetNodeScale", "NetImmerse", papyrusNetImmerse::SetNodeScale, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction3<StaticFunctionTag, void, TESObjectREFR*, BSFixedString, BGSTextureSet*>("SetNodeTextureSet", "NetImmerse", papyrusNetImmerse::SetNodeTextureSet, registry));
+		new NativeFunction4<StaticFunctionTag, void, TESObjectREFR*, BSFixedString, BGSTextureSet*, bool>("SetNodeTextureSet", "NetImmerse", papyrusNetImmerse::SetNodeTextureSet, registry));
 
 	registry->SetFunctionFlags("NetImmerse", "HasNode", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("NetImmerse", "GetNodePositionX", VMClassRegistry::kFunctionFlag_NoWait);

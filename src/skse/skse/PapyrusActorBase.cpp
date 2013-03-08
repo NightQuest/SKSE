@@ -24,7 +24,7 @@ namespace papyrusActorBase
 	{
 		if (!thisNPC)
 			return NULL;
-		return (bSleepOutfit) ? thisNPC->sleepOutfit : thisNPC->defaultOutfit;
+		return bSleepOutfit ? thisNPC->sleepOutfit : thisNPC->defaultOutfit;
 	}
 
 	void SetClass(TESNPC* thisNPC, TESClass* nuClass)
@@ -34,9 +34,31 @@ namespace papyrusActorBase
 		}
 	}
 
+	UInt32 GetSpellCount(TESNPC* thisNPC)
+	{
+		return thisNPC ? thisNPC->spellList.GetSpellCount() : 0;
+	}
+
+	SpellItem* GetNthSpell(TESNPC* thisNPC, UInt32 n)
+	{
+		return thisNPC ? thisNPC->spellList.GetNthSpell(n) : NULL;
+	}
+
+	BGSVoiceType* GetVoiceType(TESNPC* thisNPC)
+	{
+		return thisNPC ? thisNPC->actorData.voiceType : NULL;
+	}
+
+	void SetVoiceType(TESNPC* thisNPC, BGSVoiceType * newVoice)
+	{
+		if(thisNPC) {
+			thisNPC->actorData.voiceType = newVoice;
+		}
+	}
+
 	float GetWeight(TESNPC* thisNPC)
 	{
-		return (thisNPC) ? thisNPC->weight : 0.0;
+		return thisNPC ? thisNPC->weight : 0.0;
 	}
 
 	void SetWeight(TESNPC* thisNPC, float weight)
@@ -48,7 +70,7 @@ namespace papyrusActorBase
 
 	float GetHeight(TESNPC* thisNPC)
 	{
-		return (thisNPC) ? thisNPC->height : 0.0;
+		return thisNPC ? thisNPC->height : 0.0;
 	}
 
 	void SetHeight(TESNPC* thisNPC, float height)
@@ -73,8 +95,6 @@ namespace papyrusActorBase
 		if (thisNPC && n < thisNPC->numHeadParts) {
 			if (headPart && thisNPC->headparts) {
 				thisNPC->headparts[n] = headPart;
-				// Invoke Actor Member that updates FaceGen for head parts
-				// Alternatively there is probably a member that already does this as the race menu needs a way to do the same thing
 			}
 		}
 	}
@@ -102,8 +122,6 @@ namespace papyrusActorBase
 	{
 		if (thisNPC && thisNPC->faceMorph && index < TESNPC::FaceMorphs::kNumOptions) {
 			thisNPC->faceMorph->option[index] = value;
-			// Invoke Actor Member that updates FaceGen (SetNPCWeight should have it)
-			// Alternatively there is probably a member that already does this as the race menu needs a way to do the same thing
 		}
 	}
 
@@ -116,8 +134,6 @@ namespace papyrusActorBase
 	{
 		if (thisNPC && thisNPC->faceMorph && index < TESNPC::FaceMorphs::kNumPresets) {
 			thisNPC->faceMorph->presets[index] = value;
-			// Invoke Actor Member that updates FaceGen for presets
-			// Alternatively there is probably a member that already does this as the race menu needs a way to do the same thing
 		}
 	}
 
@@ -145,17 +161,6 @@ namespace papyrusActorBase
 			thisNPC->headData->headTexture = textureSet;
 		}
 	}
-
-	UInt32 GetSpellCount(TESNPC* thisNPC)
-	{
-		return (thisNPC) ? thisNPC->spellList.GetSpellCount() : 0;
-	}
-
-	SpellItem* GetNthSpell(TESNPC* thisNPC, UInt32 n)
-	{
-		return (thisNPC) ? thisNPC->spellList.GetNthSpell(n) : NULL;
-	}
-
 }
 
 #include "PapyrusVM.h"
@@ -174,6 +179,18 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESNPC, void, TESClass*>("SetClass", "ActorBase", papyrusActorBase::SetClass, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, UInt32>("GetSpellCount", "ActorBase", papyrusActorBase::GetSpellCount, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, SpellItem*, UInt32>("GetNthSpell", "ActorBase", papyrusActorBase::GetNthSpell, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, BGSVoiceType*>("GetVoiceType", "ActorBase", papyrusActorBase::GetVoiceType, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, void, BGSVoiceType*>("SetVoiceType", "ActorBase", papyrusActorBase::SetVoiceType, registry));
 
 	// Character Creation Information
 
@@ -220,12 +237,6 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <TESNPC, void, BGSColorForm*>("SetHairColor", "ActorBase", papyrusActorBase::SetHairColor, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction0 <TESNPC, UInt32>("GetSpellCount", "ActorBase", papyrusActorBase::GetSpellCount, registry));
-
-	registry->RegisterFunction(
-		new NativeFunction1 <TESNPC, SpellItem*, UInt32>("GetNthSpell", "ActorBase", papyrusActorBase::GetNthSpell, registry));
-
-	registry->RegisterFunction(
 		new NativeFunction0 <TESNPC, BGSTextureSet*>("GetFaceTextureSet", "ActorBase", papyrusActorBase::GetFaceTextureSet, registry));
 
 	registry->RegisterFunction(
@@ -235,6 +246,9 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("ActorBase", "SetCombatStyle", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "GetOutfit", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "SetClass", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetSpellCount", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetNthSpell", VMClassRegistry::kFunctionFlag_NoWait);
+
 	registry->SetFunctionFlags("ActorBase", "GetHeight", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "SetHeight", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "GetWeight", VMClassRegistry::kFunctionFlag_NoWait);
@@ -249,8 +263,6 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("ActorBase", "SetFacePreset", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "SetHairColor", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "GetHairColor", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("ActorBase", "GetSpellCount", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("ActorBase", "GetNthSpell", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "GetFaceTextureSet", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "SetFaceTextureSet", VMClassRegistry::kFunctionFlag_NoWait);
 }

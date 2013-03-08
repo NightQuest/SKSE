@@ -12,11 +12,11 @@ namespace papyrusNetImmerse
 {
 	void RegisterFuncs(VMClassRegistry* registry);
 
-	bool HasNode(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName);
-	float GetNodePositionX(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName);
-	float GetNodePositionY(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName);
-	float GetNodePositionZ(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName);
-	float GetNodeScale(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName);
-	void SetNodeScale(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName, float value);
-	void SetNodeTextureSet(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, BGSTextureSet * textureSet);
+	bool HasNode(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson);
+	float GetNodePositionX(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson);
+	float GetNodePositionY(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson);
+	float GetNodePositionZ(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson);
+	float GetNodeScale(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson);
+	void SetNodeScale(StaticFunctionTag * base, TESObjectREFR * obj, BSFixedString nodeName, float value, bool firstPerson);
+	void SetNodeTextureSet(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, BGSTextureSet * textureSet, bool firstPerson);
 }

@@ -1,3 +1,7 @@
+1.6.9:
+- properly updated NetImmerse papyrus functions, make sure to update RaceMenu at the same time
+- ActorBase.Get/SetVoiceType
+
 1.6.8:
 - back out partially committed change to NetImmerse papyrus functions, fixes RaceMenu
 

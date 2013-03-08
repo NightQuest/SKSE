@@ -263,9 +263,8 @@ public:
 	void ProcessCommands(void);
 	void QueueCommand(UIDelegate * cmd);
 
-	DEFINE_MEMBER_FN(ProcessEventQueue_HookTarget, void, 0x00A5C260);
+	DEFINE_MEMBER_FN(ProcessEventQueue_HookTarget, void, 0x00A5C210);
 };
-
 
 // 11C
 class UIStringHolder
@@ -391,16 +390,16 @@ public:
 	UInt8			padE3;
 
 	MEMBER_FN_PREFIX(Inventory3DManager);
-	DEFINE_MEMBER_FN(UpdateItem3D, void, 0x00867C90, PlayerCharacter::ObjDesc * objDesc);
-	DEFINE_MEMBER_FN(UpdateMagic3D, void, 0x008679C0, TESForm * form, UInt32 unk1);
-	DEFINE_MEMBER_FN(Clear3D, void, 0x00866950);
+	DEFINE_MEMBER_FN(UpdateItem3D, void, 0x00867E20, PlayerCharacter::ObjDesc * objDesc);
+	DEFINE_MEMBER_FN(UpdateMagic3D, void, 0x00867B50, TESForm * form, UInt32 unk1);
+	DEFINE_MEMBER_FN(Clear3D, void, 0x00866AE0);
 
-	/*DEFINE_MEMBER_FN(Unk1, void, 0x00866870, UInt32 unk1);
-	DEFINE_MEMBER_FN(Unk2, void, 0x008671A0);
-	DEFINE_MEMBER_FN(Unk3, bool, 0x00866550);
-	DEFINE_MEMBER_FN(Unk4, double, 0x00866470);
-	DEFINE_MEMBER_FN(Unk5, bool, 0x00841BD0);
-	DEFINE_MEMBER_FN(Unk6, int, 0x008677C0);*/
+	/*DEFINE_MEMBER_FN(Unk1, void, 0x00866A00, UInt32 unk1);
+	DEFINE_MEMBER_FN(Unk2, void, 0x00867330);
+	DEFINE_MEMBER_FN(Unk3, bool, 0x008666E0);
+	DEFINE_MEMBER_FN(Unk4, double, 0x00866600);
+	DEFINE_MEMBER_FN(Unk5, bool, 0x00841B80);
+	DEFINE_MEMBER_FN(Unk6, int, 0x00867950);*/
 };
 
 STATIC_ASSERT(offsetof(Inventory3DManager, unk10) == 0x10);
@@ -465,7 +464,7 @@ private:
 
 	EventDispatcher<MenuOpenCloseEvent>		menuOpenCloseEventDispatcher;	// 004
 	EventDispatcher<MenuModeChangeEvent>	menuModeChangeEventDispatcher;	// 034
-	EventDispatcher<void*>					unk_064;						// 064 - New in 1.6.87.0 - Kintect related?
+	EventDispatcher<void*>					unk_064;						// 064 - New in 1.6.87.0 - Kinect related?
 
 	UnkArray				menuStack;	// 094
 	UInt32					unk_0A0;	// 0A0
@@ -486,8 +485,8 @@ private:
 	char					pad[2];
 
 	MEMBER_FN_PREFIX(MenuManager);
-	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A5CE40, BSFixedString * menuName);
-	//DEFINE_MEMBER_FN(Register, void, 0x00A5D250, const char * name, void * ctorFunc);
+	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A5CDF0, BSFixedString * menuName);
+	//DEFINE_MEMBER_FN(Register, void, 0x00A5D200, const char * name, void * ctorFunc);
 
 public:
 

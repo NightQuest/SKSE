@@ -28,7 +28,7 @@ void GameplayPatches(void)
 
 	ApplyPatch(0x00598A20, kPickpocketChance, sizeof(kPickpocketChance));
 
-	SafeWrite8(0x008F08E0, 0xC3);	// disable achievements
+	SafeWrite8(0x008F0890, 0xC3);	// disable achievements
 }
 
 class SKSEScaleform_ExampleFunction : public GFxFunctionHandler

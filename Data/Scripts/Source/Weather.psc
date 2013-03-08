@@ -40,7 +40,7 @@ float function GetCurrentWeatherTransition() native global
 ; 3 - Full sky (SM_FULL)
 int function GetSkyMode() native global
 
-; SKSE additions built 2013-03-04 23:31:36.509000 UTC
+; SKSE additions built 2013-03-08 02:41:01.982000 UTC
 
 ; Returns the sun glare percentage
 float Function GetSunGlare() native

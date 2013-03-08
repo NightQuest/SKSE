@@ -160,7 +160,7 @@ public:
 	UInt8		unkA5;				// A5 - bitfield
 
 	MEMBER_FN_PREFIX(NiAVObject);
-	DEFINE_MEMBER_FN(UpdateNode, void, 0x00AAF3D0, NiAVObject * node);
+	DEFINE_MEMBER_FN(UpdateNode, void, 0x00AAF380, NiAVObject * node);
 };
 
 STATIC_ASSERT(sizeof(NiAVObject) == 0xA8);

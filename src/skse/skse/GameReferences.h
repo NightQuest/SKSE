@@ -228,7 +228,7 @@ public:
 	UInt32 CreateRefHandle(void);
 
 	MEMBER_FN_PREFIX(TESObjectREFR);
-	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D4F90);
+	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D4FF0);
 };
 STATIC_ASSERT(sizeof(TESObjectREFR) == 0x54);
 STATIC_ASSERT(offsetof(TESObjectREFR, handleRefObject) == 0x14);
@@ -320,7 +320,7 @@ public:
 	enum { kTypeID = kFormType_Character };
 
 	MEMBER_FN_PREFIX(Character);
-	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730CD0, bool);
+	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730C80, bool);
 };
 
 STATIC_ASSERT(sizeof(Character) == 0x19C);
@@ -374,10 +374,10 @@ public:
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
 	DEFINE_MEMBER_FN(GetTintList, tArray <TintMask *> *, 0x0055FD30);
-	DEFINE_MEMBER_FN(GetNumTints, UInt32, 0x00735D90, UInt32 tintType);
-	DEFINE_MEMBER_FN(GetTintMask, TintMask *, 0x00735D50, UInt32 tintType, UInt32 index);
-	DEFINE_MEMBER_FN(GetDamage, double, 0x00730600, ObjDesc * pForm);
-	DEFINE_MEMBER_FN(GetArmorValue, double, 0x007305D0, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetNumTints, UInt32, 0x00735D40, UInt32 tintType);
+	DEFINE_MEMBER_FN(GetTintMask, TintMask *, 0x00735D00, UInt32 tintType, UInt32 index);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x007305B0, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x00730580, ObjDesc * pForm);
 };
 
 STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1A4);

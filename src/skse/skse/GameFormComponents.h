@@ -435,7 +435,7 @@ public:
 	UInt32	unk08;	// 08 - init'd to FFFFFFFF
 
 	MEMBER_FN_PREFIX(TESDescription);
-	DEFINE_MEMBER_FN(Get, void, 0x0044FC60, BSString * out, TESForm * parent, UInt32 fieldType);
+	DEFINE_MEMBER_FN(Get, void, 0x0044FC90, BSString * out, TESForm * parent, UInt32 fieldType);
 };
 
 // C

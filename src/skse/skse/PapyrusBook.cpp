@@ -24,6 +24,11 @@ namespace papyrusBook
 	{
 		return thisBook ? ((thisBook->data.flags & TESObjectBOOK::Data::kType_Read) == TESObjectBOOK::Data::kType_Read) : false;
 	}
+
+	bool IsTakeable(TESObjectBOOK * thisBook)
+	{
+		return thisBook ? ((thisBook->data.flags & TESObjectBOOK::Data::kType_CantBeTaken) == 0) : false;
+	}
 }
 
 #include "PapyrusVM.h"
@@ -39,4 +44,7 @@ void papyrusBook::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0<TESObjectBOOK, bool>("IsRead", "Book", papyrusBook::IsRead, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectBOOK, bool>("IsTakeable", "Book", papyrusBook::IsTakeable, registry));
 }

@@ -1016,7 +1016,7 @@ public:
 		{
 			kType_None	=	0,
 			kType_Skill =	1 << 0,
-			kType_Unk01	=	1 << 1,
+			kType_CantBeTaken	=	1 << 1,
 			kType_Spell =	1 << 2,	// takes priority over skill
 			kType_Read	=	1 << 3, // set once the book is equipped by the player, along with the CHANGE_BOOK_READ (0x40) change flag
 		};

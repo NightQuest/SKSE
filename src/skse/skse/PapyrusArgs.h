@@ -15,8 +15,8 @@ public:
 	~VMArgList();
 
 	MEMBER_FN_PREFIX(VMArgList);
-	DEFINE_MEMBER_FN(GetOffset, UInt32, 0x00C3A8C0, VMState * state);
-	DEFINE_MEMBER_FN(Get, VMValue *, 0x00C3AEE0, VMState * state, UInt32 idx, UInt32 offset);
+	DEFINE_MEMBER_FN(GetOffset, UInt32, 0x00C3A870, VMState * state);
+	DEFINE_MEMBER_FN(Get, VMValue *, 0x00C3AE90, VMState * state, UInt32 idx, UInt32 offset);
 };
 
 

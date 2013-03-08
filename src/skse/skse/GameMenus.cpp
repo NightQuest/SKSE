@@ -1,6 +1,6 @@
 #include "GameMenus.h"
 
-const _CreateUIMessageData CreateUIMessageData = (_CreateUIMessageData)0x00547470;
+const _CreateUIMessageData CreateUIMessageData = (_CreateUIMessageData)0x005474D0;
 
 bool MenuManager::IsMenuOpen(BSFixedString * menuName)
 {

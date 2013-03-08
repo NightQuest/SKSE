@@ -25,7 +25,7 @@ class EventDispatcher
 	char				pad[3];
 
 	MEMBER_FN_PREFIX(EventDispatcher);
-	DEFINE_MEMBER_FN(AddEventSink_Internal, void, 0x00741F30, SinkT * eventSink);
+	DEFINE_MEMBER_FN(AddEventSink_Internal, void, 0x00741EE0, SinkT * eventSink);
 	DEFINE_MEMBER_FN(RemoveEventSink_Internal, void, 0x00671830, SinkT * eventSink);
 	DEFINE_MEMBER_FN(SendEvent_Internal, void, 0x006817B0, EventArgT * evn);
 
@@ -390,7 +390,7 @@ template <>
 class BSTEventSink <TESSleepStartEvent>
 {
 public:
-	virtual ~BSTEventSink() {}; // todo?
+	virtual ~BSTEventSink() {}	// todo?
 	virtual	EventResult ReceiveEvent(TESSleepStartEvent * evn, EventDispatcher<TESSleepStartEvent> * dispatcher) = 0;
 };
 
@@ -398,7 +398,7 @@ template <>
 class BSTEventSink <MenuOpenCloseEvent>
 {
 public:
-	virtual ~BSTEventSink() {}; // todo?
+	virtual ~BSTEventSink() {}	// todo?
 	virtual	EventResult ReceiveEvent(MenuOpenCloseEvent * evn, EventDispatcher<MenuOpenCloseEvent> * dispatcher) = 0;
 };
 
@@ -406,7 +406,7 @@ template <>
 class BSTEventSink <TESQuestStageEvent>
 {
 public:
-	virtual ~BSTEventSink() {}; // todo?
+	virtual ~BSTEventSink() {}	// todo?
 	virtual	EventResult ReceiveEvent(TESQuestStageEvent * evn, EventDispatcher<TESQuestStageEvent> * dispatcher) = 0;
 };
 
@@ -414,7 +414,7 @@ template <>
 class BSTEventSink <LevelIncrease::Event>
 {
 public:
-	virtual ~BSTEventSink() {}; // todo?
+	virtual ~BSTEventSink() {}	// todo?
 	virtual	EventResult ReceiveEvent(LevelIncrease::Event * evn, EventDispatcher<LevelIncrease::Event> * dispatcher) = 0;
 };
 
@@ -422,7 +422,7 @@ template <>
 class BSTEventSink <TESHarvestEvent::ItemHarvested>
 {
 public:
-	virtual ~BSTEventSink() {}; // todo?
+	virtual ~BSTEventSink() {}	// todo?
 	virtual	EventResult ReceiveEvent(TESHarvestEvent::ItemHarvested * evn, EventDispatcher<TESHarvestEvent::ItemHarvested> * dispatcher) = 0;
 };
 
@@ -430,7 +430,7 @@ template <>
 class BSTEventSink <TESHitEvent>
 {
 public:
-	virtual ~BSTEventSink() {}; // todo?
+	virtual ~BSTEventSink() {}	// todo?
 	virtual	EventResult ReceiveEvent(TESHitEvent * evn, EventDispatcher<TESHitEvent> * dispatcher) = 0;
 };
 

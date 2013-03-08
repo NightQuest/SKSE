@@ -50,9 +50,9 @@ public:
 		const char	* data;
 
 		MEMBER_FN_PREFIX(Ref);
-		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A511B0, const char * buf);
-		DEFINE_MEMBER_FN(Set, Ref *, 0x00A51200, const char * buf);
-		DEFINE_MEMBER_FN(Release, void, 0x00A511A0);
+		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A51160, const char * buf);
+		DEFINE_MEMBER_FN(Set, Ref *, 0x00A511B0, const char * buf);
+		DEFINE_MEMBER_FN(Release, void, 0x00A51150);
 
 		Ref() :data(NULL) { }
 		Ref(const char * buf);

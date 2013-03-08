@@ -11,4 +11,5 @@ namespace papyrusBook
 	UInt32 GetSkill(TESObjectBOOK * thisBook);
 	SpellItem * GetSpell(TESObjectBOOK * thisBook);
 	bool IsRead(TESObjectBOOK * thisBook);
+	bool IsTakeable(TESObjectBOOK * thisBook);
 };

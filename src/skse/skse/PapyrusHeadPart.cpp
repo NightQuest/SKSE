@@ -1,9 +1,39 @@
 #include "PapyrusHeadPart.h"
 
 #include "GameObjects.h"
+#include "GameData.h"
+
+#include "common/ICriticalSection.h"
  
 namespace papyrusHeadPart
 {
+	ICriticalSection	s_headPartCacheLock;
+	typedef std::map<BSFixedString, BGSHeadPart*> HeadPartCache;
+	static HeadPartCache s_headPartCache;
+
+	BGSHeadPart* GetHeadPart(StaticFunctionTag*, BSFixedString editorID)
+	{
+		s_headPartCacheLock.Enter();
+
+		if (s_headPartCache.empty()) {
+			DataHandler* pDataHandler = DataHandler::GetSingleton();
+			tArray<BGSHeadPart*>& headParts = pDataHandler->headParts;
+			for (UInt32 n = 0; n < headParts.count; n++) {
+				BGSHeadPart* pHeadPart = NULL;
+				headParts.GetNthItem(n, pHeadPart);
+				if (pHeadPart) {
+					s_headPartCache.insert(HeadPartCache::value_type(BSFixedString(pHeadPart->partName), pHeadPart));
+				}
+			}
+		}
+
+		s_headPartCacheLock.Leave();
+
+		HeadPartCache::iterator it = s_headPartCache.find(editorID);
+		BGSHeadPart* pHeadPart = (it != s_headPartCache.end()) ? it->second : NULL;
+		return pHeadPart;
+	}
+
     UInt32 GetType(BGSHeadPart* thisPart)
     {
 		if(!thisPart)
@@ -55,6 +85,9 @@ namespace papyrusHeadPart
 void papyrusHeadPart::RegisterFuncs(VMClassRegistry* registry)
 {
 	registry->RegisterForm(BGSHeadPart::kTypeID, "HeadPart");
+
+	registry->RegisterFunction(
+		new NativeFunction1<StaticFunctionTag, BGSHeadPart*, BSFixedString>("GetHeadPart", "HeadPart", papyrusHeadPart::GetHeadPart, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0<BGSHeadPart, UInt32>("GetType", "HeadPart", papyrusHeadPart::GetType, registry));

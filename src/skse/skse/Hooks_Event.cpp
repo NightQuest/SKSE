@@ -33,5 +33,5 @@ PlayerControls * PlayerControls::ctor_Hook(void)
 void Hooks_Event_Commit(void)
 {
 	// hook ctor of PlayerControls to register SKSE event sinks
-	WriteRelCall(0x0069C5F8, GetFnAddr(&PlayerControls::ctor_Hook));
+	WriteRelCall(0x0069C020 + 0x838, GetFnAddr(&PlayerControls::ctor_Hook));
 }

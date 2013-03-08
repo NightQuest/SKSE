@@ -1,7 +1,7 @@
 #include "GameAPI.h"
 #include "Utilities.h"
 
-Heap * g_formHeap = (Heap *)0x01B40BA0;
+Heap * g_formHeap = (Heap *)0x01B418B0;
 
 void * FormHeap_Allocate(UInt32 size)
 {
@@ -13,8 +13,8 @@ void FormHeap_Free(void * ptr)
 	CALL_MEMBER_FN(g_formHeap, Free)(ptr, false);
 }
 
-PlayerCharacter	** g_thePlayer = (PlayerCharacter **)0x01B2DBD4;
-const UInt32 * g_TlsIndexPtr = (UInt32 *)0x01BBDE54;
+PlayerCharacter	** g_thePlayer = (PlayerCharacter **)0x01B2E8E4;
+const UInt32 * g_TlsIndexPtr = (UInt32 *)0x01BBEB54;
 
 struct TLSData
 {
@@ -44,14 +44,14 @@ class ConsoleManager
 {
 public:
 	MEMBER_FN_PREFIX(ConsoleManager);
-	DEFINE_MEMBER_FN(Print, void, 0x00848D90, const char * fmt, va_list args);
+	DEFINE_MEMBER_FN(Print, void, 0x008489C0, const char * fmt, va_list args);
 
 	ConsoleManager();
 	~ConsoleManager();
 
 	static ConsoleManager * GetSingleton(void)
 	{
-		return *((ConsoleManager **)0x01B0FD58);
+		return *((ConsoleManager **)0x01B10B58);
 	}
 
 	void	* scriptContext;	// 00

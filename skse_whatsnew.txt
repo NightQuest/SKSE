@@ -1,3 +1,10 @@
+1.6.10:
+- support for beta runtime 1.9.26
+- HeadPart.GetHeadPart, Actor.ChangeHeadPart
+- Game.SetPlayersLastRiddenHorse
+- fixed result of ColorComponent.Set* functions
+- ClearInvalidRegistrations now cleans OnUpdateGameTime registrations as well
+
 1.6.9:
 - properly updated NetImmerse papyrus functions, make sure to update RaceMenu at the same time
 - ActorBase.Get/SetVoiceType

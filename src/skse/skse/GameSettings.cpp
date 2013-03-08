@@ -1,9 +1,9 @@
 #include "GameSettings.h"
 #include "GameAPI.h"
 
-extern SettingCollectionList	** g_iniSettingCollection = (SettingCollectionList **)0x01B97214;
-extern SettingCollectionList	** g_iniPrefSettingCollection = (SettingCollectionList **)0x01B8EDE8;
-extern SettingCollectionMap		** g_gameSettingCollection = (SettingCollectionMap **)0x012E6364;
+extern SettingCollectionList	** g_iniSettingCollection = (SettingCollectionList **)0x01B97F14;
+extern SettingCollectionList	** g_iniPrefSettingCollection = (SettingCollectionList **)0x01B8FAF8;
+extern SettingCollectionMap		** g_gameSettingCollection = (SettingCollectionMap **)0x012E7164;
 
 // sLanguage:General
 // ### if you were using g_gameLanguage, just look it up in g_iniSettingCollection

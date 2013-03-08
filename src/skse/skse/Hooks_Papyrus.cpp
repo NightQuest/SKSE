@@ -58,7 +58,7 @@
 #define LOG_PAPYRUS_FUNCTIONS 0
 
 typedef void (* _RegisterPapyrusFunctions)(VMClassRegistry ** registry);
-_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F8B10;
+_RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F97B0;
 
 #ifdef _PPAPI
 typedef std::list <SKSEPapyrusInterface::RegisterFunctions> PapyrusPluginList;
@@ -78,7 +78,8 @@ struct VTableProxy
 
 	void RegisterFunction_Hook(IFunction * fn)
 	{
-		_MESSAGE("%s\t%s\tStr10: %s\tStr28: %s\tisNative: %d\tUnk20: %d\tUnk21: %d\tUnk0A: %d\tUnk0B: %d\tUnk24: %d", fn->GetClassName()->data, fn->GetName()->data, fn->GetStr10()->data, fn->GetStr28()->data, fn->IsNative(), fn->GetUnk20(), fn->GetUnk21(), fn->Unk_0A(), fn->Unk_0B(), fn->GetUnk24());
+		_MESSAGE("%s %s", fn->GetClassName()->data, fn->GetName()->data);
+//		_MESSAGE("%s\t%s\tStr10: %s\tStr28: %s\tisNative: %d\tUnk20: %d\tUnk21: %d\tUnk0A: %d\tUnk0B: %d\tUnk24: %d", fn->GetClassName()->data, fn->GetName()->data, fn->GetStr10()->data, fn->GetStr28()->data, fn->IsNative(), fn->GetUnk20(), fn->GetUnk21(), fn->Unk_0A(), fn->Unk_0B(), fn->GetUnk24());
 	}
 };
 #endif
@@ -286,12 +287,12 @@ void Hooks_Papyrus_Commit(void)
 	SafeWrite32(0x010EAA7C, GetFnAddr(&IObjectHandlePolicy::Resolve_Hook));
 #endif
 
-	WriteRelCall(0x008D7130 + 0x098B, (UInt32)RegisterPapyrusFunctions_Hook);
+	WriteRelCall(0x008D7A80 + 0x098B, (UInt32)RegisterPapyrusFunctions_Hook);
 
 	// GlobalData / event regs
-	WriteRelCall(0x008D5A60 + 0x002A, GetFnAddr(&SkyrimVM::OnFormDelete_Hook));
-	WriteRelCall(0x008D5EA0 + 0x0017, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // Normal game load
-	WriteRelCall(0x008D6210 + 0x0116, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // New script reload command
-	WriteRelCall(0x008D2B60 + 0x0101, GetFnAddr(&SkyrimVM::SaveGlobalData_Hook));
-	WriteRelCall(0x008D5ED0 + 0x01B9, GetFnAddr(&SkyrimVM::LoadGlobalData_Hook));
+	WriteRelCall(0x008D6590 + 0x002A, GetFnAddr(&SkyrimVM::OnFormDelete_Hook));
+	WriteRelCall(0x008D69D0 + 0x0017, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // Normal game load
+	WriteRelCall(0x008D6D40 + 0x0116, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // New script reload command
+	WriteRelCall(0x008D3790 + 0x0101, GetFnAddr(&SkyrimVM::SaveGlobalData_Hook));
+	WriteRelCall(0x008D6A00 + 0x01B9, GetFnAddr(&SkyrimVM::LoadGlobalData_Hook));
 }

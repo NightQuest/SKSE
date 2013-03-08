@@ -3,25 +3,10 @@
 struct StaticFunctionTag;
 class VMClassRegistry;
 class Setting;
+class Actor;
 
 #include "GameTypes.h"
 #include "Hooks_UI.h"
-
-class TintUpdateDelegate : public UIDelegate
-{
-public:
-	TintUpdateDelegate() {}
-	virtual void Run();
-	virtual void Dispose(void);
-};
-
-class HairUpdateDelegate : public UIDelegate
-{
-public:
-	HairUpdateDelegate() {}
-	virtual void Run();
-	virtual void Dispose(void);
-};
 
 namespace papyrusGame
 {
@@ -58,4 +43,8 @@ namespace papyrusGame
 	void SetTintMaskTexturePath(StaticFunctionTag * base, BSFixedString path, UInt32 tintType, UInt32 index);
 
 	void UpdateTintMaskColors(StaticFunctionTag * base);
+
+	SInt32 GetCameraState(StaticFunctionTag * base);
+	void SetMiscStat(StaticFunctionTag * base, BSFixedString name, UInt32 value);
+	void SetPlayersLastRiddenHorse(StaticFunctionTag * base, Actor* actor);
 };

@@ -416,4 +416,3 @@ class ExtraFlags : public BSExtraData
  //	ExtraRaceData
  //	ExtraGIDBuffer
  //	ExtraMissingRefIDs
-

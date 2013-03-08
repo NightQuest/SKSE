@@ -6,6 +6,7 @@
 #include "skse/Utilities.h"
 #include "skse/Hooks_UI.h"
 #include "skse/GameCamera.h"
+#include "skse/GameReferences.h"
 
 class TESObjectREFR;
 class TESFullName;
@@ -206,6 +207,18 @@ public:
 	volatile UInt32	lock;	// 04
 };
 
+template <typename T>
+class BSTCommonScrapHeapMessageQueue : public BSTCommonMessageQueue<T>
+{
+public:
+	BSTCommonScrapHeapMessageQueue();
+	virtual ~BSTCommonScrapHeapMessageQueue();
+
+	UInt32 unk08;	// 08
+	UInt32 unk0C;	// 0C
+	UInt32 unk10;	// 10
+};
+
 // 08 + sizeof(T) * T_len + 0C
 template <typename T, UInt32 T_len>
 class BSTCommonStaticMessageQueue : public BSTCommonMessageQueue <T>
@@ -239,18 +252,18 @@ public:
 	// this takes ownership of the message ptr
 //	DEFINE_MEMBER_FN(AddMessage, void, 0x004503E0, UIMessage * msg);	// old 1.1 implementation
 	// 1.3 uses a little non-thread-safe pool of UIMessages to wrap around the nicely thread-safe BSTMessageQueue it gets added to
-	DEFINE_MEMBER_FN(AddMessage, void, 0x00431CE0, StringCache::Ref * strData, UInt32 msgID, void * objData);
+	DEFINE_MEMBER_FN(AddMessage, void, 0x00431BB0, StringCache::Ref * strData, UInt32 msgID, void * objData);
 
 	static UIManager *	GetSingleton(void)
 	{
-		return *((UIManager **)0x012E27E4);
+		return *((UIManager **)0x012E35E4);
 	}
 
 	// Used by Hooks_UI
 	void ProcessCommands(void);
 	void QueueCommand(UIDelegate * cmd);
 
-	DEFINE_MEMBER_FN(ProcessEventQueue_HookTarget, void, 0x00A5B8E0);
+	DEFINE_MEMBER_FN(ProcessEventQueue_HookTarget, void, 0x00A5C260);
 };
 
 
@@ -332,7 +345,7 @@ public:
 
 	static UIStringHolder *	GetSingleton(void)
 	{
-		return *((UIStringHolder **)0x012E27E0);
+		return *((UIStringHolder **)0x012E35E0);
 	}
 };
 
@@ -340,18 +353,59 @@ public:
 class Inventory3DManager
 {
 public:
-	~Inventory3DManager();
+	virtual ~Inventory3DManager();
 
 	static Inventory3DManager * GetSingleton(void)
 	{
-		return *((Inventory3DManager **)0x01B2DC8C);
+		return *((Inventory3DManager **)0x01B2E99C);
 	}
 
 //	void			** _vtbl;	// 00
-	UInt32			pad04[(0x34 - 0x04) / 4];	// 04
+	UInt32			unk04;
+	UInt32			unk08; // This appears to be 1 when a menu is open
+	UInt32			unk0C;
+	float			unk10[(0x30 - 0x10) / 4];
+	UInt32			unk30;
 	TESObjectREFR	* object;	// 34
-	// ...
+	UInt32			unk38;
+	UInt32			unk3C;
+	UInt32			unk40;
+
+	struct ItemData
+	{
+		TESForm	* unk04;
+		TESForm	* unk08;
+		void	* unk0C;
+		void	* unk10;
+		float	unk14;
+	};
+
+	ItemData		unk44[7];
+	UInt32			unkD0; // Number of ItemDatas?
+	UInt32			unkD4;
+	UInt32			unkD8;
+	UInt32			unkDC;
+	UInt8			unkE0;
+	UInt8			unkE1; // Somekind of mode (0 for MagicMenu)
+	UInt8			unkE2;
+	UInt8			padE3;
+
+	MEMBER_FN_PREFIX(Inventory3DManager);
+	DEFINE_MEMBER_FN(UpdateItem3D, void, 0x00867C90, PlayerCharacter::ObjDesc * objDesc);
+	DEFINE_MEMBER_FN(UpdateMagic3D, void, 0x008679C0, TESForm * form, UInt32 unk1);
+	DEFINE_MEMBER_FN(Clear3D, void, 0x00866950);
+
+	/*DEFINE_MEMBER_FN(Unk1, void, 0x00866870, UInt32 unk1);
+	DEFINE_MEMBER_FN(Unk2, void, 0x008671A0);
+	DEFINE_MEMBER_FN(Unk3, bool, 0x00866550);
+	DEFINE_MEMBER_FN(Unk4, double, 0x00866470);
+	DEFINE_MEMBER_FN(Unk5, bool, 0x00841BD0);
+	DEFINE_MEMBER_FN(Unk6, int, 0x008677C0);*/
 };
+
+STATIC_ASSERT(offsetof(Inventory3DManager, unk10) == 0x10);
+STATIC_ASSERT(offsetof(Inventory3DManager, object) == 0x34);
+STATIC_ASSERT(offsetof(Inventory3DManager, unkE0) == 0xE0);
 
 // 00C
 class MenuTableItem
@@ -432,14 +486,14 @@ private:
 	char					pad[2];
 
 	MEMBER_FN_PREFIX(MenuManager);
-	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A5C490, BSFixedString * menuName);
-	//DEFINE_MEMBER_FN(Register, void, 0x00A5C8A0, const char * name, void * ctorFunc);
+	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A5CE40, BSFixedString * menuName);
+	//DEFINE_MEMBER_FN(Register, void, 0x00A5D250, const char * name, void * ctorFunc);
 
 public:
 
 	static MenuManager * GetSingleton(void)
 	{
-		return *((MenuManager **)0x012E2748);
+		return *((MenuManager **)0x012E3548);
 	}
 
 	EventDispatcher<MenuOpenCloseEvent> * MenuOpenCloseEventDispatcher()
@@ -469,6 +523,6 @@ public:
 
 	static MagicFavorites * GetSingleton(void)
 	{
-		return *((MagicFavorites **)0x01B2D68C);
+		return *((MagicFavorites **)0x01B2E39C);
 	}
 };

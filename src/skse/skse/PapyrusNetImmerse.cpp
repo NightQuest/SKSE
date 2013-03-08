@@ -5,154 +5,94 @@
 #include "GameRTTI.h"
 #include "GameReferences.h"
 #include "GameObjects.h"
+#include "GameThreads.h"
 
 #include "NiNodes.h"
 #include "NiGeometry.h"
 
-// This class needs to be moved and renamed
-class UnkNiClass {
-public:
-	MEMBER_FN_PREFIX(UnkNiClass);
-	DEFINE_MEMBER_FN(SetNiGeometryTexture, UInt32, 0x006A4300, NiAVObject * geometry, BGSTextureSet * textureSet);
-
-	static UnkNiClass *	GetSingleton(void)
-	{
-		return *((UnkNiClass **)0x01B375F8);
-	}
-};
 
 namespace papyrusNetImmerse
 {
-	bool HasNode(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
+	NiAVObject * ResolveNode(TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
 	{
-		if(!obj)
-			return false;
+		if(!obj) return NULL;
 
-		NiNode * node = obj->GetNiNode();
+		NiAVObject	* result = obj->GetNiNode();
+
+		// special-case for the player, switch between first/third-person
 		PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
 		if(player && player->loadedState)
-			node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
+			result = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
 
-		if(!node)
-			return 0.0;
+		// name lookup
+		if(nodeName.data[0] && result)
+			result = result->GetObjectByName(&nodeName.data);
 
-		NiAVObject * object = node->GetObjectByName(&nodeName.data);
-		return (object != NULL);
+		return result;
+	}
+
+	bool HasNode(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
+	{
+		NiAVObject	* object = ResolveNode(obj, nodeName, firstPerson);
+
+		return object != NULL;
 	}
 
 	float GetNodePositionX(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
 	{
-		if(!obj)
-			return 0.0;
+		NiAVObject	* object = ResolveNode(obj, nodeName, firstPerson);
 
-		NiNode * node = obj->GetNiNode();
-		PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
-		if(player && player->loadedState)
-			node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
-
-		if(!node)
-			return 0.0;
-
-		NiAVObject * object = node->GetObjectByName(&nodeName.data);
-		if(!object)
-			return 0.0;
-
-		return object->m_worldTransform.pos.x;
+		return object ? object->m_worldTransform.pos.x : 0;
 	}
 
 	float GetNodePositionY(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
 	{
-		if(!obj)
-			return 0.0;
+		NiAVObject	* object = ResolveNode(obj, nodeName, firstPerson);
 
-		NiNode * node = obj->GetNiNode();
-		PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
-		if(player && player->loadedState)
-			node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
-
-		if(!node)
-			return 0.0;
-
-		NiAVObject * object = node->GetObjectByName(&nodeName.data);
-		if(!object)
-			return 0.0;
-
-		return object->m_worldTransform.pos.y;
+		return object ? object->m_worldTransform.pos.y : 0;
 	}
 
 	float GetNodePositionZ(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
 	{
-		if(!obj)
-			return 0.0;
+		NiAVObject	* object = ResolveNode(obj, nodeName, firstPerson);
 
-		NiNode * node = obj->GetNiNode();
-		PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
-		if(player && player->loadedState)
-			node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
-
-		if(!node)
-			return 0.0;
-
-		NiAVObject * object = node->GetObjectByName(&nodeName.data);
-		if(!object)
-			return 0.0;
-
-		return object->m_worldTransform.pos.z;
+		return object ? object->m_worldTransform.pos.z : 0;
 	}
 
 	float GetNodeScale(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, bool firstPerson)
 	{
-		if(!obj)
-			return 0.0;
+		NiAVObject	* object = ResolveNode(obj, nodeName, firstPerson);
 
-		NiNode * node = obj->GetNiNode();
-		PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
-		if(player && player->loadedState)
-			node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
-	
-		if(!node)
-			return 0.0;
-
-		NiAVObject * object = node->GetObjectByName(&nodeName.data);
-		if(!object)
-			return 0.0;
-
-		return object->m_localTransform.scale;
+		return object ? object->m_localTransform.scale : 0;
 	}
 
 	void SetNodeScale(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, float value, bool firstPerson)
 	{
-		if(obj) {
-			NiNode * node = obj->GetNiNode();
-			PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
-			if(player && player->loadedState)
-				node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
+		NiAVObject	* object = ResolveNode(obj, nodeName, firstPerson);
 
-			if(node) {
-				NiAVObject * object = node->GetObjectByName(&nodeName.data);
-				if(object) {
-					object->m_localTransform.scale = value;
-					NiAVObject::ControllerUpdateContext ctx;
-					object->UpdateWorldData(&ctx);
-				}
-			}
+		if(object)
+		{
+			object->m_localTransform.scale = value;
+			NiAVObject::ControllerUpdateContext ctx;
+			object->UpdateWorldData(&ctx);
 		}
 	}
 
 	void SetNodeTextureSet(StaticFunctionTag* base, TESObjectREFR * obj, BSFixedString nodeName, BGSTextureSet * textureSet, bool firstPerson)
 	{
-		if(obj && textureSet) {
-			NiNode * node = obj->GetNiNode();
-			PlayerCharacter * player = DYNAMIC_CAST(obj, TESObjectREFR, PlayerCharacter);
-			if(player && player->loadedState)
-				node = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
+		if(!textureSet) return;
 
-			if(node) {
-				NiAVObject * object = node->GetObjectByName(&nodeName.data);
-				if(object) {
-					NiGeometry * geometry = object->GetAsNiGeometry();
-					if(geometry)
-						CALL_MEMBER_FN(UnkNiClass::GetSingleton(), SetNiGeometryTexture)(geometry, textureSet);
+		NiAVObject	* object = ResolveNode(obj, nodeName, firstPerson);
+
+		if(object)
+		{
+			NiGeometry * geometry = object->GetAsNiGeometry();
+			if(geometry)
+			{
+				BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+				if(taskPool)
+				{
+					CALL_MEMBER_FN(taskPool, SetNiGeometryTexture)(geometry, textureSet);
 				}
 			}
 		}

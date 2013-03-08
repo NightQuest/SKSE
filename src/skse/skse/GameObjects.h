@@ -382,7 +382,7 @@ public:
 	UInt32				unk4C;	// 4C
 
 	MEMBER_FN_PREFIX(MagicItem);
-	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407670, int arg1, bool arg2);
+	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407880, int arg1, bool arg2);
 };
 
 STATIC_ASSERT(sizeof(MagicItem) == 0x50);
@@ -527,7 +527,7 @@ public:
 	UInt32	GetMagickaCost() { return data.unk00.cost; }
 
 	MEMBER_FN_PREFIX(SpellItem);
-	DEFINE_MEMBER_FN(GetEffectiveMagickaCost, double, 0x00406D10, Character* caster);
+	DEFINE_MEMBER_FN(GetEffectiveMagickaCost, double, 0x00406F10, Character* caster);
 };
 
 // D0
@@ -693,15 +693,15 @@ public:
 	UInt32		unk160;			// 160
 
 	MEMBER_FN_PREFIX(TESNPC);
-	DEFINE_MEMBER_FN(GetHeadPartByType, BGSHeadPart *, 0x00560A30, UInt32);
-	DEFINE_MEMBER_FN(GetSex, char, 0x0055ABD0);
-	DEFINE_MEMBER_FN(ChangeHeadPart, void, 0x00567430, BGSHeadPart *);
-	DEFINE_MEMBER_FN(HasOverlays, bool, 0x00567910);
+	DEFINE_MEMBER_FN(GetHeadPartByType, BGSHeadPart *, 0x00561010, UInt32);
+	DEFINE_MEMBER_FN(GetSex, char, 0x0055B240);
+	DEFINE_MEMBER_FN(ChangeHeadPart, void, 0x00567A20, BGSHeadPart *);
+	DEFINE_MEMBER_FN(HasOverlays, bool, 0x00567F00);
 	
 	BGSHeadPart * GetHeadPartOverlayByType(UInt32 type);
-	//DEFINE_MEMBER_FN(SetHeadPart, void, 0x00567680, UInt32); // Not sure what this one does exactly
-	//DEFINE_MEMBER_FN(GetMorph, float, 0x00560990, UInt32 index);
-	//DEFINE_MEMBER_FN(GetPreset, float, 0x005609F0, UInt32 index);
+	//DEFINE_MEMBER_FN(SetHeadPart, void, 0x00567C70, UInt32); // Not sure what this one does exactly
+	//DEFINE_MEMBER_FN(GetMorph, float, 0x00560F70, UInt32 index);
+	//DEFINE_MEMBER_FN(GetPreset, float, 0x00560FD0, UInt32 index);
 };
 
 STATIC_ASSERT(sizeof(TESNPC) == 0x164);
@@ -1190,7 +1190,7 @@ public:
 	// members
 
 	// 34
-	struct DataC4
+	struct GameData
 	{
 		enum	// type
 		{
@@ -1216,59 +1216,80 @@ public:
 			kType_CBow
 		};
 
+		enum Flags1 {
+			kFlags_PlayerOnly = 0x01,
+			kFlags_NPCUseAmmo = 0x02,
+			kFlags_NoJamAfterReload = 0x04,
+			kFlags_MinorCrime = 0x10,
+			kFlags_NotUsedInNormalCombat = 0x40,
+			kFlags_Unknown1 = 0x100,
+			kFlags_LongBursts = 0x800,
+			kFlags_NonHostile = 0x1000,
+			kFlags_BoundWeapon = 0x2000,
+		};
+
+		enum Flags2 {
+			kFlags_Hidebackpack = 0x01,
+			kFlags_Automatic = 0x02,
+			kFlags_CantDrop = 0x08,
+			kFlags_EmbeddedWeapon = 0x20,
+			kFlags_Unknown2 = 0x40,
+			kFlags_NotPlayable = 0x80,
+		};
+
 		UInt32	unk00;	// 00
 		float	speed;	// 04
 		float	reach;	// 08
 		float	minRange;	// 0C
 		float	maxRange;	// 10
-		float	unk14;	// 14
+		float	animationMult;	// 14
 		float	unk18;	// 18
 		float	stagger;// 1C
 		UInt32	unk20;	// 20
-		UInt32	unk24;	// 24
-		UInt32	unk28;	// 28
-		UInt16	unk2C;	// 2C
-		UInt8	unk2E;	// 2E
+		UInt32	skill;	// 24
+		UInt32	resist;	// 28
+		UInt16	flags1;	// 2C
+		UInt8	vatsChance;	// 2E
 		UInt8	unk2F;	// 2F
 		UInt8	unk30;	// 30
 		UInt8	type;	// 31
-		UInt8	unk32;	// 32
+		UInt8	flags2;	// 32
 		UInt8	unk33;	// 33
 	};
 
 	// 0C
-	struct DataF8
+	struct CritData
 	{
-		float	unk00;			// 00
-		TESForm	* spellItem;	// 04
-		UInt16	critDamage;		// 08
-		UInt8	unk0A;			// 0A
-		UInt8	pad0B;			// 0B
+		float	critMult;			// 00
+		SpellItem	* critEffect;	// 04
+		UInt16	critDamage;			// 08
+		UInt8	effectOnDeath;		// 0A
+		UInt8	pad0B;				// 0B
 	};
 
-	DataC4	unk0C0;	// 0C0
-	DataF8	unk0F4;	// 0F4
+	GameData	gameData;	// 0C0
+	CritData	critData;	// 0F4
 	TESForm	* scopeEffect;		// 100
-	TESForm	* attackSound;		// 104
-	TESForm	* attackSound2D;	// 108
-	TESForm	* attackLoopSound;	// 10C
-	TESForm	* attackFailSound;	// 110
-	TESForm	* idleSound;		// 114
-	TESForm	* equipSound;		// 118
-	TESForm	* unequipSound;		// 11C
-	TESForm	* impactDataSet;	// 120
-	TESForm	* firstPersonModel;	// 124
-	TESForm	* templateForm;		// 128
-	UInt32	unk12C;				// 12C
-	UInt32	pad130;				// 130
+	BGSSoundDescriptorForm	* attackSound;		// 104
+	BGSSoundDescriptorForm	* attackSound2D;	// 108
+	BGSSoundDescriptorForm	* attackLoopSound;	// 10C
+	BGSSoundDescriptorForm	* attackFailSound;	// 110
+	BGSSoundDescriptorForm	* idleSound;		// 114
+	BGSSoundDescriptorForm	* equipSound;		// 118
+	BGSSoundDescriptorForm	* unequipSound;		// 11C
+	BGSImpactDataSet	* impactDataSet;	// 120
+	TESForm	* firstPersonModel;				// 124
+	TESForm	* templateForm;					// 128
+	BSFixedString	embeddedNode;			// 12C
+	UInt32	pad130;							// 130
 
-	float speed() { return unk0C0.speed; }
-	float reach() { return unk0C0.reach; }
-	float stagger() { return unk0C0.stagger; }
-	float minRange() { return unk0C0.minRange; }
-	float maxRange() { return unk0C0.maxRange; }
-	UInt8 type() { return unk0C0.type; }
-	UInt16 critDamage() { return unk0F4.critDamage; }
+	float speed() { return gameData.speed; }
+	float reach() { return gameData.reach; }
+	float stagger() { return gameData.stagger; }
+	float minRange() { return gameData.minRange; }
+	float maxRange() { return gameData.maxRange; }
+	UInt8 type() { return gameData.type; }
+	UInt16 critDamage() { return critData.critDamage; }
 };
 
 STATIC_ASSERT(sizeof(TESObjectWEAP) == 0x134);

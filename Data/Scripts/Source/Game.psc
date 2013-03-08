@@ -266,7 +266,7 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2013-02-21 07:54:52.626000 UTC
+; SKSE additions built 2013-03-04 23:31:36.509000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native
@@ -380,3 +380,6 @@ int Function GetCameraState() global native
 ; set a misc stat value
 ; use QueryStat to read the value
 Function SetMiscStat(string name, int value) global native
+
+; Sets the players last ridden horse, None will clear the lastRiddenHorse
+Function SetPlayersLastRiddenHorse(Actor horse) global native

@@ -7,7 +7,6 @@
 
 void Hooks_DirectInput_Commit(void);
 
-
 class DIHookControl : public ISingleton <DIHookControl>
 {
 public:

@@ -105,6 +105,11 @@ public:
 	UInt8	align33;		// 33
 	UInt32	unk34;			// 34
 	UInt32	unk38;			// 38
+
+	static NiRenderedTexture *	GetPlayerMaskTexture(void)
+	{
+		return *((NiRenderedTexture **)0x01B3F044);
+	}
 };
 
 // 58

@@ -6,10 +6,10 @@
 #include "skse_version.h"
 
 static UInt32 g_forceContainerCategorization = 0;
-static const UInt32 kHook_ContainerMode_Base = 0x0084BAD0;
+static const UInt32 kHook_ContainerMode_Base = 0x0084B5B0;
 static const UInt32 kHook_ContainerMode_Categories = kHook_ContainerMode_Base + 0x4E;
 static const UInt32 kHook_ContainerMode_NoCategories = kHook_ContainerMode_Base + 0x63;
-static UInt32 ** g_containerMode = (UInt32 **)0x01B3D9EC;
+static UInt32 ** g_containerMode = (UInt32 **)0x01B3E6FC;
 
 static void __declspec(naked) Hook_ContainerMode(void)
 {
@@ -43,7 +43,7 @@ void Hooks_Gameplay_EnableForceContainerCategorization(bool enable)
 }
 
 UInt32 g_invalidateKeywordCache = 0;
-static UInt32 kHook_BGSKeyword_Base = 0x0054D2C0;
+static UInt32 kHook_BGSKeyword_Base = 0x0054D900;
 static UInt32 kHook_BGSKeyword_Create_Return = kHook_BGSKeyword_Base + 5;
 
 static void __declspec(naked) Hook_BGSKeyword_Create(void)
@@ -61,7 +61,7 @@ static void __declspec(naked) Hook_BGSKeyword_Create(void)
 	}
 }
 
-static UInt32	kHook_ShowVersion_Base = 0x008A6700;
+static UInt32	kHook_ShowVersion_Base = 0x008A7140;
 static UInt32	kHook_ShowVersion_Enter = kHook_ShowVersion_Base + 0x5E;
 static UInt32	kHook_ShowVersion_Return = kHook_ShowVersion_Base + 0x63;
 static char		kHook_ShowVersion_FormatString[] =
@@ -79,6 +79,9 @@ static void __declspec(naked) Hook_ShowVersion(void)
 	}
 }
 
+static const UInt32 kHook_Crosshair_LookupREFRByHandle_Base = 0x00739E60;
+static const UInt32 kHook_Crosshair_LookupREFRByHandle_Enter = kHook_Crosshair_LookupREFRByHandle_Base + 0x64;
+
 bool __cdecl Hook_Crosshair_LookupREFRByHandle(UInt32 * refHandle, TESObjectREFR ** refrOut)
 {
 	bool result = LookupREFRByHandle(refHandle, refrOut);
@@ -93,7 +96,7 @@ bool __cdecl Hook_Crosshair_LookupREFRByHandle(UInt32 * refHandle, TESObjectREFR
 }
 
 static UInt8 s_disableMapMenuMouseWheel = 1;
-static const UInt32 kHook_MapMenuMouseWheel_Base = 0x008996C0;
+static const UInt32 kHook_MapMenuMouseWheel_Base = 0x0089A0C0;
 static const UInt32 kHook_MapMenuMouseWheel_Enter = kHook_MapMenuMouseWheel_Base + 0x169;
 static const UInt32 kHook_MapMenuMouseWheel_Return = kHook_MapMenuMouseWheel_Base + 0x16F;
 
@@ -141,7 +144,7 @@ void Hooks_Gameplay_Commit(void)
 	WriteRelJump(kHook_BGSKeyword_Base, (UInt32)Hook_BGSKeyword_Create);
 
 	// hook crosshair ref update
-	WriteRelCall(0x00739B10 + 0x64, (UInt32) &Hook_Crosshair_LookupREFRByHandle);
+	WriteRelCall(kHook_Crosshair_LookupREFRByHandle_Enter, (UInt32) &Hook_Crosshair_LookupREFRByHandle);
 
 	// change return value of LocalMapMenu::InputHandler::HandleMouseMoveEvent
 	// for zoomIn/out case so it passes on the event to flash

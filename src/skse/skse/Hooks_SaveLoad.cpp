@@ -91,7 +91,7 @@ void BGSSaveLoadManager::ProcessEvents_Hook(void)
 }
 
 typedef void * (__stdcall * _DeleteSavegame_Hooked)(const char * saveName, UInt32 unk1);
-_DeleteSavegame_Hooked DeleteSavegame_Hooked = (_DeleteSavegame_Hooked)0x0067FF10;
+_DeleteSavegame_Hooked DeleteSavegame_Hooked = (_DeleteSavegame_Hooked)0x00680180;
 
 void __stdcall DeleteSavegame_Hook(const char * saveNameIn, UInt32 unk1)
 {
@@ -177,11 +177,11 @@ public:
 void Hooks_SaveLoad_Commit(void)
 {
 	// Load & save
-	WriteRelCall(0x00681090 + 0x01E2, GetFnAddr(&BGSSaveLoadManager::SaveGame_Hook));
-	WriteRelCall(0x00681D60 + 0x00B5, GetFnAddr(&BGSSaveLoadManager::LoadGame_Hook));
-	WriteRelCall(0x0069C9B0 + 0x0064, GetFnAddr(&BGSSaveLoadManager::ProcessEvents_Hook));
+	WriteRelCall(0x006813D0 + 0x01E2, GetFnAddr(&BGSSaveLoadManager::SaveGame_Hook));
+	WriteRelCall(0x006822C0 + 0x00B5, GetFnAddr(&BGSSaveLoadManager::LoadGame_Hook));
+	WriteRelCall(0x0069CC10 + 0x0064, GetFnAddr(&BGSSaveLoadManager::ProcessEvents_Hook));
 
 	// Delete savegame
-	WriteRelCall(0x006772A0, (UInt32)DeleteSavegame_Hook); // DeleteGame
-	WriteRelCall(0x00677593, (UInt32)DeleteSavegame_Hook); // SaveGame overwrite (= delete+new)
+	WriteRelCall(0x00677350 + 0x10, (UInt32)DeleteSavegame_Hook); // DeleteGame
+	WriteRelCall(0x006775E0 + 0x73, (UInt32)DeleteSavegame_Hook); // SaveGame overwrite (= delete+new)
 }

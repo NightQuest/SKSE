@@ -5,11 +5,11 @@ bool InputEventDispatcher::IsGamepadEnabled(void)
 	return (gamepad != NULL) && gamepad->IsEnabled();
 }
 
-InputEventDispatcher ** g_inputEventDispatcher = (InputEventDispatcher **)0x01B2DA14;
+InputEventDispatcher ** g_inputEventDispatcher = (InputEventDispatcher **)0x01B2E724;
 
 InputManager * InputManager::GetSingleton(void)
 {
-	return *((InputManager **)0x012E6658);
+	return *((InputManager **)0x012E7458);
 }
 
 UInt8 InputManager::AllowTextInput(bool allow)
@@ -90,10 +90,10 @@ BSFixedString InputManager::GetMappedControl(UInt32 buttonID, UInt32 deviceType,
 
 PlayerControls * PlayerControls::GetSingleton(void)
 {
-	return *((PlayerControls **)0x012E6654);
+	return *((PlayerControls **)0x012E7454);
 }
 
 MenuControls * MenuControls::GetSingleton(void)
 {
-	return *((MenuControls **)0x01B0FF5C);
+	return *((MenuControls **)0x01B10D5C);
 }

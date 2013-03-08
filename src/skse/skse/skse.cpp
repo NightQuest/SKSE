@@ -12,7 +12,7 @@ IDebugLog	gLog;
 
 const char * kLogPath = "\\My Games\\Skyrim\\SKSE\\skse.log";
 
-STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_8_151_0);
+STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_9_26_0);
 
 #include "Hooks_Scaleform.h"
 #include "Hooks_Gameplay.h"
@@ -25,6 +25,7 @@ STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_8_151_0);
 #include "Hooks_Debug.h"
 #include "Hooks_Event.h"
 #include "Hooks_Camera.h"
+#include "Hooks_Threads.h"
 
 #else
 
@@ -81,10 +82,12 @@ void SKSE_Initialize(void)
 		Hooks_ObScript_Init();
 		Hooks_Papyrus_Init();
 		Hooks_NetImmerse_Init();
+		Hooks_Threads_Init();
 
 		g_pluginManager.Init();
 
 		Hooks_Debug_Commit();
+		Hooks_Threads_Commit();
 		Hooks_Scaleform_Commit();
 		Hooks_Gameplay_Commit();
 		Hooks_ObScript_Commit();

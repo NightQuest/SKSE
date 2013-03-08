@@ -228,7 +228,7 @@ public:
 	UInt32 CreateRefHandle(void);
 
 	MEMBER_FN_PREFIX(TESObjectREFR);
-	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D4450);
+	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D4F90);
 };
 STATIC_ASSERT(sizeof(TESObjectREFR) == 0x54);
 STATIC_ASSERT(offsetof(TESObjectREFR, handleRefObject) == 0x14);
@@ -270,6 +270,8 @@ public:
 class Actor : public TESObjectREFR
 {
 public:
+	enum { kTypeID = kFormType_Character };
+
 	virtual ~Actor();
 
 	// 0C
@@ -318,7 +320,7 @@ public:
 	enum { kTypeID = kFormType_Character };
 
 	MEMBER_FN_PREFIX(Character);
-	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x007309B0, bool);
+	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730CD0, bool);
 };
 
 STATIC_ASSERT(sizeof(Character) == 0x19C);
@@ -340,7 +342,7 @@ public:
 	UInt32	pad238[(0x58C - 0x238) >> 2];	// 238
 	NiNode	* firstPersonSkeleton;			// 58C
 	UInt32	pad590[(0x5AC - 0x590) >> 2];
-	UInt32	lastRiddenHorse;				// 5AC
+	UInt32	lastRiddenHorseHandle;			// 5AC
 	UInt32	pad5B0[(0x648 - 0x5B0) >> 2];
 	UInt32	numTeammates;					// 648
 	UInt32	pad64C[(0x6E0 - 0x64C) >> 2];
@@ -371,18 +373,18 @@ public:
 	};
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
-	DEFINE_MEMBER_FN(GetTintList, tArray <TintMask *> *, 0x0055F750);
-	DEFINE_MEMBER_FN(GetNumTints, UInt32, 0x007359A0, UInt32 tintType);
-	DEFINE_MEMBER_FN(GetTintMask, TintMask *, 0x00735960, UInt32 tintType, UInt32 index);
-	DEFINE_MEMBER_FN(GetDamage, double, 0x007302E0, ObjDesc * pForm);
-	DEFINE_MEMBER_FN(GetArmorValue, double, 0x007302B0, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetTintList, tArray <TintMask *> *, 0x0055FD30);
+	DEFINE_MEMBER_FN(GetNumTints, UInt32, 0x00735D90, UInt32 tintType);
+	DEFINE_MEMBER_FN(GetTintMask, TintMask *, 0x00735D50, UInt32 tintType, UInt32 index);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x00730600, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x007305D0, ObjDesc * pForm);
 };
 
 STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1A4);
 STATIC_ASSERT(offsetof(PlayerCharacter, numPerkPoints) == 0x6E1);
 STATIC_ASSERT(offsetof(PlayerCharacter, tintMasks) == 0x6E8);
 STATIC_ASSERT(offsetof(PlayerCharacter, overlayTintMasks) == 0x6F4);
-STATIC_ASSERT(offsetof(PlayerCharacter, lastRiddenHorse) == 0x5AC);
+STATIC_ASSERT(offsetof(PlayerCharacter, lastRiddenHorseHandle) == 0x5AC);
 
 // D8
 class Explosion : public TESObjectREFR
@@ -461,7 +463,7 @@ class CrosshairRefHandleHolder
 public:
 	static CrosshairRefHandleHolder * GetSingleton(void)
 	{
-		return *((CrosshairRefHandleHolder **)0x1B107D8);
+		return *((CrosshairRefHandleHolder **)0x01B115D8);
 	}
 
 	UInt32 CrosshairRefHandle(void) const		{ return crosshairRefHandle; }

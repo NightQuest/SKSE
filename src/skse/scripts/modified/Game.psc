@@ -111,3 +111,6 @@ int Function GetCameraState() global native
 ; set a misc stat value
 ; use QueryStat to read the value
 Function SetMiscStat(string name, int value) global native
+
+; Sets the players last ridden horse, None will clear the lastRiddenHorse
+Function SetPlayersLastRiddenHorse(Actor horse) global native

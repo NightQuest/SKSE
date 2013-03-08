@@ -400,7 +400,6 @@ public:
 	}
 };
 
-
 class SKSEScaleform_SendModEvent : public GFxFunctionHandler
 {
 public:
@@ -998,9 +997,9 @@ public:
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00842520, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x008423A0, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 
-	enum { kCtorHookAddress = 0x00843A40 + 0x0049 };
+	enum { kCtorHookAddress = 0x008436C0 + 0x0049 };
 
 	StandardItemData * ctor_Hook(GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 };
@@ -1040,9 +1039,9 @@ public:
 	GFxValue		fxValue;	// 10
 
 	MEMBER_FN_PREFIX(MagicItemData);
-	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x00874070, GFxMovieView ** movieView, TESForm * pForm, int unk);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x00873FB0, GFxMovieView ** movieView, TESForm * pForm, int unk);
 
-	enum { kCtorHookAddress = 0x008745E0 + 0x0049 };
+	enum { kCtorHookAddress = 0x00874520 + 0x0049 };
 
 	MagicItemData * ctor_Hook(GFxMovieView ** movieView, TESForm * pForm, int unk);
 };
@@ -1064,33 +1063,156 @@ MagicItemData * MagicItemData::ctor_Hook(GFxMovieView ** movieView, TESForm * pF
 	return result;
 }
 
-// ### todo
-class FavItemDataHook
+//// fav menu data
+
+namespace favMenuDataHook
 {
-public:
-	GFxMovieView	* movieView;	// 00
-	UInt32			unk04;			// 04
-	GFxValue		* fxValue;		// 08
+	// One hook for items (1) and magic (2), and a special case of magic if the player is a vampire lord (3).
 
-	MEMBER_FN_PREFIX(FavItemDataHook);
-	DEFINE_MEMBER_FN(Hooked, int, 0x0085C5F0, TESForm * pForm);
+	typedef const char * (__cdecl * _GetName)(TESForm * form);
+	static const _GetName GetName = (_GetName)0x00452420;
 
-	enum { kCtorHookAddress = 0x0085CFA0 + 0x004F };
-
-	int Hook(TESForm * pForm);
-};
-
-int FavItemDataHook::Hook(TESForm * pForm)
-{
-	int result = CALL_MEMBER_FN(this, Hooked)(pForm);
-
-	if(s_bExtendData)
+	// Not used, for documenation only
+	struct FavData
 	{
-		scaleformExtend::CommonItemData(fxValue, pForm);
-	}
+		GFxMovieView	** movieView;	// 00
+		UInt32			unk04;			// 04
+		GFxValue		* entryList;	// 08
+	};
 
-	return result;
+	void __stdcall SetItemData(IMenu * menu, GFxValue * dataContainer, PlayerCharacter::ObjDesc * objDesc)
+	{
+		if (s_bExtendData)
+		{
+			GFxMovieView * movieView = menu->view;
+
+			scaleformExtend::CommonItemData(dataContainer, objDesc->form);
+			scaleformExtend::StandardItemData(dataContainer, objDesc->form);
+			scaleformExtend::InventoryData(dataContainer, movieView, objDesc);
+			scaleformExtend::MagicItemData(dataContainer, movieView, objDesc->form, true, false);
+		}
+	};
+
+	void __stdcall SetMagicData(GFxMovieView * movieView, GFxValue * dataContainer, TESForm * form)
+	{
+		if (s_bExtendData)
+		{
+			scaleformExtend::CommonItemData(dataContainer, form);
+			scaleformExtend::MagicItemData(dataContainer, movieView, form, true, false);
+		}
+	};
+
+	// 1 - Item
+	static const UInt32 kSetItemData_Base = 0x0085C610;
+	static const UInt32 kSetItemData_retn = kSetItemData_Base + 0x9F;
+
+	enum
+	{
+		kSetItemData_EntryStackOffset	= 0x460,
+		kSetItemData_VarContainerObj	= -0x430
+	};
+
+	__declspec(naked) void SetItemData_Entry(void)
+	{
+		__asm
+		{
+			// overwritten code
+			call	eax				// movieView->CreateObject(containerObj,0,0,0)
+
+			lea		eax, [esp + (kSetItemData_EntryStackOffset-0x10) + kSetItemData_VarContainerObj]
+
+			// insert call to our data extend function
+			pushad
+			push	esi				// esi contains ObjDesc*
+			push	eax
+			push	ebp				// ebp contains IMenu* (this)
+			call	SetItemData		// stdcall so we don't need to do work
+			popad
+
+			// inline the overwritten call of 0x7BFCC0 (return objDesc->count)
+			mov		eax, [esi+8]
+
+			jmp		[kSetItemData_retn]
+		}
+	};
+
+	// 2 - Magic
+	static const UInt32 kSetMagicData_Base = 0x0085C0C0;
+	static const UInt32 kSetMagicData_retn = kSetMagicData_Base + 0x49;
+
+	enum
+	{
+		kSetMagicData_EntryStackOffset	= 0x48,
+		kSetMagicData_VarContainerObj	= -0x10
+	};
+
+	__declspec(naked) void SetMagicData_Entry(void)
+	{
+		__asm
+		{
+			// overwritten code
+			call    edx				// movieView->CreateObject(containerObj,0,0,0)
+
+			lea		eax, [esp + (kSetMagicData_EntryStackOffset-0x10) + kSetMagicData_VarContainerObj]
+
+			// insert call to our data extend function
+			pushad
+			push	ebp				// ebp contains TESForm*
+			push	eax
+			mov		eax, [edi]		// edi contains FavData* (this)
+			mov		eax, [eax]
+			push	eax
+			call	SetMagicData	// stdcall so we don't need to do work
+			popad
+
+			// overwritten code
+			push	ebp
+			call	GetName
+
+			jmp		[kSetMagicData_retn]
+		}
+	};
+
+	// 3 - VampireLord
+	static const UInt32 kSetVampireData_Base = 0x0085C370;
+	static const UInt32 kSetVampireData_retn = kSetVampireData_Base + 0x6C;
+
+	enum
+	{
+		kSetVampireData_EntryStackOffset	= 0x48,
+		kSetVampireData_VarContainerObj		= -0x10
+	};
+
+	__declspec(naked) void SetVampireData_Entry(void)
+	{
+		__asm
+		{
+			// overwritten code
+			call    edx				// movieView->CreateObject(containerObj,0,0,0)
+
+			lea		eax, [esp + (kSetVampireData_EntryStackOffset-0x10) + kSetVampireData_VarContainerObj]
+
+			// insert call to our data extend function
+			pushad
+			push	esi				// esi contains TESForm*
+			push	eax
+			mov		eax, [edi]		// edi contains FavData* (this)
+			mov		eax, [eax]
+			push	eax
+			call	SetMagicData	// stdcall so we don't need to do work
+			popad
+
+			// overwritten code
+			push	esi
+			call	GetName
+
+			jmp		[kSetVampireData_retn]
+		}
+	};
 }
+
+
+//// translations
 
 class GFxLoaderHook
 {
@@ -1099,9 +1221,9 @@ public:
 	GFxStateBag		* stateBag;
 
 	MEMBER_FN_PREFIX(GFxLoaderHook);
-	DEFINE_MEMBER_FN(Hooked, UInt32, 0x00A606F0);
+	DEFINE_MEMBER_FN(Hooked, UInt32, 0x00A60FB0);
 
-	enum { kCtorHookAddress = 0x0069CFB0 + 0x07D7 };
+	enum { kCtorHookAddress = 0x0069D210 + 0x07D7 };
 
 	UInt32 Hook(void);
 };
@@ -1189,7 +1311,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	globals.SetMember("skse", &skse);
 }
 
-static const UInt32 kInstallHooks_Base = 0x00A60390;
+static const UInt32 kInstallHooks_Base = 0x00A60C50;
 static const UInt32 kInstallHooks_Entry_retn = kInstallHooks_Base + 0xBE;
 
 __declspec(naked) void InstallHooks_Entry(void)
@@ -1219,8 +1341,10 @@ void Hooks_Scaleform_Commit(void)
 	WriteRelCall(StandardItemData::kCtorHookAddress, GetFnAddr(&StandardItemData::ctor_Hook));
 	WriteRelCall(MagicItemData::kCtorHookAddress, GetFnAddr(&MagicItemData::ctor_Hook));
 	
-	// Disabled - only extended a subset of the entries, wasn't used by anyone yet
-	//WriteRelCall(FavItemDataHook::kCtorHookAddress, GetFnAddr(&FavItemDataHook::Hook));
+	// fav menu data hooks
+	WriteRelJump(favMenuDataHook::kSetItemData_Base + 0x96, (UInt32)favMenuDataHook::SetItemData_Entry);
+	WriteRelJump(favMenuDataHook::kSetMagicData_Base + 0x41, (UInt32)favMenuDataHook::SetMagicData_Entry);
+	WriteRelJump(favMenuDataHook::kSetVampireData_Base + 0x64, (UInt32)favMenuDataHook::SetVampireData_Entry);
 
 	// gfxloader creation hook
 	WriteRelCall(GFxLoaderHook::kCtorHookAddress, GetFnAddr(&GFxLoaderHook::Hook));

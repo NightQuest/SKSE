@@ -4,7 +4,7 @@ Scriptname Weapon extends Form Hidden
 Function Fire(ObjectReference akSource, Ammo akAmmo = None) native
 
 
-; SKSE additions built 2013-02-21 07:54:52.626000 UTC
+; SKSE additions built 2013-03-04 23:31:36.509000 UTC
 
 int Function GetBaseDamage() native
 Function SetBaseDamage(int damage) native

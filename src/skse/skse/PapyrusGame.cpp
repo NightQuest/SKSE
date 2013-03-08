@@ -8,44 +8,11 @@
 #include "GameSettings.h"
 #include "GameForms.h"
 #include "GameCamera.h"
+#include "GameMenus.h"
+#include "GameThreads.h"
 
 #include "NiNodes.h"
-
 #include "Colors.h"
-#include "GameMenus.h"
-
-#include "common/IMemPool.h"
-
-IThreadSafeBasicMemPool<TintUpdateDelegate,16>		s_tintUpdateDelegatePool;
-IThreadSafeBasicMemPool<HairUpdateDelegate,16>		s_hairUpdateDelegatePool;
-
-void TintUpdateDelegate::Run()
-{
-	PlayerCharacter* pPC = (*g_thePlayer);
-	if(!pPC)
-		return;
-
-	pPC->UpdateSkinColor();
-	UpdatePlayerTints();
-}
-void TintUpdateDelegate::Dispose(void)
-{
-	s_tintUpdateDelegatePool.Free(this);
-}
-
-void HairUpdateDelegate::Run()
-{
-	PlayerCharacter* pPC = (*g_thePlayer);
-	if(!pPC)
-		return;
-
-	pPC->UpdateHairColor();
-}
-
-void HairUpdateDelegate::Dispose(void)
-{
-	s_hairUpdateDelegatePool.Free(this);
-}
 
 namespace papyrusGame
 {
@@ -438,39 +405,11 @@ namespace papyrusGame
 		}
 	}
 
-	// PLB: A bit hacky to delegate these to the UIManager but at least they don't crash
 	void UpdateTintMaskColors(StaticFunctionTag * base)
 	{
-		UIManager * uiManager = UIManager::GetSingleton();
-		if (!uiManager)
-			return;
-
-		PlayerCharacter* pPC = (*g_thePlayer);
-		if(!pPC)
-			return;
-
-		// PLB: This object doesn't exist at the beginning of a game session
-		// UpdatePlayerTints will create this object, however
-		if(NiObject::GetPlayerMaskObject()) {
-			TintUpdateDelegate * cmd = s_tintUpdateDelegatePool.Allocate();
-			if (!cmd) {
-				_MESSAGE("Failed to allocate TintUpdateDelegate, skipping invoke");
-				return;
-			}
-			uiManager->QueueCommand(cmd);
-		} else {
-			TESNPC * npc = DYNAMIC_CAST(pPC->baseForm, TESForm, TESNPC);
-			BSFaceGenNiNode * faceNode = pPC->GetFaceGenNiNode();
-			BGSHeadPart * facePart = NULL;
-			if(CALL_MEMBER_FN(npc, HasOverlays)()) {
-				facePart = npc->GetHeadPartOverlayByType(BGSHeadPart::kTypeFace);
-			} else {
-				facePart = CALL_MEMBER_FN(npc, GetHeadPartByType)(BGSHeadPart::kTypeFace);
-			}
-			if(npc && faceNode && facePart) {
-				pPC->UpdateSkinColor();
-				CALL_MEMBER_FN(FaceGen::GetSingleton(), RegenerateHead)(faceNode, facePart, npc);
-			}
+		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+		if(taskPool) {
+			taskPool->UpdateTintMasks();
 		}
 	}
 
@@ -491,17 +430,10 @@ namespace papyrusGame
 
 	void UpdateHairColor(StaticFunctionTag * base)
 	{
-		UIManager * uiManager = UIManager::GetSingleton();
-		if (!uiManager)
-			return;
-
-		HairUpdateDelegate * cmd = s_hairUpdateDelegatePool.Allocate();
-		if (!cmd) {
-			_MESSAGE("Failed to allocate HairUpdateDelegate, skipping invoke");
-			return;
+		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+		if(taskPool) {
+			taskPool->UpdateHairColor();
 		}
-
-		uiManager->QueueCommand(cmd);
 	}
 
 	SInt32 GetCameraState(StaticFunctionTag * base)
@@ -525,6 +457,18 @@ namespace papyrusGame
 			stat->value = value;
 		else
 			_MESSAGE("SetMiscStat: could not find stat (%s)", name.data);
+	}
+
+	void SetPlayersLastRiddenHorse(StaticFunctionTag * base, Actor* actor)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		if(pPC) {
+			if(!actor) {
+				pPC->lastRiddenHorseHandle = 0;
+			} else {
+				pPC->lastRiddenHorseHandle = actor->CreateRefHandle();
+			}
+		}
 	}
 }
 
@@ -629,12 +573,17 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <StaticFunctionTag, TintMask*, UInt32>("GetNthTintMask", "Game", papyrusGame::GetNthTintMask, registry));
 #endif
 
+	// Misc
+	registry->RegisterFunction(
+		new NativeFunction0 <StaticFunctionTag, SInt32>("GetCameraState", "Game", papyrusGame::GetCameraState, registry));
+
 	registry->RegisterFunction(
 		new NativeFunction2 <StaticFunctionTag, void, BSFixedString, UInt32>("SetMiscStat", "Game", papyrusGame::SetMiscStat, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction0 <StaticFunctionTag, SInt32>("GetCameraState", "Game", papyrusGame::GetCameraState, registry));
+		new NativeFunction1 <StaticFunctionTag, void, Actor*>("SetPlayersLastRiddenHorse", "Game", papyrusGame::SetPlayersLastRiddenHorse, registry));
 
+	// Mod
 	registry->SetFunctionFlags("Game", "GetModCount", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetModByName", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetModName", VMClassRegistry::kFunctionFlag_NoWait);
@@ -642,13 +591,18 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Game", "GetModDescription", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetModDependencyCount", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetNthModDependency", VMClassRegistry::kFunctionFlag_NoWait);
+
+	// GameSettings
 	registry->SetFunctionFlags("Game", "SetGameSettingFloat", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "SetGameSettingInt", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "SetGameSettingBool", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "SetGameSettingString", VMClassRegistry::kFunctionFlag_NoWait);
+
+	// Save/Load
 	registry->SetFunctionFlags("Game", "SaveGame", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "LoadGame", VMClassRegistry::kFunctionFlag_NoWait);
 
+	// Tintmasks
 	registry->SetFunctionFlags("Game", "GetNumTintMasks", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetNthTintMaskColor", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "SetNthTintMaskColor", VMClassRegistry::kFunctionFlag_NoWait);
@@ -661,12 +615,14 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Game", "GetTintMaskTexturePath", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "SetTintMaskTexturePath", VMClassRegistry::kFunctionFlag_NoWait);
 
-	registry->SetFunctionFlags("Game", "SetMiscStat", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("Game", "GetCameraState", VMClassRegistry::kFunctionFlag_NoWait);
-
 #ifdef PAPYRUS_CUSTOM_CLASS
 	registry->SetFunctionFlags("Game", "GetNthTintMask", VMClassRegistry::kFunctionFlag_NoWait);
 #endif
+
+	// Misc
+	registry->SetFunctionFlags("Game", "SetMiscStat", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "GetCameraState", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "SetPlayersLastRiddenHorse", VMClassRegistry::kFunctionFlag_NoWait);
 
 	//registry->SetFunctionFlags("Game", "UpdateTintMaskColors", VMClassRegistry::kFunctionFlag_NoWait);
 	//registry->SetFunctionFlags("Game", "UpdateHairColor", VMClassRegistry::kFunctionFlag_NoWait);

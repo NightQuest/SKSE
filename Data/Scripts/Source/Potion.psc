@@ -3,7 +3,7 @@ Scriptname Potion extends Form
 ; Is this postion classified as hostile?
 bool Function IsHostile() native
 
-; SKSE additions built 2013-02-21 07:54:52.626000 UTC
+; SKSE additions built 2013-03-04 23:31:36.509000 UTC
 ; Is this potion classified as Food?
 bool Function IsFood() native
 

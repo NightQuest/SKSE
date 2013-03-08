@@ -6,7 +6,6 @@
 #include "PapyrusArgs.h"
 #include "Hooks_Scaleform.h"
 
-
 //// Global instances
 
 RegistrationMapHolder<BSFixedString>						g_menuOpenCloseRegs;
@@ -26,7 +25,6 @@ InputEventHandler			g_inputEventHandler;
 ModCallbackEventHandler		g_modCallbackEventHandler;
 CameraEventHandler			g_cameraEventHandler;
 CrosshairRefEventHandler	g_crosshairRefEventHandler;
-
 
 //// Generic functors
 

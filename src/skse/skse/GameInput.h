@@ -186,7 +186,7 @@ public:
 	// used by Hooks_Event
 	PlayerControls * ctor_Hook(void);
 	MEMBER_FN_PREFIX(PlayerControls);
-	DEFINE_MEMBER_FN(ctor, PlayerControls *, 0x0087A440);
+	DEFINE_MEMBER_FN(ctor, PlayerControls *, 0x0087A360);
 };
 STATIC_ASSERT(offsetof(PlayerControls, remapMode) == 0x040);
 
@@ -319,7 +319,7 @@ public:
 
 	static InputStringHolder *	GetSingleton(void)
 	{
-		return *((InputStringHolder **)0x01B2D678);
+		return *((InputStringHolder **)0x01B2E388);
 	}
 };
 STATIC_ASSERT(sizeof(InputStringHolder) == 0x1A0);

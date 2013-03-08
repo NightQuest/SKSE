@@ -265,8 +265,6 @@ template <> UInt32 GetTypeID <VMArray<float>>(VMClassRegistry * registry)			{ re
 template <> UInt32 GetTypeID <VMArray<bool>>(VMClassRegistry * registry)			{ return VMValue::kType_BoolArray; }
 template <> UInt32 GetTypeID <VMArray<BSFixedString>>(VMClassRegistry * registry)	{ return VMValue::kType_StringArray; }
 
-
-
 UInt32 GetTypeIDFromFormTypeID(UInt32 formTypeID, VMClassRegistry * registry)
 {
 	UInt32		result = 0;

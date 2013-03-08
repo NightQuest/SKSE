@@ -6,6 +6,7 @@ class Actor;
 class SpellItem;
 class ActiveEffect;
 class VMClassRegistry;
+class BGSHeadPart;
 
 namespace papyrusActor
 {
@@ -23,4 +24,6 @@ namespace papyrusActor
 
 	void EquipItemEx(Actor* thisActor, TESForm* item, SInt32 slotId, bool preventUnequip, bool equipSound);
 	void UnequipItemEx(Actor* thisActor, TESForm* item, SInt32 slotId, bool preventEquip);
+
+	void ChangeHeadPart(Actor * thisActor, BGSHeadPart * newPart);
 }

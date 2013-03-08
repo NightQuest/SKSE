@@ -282,12 +282,16 @@ public:
 	virtual bool	Unk_07(void);
 	virtual UInt32	GetUnk20(void);
 
+	enum {
+		kFlag_PCLevelMult = 0x80
+	};
+
 	UInt32				flags;	// 04 - init'd to 0
 	UInt16				unk08;	// 08 - init'd to 0
 	UInt16				unk0A;	// 0A - init'd to 0
-	UInt16				unk0C;	// 0C - init'd to 1
-	UInt16				unk0E;	// 0E - init'd to 0
-	UInt16				unk10;	// 10 - init'd to 0
+	UInt16				level;	// 0C - init'd to 1	(CK Multiplier * 1000 if PCLevelMult is true)
+	UInt16				minLevel;	// 0E - init'd to 0
+	UInt16				maxLevel;	// 10 - init'd to 0
 	UInt16				unk12;	// 12 - init'd to 0x64 (100)
 	UInt16				unk14;	// 14 - init'd to iBaseDisposition (35)
 	UInt16				unk16;	// 16 - init'd to 0
@@ -431,7 +435,7 @@ public:
 	UInt32	unk08;	// 08 - init'd to FFFFFFFF
 
 	MEMBER_FN_PREFIX(TESDescription);
-	DEFINE_MEMBER_FN(Get, void, 0x0044FF30, BSString * out, TESForm * parent, UInt32 fieldType);
+	DEFINE_MEMBER_FN(Get, void, 0x0044FC60, BSString * out, TESForm * parent, UInt32 fieldType);
 };
 
 // C
@@ -638,7 +642,7 @@ public:
 
 //	void	** _vtbl;	// 00
 	
-	Data	unk04;		// 04
+	Data		unk04;	// 04
 	UnkArray	unk34;	// 34
 };
 
@@ -711,16 +715,16 @@ public:
 	virtual void	Unk_06(void);
 	virtual void	Unk_07(void);
 
-//	void	** _vtbl;	// 00
-	UInt32	unk04;		// 04
-	UInt8	unk08;		// 08
-	UInt8	unk09;		// 09
-	UInt16	unk0A;		// 0A
-	float	unk0C;		// 0C
-	UInt32	unk10;		// 10
-	UnkArray	unk14;	// 14
-	UnkArray	unk20;	// 20
-	UInt32	unk2C;		// 2C
+//	void		** _vtbl;	// 00
+	UInt32		unk04;		// 04
+	UInt8		unk08;		// 08
+	UInt8		unk09;		// 09
+	UInt16		unk0A;		// 0A
+	float		unk0C;		// 0C
+	UInt32		unk10;		// 10
+	UnkArray	unk14;		// 14
+	UnkArray	unk20;		// 20
+	UInt32		unk2C;		// 2C
 };
 
 // 04

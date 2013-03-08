@@ -1840,66 +1840,66 @@ public:
 	// 28
 	struct General	// CSGD
 	{
-		float	offensiveMult;	// 00 - init'd to 0.5
-		float	defensiveMult;	// 04 - init'd to 0.5
+		float	offensiveMult;		// 00 - init'd to 0.5
+		float	defensiveMult;		// 04 - init'd to 0.5
 		float	groupOffensiveMult;	// 08 - init'd to 1
-		float	meleeMult;	// 0C - init'd to 1
-		float	rangedMult;	// 10 - init'd to 1
-		float	magicMult;	// 14 - init'd to 1
-		float	shoutMult;	// 18 - init'd to 1
-		float	staffMult;	// 1C - init'd to 1
-		float	unarmedMult;	// 20 - init'd to 1
+		float	meleeMult;			// 0C - init'd to 1
+		float	rangedMult;			// 10 - init'd to 1
+		float	magicMult;			// 14 - init'd to 1
+		float	shoutMult;			// 18 - init'd to 1
+		float	staffMult;			// 1C - init'd to 1
+		float	unarmedMult;		// 20 - init'd to 1
 		float	avoidThreatChance;	// 24 - init'd to 0.2
 	};
 
 	// 20
 	struct Melee	// CSME
 	{
-		float	attackStaggeredMult;	// 00 - init'd to 1
+		float	attackStaggeredMult;		// 00 - init'd to 1
 		float	powerAttackStaggeredMult;	// 04 - init'd to 1
 		float	powerAttackBlockingMult;	// 08 - init'd to 1
-		float	bashMult;	// 0C - init'd to 1
-		float	bashRecoiledMult;	// 10 - init'd to 1
-		float	bashAttackMult;	// 14 - init'd to 1
-		float	bashPowerAttackMult;	// 18 - init'd to 1
-		float	specialAttackMult;	// 1C - init'd to 0.1
+		float	bashMult;					// 0C - init'd to 1
+		float	bashRecoiledMult;			// 10 - init'd to 1
+		float	bashAttackMult;				// 14 - init'd to 1
+		float	bashPowerAttackMult;		// 18 - init'd to 1
+		float	specialAttackMult;			// 1C - init'd to 0.1
 	};
 
 	// 10
 	struct CloseRange	// CSCR
 	{
-		float	duelingCircleMult;	// 00 - init'd to 0.2
+		float	duelingCircleMult;		// 00 - init'd to 0.2
 		float	duelingFallbackMult;	// 04 - init'd to 0.2
 		float	flankingFlankDistance;	// 08 - init'd to 0.2
-		float	flankingStalkTime;	// 0C - init'd to 0.2
+		float	flankingStalkTime;		// 0C - init'd to 0.2
 	};
 
 	// 4
 	struct LongRange	// CSLR
 	{
-		float	strafeMult;	// 00 - init'd to 0.2
+		float	strafeMult;		// 00 - init'd to 0.2
 	};
 
 	// 20
 	struct Flight	// CSFL
 	{
-		float	hoverChance;	// 00 - init'd to 0.5
-		float	diveBombChance;	// 04 - init'd to 1
-		float	unk08;	// 08 - init'd to 0.5
-		float	unk0C;	// 0C - init'd to 0.5
-		float	unk10;	// 10 - init'd to 0.5
-		float	unk14;	// 14 - init'd to 0.5
-		float	unk18;	// 18 - init'd to 0.5
+		float	hoverChance;		// 00 - init'd to 0.5
+		float	diveBombChance;		// 04 - init'd to 1
+		float	unk08;				// 08 - init'd to 0.5
+		float	unk0C;				// 0C - init'd to 0.5
+		float	unk10;				// 10 - init'd to 0.5
+		float	unk14;				// 14 - init'd to 0.5
+		float	unk18;				// 18 - init'd to 0.5
 		float	flyingAttackChance;	// 1C - init'd to 0.75
 	};
 
-	General	general;		// 14 - CSGD
-	Melee	melee;		// 3C - CSME
+	General	general;			// 14 - CSGD
+	Melee	melee;				// 3C - CSME
 	CloseRange	closeRange;		// 5C - CSCR
 	LongRange	longRange;		// 6C - CSLR
-	Flight	flight;		// 70 - CSFL
-	UInt8	allowDualWielding;		// 90 - DATA
-	UInt8	pad91[3];	// 91
+	Flight	flight;				// 70 - CSFL
+	UInt8	allowDualWielding;	// 90 - DATA
+	UInt8	pad91[3];			// 91
 };
 
 // 1D4
@@ -2205,9 +2205,9 @@ public:
 	UInt32						unk48;		// 48
 	tArray<TESObjectREFR*> objectList;		// 4C
 	UInt32						unk58;		// 58
-	UInt32						unk5C;		//	5C
-	UnkArray	unk60;		// 60
-	UnkArray	unk6C;		// 6C
+	UInt32						unk5C;		// 5C
+	UnkArray					unk60;		// 60
+	UnkArray					unk6C;		// 6C
 	Data						unk78;		// 78
 	UInt32						unk80;		// 80
 	UInt32						unk84;		// 84
@@ -2475,7 +2475,7 @@ public:
 		UInt8	pad0E[2];			// 0E
 		float	height[2];			// 10
 		float	weight[2];			// 18
-		UInt32	raceFlags;				// 20 - not init'd
+		UInt32	raceFlags;			// 20 - not init'd
 		float	health;				// 24
 		float	magicka;			// 28
 		float	stamina;			// 2C
@@ -3031,7 +3031,7 @@ public:
 		if(type > kFormType_Max)
 			return NULL;
 
-		IFormFactory	** kFactoryList = (IFormFactory **)0x012E49B0;
+		IFormFactory	** kFactoryList = (IFormFactory **)0x012E57B0;
 
 		return kFactoryList[type];
 	}

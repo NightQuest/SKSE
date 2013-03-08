@@ -4,10 +4,10 @@
 #include "GameRTTI.h"
 #include "NiNodes.h"
 
-const _CreateRefHandleByREFR	CreateRefHandleByREFR = (_CreateRefHandleByREFR)0x0068DAA0;
-const _LookupREFRByHandle		LookupREFRByHandle = (_LookupREFRByHandle)0x0065C920;
+const _CreateRefHandleByREFR	CreateRefHandleByREFR = (_CreateRefHandleByREFR)0x0065C710;
+const _LookupREFRByHandle		LookupREFRByHandle = (_LookupREFRByHandle)0x004A90C0;
 
-const UInt32 * g_invalidRefHandle = (UInt32*)0x0130F830;
+const UInt32 * g_invalidRefHandle = (UInt32*)0x01310630;
 
 UInt32 TESObjectREFR::CreateRefHandle(void)
 {

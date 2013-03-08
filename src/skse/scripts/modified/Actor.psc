@@ -20,3 +20,7 @@ Function EquipItemEx(Form item, int equipSlot = 0, bool preventUnequip = false, 
 
 ; unequips item at the given slot
 Function UnequipItemEx(Form item, int equipSlot = 0, bool preventEquip = false) native
+
+; Adds a headpart, if the type exists it will replace, must not be misc type
+; Beware: This function also affects the ActorBase
+Function ChangeHeadPart(HeadPart hPart) native

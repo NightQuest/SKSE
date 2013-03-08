@@ -9,11 +9,11 @@
 
 UInt32 g_tintTextureResolution = 256;
 
-_ClipTextureDimensions ClipTextureDimensions = (_ClipTextureDimensions)0x00C8FE10;
+_ClipTextureDimensions ClipTextureDimensions = (_ClipTextureDimensions)0x00C90970;
 
 NiDX9Renderer * NiDX9Renderer::GetSingleton()
 {
-	return *((NiDX9Renderer **)0x01BA69FC);
+	return *((NiDX9Renderer **)0x01BA76FC);
 }
 
 void * __stdcall ClipTextureDimensions_Hook(NiDX9Renderer * renderer, UInt32 type, UInt32 * height, UInt32 * width, UInt32 * a5, UInt32 * a6, UInt32 * a7, UInt32 * a8, UInt32 * a9, UInt32 * a10)
@@ -41,6 +41,6 @@ void Hooks_NetImmerse_Init(void)
 
 void Hooks_NetImmerse_Commit(void)
 {
-	WriteRelCall(0x00C90B8C, (UInt32)ClipTextureDimensions_Hook);
-	WriteRelCall(0x00C916CC, (UInt32)ClipTextureDimensions_Hook);
+	WriteRelCall(0x00C916B0 + 0x3C, (UInt32)ClipTextureDimensions_Hook);
+	WriteRelCall(0x00C921E0 + 0x4C, (UInt32)ClipTextureDimensions_Hook);
 }

@@ -15,6 +15,7 @@ class NiExtraData;
 class NiTimeController;
 class NiNode;
 class NiGeometry;
+class NiRenderedTexture;
 
 // 08
 class NiRefObject
@@ -81,12 +82,6 @@ public:
 
 	// begin bethesda extensions? possibly just stuff we can't match up
 	virtual UInt32			Unk_20(void);
-
-	// PLB: Still not quite sure what this is exactly
-	static NiObject *	GetPlayerMaskObject(void)
-	{
-		return *((NiObject **)0x01B3F044);
-	}
 };
 
 STATIC_ASSERT(sizeof(NiObject) == 0x08);
@@ -165,7 +160,7 @@ public:
 	UInt8		unkA5;				// A5 - bitfield
 
 	MEMBER_FN_PREFIX(NiAVObject);
-	DEFINE_MEMBER_FN(UpdateNode, void, 0x00AAE690, NiAVObject * node);
+	DEFINE_MEMBER_FN(UpdateNode, void, 0x00AAF3D0, NiAVObject * node);
 };
 
 STATIC_ASSERT(sizeof(NiAVObject) == 0xA8);

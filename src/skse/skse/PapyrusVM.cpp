@@ -1,8 +1,8 @@
 #include "PapyrusVM.h"
 #include "GameAPI.h"
 
-IObjectHandlePolicy	** g_objectHandlePolicy = (IObjectHandlePolicy **)0x01BA6308;
-SkyrimVM			** g_skyrimVM = (SkyrimVM **)0x012E488C;
+IObjectHandlePolicy	** g_objectHandlePolicy = (IObjectHandlePolicy **)0x01BA7008;
+SkyrimVM			** g_skyrimVM = (SkyrimVM **)0x012E568C;
 
 void VMClassInfo::AddRef(void)
 {
@@ -174,6 +174,9 @@ UInt32 SkyrimVM::ClearInvalidRegistrations(void)
 
 	UInt32 count = 0;
 	while(m_updateRegHolder.Remove(invalidHandle) == true)
+		count++;
+
+	while(m_updateGameTimeRegHolder.Remove(invalidHandle) == true)
 		count++;
 
 	m_updateLock.Release();

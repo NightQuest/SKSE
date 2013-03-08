@@ -25,9 +25,9 @@ class EventDispatcher
 	char				pad[3];
 
 	MEMBER_FN_PREFIX(EventDispatcher);
-	DEFINE_MEMBER_FN(AddEventSink_Internal, void, 0x008CD4D0, SinkT * eventSink);
-	DEFINE_MEMBER_FN(RemoveEventSink_Internal, void, 0x00741E00, SinkT * eventSink);
-	DEFINE_MEMBER_FN(SendEvent_Internal, void, 0x006C3F60, EventArgT * evn);
+	DEFINE_MEMBER_FN(AddEventSink_Internal, void, 0x00741F30, SinkT * eventSink);
+	DEFINE_MEMBER_FN(RemoveEventSink_Internal, void, 0x00671830, SinkT * eventSink);
+	DEFINE_MEMBER_FN(SendEvent_Internal, void, 0x006817B0, EventArgT * evn);
 
 public:
 

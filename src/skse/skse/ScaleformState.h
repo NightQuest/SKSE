@@ -50,7 +50,6 @@ public:
 
 typedef tHashSet<TranslationTableItem, const wchar_t *> TranslationTable;
 
-
 // These are incomplete and only decoded to get the translation table yet.
 class BSScaleformTranslator
 {

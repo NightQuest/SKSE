@@ -2,7 +2,7 @@
 
 DataHandler * DataHandler::GetSingleton()
 {
-	return *((DataHandler **)0x012E1EB8);
+	return *((DataHandler **)0x012E2CB8);
 }
 
 class LoadedModFinder
@@ -40,12 +40,12 @@ void BGSSaveLoadManager::Load(const char * name)
 
 BGSSaveLoadManager * BGSSaveLoadManager::GetSingleton(void)
 {
-	return *((BGSSaveLoadManager **)0x01B2D698);
+	return *((BGSSaveLoadManager **)0x01B2E3A8);
 }
 
 MiscStatManager * MiscStatManager::GetSingleton(void)
 {
-	return (MiscStatManager *)0x012E5E34;
+	return (MiscStatManager *)0x012E6C34;
 }
 
 MiscStatManager::MiscStat * MiscStatManager::Get(const char * name)
@@ -65,19 +65,19 @@ MiscStatManager::MiscStat * MiscStatManager::Get(const char * name)
 
 EquipManager * EquipManager::GetSingleton(void)
 {
-	return *((EquipManager **)0x012E51AC);
+	return *((EquipManager **)0x012E5FAC);
 }
 
-const _GetEitherHandSlot GetEitherHandSlot = (_GetEitherHandSlot)0x0054BD70;
-const _GetRightHandSlot GetRightHandSlot = (_GetRightHandSlot)0x0054BD40;
-const _GetLeftHandSlot GetLeftHandSlot = (_GetLeftHandSlot)0x0049D0D0;
+const _GetEitherHandSlot GetEitherHandSlot = (_GetEitherHandSlot)0x0054C390;
+const _GetRightHandSlot GetRightHandSlot = (_GetRightHandSlot)0x0054C360;
+const _GetLeftHandSlot GetLeftHandSlot = (_GetLeftHandSlot)0x0054C330;
 
 
-const _LookupActorValueByName LookupActorValueByName = (_LookupActorValueByName)0x005AD770;
+const _LookupActorValueByName LookupActorValueByName = (_LookupActorValueByName)0x005AD270;
 
 ActorValueList * ActorValueList::GetSingleton(void)
 {
-	return *((ActorValueList **)0x012E1DDC);
+	return *((ActorValueList **)0x012E2BDC);
 }
 
 ActorValueInfo * ActorValueList::GetActorValue(UInt32 id)
@@ -86,13 +86,13 @@ ActorValueInfo * ActorValueList::GetActorValue(UInt32 id)
 }
 
 
-const _ChangeActorHeadPart ChangeActorHeadPart = (_ChangeActorHeadPart)0x005AA6C0; // Changes one HeadPart to another
-const _UpdatePlayerTints UpdatePlayerTints = (_UpdatePlayerTints)0x0087F190; // Regenerates dynamic tints
+const _ChangeActorHeadPart ChangeActorHeadPart = (_ChangeActorHeadPart)0x005AA160; // Changes one HeadPart to another
+const _UpdatePlayerTints UpdatePlayerTints = (_UpdatePlayerTints)0x0087F080; // Regenerates dynamic tints
 
 FaceGen * FaceGen::GetSingleton(void)
 {
-	return *((FaceGen **)0x012E2738);
+	return *((FaceGen **)0x012E3538);
 }
 
-const _GetActorBaseOverlays GetActorBaseOverlays = (_GetActorBaseOverlays)0x005679D0;
-const _GetNumActorBaseOverlays GetNumActorBaseOverlays = (_GetNumActorBaseOverlays)0x00567A40;
+const _GetActorBaseOverlays GetActorBaseOverlays = (_GetActorBaseOverlays)0x00567FC0;
+const _GetNumActorBaseOverlays GetNumActorBaseOverlays = (_GetNumActorBaseOverlays)0x00568030;

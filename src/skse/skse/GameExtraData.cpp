@@ -4,8 +4,7 @@
 #include "GameAPI.h"
 #include "GameData.h"
 
-
-extern const void* RTTIForExtraType[0xB4] = 
+extern const void * RTTIForExtraType[0xB4] = 
 {
 	NULL,						// 0x0
 	RTTI_ExtraHavok,			// 0x1,
@@ -189,15 +188,15 @@ extern const void* RTTIForExtraType[0xB4] =
  	RTTI_ExtraMissingRefIDs,	// 0xB3
 };
 
-static const UInt32 s_ExtraHealthVtbl =				0x010791D8;
-static const UInt32 s_ExtraChargeVtbl =				0x01079208;
-static const UInt32	s_ExtraCountVtbl =				0x01079198;
-static const UInt32 s_ExtraTextDisplayVtbl =		0x01079508;
-static const UInt32 s_ExtraSoulVtbl =				0x01079D4C;
-static const UInt32 s_ExtraOwnershipVtbl =			0x01079168;
-static const UInt32 s_ExtraAliasInstanceArrayVtbl = 0x01079A98;
-static const UInt32 s_ExtraCannotWearVtbl =			0x010791C8;
-static const UInt32 s_ExtraHotkeyVtbl =				0x01079238;
+static const UInt32 s_ExtraHealthVtbl =				0x010791F8;
+static const UInt32 s_ExtraChargeVtbl =				0x01079228;
+static const UInt32	s_ExtraCountVtbl =				0x010791B8;
+static const UInt32 s_ExtraTextDisplayVtbl =		0x01079528;
+static const UInt32 s_ExtraSoulVtbl =				0x01079D6C;
+static const UInt32 s_ExtraOwnershipVtbl =			0x01079188;
+static const UInt32 s_ExtraAliasInstanceArrayVtbl = 0x01079AB8;
+static const UInt32 s_ExtraCannotWearVtbl =			0x010791E8;
+static const UInt32 s_ExtraHotkeyVtbl =				0x01079258;
 
 BSExtraData* BaseExtraList::GetByType(UInt32 type) const {
 	if (!HasType(type)) return NULL;

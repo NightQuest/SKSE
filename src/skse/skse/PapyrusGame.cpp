@@ -470,6 +470,24 @@ namespace papyrusGame
 			}
 		}
 	}
+
+	SInt32 GetSkillLegendaryLevel(StaticFunctionTag * base, BSFixedString actorValue)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		if(pPC && pPC->skills) {
+			return pPC->skills->GetSkillLegendaryLevel(actorValue);
+		}
+
+		return -1;
+	}
+
+	void SetSkillLegendaryLevel(StaticFunctionTag * base, BSFixedString actorValue, UInt32 level)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		if(pPC && pPC->skills) {
+			return pPC->skills->SetSkillLegendaryLevel(actorValue, level);
+		}
+	}
 }
 
 #include "PapyrusVM.h"
@@ -583,6 +601,13 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, void, Actor*>("SetPlayersLastRiddenHorse", "Game", papyrusGame::SetPlayersLastRiddenHorse, registry));
 
+	// Skills
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, SInt32, BSFixedString>("GetSkillLegendaryLevel", "Game", papyrusGame::GetSkillLegendaryLevel, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, void, BSFixedString, UInt32>("SetSkillLegendaryLevel", "Game", papyrusGame::SetSkillLegendaryLevel, registry));
+
 	// Mod
 	registry->SetFunctionFlags("Game", "GetModCount", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetModByName", VMClassRegistry::kFunctionFlag_NoWait);
@@ -626,4 +651,8 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 
 	//registry->SetFunctionFlags("Game", "UpdateTintMaskColors", VMClassRegistry::kFunctionFlag_NoWait);
 	//registry->SetFunctionFlags("Game", "UpdateHairColor", VMClassRegistry::kFunctionFlag_NoWait);
+
+	// Skills
+	registry->SetFunctionFlags("Game", "GetSkillLegendaryLevel", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Game", "SetSkillLegendaryLevel", VMClassRegistry::kFunctionFlag_NoWait);
 }

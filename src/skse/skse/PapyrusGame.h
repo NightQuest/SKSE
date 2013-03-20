@@ -47,4 +47,7 @@ namespace papyrusGame
 	SInt32 GetCameraState(StaticFunctionTag * base);
 	void SetMiscStat(StaticFunctionTag * base, BSFixedString name, UInt32 value);
 	void SetPlayersLastRiddenHorse(StaticFunctionTag * base, Actor* actor);
+
+	SInt32 GetSkillLegendaryLevel(StaticFunctionTag * base, BSFixedString actorValue);
+	void SetSkillLegendaryLevel(StaticFunctionTag * base, BSFixedString actorValue, UInt32 level);
 };

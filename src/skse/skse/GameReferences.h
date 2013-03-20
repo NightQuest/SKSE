@@ -228,7 +228,7 @@ public:
 	UInt32 CreateRefHandle(void);
 
 	MEMBER_FN_PREFIX(TESObjectREFR);
-	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D4FF0);
+	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D5230);
 };
 STATIC_ASSERT(sizeof(TESObjectREFR) == 0x54);
 STATIC_ASSERT(offsetof(TESObjectREFR, handleRefObject) == 0x14);
@@ -259,6 +259,12 @@ public:
 	// older versions of this class stored flags in a UInt64
 	// this forced the addition of 4 useless padding bytes
 	// current and future versions store flags as two UInt32s
+
+	enum {
+		kState_Sprinting = 0x100,
+		kState_Sneaking = 0x200,
+		kState_Swimming = 0x400
+	};
 
 	UInt32	flags04;
 	UInt32	flags08;
@@ -320,7 +326,7 @@ public:
 	enum { kTypeID = kFormType_Character };
 
 	MEMBER_FN_PREFIX(Character);
-	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730C80, bool);
+	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730EE0, bool);
 };
 
 STATIC_ASSERT(sizeof(Character) == 0x19C);
@@ -343,7 +349,9 @@ public:
 	NiNode	* firstPersonSkeleton;			// 58C
 	UInt32	pad590[(0x5AC - 0x590) >> 2];
 	UInt32	lastRiddenHorseHandle;			// 5AC
-	UInt32	pad5B0[(0x648 - 0x5B0) >> 2];
+	UInt32	pad5B0[(0x614 - 0x5B0) >> 2];
+	PlayerSkills *	skills;
+	UInt32	pad618[(0x648 - 0x618) >> 2];
 	UInt32	numTeammates;					// 648
 	UInt32	pad64C[(0x6E0 - 0x64C) >> 2];
 	UInt8	unk6E0;							// 6E0
@@ -352,7 +360,7 @@ public:
 	UInt32	unk6E4;							// 6E4
 
 	tArray <TintMask *>	tintMasks;			// 6E8		// These are the actual tints
-	tArray <TintMask *>	* overlayTintMasks;	// 6F4		// These apply when the Race's FaceGen Head is off
+	tArray <TintMask *>	* overlayTintMasks;	// 6F4		// These apply when overlay head parts is enabled
 
 	// Overlayed tints should be the same as original tints
 	// occasionally they can have no type so index matching
@@ -373,11 +381,11 @@ public:
 	};
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
-	DEFINE_MEMBER_FN(GetTintList, tArray <TintMask *> *, 0x0055FD30);
-	DEFINE_MEMBER_FN(GetNumTints, UInt32, 0x00735D40, UInt32 tintType);
-	DEFINE_MEMBER_FN(GetTintMask, TintMask *, 0x00735D00, UInt32 tintType, UInt32 index);
-	DEFINE_MEMBER_FN(GetDamage, double, 0x007305B0, ObjDesc * pForm);
-	DEFINE_MEMBER_FN(GetArmorValue, double, 0x00730580, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetTintList, tArray <TintMask *> *, 0x0055FF90);
+	DEFINE_MEMBER_FN(GetNumTints, UInt32, 0x00735F40, UInt32 tintType);
+	DEFINE_MEMBER_FN(GetTintMask, TintMask *, 0x00735F00, UInt32 tintType, UInt32 index);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x00730810, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x007307E0, ObjDesc * pForm);
 };
 
 STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1A4);
@@ -385,6 +393,7 @@ STATIC_ASSERT(offsetof(PlayerCharacter, numPerkPoints) == 0x6E1);
 STATIC_ASSERT(offsetof(PlayerCharacter, tintMasks) == 0x6E8);
 STATIC_ASSERT(offsetof(PlayerCharacter, overlayTintMasks) == 0x6F4);
 STATIC_ASSERT(offsetof(PlayerCharacter, lastRiddenHorseHandle) == 0x5AC);
+STATIC_ASSERT(offsetof(PlayerCharacter, skills) == 0x614);
 
 // D8
 class Explosion : public TESObjectREFR

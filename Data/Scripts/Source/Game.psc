@@ -266,7 +266,7 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2013-03-08 02:41:01.982000 UTC
+; SKSE additions built 2013-03-19 23:47:10.300000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native
@@ -383,3 +383,10 @@ Function SetMiscStat(string name, int value) global native
 
 ; Sets the players last ridden horse, None will clear the lastRiddenHorse
 Function SetPlayersLastRiddenHorse(Actor horse) global native
+
+; Returns the legendary level for the skill
+; -1 indicates the particular skill cannot have a legendary level
+int Function GetSkillLegendaryLevel(string actorValue) global native
+
+; Sets the legendary level for the skill
+Function SetSkillLegendaryLevel(string actorValue, int level) global native

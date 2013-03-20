@@ -309,13 +309,13 @@ public:
 	void				* unk54;			// 54
 
 private:
-	DEFINE_MEMBER_FN(Save_Internal, bool, 0x006813D0, const char * name, int unk1, UInt32 unk2);
-	DEFINE_MEMBER_FN(Load_Internal, bool, 0x006822C0, const char * name, int unk1, UInt32 unk2, UInt32 unk3);
+	DEFINE_MEMBER_FN(Save_Internal, bool, 0x006814D0, const char * name, int unk1, UInt32 unk2);
+	DEFINE_MEMBER_FN(Load_Internal, bool, 0x006821C0, const char * name, int unk1, UInt32 unk2, UInt32 unk3);
 
-	DEFINE_MEMBER_FN(SaveGame_HookTarget, void, 0x00679030, const char * fileName);
-	DEFINE_MEMBER_FN(LoadGame_HookTarget, bool, 0x0067B550, const char * fileName, bool unk0);
+	DEFINE_MEMBER_FN(SaveGame_HookTarget, void, 0x00679200, const char * fileName);
+	DEFINE_MEMBER_FN(LoadGame_HookTarget, bool, 0x0067B720, const char * fileName, bool unk0);
 
-	DEFINE_MEMBER_FN(ProcessEvents_Internal, void, 0x00682500);
+	DEFINE_MEMBER_FN(ProcessEvents_Internal, void, 0x00682400);
 };
 
 STATIC_ASSERT(sizeof(BGSSaveLoadManager) == 0x58);
@@ -343,7 +343,7 @@ public:
 	};
 
 	MEMBER_FN_PREFIX(MiscStatManager);
-	DEFINE_MEMBER_FN(Visit, void, 0x00488130, Visitor ** visitor);
+	DEFINE_MEMBER_FN(Visit, void, 0x00488120, Visitor ** visitor);
 
 	MiscStat	* m_stats;	// 00
 	UInt32		unk04;		// 04
@@ -360,8 +360,8 @@ public:
 	static EquipManager *   GetSingleton(void);
 
 	MEMBER_FN_PREFIX(EquipManager);
-	DEFINE_MEMBER_FN(EquipItem, void, 0x006EF150, Actor * actor, TESForm * item, BaseExtraList * extraData, SInt32 count, BGSEquipSlot * equipSlot, bool withEquipSound, bool preventUnequip, bool showMsg, void * unk);
-	DEFINE_MEMBER_FN(UnequipItem, bool, 0x006EE2D0, Actor * actor, TESForm * item, BaseExtraList * extraData, SInt32 count, BGSEquipSlot * equipSlot, bool unkFlag1 , bool preventEquip, bool unkFlag2, bool unkFlag3, void * unk);
+	DEFINE_MEMBER_FN(EquipItem, void, 0x006EF3E0, Actor * actor, TESForm * item, BaseExtraList * extraData, SInt32 count, BGSEquipSlot * equipSlot, bool withEquipSound, bool preventUnequip, bool showMsg, void * unk);
+	DEFINE_MEMBER_FN(UnequipItem, bool, 0x006EE560, Actor * actor, TESForm * item, BaseExtraList * extraData, SInt32 count, BGSEquipSlot * equipSlot, bool unkFlag1 , bool preventEquip, bool unkFlag2, bool unkFlag3, void * unk);
 };
 
 typedef BGSEquipSlot * (* _GetEitherHandSlot)();
@@ -400,7 +400,7 @@ public:
 	DEFINE_MEMBER_FN(RegenerateHead, void, 0x005A4800, BSFaceGenNiNode * headNode, BGSHeadPart * head, TESNPC * npc);
 };
 
-//typedef void (* _Morph)(BSFaceGenNiNode*, BGSHeadPart* affectedPart /* Usually all of them */, struct Action* /* Name, Value, Delta? */); // 0x005A3CF0
+//typedef void (* _Morph)(BSFaceGenNiNode*, BGSHeadPart* affectedPart /* Usually all of them */, struct Action* /* Name, Value, Delta? */); // 0x005A4070
 
 typedef void (* _ChangeActorHeadPart)(Actor*, BGSHeadPart* oldPart, BGSHeadPart* newPart);
 extern const _ChangeActorHeadPart ChangeActorHeadPart;

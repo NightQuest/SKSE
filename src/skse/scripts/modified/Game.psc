@@ -114,3 +114,10 @@ Function SetMiscStat(string name, int value) global native
 
 ; Sets the players last ridden horse, None will clear the lastRiddenHorse
 Function SetPlayersLastRiddenHorse(Actor horse) global native
+
+; Returns the legendary level for the skill
+; -1 indicates the particular skill cannot have a legendary level
+int Function GetSkillLegendaryLevel(string actorValue) global native
+
+; Sets the legendary level for the skill
+Function SetSkillLegendaryLevel(string actorValue, int level) global native

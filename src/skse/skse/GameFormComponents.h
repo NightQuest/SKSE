@@ -435,7 +435,7 @@ public:
 	UInt32	unk08;	// 08 - init'd to FFFFFFFF
 
 	MEMBER_FN_PREFIX(TESDescription);
-	DEFINE_MEMBER_FN(Get, void, 0x0044FC90, BSString * out, TESForm * parent, UInt32 fieldType);
+	DEFINE_MEMBER_FN(Get, void, 0x0044FB70, BSString * out, TESForm * parent, UInt32 fieldType);
 };
 
 // C
@@ -973,4 +973,37 @@ public:
 	UInt32		tintType;
 
 	UInt32 ToARGB();
+};
+
+class PlayerSkills
+{
+public:
+
+	enum {
+		kAdvanceableSkillOffset = 6,
+		kNumAdvanceableSkills = 18
+	};
+
+	struct StatData {
+		struct LevelData {
+			float points;
+			float pointsMax;
+			float level;
+		};
+
+		LevelData	levelData[kNumAdvanceableSkills];
+		UInt32		unkD8;
+		UInt32		unkDC;
+		UInt32		legendaryLevel[kNumAdvanceableSkills];
+	};
+
+	StatData * data;
+
+	SInt32 ResolveAdvanceableSkillId(SInt32 actorValue);
+
+	SInt32 GetSkillLegendaryLevel(BSFixedString actorValue);
+	void SetSkillLegendaryLevel(BSFixedString actorValue, UInt32 level);
+
+	MEMBER_FN_PREFIX(PlayerSkills);
+	DEFINE_MEMBER_FN(IncrementLegendary, UInt32, 0x00760110, UInt32 actorValue);
 };

@@ -42,12 +42,38 @@ UInt32 BSResourceNiBinaryStream::ReadLine(char * dst, UInt32 dstLen, UInt32 term
 	return CALL_MEMBER_FN(this, ReadLine)(dst, dstLen, terminator);
 }
 
-UInt32 BSResourceNiBinaryStream::Read(char * dst, UInt32 len)
+UInt32 BSResourceNiBinaryStream::ReadLine_w(wchar_t * dst, UInt32 dstLen, UInt32 terminator)
+{
+	wchar_t	* iter = dst;
+
+	if(dstLen == 0)
+		return 0;
+
+	for(UInt32 i = 0; i < dstLen - 1; i++)
+	{
+		wchar_t	data;
+
+		if(Read(&data, sizeof(data)) != sizeof(data))
+			break;
+
+		if(data == terminator)
+			break;
+
+		*iter++ = data;
+	}
+
+	// null terminate
+	*iter = 0;
+
+	return iter - dst;
+}
+
+UInt32 BSResourceNiBinaryStream::Read(void * dst, UInt32 len)
 {
 	return CALL_MEMBER_FN(this, Read)(dst, len);
 }
 
-UInt32 BSResourceNiBinaryStream::Write(char * src, UInt32 len)
+UInt32 BSResourceNiBinaryStream::Write(void * src, UInt32 len)
 {
 	return CALL_MEMBER_FN(this, Write)(src, len);
 }

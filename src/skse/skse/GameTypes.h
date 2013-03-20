@@ -50,9 +50,9 @@ public:
 		const char	* data;
 
 		MEMBER_FN_PREFIX(Ref);
-		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A51160, const char * buf);
-		DEFINE_MEMBER_FN(Set, Ref *, 0x00A511B0, const char * buf);
-		DEFINE_MEMBER_FN(Release, void, 0x00A51150);
+		DEFINE_MEMBER_FN(ctor, Ref *, 0x00A511C0, const char * buf);
+		DEFINE_MEMBER_FN(Set, Ref *, 0x00A51210, const char * buf);
+		DEFINE_MEMBER_FN(Release, void, 0x00A511B0);
 
 		Ref() :data(NULL) { }
 		Ref(const char * buf);
@@ -672,7 +672,7 @@ typedef void (__cdecl * _CRC32_Calc8)(UInt32 * out, UInt64 data);
 extern const _CRC32_Calc8 CRC32_Calc8;
 
 // 01C
-// Note: I'm pretty sure that the current implemenation is not safe for refcounted Item types and the like.
+// Note: I'm pretty sure that the current implementation is not safe for refcounted Item types and the like.
 template <typename Item, typename Key = Item>
 class tHashSet
 {

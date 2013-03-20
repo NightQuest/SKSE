@@ -244,7 +244,7 @@ public:
 
 private:
 	MEMBER_FN_PREFIX(BaseExtraList);
-	DEFINE_MEMBER_FN(CheckContainerExtraData_Internal, bool, 0x0040AC10, bool isEquipped);	
+	DEFINE_MEMBER_FN(CheckContainerExtraData_Internal, bool, 0x0040ABF0, bool isEquipped);	
 };
 
 STATIC_ASSERT(sizeof(BaseExtraList) == 0x08);

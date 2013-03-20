@@ -57,12 +57,12 @@ class BSTaskPool
 {
 public:
 	MEMBER_FN_PREFIX(BSTaskPool);
-	DEFINE_MEMBER_FN(SetNiGeometryTexture, UInt32, 0x006A4600, NiAVObject * geometry, BGSTextureSet * textureSet);
+	DEFINE_MEMBER_FN(SetNiGeometryTexture, UInt32, 0x006A4590, NiAVObject * geometry, BGSTextureSet * textureSet);
 
 	void ProcessTasks(void);
 	void QueueTask(TaskDelegate * cmd);
 
-	DEFINE_MEMBER_FN(ProcessTaskQueue_HookTarget, void, 0x006A0BA0);
+	DEFINE_MEMBER_FN(ProcessTaskQueue_HookTarget, void, 0x006A0B30);
 
 	void UpdateTintMasks();
 	void UpdateHairColor();

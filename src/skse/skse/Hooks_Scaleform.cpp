@@ -997,9 +997,9 @@ public:
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00842350, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00842140, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 
-	enum { kCtorHookAddress = 0x00843670 + 0x0049 };
+	enum { kCtorHookAddress = 0x008433B0 + 0x0049 };
 
 	StandardItemData * ctor_Hook(GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
 };
@@ -1039,9 +1039,9 @@ public:
 	GFxValue		fxValue;	// 10
 
 	MEMBER_FN_PREFIX(MagicItemData);
-	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x00873F60, GFxMovieView ** movieView, TESForm * pForm, int unk);
+	DEFINE_MEMBER_FN(ctor_data, MagicItemData *, 0x00873D70, GFxMovieView ** movieView, TESForm * pForm, int unk);
 
-	enum { kCtorHookAddress = 0x008744D0 + 0x0049 };
+	enum { kCtorHookAddress = 0x008742E0 + 0x0049 };
 
 	MagicItemData * ctor_Hook(GFxMovieView ** movieView, TESForm * pForm, int unk);
 };
@@ -1070,7 +1070,7 @@ namespace favMenuDataHook
 	// One hook for items (1) and magic (2), and a special case of magic if the player is a vampire lord (3).
 
 	typedef const char * (__cdecl * _GetName)(TESForm * form);
-	static const _GetName GetName = (_GetName)0x00452450;
+	static const _GetName GetName = (_GetName)0x00452300;
 
 	// Not used, for documenation only
 	struct FavData
@@ -1103,7 +1103,7 @@ namespace favMenuDataHook
 	};
 
 	// 1 - Item
-	static const UInt32 kSetItemData_Base = 0x0085C7A0;
+	static const UInt32 kSetItemData_Base = 0x0085C580;
 	static const UInt32 kSetItemData_retn = kSetItemData_Base + 0x9F;
 
 	enum
@@ -1137,7 +1137,7 @@ namespace favMenuDataHook
 	};
 
 	// 2 - Magic
-	static const UInt32 kSetMagicData_Base = 0x0085C250;
+	static const UInt32 kSetMagicData_Base = 0x0085C030;
 	static const UInt32 kSetMagicData_retn = kSetMagicData_Base + 0x49;
 
 	enum
@@ -1174,7 +1174,7 @@ namespace favMenuDataHook
 	};
 
 	// 3 - VampireLord
-	static const UInt32 kSetVampireData_Base = 0x0085C500;
+	static const UInt32 kSetVampireData_Base = 0x0085C2E0;
 	static const UInt32 kSetVampireData_retn = kSetVampireData_Base + 0x6C;
 
 	enum
@@ -1221,9 +1221,9 @@ public:
 	GFxStateBag		* stateBag;
 
 	MEMBER_FN_PREFIX(GFxLoaderHook);
-	DEFINE_MEMBER_FN(Hooked, UInt32, 0x00A60F60);
+	DEFINE_MEMBER_FN(Hooked, UInt32, 0x00A60FE0);
 
-	enum { kCtorHookAddress = 0x0069D210 + 0x07D7 };
+	enum { kCtorHookAddress = 0x0069D1D0 + 0x07D7 };
 
 	UInt32 Hook(void);
 };
@@ -1311,7 +1311,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	globals.SetMember("skse", &skse);
 }
 
-static const UInt32 kInstallHooks_Base = 0x00A60C00;
+static const UInt32 kInstallHooks_Base = 0x00A60C80;
 static const UInt32 kInstallHooks_Entry_retn = kInstallHooks_Base + 0xBE;
 
 __declspec(naked) void InstallHooks_Entry(void)

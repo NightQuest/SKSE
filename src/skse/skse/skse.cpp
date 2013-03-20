@@ -12,7 +12,7 @@ IDebugLog	gLog;
 
 const char * kLogPath = "\\My Games\\Skyrim\\SKSE\\skse.log";
 
-STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_9_29_0);
+STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_9_32_0);
 
 #include "Hooks_Scaleform.h"
 #include "Hooks_Gameplay.h"

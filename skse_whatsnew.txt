@@ -1,7 +1,15 @@
+1.6.13:
+- fix crash in UpdateHairColor
+
+1.6.12:
+- support for beta runtime 1.9.32
+- translations no longer treat characters like 0x4E0A as a newline terminator
+- added Game.Get/SetSkillLegendaryLevel
+
 1.6.11:
 - fixed bug that would prevent sleep event registrations from being saved
 - add Book.IsTakeable
-- support for beta runtime 1.9.29
+- support for beta runtime 1.9.29 (later released as a final version)
 
 1.6.10:
 - support for beta runtime 1.9.26

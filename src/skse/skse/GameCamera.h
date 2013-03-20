@@ -235,7 +235,7 @@ public:
 	UInt32			unk24[0x04];	// 24
 
 	MEMBER_FN_PREFIX(TESCamera);
-	DEFINE_MEMBER_FN(SetCameraState, UInt32, 0x00652F00, TESCameraState * cameraState);
+	DEFINE_MEMBER_FN(SetCameraState, UInt32, 0x006533D0, TESCameraState * cameraState);
 };
 
 class LocalMapCamera : public TESCamera

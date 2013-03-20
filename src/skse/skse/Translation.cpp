@@ -11,9 +11,6 @@ namespace Translation
 {
 	void ParseTranslation(BSScaleformTranslator * translator, std::string & name)
 	{
-		wchar_t buf[512];
-		UInt32 ret = 0;
-
 		Setting	* setting = GetINISetting("sLanguage:General");
 		std::string path = "Interface\\Translations\\";
 
@@ -30,8 +27,8 @@ namespace Translation
 			_MESSAGE("Reading translations from %s...", path.c_str());
 
 		// Check if file is empty, if not check if the BOM is UTF-16
-		UInt16 bom = 0;
-		ret = fileStream.Read((char*)&bom, sizeof(UInt16));
+		UInt16	bom = 0;
+		UInt32	ret = fileStream.Read(&bom, sizeof(UInt16));
 		if(ret == 0) {
 			_MESSAGE("Empty translation file.");
 			return;
@@ -43,16 +40,13 @@ namespace Translation
 
 		while(true)
 		{	
-			ret = fileStream.ReadLine((char*)buf, 512 * sizeof(wchar_t), '\n');
-			if(ret == 0) // End of file
+			wchar_t buf[512];
+
+			UInt32	len = fileStream.ReadLine_w(buf, sizeof(buf) / sizeof(buf[0]), '\n');
+			if(len == 0) // End of file
 				return;
 
-			// Align to wchar_t buffer
-			fileStream.Seek(1);
-
-			UInt32 len = ret / 2;
-
-			// At least $ + wchar_t + \t + wchar_t
+			// at least $ + wchar_t + \t + wchar_t
 			if(len < 4 || buf[0] != '$')
 				continue;
 
@@ -60,7 +54,7 @@ namespace Translation
 			if(last == '\r')
 				len--;
 
-			// Null terminate
+			// null terminate
 			buf[len] = 0;
 
 			UInt32 delimIdx = 0;
@@ -68,11 +62,11 @@ namespace Translation
 				if(buf[i] == '\t')
 					delimIdx = i;
 
-			// At least $ + wchar_t
+			// at least $ + wchar_t
 			if(delimIdx < 2)
 				continue;
 
-			// Replace \t by \0
+			// replace \t by \0
 			buf[delimIdx] = 0;
 
 			wchar_t * key = NULL;

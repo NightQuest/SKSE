@@ -117,11 +117,11 @@ public:
 	virtual bool				Run(VMValue * baseValue, VMClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
 
 	MEMBER_FN_PREFIX(NativeFunctionBase);
-	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C46890);
-	DEFINE_MEMBER_FN(Impl_GetParam, UInt32 *, 0x00C46D10, UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut);
-	DEFINE_MEMBER_FN(Impl_Invoke, UInt32, 0x00C46A70, UInt32 unk0, UInt32 unk1, VMClassRegistry * registry, UInt32 unk3);
-	DEFINE_MEMBER_FN(Impl_Fn10, StringCache::Ref *, 0x00C468D0);
-	DEFINE_MEMBER_FN(Impl_Fn12, bool, 0x00C46D20, UInt32 idx, UInt32 out);
+	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C46AD0);
+	DEFINE_MEMBER_FN(Impl_GetParam, UInt32 *, 0x00C46F50, UInt32 idx, StringCache::Ref * nameOut, UInt32 * typeOut);
+	DEFINE_MEMBER_FN(Impl_Invoke, UInt32, 0x00C46CB0, UInt32 unk0, UInt32 unk1, VMClassRegistry * registry, UInt32 unk3);
+	DEFINE_MEMBER_FN(Impl_Fn10, StringCache::Ref *, 0x00C46B10);
+	DEFINE_MEMBER_FN(Impl_Fn12, bool, 0x00C46F60, UInt32 idx, UInt32 out);
 
 	// redirect to formheap
 	static void * operator new(std::size_t size)
@@ -183,8 +183,8 @@ public:
 	virtual bool				Run(VMValue * baseValue, VMClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state) = 0;
 
 	MEMBER_FN_PREFIX(NativeFunction);
-	DEFINE_MEMBER_FN(Impl_ctor, NativeFunction *, 0x00C469C0, const char * fnName, const char * className, UInt32 unk0, UInt32 numParams);
-	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C46890);
+	DEFINE_MEMBER_FN(Impl_ctor, NativeFunction *, 0x00C46C00, const char * fnName, const char * className, UInt32 unk0, UInt32 numParams);
+	DEFINE_MEMBER_FN(Impl_dtor, void, 0x00C46AD0);
 
 	void	DebugRunHook(VMValue * baseValue, VMClassRegistry * registry, UInt32 arg2, VMValue * resultValue, VMState * state);
 

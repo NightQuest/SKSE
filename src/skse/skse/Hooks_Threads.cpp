@@ -38,6 +38,6 @@ void Hooks_Threads_Init(void)
 
 void Hooks_Threads_Commit(void)
 {
-	WriteRelCall(0x00691130 + 0x016, GetFnAddr(&BSTaskPool::ProcessTasks));
-	WriteRelCall(0x0069CC10 + 0x578, GetFnAddr(&BSTaskPool::ProcessTasks));
+	WriteRelCall(0x006910F0 + 0x016, GetFnAddr(&BSTaskPool::ProcessTasks));
+	WriteRelCall(0x0069CBD0 + 0x578, GetFnAddr(&BSTaskPool::ProcessTasks));
 }

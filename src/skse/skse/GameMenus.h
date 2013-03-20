@@ -252,7 +252,7 @@ public:
 	// this takes ownership of the message ptr
 //	DEFINE_MEMBER_FN(AddMessage, void, 0x004503E0, UIMessage * msg);	// old 1.1 implementation
 	// 1.3 uses a little non-thread-safe pool of UIMessages to wrap around the nicely thread-safe BSTMessageQueue it gets added to
-	DEFINE_MEMBER_FN(AddMessage, void, 0x00431BB0, StringCache::Ref * strData, UInt32 msgID, void * objData);
+	DEFINE_MEMBER_FN(AddMessage, void, 0x00431B00, StringCache::Ref * strData, UInt32 msgID, void * objData);
 
 	static UIManager *	GetSingleton(void)
 	{
@@ -263,7 +263,7 @@ public:
 	void ProcessCommands(void);
 	void QueueCommand(UIDelegate * cmd);
 
-	DEFINE_MEMBER_FN(ProcessEventQueue_HookTarget, void, 0x00A5C210);
+	DEFINE_MEMBER_FN(ProcessEventQueue_HookTarget, void, 0x00A5C270);
 };
 
 // 11C
@@ -390,16 +390,16 @@ public:
 	UInt8			padE3;
 
 	MEMBER_FN_PREFIX(Inventory3DManager);
-	DEFINE_MEMBER_FN(UpdateItem3D, void, 0x00867E20, PlayerCharacter::ObjDesc * objDesc);
-	DEFINE_MEMBER_FN(UpdateMagic3D, void, 0x00867B50, TESForm * form, UInt32 unk1);
-	DEFINE_MEMBER_FN(Clear3D, void, 0x00866AE0);
+	DEFINE_MEMBER_FN(UpdateItem3D, void, 0x00867C00, PlayerCharacter::ObjDesc * objDesc);
+	DEFINE_MEMBER_FN(UpdateMagic3D, void, 0x00867930, TESForm * form, UInt32 unk1);
+	DEFINE_MEMBER_FN(Clear3D, void, 0x008668C0);
 
-	/*DEFINE_MEMBER_FN(Unk1, void, 0x00866A00, UInt32 unk1);
-	DEFINE_MEMBER_FN(Unk2, void, 0x00867330);
-	DEFINE_MEMBER_FN(Unk3, bool, 0x008666E0);
-	DEFINE_MEMBER_FN(Unk4, double, 0x00866600);
-	DEFINE_MEMBER_FN(Unk5, bool, 0x00841B80);
-	DEFINE_MEMBER_FN(Unk6, int, 0x00867950);*/
+	/*DEFINE_MEMBER_FN(Unk1, void, 0x008667E0, UInt32 unk1);
+	DEFINE_MEMBER_FN(Unk2, void, 0x00867110);
+	DEFINE_MEMBER_FN(Unk3, bool, 0x008664C0);
+	DEFINE_MEMBER_FN(Unk4, double, 0x008663E0);
+	DEFINE_MEMBER_FN(Unk5, bool, 0x008418D0);
+	DEFINE_MEMBER_FN(Unk6, int, 0x00867730);*/
 };
 
 STATIC_ASSERT(offsetof(Inventory3DManager, unk10) == 0x10);
@@ -485,8 +485,8 @@ private:
 	char					pad[2];
 
 	MEMBER_FN_PREFIX(MenuManager);
-	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A5CDF0, BSFixedString * menuName);
-	//DEFINE_MEMBER_FN(Register, void, 0x00A5D200, const char * name, void * ctorFunc);
+	DEFINE_MEMBER_FN(IsMenuOpen, bool, 0x00A5CE90, BSFixedString * menuName);
+	//DEFINE_MEMBER_FN(Register, void, 0x00A5D2A0, const char * name, void * ctorFunc);
 
 public:
 

@@ -1,4 +1,5 @@
 #include "skse/GameFormComponents.h"
+#include "skse/GameData.h"
 
 UInt32 BGSBipedObjectForm::AddSlotToMask(UInt32 slot)
 {
@@ -66,4 +67,34 @@ UInt32 TESContainer::CountItem(TESForm * item) const
 UInt32 TintMask::ToARGB()
 {
 	return MAKE_COLOR((UInt32)(alpha * 255), color.red, color.green, color.blue);
+}
+
+SInt32 PlayerSkills::ResolveAdvanceableSkillId(SInt32 actorValue)
+{
+	if(actorValue - kAdvanceableSkillOffset >= 0 && actorValue < kNumAdvanceableSkills + kAdvanceableSkillOffset)
+		return actorValue - kAdvanceableSkillOffset;
+
+	return -1;
+}
+
+SInt32 PlayerSkills::GetSkillLegendaryLevel(BSFixedString actorValue)
+{
+	if(data) {
+		UInt32 avId = LookupActorValueByName(actorValue.data);
+		SInt32 skillId = ResolveAdvanceableSkillId(avId);
+		if(skillId != -1)
+			return data->legendaryLevel[skillId];
+	}
+
+	return -1;
+}
+
+void PlayerSkills::SetSkillLegendaryLevel(BSFixedString actorValue, UInt32 level)
+{
+	if(data) {
+		UInt32 avId = LookupActorValueByName(actorValue.data);
+		SInt32 skillId = ResolveAdvanceableSkillId(avId);
+		if(skillId != -1)
+			data->legendaryLevel[skillId] = level;
+	}
 }

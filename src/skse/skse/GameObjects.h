@@ -382,7 +382,7 @@ public:
 	UInt32				unk4C;	// 4C
 
 	MEMBER_FN_PREFIX(MagicItem);
-	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407880, int arg1, bool arg2);
+	DEFINE_MEMBER_FN(GetCostliestEffectItem, EffectItem *, 0x00407860, int arg1, bool arg2);
 };
 
 STATIC_ASSERT(sizeof(MagicItem) == 0x50);
@@ -527,7 +527,7 @@ public:
 	UInt32	GetMagickaCost() { return data.unk00.cost; }
 
 	MEMBER_FN_PREFIX(SpellItem);
-	DEFINE_MEMBER_FN(GetEffectiveMagickaCost, double, 0x00406F10, Character* caster);
+	DEFINE_MEMBER_FN(GetEffectiveMagickaCost, double, 0x00406EF0, Character* caster);
 };
 
 // D0
@@ -693,15 +693,15 @@ public:
 	UInt32		unk160;			// 160
 
 	MEMBER_FN_PREFIX(TESNPC);
-	DEFINE_MEMBER_FN(GetHeadPartByType, BGSHeadPart *, 0x00561010, UInt32);
-	DEFINE_MEMBER_FN(GetSex, char, 0x0055B240);
-	DEFINE_MEMBER_FN(ChangeHeadPart, void, 0x00567A20, BGSHeadPart *);
-	DEFINE_MEMBER_FN(HasOverlays, bool, 0x00567F00);
+	DEFINE_MEMBER_FN(GetHeadPartByType, BGSHeadPart *, 0x00561270, UInt32);
+	DEFINE_MEMBER_FN(GetSex, char, 0x0055B510);
+	DEFINE_MEMBER_FN(ChangeHeadPart, void, 0x00567CE0, BGSHeadPart *);
+	DEFINE_MEMBER_FN(HasOverlays, bool, 0x005681C0);
 	
 	BGSHeadPart * GetHeadPartOverlayByType(UInt32 type);
-	//DEFINE_MEMBER_FN(SetHeadPart, void, 0x00567C70, UInt32); // Not sure what this one does exactly
-	//DEFINE_MEMBER_FN(GetMorph, float, 0x00560F70, UInt32 index);
-	//DEFINE_MEMBER_FN(GetPreset, float, 0x00560FD0, UInt32 index);
+	//DEFINE_MEMBER_FN(SetHeadPart, void, 0x00567F30, UInt32); // Not sure what this one does exactly
+	//DEFINE_MEMBER_FN(GetMorph, float, 0x005611D0, UInt32 index);
+	//DEFINE_MEMBER_FN(GetPreset, float, 0x00561230, UInt32 index);
 };
 
 STATIC_ASSERT(sizeof(TESNPC) == 0x164);
@@ -1828,7 +1828,7 @@ public:
 class BGSEntryPointPerkEntry : public BGSPerkEntry
 {
 public:
-	virtual ~BGSEntryPointPerkEntry(); // Has a number of virtuals, dont know what they are yet
+	virtual ~BGSEntryPointPerkEntry(); // Has a number of virtuals, don't know what they are yet
 
 	UInt32						unk08;
 	BGSEntryPointFunctionData	* data;

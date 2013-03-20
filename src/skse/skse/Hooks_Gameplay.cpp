@@ -6,7 +6,7 @@
 #include "skse_version.h"
 
 static UInt32 g_forceContainerCategorization = 0;
-static const UInt32 kHook_ContainerMode_Base = 0x0084B740;
+static const UInt32 kHook_ContainerMode_Base = 0x0084B4C0;
 static const UInt32 kHook_ContainerMode_Categories = kHook_ContainerMode_Base + 0x4E;
 static const UInt32 kHook_ContainerMode_NoCategories = kHook_ContainerMode_Base + 0x63;
 static UInt32 ** g_containerMode = (UInt32 **)0x01B3E6FC;
@@ -43,7 +43,7 @@ void Hooks_Gameplay_EnableForceContainerCategorization(bool enable)
 }
 
 UInt32 g_invalidateKeywordCache = 0;
-static UInt32 kHook_BGSKeyword_Base = 0x0054D930;
+static UInt32 kHook_BGSKeyword_Base = 0x0054DDE0;
 static UInt32 kHook_BGSKeyword_Create_Return = kHook_BGSKeyword_Base + 5;
 
 static void __declspec(naked) Hook_BGSKeyword_Create(void)
@@ -61,7 +61,7 @@ static void __declspec(naked) Hook_BGSKeyword_Create(void)
 	}
 }
 
-static UInt32	kHook_ShowVersion_Base = 0x008A70F0;
+static UInt32	kHook_ShowVersion_Base = 0x008A7020;
 static UInt32	kHook_ShowVersion_Enter = kHook_ShowVersion_Base + 0x5E;
 static UInt32	kHook_ShowVersion_Return = kHook_ShowVersion_Base + 0x63;
 static char		kHook_ShowVersion_FormatString[] =
@@ -79,7 +79,7 @@ static void __declspec(naked) Hook_ShowVersion(void)
 	}
 }
 
-static const UInt32 kHook_Crosshair_LookupREFRByHandle_Base = 0x00739E10;
+static const UInt32 kHook_Crosshair_LookupREFRByHandle_Base = 0x00739FD0;
 static const UInt32 kHook_Crosshair_LookupREFRByHandle_Enter = kHook_Crosshair_LookupREFRByHandle_Base + 0x64;
 
 bool __cdecl Hook_Crosshair_LookupREFRByHandle(UInt32 * refHandle, TESObjectREFR ** refrOut)
@@ -96,7 +96,7 @@ bool __cdecl Hook_Crosshair_LookupREFRByHandle(UInt32 * refHandle, TESObjectREFR
 }
 
 static UInt8 s_disableMapMenuMouseWheel = 1;
-static const UInt32 kHook_MapMenuMouseWheel_Base = 0x0089A070;
+static const UInt32 kHook_MapMenuMouseWheel_Base = 0x00899FD0;
 static const UInt32 kHook_MapMenuMouseWheel_Enter = kHook_MapMenuMouseWheel_Base + 0x169;
 static const UInt32 kHook_MapMenuMouseWheel_Return = kHook_MapMenuMouseWheel_Base + 0x16F;
 

@@ -4,7 +4,7 @@
 #include "SafeWrite.h"
 #include <queue>
 
-static const UInt32 kInstallCameraHook_Base = 0x00652F00 + 0x57;
+static const UInt32 kInstallCameraHook_Base = 0x006533D0 + 0x57;
 static const UInt32 kInstallCameraHook_Entry_retn = kInstallCameraHook_Base + 0x05;
 
 void __stdcall InstallCameraHook(TESCameraState * oldState, TESCameraState * newState)

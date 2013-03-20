@@ -30,10 +30,10 @@ public:
 
 #ifdef PAPYRUS_CUSTOM_CLASS
 	MEMBER_FN_PREFIX(IObjectHandlePolicy);
-	DEFINE_MEMBER_FN(Unk_02_Origin, bool, 0x008B3DB0, UInt64 handle);
-	DEFINE_MEMBER_FN(IsType_Origin, bool, 0x008B3B70, UInt32 typeID, UInt64 handle);
-	DEFINE_MEMBER_FN(Create_Origin, UInt64, 0x008B4360, UInt32 typeID, void * srcData);
-	DEFINE_MEMBER_FN(Resolve_Origin, void *, 0x008B3E80, UInt32 typeID, UInt64 handle);
+	DEFINE_MEMBER_FN(Unk_02_Origin, bool, 0x008B3D60, UInt64 handle);
+	DEFINE_MEMBER_FN(IsType_Origin, bool, 0x008B3B20, UInt32 typeID, UInt64 handle);
+	DEFINE_MEMBER_FN(Create_Origin, UInt64, 0x008B4310, UInt32 typeID, void * srcData);
+	DEFINE_MEMBER_FN(Resolve_Origin, void *, 0x008B3E30, UInt32 typeID, UInt64 handle);
 
 	bool Unk_02_Hook(UInt64 handle);
 	bool IsType_Hook(UInt32 typeID, UInt64 handle);
@@ -68,7 +68,7 @@ public:
 //	void	** _vtbl;	// 00
 
 	MEMBER_FN_PREFIX(ObjectBindPolicy);
-	DEFINE_MEMBER_FN(BindObject, void, 0x00C2BF10, VMIdentifier ** identifier, UInt64 handle);
+	DEFINE_MEMBER_FN(BindObject, void, 0x00C2BCD0, VMIdentifier ** identifier, UInt64 handle);
 };
 
 // 10
@@ -84,8 +84,8 @@ public:
 	void	Release(void);
 
 	MEMBER_FN_PREFIX(VMClassInfo);
-	DEFINE_MEMBER_FN(Destroy, void, 0x00C35120);
-	DEFINE_MEMBER_FN(GetVariable, SInt32, 0x00C34080, BSFixedString * name);
+	DEFINE_MEMBER_FN(Destroy, void, 0x00C34ED0);
+	DEFINE_MEMBER_FN(GetVariable, SInt32, 0x00C33E30, BSFixedString * name);
 };
 
 // This type is not fully decoded or correctly sized, just enough to use the functor
@@ -213,10 +213,10 @@ public:
 	MEMBER_FN_PREFIX(SkyrimVM);
 
 	// Used by Hooks_Papyrus
-	DEFINE_MEMBER_FN(UnregisterFromSleep_Internal, void, 0x008D4C30, UInt64 handle);
-	DEFINE_MEMBER_FN(RevertGlobalData_Internal, bool, 0x008D5DE0);
-	DEFINE_MEMBER_FN(SaveRegSleepEventHandles_Internal, bool, 0x008CD890, void * handleReaderWriter, void * saveStorageWrapper);
-	DEFINE_MEMBER_FN(LoadRegSleepEventHandles_Internal, bool, 0x008D3DA0, void * handleReaderWriter, void * loadStorageWrapper);
+	DEFINE_MEMBER_FN(UnregisterFromSleep_Internal, void, 0x008D4C40, UInt64 handle);
+	DEFINE_MEMBER_FN(RevertGlobalData_Internal, bool, 0x008D5DF0);
+	DEFINE_MEMBER_FN(SaveRegSleepEventHandles_Internal, bool, 0x008CD8F0, void * handleReaderWriter, void * saveStorageWrapper);
+	DEFINE_MEMBER_FN(LoadRegSleepEventHandles_Internal, bool, 0x008D3DB0, void * handleReaderWriter, void * loadStorageWrapper);
 
 	void OnFormDelete_Hook(UInt64 handle);
 	void RevertGlobalData_Hook(void);
@@ -255,7 +255,7 @@ public:
 	void	Destroy(void);
 
 	MEMBER_FN_PREFIX(VMIdentifier);
-	DEFINE_MEMBER_FN(Destroy_Internal, void, 0x00C31090);
+	DEFINE_MEMBER_FN(Destroy_Internal, void, 0x00C30E90);
 };
 
 // 08
@@ -315,8 +315,8 @@ public:
 	} data;			// 04
 
 	MEMBER_FN_PREFIX(VMValue);
-	DEFINE_MEMBER_FN(Set, void, 0x00C32C30, VMValue * src);
-	DEFINE_MEMBER_FN(Destroy, void, 0x00C32B30);
+	DEFINE_MEMBER_FN(Set, void, 0x00C329E0, VMValue * src);
+	DEFINE_MEMBER_FN(Destroy, void, 0x00C328E0);
 
 	void	SetNone(void)
 	{
@@ -404,7 +404,7 @@ public:
 		VMValue	* Get(UInt32 idx)	{ return (idx < m_size) ? &m_data[idx] : NULL; }
 
 		MEMBER_FN_PREFIX(Output);
-		DEFINE_MEMBER_FN(Resize, bool, 0x008C2A10, UInt32 len);
+		DEFINE_MEMBER_FN(Resize, bool, 0x008C2A70, UInt32 len);
 	};
 
 	virtual bool	Copy(Output * dst) = 0;

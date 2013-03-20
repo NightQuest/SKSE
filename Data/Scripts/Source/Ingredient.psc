@@ -12,7 +12,7 @@ int Function LearnNextEffect() native
 ; Flags the all effects as known by the player
 Function LearnAllEffects() native
 
-; SKSE additions built 2013-03-08 02:41:01.982000 UTC
+; SKSE additions built 2013-03-19 23:47:10.300000 UTC
 ; return the number of the effects
 int Function GetNumEffects() native
 

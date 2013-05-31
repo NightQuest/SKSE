@@ -3,6 +3,9 @@
 class TESObjectWEAP;
 class VMClassRegistry;
 class EnchantmentItem;
+class TESObjectSTAT;
+class SpellItem;
+class BGSEquipSlot;
 
 #include "GameTypes.h"
 
@@ -38,4 +41,28 @@ namespace papyrusWeapon
 
 	EnchantmentItem* GetEnchantment(TESObjectWEAP* thisWeapon);
 	void SetEnchantment(TESObjectWEAP* thisWeapon, EnchantmentItem* enchantment);
+
+	UInt32 GetEnchantmentValue(TESObjectWEAP* thisWeapon);
+	void SetEnchantmentValue(TESObjectWEAP* thisWeapon, UInt32 value);
+
+	TESObjectSTAT * GetEquippedModel(TESObjectWEAP* thisWeapon);
+	void SetEquippedModel(TESObjectWEAP* thisWeapon, TESObjectSTAT * model);
+
+	BGSEquipSlot * GetEquipType(TESObjectWEAP* thisWeapon);
+	void SetEquipType(TESObjectWEAP* thisWeapon, BGSEquipSlot * slot);
+
+	BSFixedString GetSkill(TESObjectWEAP* thisWeapon);
+	void SetSkill(TESObjectWEAP* thisWeapon, BSFixedString skill);
+
+	BSFixedString GetResist(TESObjectWEAP* thisWeapon);
+	void SetResist(TESObjectWEAP* thisWeapon, BSFixedString resist);
+
+	SpellItem * GetCritEffect(TESObjectWEAP* thisWeapon);
+	void SetCritEffect(TESObjectWEAP* thisWeapon, SpellItem * spell);
+
+	bool GetCritEffectOnDeath(TESObjectWEAP* thisWeapon);
+	void SetCritEffectOnDeath(TESObjectWEAP* thisWeapon, bool critOnDeath);
+
+	float GetCritMultiplier(TESObjectWEAP* thisWeapon);
+	void SetCritMultiplier(TESObjectWEAP* thisWeapon, float critMult);
 }

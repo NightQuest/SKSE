@@ -31,6 +31,14 @@ void BSTaskPool::ProcessTasks()
 	s_taskQueueLock.Leave();
 }
 
+void TaskInterface::AddTask(TaskDelegate * task)
+{
+	BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+	if(taskPool) {
+		taskPool->QueueTask(task);
+	}
+}
+
 void Hooks_Threads_Init(void)
 {
 	

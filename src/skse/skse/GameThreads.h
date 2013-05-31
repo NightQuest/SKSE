@@ -43,13 +43,26 @@ private:
 class SKSETaskChangeHeadPart : public TaskDelegate
 {
 public:
-	static SKSETaskChangeHeadPart * Create(Actor * actor, BGSHeadPart* newPart);
+	static SKSETaskChangeHeadPart * Create(Actor * actor, BGSHeadPart* oldPart, BGSHeadPart* newPart);
 	virtual void Run();
 	virtual void Dispose();
 
 private:
 	Actor* m_actor;
+	BGSHeadPart* m_oldPart;
 	BGSHeadPart* m_newPart;
+};
+
+class SKSETaskUpdateWeight : public TaskDelegate
+{
+public:
+	static SKSETaskUpdateWeight * Create(Actor * actor, float delta);
+	virtual void Run();
+	virtual void Dispose();
+
+private:
+	Actor	* m_actor;
+	float	m_delta;
 };
 
 
@@ -68,7 +81,8 @@ public:
 	void UpdateHairColor();
 
 	void RegenerateHead(Actor * actor);
-	void ChangeHeadPart(Actor * actor, BGSHeadPart * headPart);
+	void ChangeHeadPart(Actor * actor, BGSHeadPart * oldPart, BGSHeadPart * newPart);
+	void UpdateWeight(Actor * actor, float delta);
 
 	static BSTaskPool *	GetSingleton(void)
 	{

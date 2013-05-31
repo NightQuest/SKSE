@@ -3,7 +3,7 @@ Scriptname Potion extends Form
 ; Is this postion classified as hostile?
 bool Function IsHostile() native
 
-; SKSE additions built 2013-03-19 23:47:10.300000 UTC
+; SKSE additions built 2013-05-30 03:14:16.893000 UTC
 ; Is this potion classified as Food?
 bool Function IsFood() native
 
@@ -24,3 +24,12 @@ MagicEffect Function GetNthEffectMagicEffect(int index) native
 
 ; return the index of the costliest effect
 int Function GetCostliestEffectIndex() native
+
+; sets the magnitude of the specified effect
+Function SetNthEffectMagnitude(int index, float value) native
+
+; sets the area of the specified effect
+Function SetNthEffectArea(int index, int value) native
+
+; sets the duration of the specified effect
+Function SetNthEffectDuration(int index, int value) native

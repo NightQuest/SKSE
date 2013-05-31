@@ -68,3 +68,10 @@ Function UnregisterForCrosshairRef() native
 	
 Event OnCrosshairRefChange(ObjectReference ref)
 EndEvent
+
+; See Form.psc
+Function RegisterForActorAction(int actionType) native
+Function UnregisterForActorAction(int actionType) native
+
+Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
+EndEvent

@@ -9,7 +9,10 @@ IDebugLog	gLog("skse_example_plugin.log");
 
 PluginHandle	g_pluginHandle = kPluginHandle_Invalid;
 
-SKSEScaleformInterface	* scaleform = NULL;
+SKSEScaleformInterface		* g_scaleform = NULL;
+SKSESerializationInterface	* g_serialization = NULL;
+
+/**** simple gameplay patches ****/
 
 void ApplyPatch(UInt32 base, UInt8 * buf, UInt32 len)
 {
@@ -31,6 +34,8 @@ void GameplayPatches(void)
 	SafeWrite8(0x008F0850, 0xC3);	// disable achievements
 }
 
+/**** scaleform functions ****/
+
 class SKSEScaleform_ExampleFunction : public GFxFunctionHandler
 {
 public:
@@ -45,6 +50,73 @@ bool RegisterScaleform(GFxMovieView * view, GFxValue * root)
 	RegisterFunction <SKSEScaleform_ExampleFunction>(root, view, "ExampleFunction");
 
 	return true;
+}
+
+/**** serialization ****/
+
+void Serialization_Revert(SKSESerializationInterface * intfc)
+{
+	_MESSAGE("revert");
+}
+
+const UInt32 kSerializationDataVersion = 1;
+
+void Serialization_Save(SKSESerializationInterface * intfc)
+{
+	_MESSAGE("save");
+
+	if(intfc->OpenRecord('DATA', kSerializationDataVersion))
+	{
+		char	kData[] = "hello world";
+
+		intfc->WriteRecordData(kData, sizeof(kData));
+	}
+}
+
+void Serialization_Load(SKSESerializationInterface * intfc)
+{
+	_MESSAGE("load");
+
+	UInt32	type;
+	UInt32	version;
+	UInt32	length;
+	bool	error = false;
+
+	while(!error && intfc->GetNextRecordInfo(&type, &version, &length))
+	{
+		switch(type)
+		{
+			case 'DATA':
+			{
+				if(version == kSerializationDataVersion)
+				{
+					if(length)
+					{
+						char	* buf = new char[length];
+
+						intfc->ReadRecordData(buf, length);
+						buf[length - 1] = 0;
+
+						_MESSAGE("read data: %s", buf);
+					}
+					else
+					{
+						_MESSAGE("empty data?");
+					}
+				}
+				else
+				{
+					error = true;
+				}
+			}
+			break;
+
+			default:
+				_MESSAGE("unhandled type %08X", type);
+				error = true;
+				break;
+		}
+	}
 }
 
 extern "C"
@@ -68,7 +140,7 @@ bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info)
 
 		return false;
 	}
-	else if(skse->runtimeVersion != RUNTIME_VERSION_1_9_26_0)
+	else if(skse->runtimeVersion != RUNTIME_VERSION_1_9_32_0)
 	{
 		_MESSAGE("unsupported runtime version %08X", skse->runtimeVersion);
 
@@ -76,17 +148,33 @@ bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info)
 	}
 
 	// get the scaleform interface and query its version
-	scaleform = (SKSEScaleformInterface *)skse->QueryInterface(kInterface_Scaleform);
-	if(!scaleform)
+	g_scaleform = (SKSEScaleformInterface *)skse->QueryInterface(kInterface_Scaleform);
+	if(!g_scaleform)
 	{
 		_MESSAGE("couldn't get scaleform interface");
 
 		return false;
 	}
 
-	if(scaleform->interfaceVersion < SKSEScaleformInterface::kInterfaceVersion)
+	if(g_scaleform->interfaceVersion < SKSEScaleformInterface::kInterfaceVersion)
 	{
-		_MESSAGE("scaleform interface too old (%d expected %d)", scaleform->interfaceVersion, SKSEScaleformInterface::kInterfaceVersion);
+		_MESSAGE("scaleform interface too old (%d expected %d)", g_scaleform->interfaceVersion, SKSEScaleformInterface::kInterfaceVersion);
+
+		return false;
+	}
+
+	// get the serialization interface and query its version
+	g_serialization = (SKSESerializationInterface *)skse->QueryInterface(kInterface_Serialization);
+	if(!g_serialization)
+	{
+		_MESSAGE("couldn't get serialization interface");
+
+		return false;
+	}
+
+	if(g_serialization->version < SKSESerializationInterface::kVersion)
+	{
+		_MESSAGE("serialization interface too old (%d expected %d)", g_serialization->version, SKSESerializationInterface::kVersion);
 
 		return false;
 	}
@@ -106,7 +194,16 @@ bool SKSEPlugin_Load(const SKSEInterface * skse)
 	GameplayPatches();
 
 	// register scaleform callbacks
-	scaleform->Register("example_plugin", RegisterScaleform);
+	g_scaleform->Register("example_plugin", RegisterScaleform);
+
+	// register callbacks and unique ID for serialization
+
+	// ### this must be a UNIQUE ID, change this and email me the ID so I can let you know if someone else has already taken it
+	g_serialization->SetUniqueID(g_pluginHandle, 'TEST');
+
+	g_serialization->SetRevertCallback(g_pluginHandle, Serialization_Revert);
+	g_serialization->SetSaveCallback(g_pluginHandle, Serialization_Save);
+	g_serialization->SetLoadCallback(g_pluginHandle, Serialization_Load);
 
 	return true;
 }

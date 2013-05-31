@@ -393,6 +393,9 @@ public:
 	bool IsAmmo() { return formType == kFormType_Ammo; }
 	bool IsArmor() { return formType == kFormType_Armor; }
 
+	// bethesda removed most of the functionality from their code, this reimplements it for simple classes
+	void CopyFromEx(TESForm * rhs);
+
 	void	* unk04;	// 04
 	UInt32	flags;		// 08
 	UInt32	formID;		// 0C
@@ -680,7 +683,7 @@ class BGSEquipSlot : public TESForm
 public:
 	enum { kTypeID = kFormType_EquipSlot };
 
-	UnkArray	unk14;
+	tArray<BGSEquipSlot*>		parentSlots;
 	UInt32						unk20;
 };
 
@@ -730,7 +733,9 @@ public:
 	UInt32					type;			// 3C
 	tArray <BGSHeadPart *>	extraParts;		// 40
 	BGSTextureSet *			textureSet;		// 4C
-	TESModelTri				unk50[3];		// 50
+	TESModelTri				raceMorph;		// 50
+	TESModelTri				morph;			// 64
+	TESModelTri				chargenMorph;	// 78
 	UInt32					unk8C;          // 8C
 	BGSListForm *			validRaces;		// 90
 	StringCache::Ref		partName;		// 94
@@ -1844,11 +1849,11 @@ public:
 		float	defensiveMult;		// 04 - init'd to 0.5
 		float	groupOffensiveMult;	// 08 - init'd to 1
 		float	meleeMult;			// 0C - init'd to 1
-		float	rangedMult;			// 10 - init'd to 1
-		float	magicMult;			// 14 - init'd to 1
+		float	magicMult;			// 10 - init'd to 1
+		float	rangedMult;			// 14 - init'd to 1
 		float	shoutMult;			// 18 - init'd to 1
-		float	staffMult;			// 1C - init'd to 1
-		float	unarmedMult;		// 20 - init'd to 1
+		float	unarmedMult;			// 1C - init'd to 1
+		float	staffMult;		// 20 - init'd to 1
 		float	avoidThreatChance;	// 24 - init'd to 0.2
 	};
 
@@ -1885,12 +1890,18 @@ public:
 	{
 		float	hoverChance;		// 00 - init'd to 0.5
 		float	diveBombChance;		// 04 - init'd to 1
-		float	unk08;				// 08 - init'd to 0.5
-		float	unk0C;				// 0C - init'd to 0.5
+		float	groundAttackChance;	// 08 - init'd to 0.5
+		float	hoverTime;			// 0C - init'd to 0.5
 		float	unk10;				// 10 - init'd to 0.5
-		float	unk14;				// 14 - init'd to 0.5
+		float	perchAttackChance;	// 14 - init'd to 0.5
 		float	unk18;				// 18 - init'd to 0.5
 		float	flyingAttackChance;	// 1C - init'd to 0.75
+	};
+
+	enum {
+		kFlag_Dueling = 1,
+		kFlag_Flanking = 2,
+		kFlag_AllowDualWielding = 4
 	};
 
 	General	general;			// 14 - CSGD
@@ -1898,7 +1909,7 @@ public:
 	CloseRange	closeRange;		// 5C - CSCR
 	LongRange	longRange;		// 6C - CSLR
 	Flight	flight;				// 70 - CSFL
-	UInt8	allowDualWielding;	// 90 - DATA
+	UInt8	flags;				// 90 - DATA
 	UInt8	pad91[3];			// 91
 };
 

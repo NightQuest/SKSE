@@ -16,6 +16,14 @@ class NiTimeController;
 class NiNode;
 class NiGeometry;
 class NiRenderedTexture;
+class NiSwitchNode;
+class NiTriBasedGeom;
+class NiTriShape;
+class NiTriStrips;
+class BSSegmentedTriShape;
+class NiRenderTargetGroup;
+class NiProperty;
+class NiSourceTexture;
 
 // 08
 class NiRefObject
@@ -26,8 +34,11 @@ public:
 
 	virtual void	DeleteThis(void);	// calls virtual dtor
 
+	void	IncRef(void);
+	bool	Release(void);
+
 //	void	** _vtbl;		// 00
-	UInt32	m_uiRefCount;	// 04
+	volatile SInt32	m_uiRefCount;	// 04
 };
 
 // ### not all of this is verified, I'm just assuming that little has changed from other
@@ -42,15 +53,15 @@ public:
 
 	// then a bunch of attempts to avoid dynamic_cast?
 	// unverified, do not use
-	virtual NiNode *		GetAsNiNode(void);
-	virtual UInt32			Unk_04(void);
+	virtual NiNode			* GetAsNiNode(void);
+	virtual NiSwitchNode	* GetAsNiSwitchNode(void);
 	virtual UInt32			Unk_05(void);
 	virtual UInt32			Unk_06(void);
-	virtual NiGeometry *	GetAsNiGeometry(void); // This could also be NiTriBasedGeom or another sub class
-	virtual UInt32			Unk_08(void);
-	virtual UInt32			Unk_09(void);
-	virtual UInt32			Unk_0A(void);
-	virtual UInt32			Unk_0B(void);
+	virtual NiGeometry		* GetAsNiGeometry(void);
+	virtual NiTriBasedGeom	* GetAsNiTriBasedGeom(void);
+	virtual NiTriStrips		* GetAsNiTriStrips(void);
+	virtual NiTriShape		* GetAsNiTriShape(void);
+	virtual BSSegmentedTriShape * GetAsBSSegmentedTriShape(void);
 	virtual UInt32			Unk_0C(void);
 	virtual UInt32			Unk_0D(void);
 	virtual UInt32			Unk_0E(void);
@@ -82,6 +93,10 @@ public:
 
 	// begin bethesda extensions? possibly just stuff we can't match up
 	virtual UInt32			Unk_20(void);
+
+	
+	MEMBER_FN_PREFIX(NiObject);
+	DEFINE_MEMBER_FN(DeepCopy, NiStream *, 0x00AAFD60, NiObject ** result);
 };
 
 STATIC_ASSERT(sizeof(NiObject) == 0x08);
@@ -129,7 +144,7 @@ public:
 	virtual void	UpdateControllers(ControllerUpdateContext * ctx);	// calls controller vtbl+0x8C
 	virtual void	UpdateNodeBound(ControllerUpdateContext * ctx);
 	virtual void	ApplyTransform(NiMatrix33 * mtx, NiPoint3 * translate, bool postTransform);
-	virtual void	Unk_24(UInt32 arg0);	// call Unk_24 on all children
+	virtual void	SetPropertyState(NiProperty * prop);
 	virtual void	Unk_25(UInt32 arg0);
 	virtual void	Unk_26(UInt32 arg0);
 	virtual NiAVObject *	GetObjectByName(const char ** name);	// BSFixedString? alternatively BSFixedString is a typedef of a netimmerse type
@@ -162,5 +177,53 @@ public:
 	MEMBER_FN_PREFIX(NiAVObject);
 	DEFINE_MEMBER_FN(UpdateNode, void, 0x00AAF320, NiAVObject * node);
 };
-
 STATIC_ASSERT(sizeof(NiAVObject) == 0xA8);
+
+// Bethesda class, unknown name
+class NiRenderTarget : public NiObject
+{
+public:
+	virtual ~NiRenderTarget();
+
+	NiRenderTargetGroup * unk08;
+	UInt32	unk0C;
+	UInt32	unk10;
+	UInt32	unk14;
+	UInt32	unk18;
+	UInt32	unk1C;
+	UInt32	unk20;
+	UInt32	unk24;
+	UInt32	unk28;
+	UInt32	unk2C;	// inited to FFFFFFFF
+	NiRenderedTexture * renderedTexture;
+
+	static NiRenderTarget *	GetPlayerFaceMask(void)
+	{
+		return *((NiRenderTarget **)0x01B3FD54);
+	}
+};
+
+// ??
+class BSFaceGenMorphData : public NiRefObject
+{
+public:
+	void	* unk08;
+	UInt32	unk0C;
+};
+
+
+// 4C
+class BSFaceGenMorphDataHead : public BSFaceGenMorphData
+{
+public:
+	UInt32	unk10[(0x4C - 0x10) >> 2];
+};
+STATIC_ASSERT(sizeof(BSFaceGenMorphDataHead) == 0x4C);
+
+
+// 10
+class BSFaceGenMorphDataHair : public BSFaceGenMorphData
+{
+public:
+};
+STATIC_ASSERT(sizeof(BSFaceGenMorphDataHair) == 0x10);

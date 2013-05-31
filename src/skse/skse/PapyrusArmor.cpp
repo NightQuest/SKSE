@@ -5,10 +5,8 @@
 namespace papyrusArmor
 {
 	UInt32 GetArmorRating(TESObjectARMO* thisArmor)
-	{	
-		if (!thisArmor)
-			return 0;
-		return thisArmor->armorValTimes100 / 100;
+	{
+		return (thisArmor) ? thisArmor->armorValTimes100 / 100 : 0;
 	}
 
 	void SetArmorRating(TESObjectARMO* thisArmor, UInt32 nuAR)
@@ -35,8 +33,9 @@ namespace papyrusArmor
 
 	void SetSlotMask(TESObjectARMO* thisArmor, UInt32 slotMask)
 	{
-		if (thisArmor)
+		if (thisArmor) {
 			thisArmor->bipedObject.SetSlotMask(slotMask);
+		}
 	}
 
 	UInt32 AddSlotToMask(TESObjectARMO* thisArmor, UInt32 slot)
@@ -65,10 +64,9 @@ namespace papyrusArmor
 
 	void SetModelPath(TESObjectARMO* thisArmor, BSFixedString nuPath, bool bFemale)
 	{
-		if (!thisArmor)
-			return;
-
-		thisArmor->bipedModel.textureSwap[bFemale ? 1 : 0].SetModelName(nuPath.data);
+		if (thisArmor) {
+			thisArmor->bipedModel.textureSwap[bFemale ? 1 : 0].SetModelName(nuPath.data);
+		}
 	}
 
 	BSFixedString GetIconPath(TESObjectARMO* thisArmor, bool bFemale)
@@ -78,10 +76,9 @@ namespace papyrusArmor
 
 	void SetIconPath(TESObjectARMO* thisArmor, BSFixedString nuPath, bool bFemale)
 	{
-		if (!thisArmor)
-			return;
-
-		thisArmor->bipedModel.icon[bFemale ? 1 : 0].str = nuPath.data;
+		if (thisArmor) {
+			thisArmor->bipedModel.icon[bFemale ? 1 : 0].str = nuPath.data;
+		}
 	}
 
 	BSFixedString GetMessageIconPath(TESObjectARMO* thisArmor, bool bFemale)
@@ -91,10 +88,9 @@ namespace papyrusArmor
 
 	void SetMessageIconPath(TESObjectARMO* thisArmor, BSFixedString nuPath, bool bFemale)
 	{
-		if (!thisArmor)
-			return;
-
-		thisArmor->bipedModel.messageIcon[bFemale ? 1 : 0].icon.str = nuPath.data;
+		if (thisArmor) {
+			thisArmor->bipedModel.messageIcon[bFemale ? 1 : 0].icon.str = nuPath.data;
+		}
 	}
 
 	UInt32 GetWeightClass(TESObjectARMO* thisArmor)

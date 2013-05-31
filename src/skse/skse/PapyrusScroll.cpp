@@ -31,6 +31,32 @@ namespace papyrusScroll
 
 	UInt32 GetCostliestEffectIndex(ScrollItem* thisMagic)
 	{ return magicItemUtils::GetCostliestEffectIndex(thisMagic); }
+
+	void SetNthEffectMagnitude(ScrollItem* thisMagic, UInt32 index, float value)
+	{ magicItemUtils::SetNthEffectMagnitude(thisMagic, index, value); }
+
+	void SetNthEffectArea(ScrollItem* thisMagic, UInt32 index, UInt32 value)
+	{ magicItemUtils::SetNthEffectArea(thisMagic, index, value); }
+
+	void SetNthEffectDuration(ScrollItem* thisMagic, UInt32 index, UInt32 value)
+	{ magicItemUtils::SetNthEffectDuration(thisMagic, index, value); }
+
+	BGSEquipSlot * GetEquipType(ScrollItem* thisMagic)
+	{
+		if (thisMagic) {
+			return thisMagic->equipType.GetEquipSlot();
+		}
+
+		// Invalid EquipSlot
+		return NULL;
+	}
+
+	void SetEquipType(ScrollItem* thisMagic, BGSEquipSlot * slot)
+	{
+		if (thisMagic && slot) {
+			thisMagic->equipType.SetEquipSlot(slot);
+		}
+	}
 }
 
 #include "PapyrusVM.h"
@@ -56,4 +82,21 @@ void papyrusScroll::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0<ScrollItem, UInt32>("GetCostliestEffectIndex", "Scroll", papyrusScroll::GetCostliestEffectIndex, registry));
+
+	// Sets
+	registry->RegisterFunction(
+		new NativeFunction2<ScrollItem, void, UInt32, float>("SetNthEffectMagnitude", "Scroll", papyrusScroll::SetNthEffectMagnitude, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2<ScrollItem, void, UInt32, UInt32>("SetNthEffectArea", "Scroll", papyrusScroll::SetNthEffectArea, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2<ScrollItem, void, UInt32, UInt32>("SetNthEffectDuration", "Scroll", papyrusScroll::SetNthEffectDuration, registry));
+
+	// EquipType
+	registry->RegisterFunction(
+		new NativeFunction0 <ScrollItem, BGSEquipSlot*>("GetEquipType", "Scroll", papyrusScroll::GetEquipType, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <ScrollItem, void, BGSEquipSlot*>("SetEquipType", "Scroll", papyrusScroll::SetEquipType, registry));
 }

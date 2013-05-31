@@ -491,6 +491,7 @@ extern RegistrationMapHolder<BSFixedString,ModCallbackParameters>	g_modCallbackR
 
 extern RegistrationSetHolder<NullParameters>						g_cameraEventRegs;
 extern RegistrationSetHolder<NullParameters>						g_crosshairRefEventRegs;
+extern RegistrationMapHolder<UInt32>								g_actionEventRegs;
 
 struct SKSEModCallbackEvent
 {
@@ -549,6 +550,45 @@ public:
 
 extern EventDispatcher<SKSECrosshairRefEvent> g_crosshairRefEventDispatcher;
 
+struct SKSEActionEvent
+{
+	enum {
+		kType_WeaponSwing = 0,
+		kType_SpellCast = 1,
+		kType_SpellFire = 2,
+		kType_VoiceCast = 3,
+		kType_VoiceFire = 4,
+		kType_BowDraw = 5,
+		kType_BowRelease = 6,
+		kType_BeginDraw = 7,
+		kType_EndDraw = 8,
+		kType_BeginSheathe = 9,
+		kType_EndSheathe = 10
+	};
+	enum {
+		kSlot_Right = 0,
+		kSlot_Left = 1,
+		kSlot_Voice = 2
+	};
+	UInt32 type;
+	Actor * actor;
+	TESForm	* sourceForm;
+	UInt32	slot;
+
+	SKSEActionEvent(UInt32 a_type, Actor * a_actor, TESForm * a_source, UInt32 a_slot) :
+	type(a_type), actor(a_actor), sourceForm(a_source), slot(a_slot) {}
+};
+
+template <>
+class BSTEventSink <SKSEActionEvent>
+{
+public:
+	virtual ~BSTEventSink() {}; // todo?
+	virtual	EventResult ReceiveEvent(SKSEActionEvent * evn, EventDispatcher<SKSEActionEvent> * dispatcher) = 0;
+};
+
+extern EventDispatcher<SKSEActionEvent> g_actionEventDispatcher;
+
 
 class MenuEventHandler : public BSTEventSink <MenuOpenCloseEvent>
 {
@@ -580,8 +620,15 @@ public:
 	virtual	EventResult		ReceiveEvent(SKSECrosshairRefEvent * evn, EventDispatcher<SKSECrosshairRefEvent> * dispatcher);
 };
 
+class ActionEventHandler : public BSTEventSink <SKSEActionEvent>
+{
+public:
+	virtual	EventResult		ReceiveEvent(SKSEActionEvent * evn, EventDispatcher<SKSEActionEvent> * dispatcher);
+};
+
 extern MenuEventHandler				g_menuEventHandler;
 extern InputEventHandler			g_inputEventHandler;
 extern ModCallbackEventHandler		g_modCallbackEventHandler;
 extern CameraEventHandler			g_cameraEventHandler;
 extern CrosshairRefEventHandler		g_crosshairRefEventHandler;
+extern ActionEventHandler			g_actionEventHandler;

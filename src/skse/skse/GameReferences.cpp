@@ -23,6 +23,19 @@ UInt32 TESObjectREFR::CreateRefHandle(void)
 	}
 }
 
+TESForm * Actor::GetEquippedObject(bool abLeftHand)
+{
+	if(!equipData) 
+		return NULL;
+
+	if(abLeftHand)
+		return equipData->equippedObject[ActorEquipData::kEquippedHand_Left];
+	else
+		return equipData->equippedObject[ActorEquipData::kEquippedHand_Right];
+
+	return NULL;
+}
+
 TintMask * PlayerCharacter::GetOverlayTintMask(TintMask * original)
 {
 	SInt32 curIndex = -1;

@@ -6,6 +6,7 @@ class BGSPerk;
 class EffectSetting;
 class VMClassRegistry;
 class Character;
+class BGSEquipSlot;
 
 namespace papyrusSpell
 {
@@ -23,6 +24,13 @@ namespace papyrusSpell
 	UInt32 GetCostliestEffectIndex(SpellItem* thisMagic);
 	UInt32 GetMagickaCost(SpellItem* thisMagic);
 	UInt32 GetEffectiveMagickaCost(SpellItem* thisSpell, Character* caster);
+
+	void SetNthEffectMagnitude(SpellItem* thisSpell, UInt32 index, float value);
+	void SetNthEffectArea(SpellItem* thisSpell, UInt32 index, UInt32 value);
+	void SetNthEffectDuration(SpellItem* thisSpell, UInt32 index, UInt32 value);
+
+	BGSEquipSlot * GetEquipType(SpellItem* thisMagic);
+	void SetEquipType(SpellItem* thisMagic, BGSEquipSlot * n);
 };
 
 namespace magicItemUtils {
@@ -32,4 +40,8 @@ namespace magicItemUtils {
 	UInt32 GetNthEffectDuration(MagicItem* thisMagic, UInt32 index);
 	EffectSetting* GetNthEffectMagicEffect(MagicItem* thisMagic, UInt32 index);
 	UInt32 GetCostliestEffectIndex(MagicItem* thisMagic);
+
+	void SetNthEffectMagnitude(MagicItem* thisMagic, UInt32 index, float value);
+	void SetNthEffectArea(MagicItem* thisMagic, UInt32 index, UInt32 value);
+	void SetNthEffectDuration(MagicItem* thisMagic, UInt32 index, UInt32 value);
 }

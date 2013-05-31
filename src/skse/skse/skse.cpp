@@ -26,6 +26,7 @@ STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_9_32_0);
 #include "Hooks_Event.h"
 #include "Hooks_Camera.h"
 #include "Hooks_Threads.h"
+#include "Hooks_Handlers.h"
 
 #else
 
@@ -83,11 +84,13 @@ void SKSE_Initialize(void)
 		Hooks_Papyrus_Init();
 		Hooks_NetImmerse_Init();
 		Hooks_Threads_Init();
+		Hooks_Handlers_Init();
 
 		g_pluginManager.Init();
 
 		Hooks_Debug_Commit();
 		Hooks_Threads_Commit();
+		Hooks_Handlers_Commit();
 		Hooks_Scaleform_Commit();
 		Hooks_Gameplay_Commit();
 		Hooks_ObScript_Commit();

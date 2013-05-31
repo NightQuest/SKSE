@@ -84,18 +84,35 @@ namespace papyrusActor
 		return NULL;
 	}
 
+	TESForm * GetEquippedObject(Actor * thisActor, UInt32 slot)
+	{
+		if(!thisActor) return NULL;
+
+		enum
+		{
+			kSlotID_Left = 0,
+			kSlotID_Right,
+			kSlotID_Voice,
+		};
+
+		if(slot == kSlotID_Voice)
+			return thisActor->equippedShout;
+		else
+			return thisActor->GetEquippedObject(slot == kSlotID_Left);
+	}
+
 	UInt32 GetSpellCount(Actor* thisActor)
 	{
-		return (thisActor) ? thisActor->addedSpells.spellCount : 0;
+		if(!thisActor) return NULL;
+
+		return thisActor->addedSpells.Length();
 	}
 
 	SpellItem* GetNthSpell(Actor* thisActor, UInt32 n)
 	{
-		if (thisActor && thisActor->addedSpells.spells && n < thisActor->addedSpells.spellCount)
-		{
-			return thisActor->addedSpells.spells[n];
-		}
-		else return NULL;
+		if(!thisActor) return NULL;
+
+		return thisActor->addedSpells.Get(n);
 	}
 
 #ifdef _AEFFECTS
@@ -226,7 +243,7 @@ namespace papyrusActor
 			hasItemMinCount = itemCount > 1;
 
 		if (!isTargetSlotInUse && hasItemMinCount)
-			CALL_MEMBER_FN(equipManager, EquipItem)(thisActor, item, NULL, equipCount, targetEquipSlot, equipSound, preventUnequip, false, NULL);
+			CALL_MEMBER_FN(equipManager, EquipItem)(thisActor, item, enchantList, equipCount, targetEquipSlot, equipSound, preventUnequip, false, NULL);
 	}
 
 	void UnequipItemEx(Actor* thisActor, TESForm* item, SInt32 slotId, bool preventEquip)
@@ -297,11 +314,62 @@ namespace papyrusActor
 		}
 	}
 
+	void RegenerateHead(Actor * thisActor)
+	{
+		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+		if(taskPool) {
+			taskPool->RegenerateHead(thisActor);
+		}
+	}
+
 	void ChangeHeadPart(Actor * thisActor, BGSHeadPart * newPart)
 	{
 		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
 		if(taskPool) {
-			taskPool->ChangeHeadPart(thisActor, newPart);
+			TESNPC* npc = DYNAMIC_CAST(thisActor->baseForm, TESForm, TESNPC);
+			if(npc) {
+				if(newPart->type != BGSHeadPart::kTypeMisc) {
+					BGSHeadPart * oldPart = NULL;
+					if(CALL_MEMBER_FN(npc, HasOverlays)())
+						oldPart = npc->GetHeadPartOverlayByType(newPart->type);
+					if(!oldPart)
+						oldPart = CALL_MEMBER_FN(npc, GetHeadPartByType)(newPart->type);
+
+					//CALL_MEMBER_FN(npc, ChangeHeadPart)(newPart); // Changes the HeadPart list, this should be a mesh only change
+					taskPool->ChangeHeadPart(thisActor, oldPart, newPart);
+				}
+			}
+		}
+	}
+
+	void UpdateWeight(Actor * thisActor, float neckDelta)
+	{
+		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+		if(taskPool) {
+			taskPool->UpdateWeight(thisActor, neckDelta);
+		}
+	}
+
+	bool IsAIEnabled(Actor * thisActor)
+	{
+		if (!thisActor)
+			return false;
+
+		return (thisActor->flags1 & Actor::kFlags_AIEnabled) == Actor::kFlags_AIEnabled;
+	}
+
+	bool IsSwimming(Actor * thisActor)
+	{
+		if (!thisActor)
+			return false;
+
+		return (thisActor->actorState.flags04 & ActorState::kState_Swimming) == ActorState::kState_Swimming;
+	}
+
+	void SheatheWeapon(Actor * thisActor)
+	{
+		if (thisActor) {
+			thisActor->DrawSheatheWeapon(false);
 		}
 	}
 }
@@ -313,6 +381,9 @@ void papyrusActor::RegisterFuncs(VMClassRegistry* registry)
 {
 	registry->RegisterFunction(
 		new NativeFunction1 <Actor, TESForm*, UInt32>("GetWornForm", "Actor", papyrusActor::GetWornForm, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <Actor, TESForm*, UInt32>("GetEquippedObject", "Actor", papyrusActor::GetEquippedObject, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0 <Actor, UInt32>("GetSpellCount", "Actor", papyrusActor::GetSpellCount, registry));
@@ -339,4 +410,19 @@ void papyrusActor::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <Actor, void, BGSHeadPart*>("ChangeHeadPart", "Actor", papyrusActor::ChangeHeadPart, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <Actor, void>("RegenerateHead", "Actor", papyrusActor::RegenerateHead, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <Actor, void, float>("UpdateWeight", "Actor", papyrusActor::UpdateWeight, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <Actor, bool>("IsAIEnabled", "Actor", papyrusActor::IsAIEnabled, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <Actor, bool>("IsSwimming", "Actor", papyrusActor::IsSwimming, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <Actor, void>("SheatheWeapon", "Actor", papyrusActor::SheatheWeapon, registry));
 }

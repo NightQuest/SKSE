@@ -79,6 +79,14 @@ public:
 
 class ThumbstickEvent : public IDEvent, public InputEvent
 {
+public:
+	virtual					~ThumbstickEvent();
+	virtual bool			IsIDEvent();
+	virtual BSFixedString *	GetControlID();
+
+	UInt32	keyMask;	// 14 - b for left stick, c for right stick
+	float	x;			// 18
+	float	y;			// 1C
 };
 
 class DeviceConnectEvent : public InputEvent
@@ -169,6 +177,20 @@ public:
 };
 STATIC_ASSERT(sizeof(InputManager) == 0x9C);
 
+class PlayerInputHandler
+{
+public:
+	PlayerInputHandler();
+	virtual ~PlayerInputHandler();
+
+	virtual void Unk_01();
+	virtual void Unk_02();
+	virtual void Unk_03();
+	virtual void Unk_04();
+
+	UInt32	unk04;				// 04
+};
+
 //?
 class PlayerControls
 {
@@ -177,18 +199,28 @@ public:
 	virtual UInt32	Unk_01();
 
 //	void			** _vtbl;		// 00
-	UInt8			pad04[0x3C];	// 04
+	BSTEventSink<void*> menuOpenCloseEvent;	// 04
+	BSTEventSink<void*> menuModeChangeEvent;	// 08
+	BSTEventSink<void*> furnitureEvent;	// 0C
+	UInt8			pad10[0x28];	// 10
+	UInt8			autoRun;		// 38
+	UInt8			runMode;		// 39
+	UInt8			pad3A[0x06];	// 3A
 	bool			remapMode;		// 40 - might be named differently
 	UInt8			pad41[3];		// 41
+	UInt32			unk44[(0x128 - 0x44) >> 2];	// 44
+	PlayerInputHandler * inputHandlers[13];	// 128
 
 	static PlayerControls *	GetSingleton(void);
 
 	// used by Hooks_Event
 	PlayerControls * ctor_Hook(void);
 	MEMBER_FN_PREFIX(PlayerControls);
-	DEFINE_MEMBER_FN(ctor, PlayerControls *, 0x0087A120);
+	DEFINE_MEMBER_FN(ctor, PlayerControls *, 0x00774F20);
 };
+STATIC_ASSERT(offsetof(PlayerControls, runMode) == 0x039);
 STATIC_ASSERT(offsetof(PlayerControls, remapMode) == 0x040);
+STATIC_ASSERT(offsetof(PlayerControls, inputHandlers) == 0x128);
 
 // ?
 class MenuControls

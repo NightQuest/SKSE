@@ -350,6 +350,11 @@ namespace papyrusObjectReference
 	{
 		obj->ResetInventory(false);
 	}
+
+	bool IsOffLimits(TESObjectREFR * obj)
+	{
+		return CALL_MEMBER_FN(obj, IsOffLimits)();
+	}
 };
 
 #include "PapyrusVM.h"
@@ -390,4 +395,7 @@ void papyrusObjectReference::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0<TESObjectREFR, void>("ResetInventory", "ObjectReference", papyrusObjectReference::ResetInventory, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectREFR, bool>("IsOffLimits", "ObjectReference", papyrusObjectReference::IsOffLimits, registry));
 }

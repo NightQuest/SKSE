@@ -17,36 +17,61 @@ static char							s_crashDumpPath[MAX_PATH];
 
 static IInterlockedLong				s_inExceptionFilter;
 
+// ignore these crash points to make dumps less spammy
+const char * IsKnownCrash(EXCEPTION_POINTERS * info)
+{
+	if(info->ContextRecord->Eip == 0x0055DF80 + 0x00DF)
+		return "on exit while destroying TESIdleForms";
+
+	return NULL;
+}
+
 LONG WINAPI ExceptionFilter(EXCEPTION_POINTERS * info)
 {
 	if(s_inExceptionFilter.Claim())
 	{
-		_ERROR("Skyrim has crashed. A minidump containing debugging information is being written to %s.", s_crashDumpPath);
+		bool		writeDump = true;
+		const char	* crashReason = IsKnownCrash(info);
 
-		HANDLE	dumpFile = CreateFile(s_crashDumpPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-		if(dumpFile != INVALID_HANDLE_VALUE)
+		if(crashReason)
 		{
-			MINIDUMP_EXCEPTION_INFORMATION	exceptionInfo;
+			_ERROR("Skyrim has crashed in a known crash location (%s). No crashdump will be written in release builds.", crashReason);
 
-			exceptionInfo.ThreadId = GetCurrentThreadId();
-			exceptionInfo.ExceptionPointers = info;
-			exceptionInfo.ClientPointers = FALSE;
+#if NDEBUG
+			// skip writing crashdumps for these in release
+			writeDump = false;
+#endif
+		}
+		
+		if(writeDump)
+		{
+			_ERROR("Skyrim has crashed. A minidump containing debugging information is being written to %s.", s_crashDumpPath);
 
-			BOOL	result = s_dbgHelpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), dumpFile, MiniDumpNormal, &exceptionInfo, NULL, NULL);
-			if(result)
+			HANDLE	dumpFile = CreateFile(s_crashDumpPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+			if(dumpFile != INVALID_HANDLE_VALUE)
 			{
-				_ERROR("Minidump written.");
+				MINIDUMP_EXCEPTION_INFORMATION	exceptionInfo;
+
+				exceptionInfo.ThreadId = GetCurrentThreadId();
+				exceptionInfo.ExceptionPointers = info;
+				exceptionInfo.ClientPointers = FALSE;
+
+				BOOL	result = s_dbgHelpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), dumpFile, MiniDumpNormal, &exceptionInfo, NULL, NULL);
+				if(result)
+				{
+					_ERROR("Minidump written.");
+				}
+				else
+				{
+					_ERROR("Unable to write minidump.");
+				}
+
+				CloseHandle(dumpFile);
 			}
 			else
 			{
-				_ERROR("Unable to write minidump.");
+				_ERROR("Unable to open minidump. (%08X)", GetLastError());
 			}
-
-			CloseHandle(dumpFile);
-		}
-		else
-		{
-			_ERROR("Unable to open minidump. (%08X)", GetLastError());
 		}
 
 		s_inExceptionFilter.Release();

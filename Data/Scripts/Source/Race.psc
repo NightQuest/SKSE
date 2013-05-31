@@ -1,6 +1,6 @@
 Scriptname Race extends Form Hidden
 
-; SKSE additions built 2013-03-19 23:47:10.300000 UTC
+; SKSE additions built 2013-05-30 03:14:16.893000 UTC
 ; returns the number of spells for the race
 int Function GetSpellCount() native
 
@@ -21,6 +21,10 @@ VoiceType Function GetDefaultVoiceType(bool female) native
 
 ; Sets the races default voice type
 Function SetDefaultVoiceType(bool female, VoiceType voice) native
+
+; Gets/sets the skin of the race
+Armor Function GetSkin() native
+Function SetSkin(Armor skin) native
 
 ; Returns the number of playable races
 int Function GetNumPlayableRaces() native global

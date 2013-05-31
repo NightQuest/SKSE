@@ -1,23 +1,10 @@
 #pragma once
 
 #include "GameTypes.h"
+#include "GameInput.h"
 
 class TESCamera;
 class NiNode;
-
-class PlayerInputHandler
-{
-public:
-	PlayerInputHandler();
-	virtual ~PlayerInputHandler();
-
-	virtual void Unk_01();
-	virtual void Unk_02();
-	virtual void Unk_03();
-	virtual void Unk_04();
-
-	UInt32	unk04;				// 04
-};
 
 class TESCameraState
 {
@@ -174,12 +161,18 @@ class ThirdPersonState : public TESCameraState
 public:
 	ThirdPersonState();
 	virtual ~ThirdPersonState();
+	virtual void Unk_09(void);
+	virtual void Unk_0A(void);
+	virtual void UpdateMode(bool weaponDrawn);
 
 	PlayerInputHandler		inputHandler;		// 10
 	NiNode					* cameraNode;		// 18
 	NiNode					* controllerNode;	// 1C
 	float					unk20[0x03];		// 20
-	UInt32					unk2C[0x07];		// 2C
+	UInt32					unk2C[0x04];		// 2C
+	float					fOverShoulderPosX;	// 3C
+	float					fOverShoulderCombatAddY;	// 40
+	float					fOverShoulderPosZ;	// 44
 	float					unk48[0x03];		// 48
 	UInt32					unk54[0x11];		// 54
 	float					unk98[0x03];		// 98
@@ -187,6 +180,9 @@ public:
 	UInt8					unkB4[0x07];		// B4
 	UInt8					padBB;
 };
+
+STATIC_ASSERT(offsetof(ThirdPersonState, fOverShoulderPosX) == 0x3C);
+STATIC_ASSERT(offsetof(ThirdPersonState, unk48) == 0x48);
 
 class BleedoutCameraState : public ThirdPersonState
 {
@@ -232,7 +228,8 @@ public:
 	UInt32			unk04[0x06];	// 04
 	NiNode			* niNode;		// 1C
 	TESCameraState	* cameraState;	// 20
-	UInt32			unk24[0x04];	// 24
+	UInt8			unk24;	// 24
+	UInt8			pad25[3];	// 25
 
 	MEMBER_FN_PREFIX(TESCamera);
 	DEFINE_MEMBER_FN(SetCameraState, UInt32, 0x006533D0, TESCameraState * cameraState);
@@ -288,8 +285,25 @@ public:
 		kNumCameraStates
 	};
 
-	UInt32 unk34[(0x6C - 0x34) >> 2];					// 34
+	UInt32 unk34[(0x6C - 0x28) >> 2];					// 34
 	TESCameraState * cameraStates[kNumCameraStates];	// 6C
+	UInt32	unkA0;										// A0
+	UInt32	unkA4;										// A4
+	UInt32	unkA8;										// A8
+	float	worldFOV;									// AC
+	float	firstPersonFOV;								// B0
+	UInt32	unkB4[(0xD0 - 0xB4) >> 2];					// B4
+	UInt8	unkD0;										// D0
+	UInt8	unkD1;										// D1
+	UInt8	unkD2;										// D2
+	UInt8	unkD3;										// D3
+	UInt8	unkD4;										// D4
+	UInt8	unkD5;										// D5
+	UInt8	padD6[2];									// D6
+
+	MEMBER_FN_PREFIX(PlayerCamera);
+	DEFINE_MEMBER_FN(UpdateThirdPerson, void, 0x0083C7E0, bool weaponDrawn);
 };
 
 STATIC_ASSERT(offsetof(PlayerCamera, cameraStates) == 0x6C);
+STATIC_ASSERT(offsetof(PlayerCamera, padD6) == 0xD6);

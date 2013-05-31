@@ -41,6 +41,17 @@ std::string GetAppDir(void)
 	return appPath.substr(0, slashOffset);
 }
 
+bool RunningEditor(void)
+{
+	// ### this is not a good method of detection
+	char pathBuffer[MAX_PATH] = {0};
+
+	strcpy_s(pathBuffer, sizeof(pathBuffer), GetAppPath().c_str());
+	_strlwr_s(pathBuffer, sizeof(pathBuffer));
+
+	return strstr(pathBuffer, "creationkit.exe") != NULL;
+}
+
 BOOL WINAPI DllMain(HANDLE procHandle, DWORD reason, LPVOID reserved)
 {
 	if(reason == DLL_PROCESS_ATTACH)
@@ -142,16 +153,18 @@ void InstallHook(void * retaddr, UInt32 hookSrc)
 
 	std::string		dllSuffix;
 	ProcHookInfo	procHookInfo;
+	bool			isEditor = RunningEditor();
 
-	if(!IdentifyEXE(appPath.c_str(), false, &dllSuffix, &procHookInfo))
+	if(!IdentifyEXE(appPath.c_str(), isEditor, &dllSuffix, &procHookInfo))
 	{
 		_ERROR("unknown exe");
 		return;
 	}
 
 	// build full path to our dll
-	g_dllPath = GetAppDir() + "\\skse_" + dllSuffix + ".dll";
+	const char	* dllPrefix = (isEditor == false) ? "\\skse_" : "\\skse_editor_";
 
+	g_dllPath = GetAppDir() + dllPrefix + dllSuffix + ".dll";
 	_MESSAGE("dll = %s", g_dllPath.c_str());
 
 	// hook winmain call

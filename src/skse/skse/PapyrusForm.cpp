@@ -267,6 +267,22 @@ namespace papyrusForm
 		g_crosshairRefEventRegs.Unregister<TESForm>(thisForm->GetFormType(), thisForm);
 	}
 
+	void RegisterForActorAction(TESForm * thisForm, UInt32 actionType)
+	{
+		if(!thisForm)
+			return;
+
+		g_actionEventRegs.Register<TESForm>(actionType, thisForm->GetFormType(), thisForm);
+	}
+
+	void UnregisterForActorAction(TESForm * thisForm, UInt32 actionType)
+	{
+		if(!thisForm)
+			return;
+
+		g_actionEventRegs.Unregister<TESForm>(actionType, thisForm->GetFormType(), thisForm);
+	}
+
 	TESForm * TempClone(TESForm * thisForm)
 	{
 		TESForm	* result = NULL;
@@ -281,6 +297,7 @@ namespace papyrusForm
 				{
 					result->Init();
 					result->CopyFrom(thisForm);
+					result->CopyFromEx(thisForm);
 				}
 				else
 				{
@@ -380,6 +397,12 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction0 <TESForm, void> ("UnregisterForCrosshairRef", "Form", papyrusForm::UnregisterForCrosshairRef, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, UInt32> ("RegisterForActorAction", "Form", papyrusForm::RegisterForActorAction, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, UInt32> ("UnregisterForActorAction", "Form", papyrusForm::UnregisterForActorAction, registry));
+
 	registry->SetFunctionFlags("Form", "RegisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Form", "UnregisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Form", "UnregisterForAllKeys", VMClassRegistry::kFunctionFlag_NoWait);
@@ -396,4 +419,6 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Form", "UnregisterForCameraState", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Form", "RegisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Form", "UnregisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "RegisterForActorAction", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Form", "UnregisterForActorAction", VMClassRegistry::kFunctionFlag_NoWait);
 }

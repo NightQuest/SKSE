@@ -120,6 +120,10 @@ namespace scaleformExtend
 					RegisterNumber(pFxVal, "minRange", pWeapon->minRange());
 					RegisterNumber(pFxVal, "maxRange", pWeapon->maxRange());
 					RegisterNumber(pFxVal, "baseDamage", pWeapon->damage.GetAttackDamage());
+
+					BGSEquipSlot * equipSlot = pWeapon->equipType.GetEquipSlot();
+					if (equipSlot)
+						RegisterNumber(pFxVal, "equipSlot", equipSlot->formID);
 				}
 			}
 			break;
@@ -214,6 +218,10 @@ namespace scaleformExtend
 				{
 					RegisterNumber(pFxVal, "spellType", pSpellItem->data.type);
 					RegisterNumber(pFxVal, "trueCost", pSpellItem->GetMagickaCost());
+
+					BGSEquipSlot * equipSlot = pSpellItem->equipType.GetEquipSlot();
+					if (equipSlot)
+						RegisterNumber(pFxVal, "equipSlot", equipSlot->formID);
 				}
 
 				AlchemyItem * pAlchemyItem = DYNAMIC_CAST(pMagicItem, MagicItem, AlchemyItem);
@@ -405,11 +413,11 @@ namespace scaleformExtend
 					GFxValue addedSpells;
 					movieView->CreateArray(&addedSpells);
 
-					for(int i = 0; i < pActor->addedSpells.spellCount && pActor->addedSpells.flags == 0; i++)
+					for(int i = 0; i < pActor->addedSpells.Length(); i++)
 					{
 						GFxValue spell;
 						movieView->CreateObject(&spell);
-						scaleformExtend::FormData(&spell, movieView, pActor->addedSpells.spells[i], bRecursive ? bExtra : false, bRecursive);
+						scaleformExtend::FormData(&spell, movieView, pActor->addedSpells.Get(i), bRecursive ? bExtra : false, bRecursive);
 						addedSpells.PushBack(&spell);
 					}
 
@@ -435,6 +443,7 @@ namespace scaleformExtend
 							RegisterNumber(&effect, "elapsed", pEffect->elapsed);
 							RegisterNumber(&effect, "duration", pEffect->duration);
 							RegisterNumber(&effect, "magnitude", pEffect->magnitude);
+							RegisterBool(&effect, "inactive", (pEffect->flags & ActiveEffect::kFlag_Inactive) == ActiveEffect::kFlag_Inactive);
 							
 							// ActiveEffect
 							if(pEffect->effect && pEffect->effect->mgef)

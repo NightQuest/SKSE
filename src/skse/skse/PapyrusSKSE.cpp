@@ -1,6 +1,9 @@
 #include "PapyrusSKSE.h"
 
 #include "skse_version.h"
+#include "PluginManager.h"
+
+extern PluginManager	g_pluginManager;
 
 namespace papyrusSKSE {
 
@@ -22,6 +25,15 @@ namespace papyrusSKSE {
 	{
 		return SKSE_VERSION_RELEASEIDX;
 	}
+	UInt32 GetPluginVersion(StaticFunctionTag* base, BSFixedString name)
+	{
+		PluginInfo * info = g_pluginManager.GetInfoByName(name.data);
+		if(info) {
+			return info->version;
+		}
+
+		return -1;
+	}
 }
 
 #include "PapyrusVM.h"
@@ -41,8 +53,12 @@ void papyrusSKSE::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction0<StaticFunctionTag, UInt32>("GetVersionRelease", "SKSE", papyrusSKSE::GetVersionRelease, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction1<StaticFunctionTag, UInt32, BSFixedString>("GetPluginVersion", "SKSE", papyrusSKSE::GetPluginVersion, registry));
+
 	registry->SetFunctionFlags("SKSE", "GetVersion", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("SKSE", "GetVersionMinor", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("SKSE", "GetVersionBeta", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("SKSE", "GetVersionRelease", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("SKSE", "GetPluginVersion", VMClassRegistry::kFunctionFlag_NoWait);
 }

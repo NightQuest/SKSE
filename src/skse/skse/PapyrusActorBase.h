@@ -9,6 +9,7 @@ class TESClass;
 class SpellItem;
 class BGSHeadPart;
 class BGSTextureSet;
+class TESObjectARMO;
 
 namespace papyrusActorBase {
 	void RegisterFuncs(VMClassRegistry* registry);
@@ -35,4 +36,10 @@ namespace papyrusActorBase {
 
 	UInt32 GetSpellCount(TESNPC* thisNPC);
 	SpellItem* GetNthSpell(TESNPC* thisNPC, UInt32 n);
+
+	TESObjectARMO * GetSkin(TESNPC* thisNPC);
+	void SetSkin(TESNPC* thisNPC, TESObjectARMO * skin);
+	TESObjectARMO * GetSkinFar(TESNPC* thisNPC);
+	void SetSkinFar(TESNPC* thisNPC, TESObjectARMO * skin);
+	TESNPC* GetTemplate(TESNPC* thisNPC);
 };

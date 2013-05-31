@@ -16,4 +16,8 @@ namespace papyrusPotion
 	UInt32 GetNthEffectDuration(AlchemyItem* thisMagic, UInt32 index);
 	EffectSetting* GetNthEffectMagicEffect(AlchemyItem* thisMagic, UInt32 index);
 	UInt32 GetCostliestEffectIndex(AlchemyItem* thisMagic);
+
+	void SetNthEffectMagnitude(AlchemyItem* thisMagic, UInt32 index, float value);
+	void SetNthEffectArea(AlchemyItem* thisMagic, UInt32 index, UInt32 value);
+	void SetNthEffectDuration(AlchemyItem* thisMagic, UInt32 index, UInt32 value);
 };

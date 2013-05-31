@@ -74,6 +74,31 @@ class BarterMenu : public IMenu
 class BGSHeadPart;
 class TESRace;
 
+class RaceMenuSlider
+{
+public:
+	RaceMenuSlider::RaceMenuSlider() {};
+	RaceMenuSlider::RaceMenuSlider(UInt32 filterFlag, const char * sliderName, const char * callbackName, UInt32 sliderId, UInt32 index, UInt32 type, UInt8 unk8, float min, float max, float value, float interval, UInt32 unk13);
+
+	float	min;	// 00
+	float	max;	// 04
+	float	value;	// 08
+	float	interval;	// 0C
+	UInt32	filterFlag;	// 10
+	UInt32	type;	// 14
+	char	* name;	// 18
+	char	callback[0x104];	// 1C
+	UInt32	index;	// 120
+	UInt32	id;	// 124
+	UInt32	unk128;	// 128
+	UInt32	unk12C;	// 12C - 0x7F7FFFFF
+	UInt8	unk130;	// 130
+	UInt8	pad131[3]; // 131
+
+	MEMBER_FN_PREFIX(RaceMenuSlider);
+	DEFINE_MEMBER_FN(Construct, RaceMenuSlider *, 0x0087D840, UInt32 filterFlag, const char * sliderName, const char * callbackName, UInt32 sliderId, UInt32 index, UInt32 type, UInt8 unk8, float min, float max, float value, float interval, UInt32 unk13);
+};
+
 class RaceSexMenu : public IMenu
 {
 public:
@@ -93,13 +118,21 @@ public:
 
 	struct RaceComponent
 	{
-		TESRace				* race;
-		UInt32				unk04[4];
+		TESRace				* race;			// 00
+		tArray<RaceMenuSlider>	sliders;	// 04
+		UInt32				unk10;			// 10
 	};
 
-	tArray<RaceComponent>	race1;
-	tArray<RaceComponent>	race2;
+	tArray<RaceComponent>	race1;			// C0
+	tArray<RaceComponent>	sliderData;		// CC
+	UInt32					unkD8;			// D8
+	UInt32					unkDC;			// DC
+	UInt32					unkE0;			// E0
+	UInt32					raceIndex;		// E4
 };
+
+STATIC_ASSERT(offsetof(RaceSexMenu, race1) == 0xC0);
+STATIC_ASSERT(offsetof(RaceSexMenu, raceIndex) == 0xE4);
 
 class MapMenu : public IMenu
 {
@@ -505,23 +538,3 @@ public:
 	GFxMovieView *		GetMovieView(BSFixedString * menuName);
 };
 STATIC_ASSERT(sizeof(MenuManager) == 0x11C);
-
-// 20
-class MagicFavorites
-{
-//	void			** _vtbl;	// 00
-	UInt32			unk004;		// 04
-	UnkFormArray	spells;		// 08
-	UnkFormArray	hotkeys;	// 14
-
-public:
-	virtual	~MagicFavorites();
-
-	void	SetHotkey(TESForm * form, SInt8 idx);
-	void	ClearHotkey(SInt8 idx);
-
-	static MagicFavorites * GetSingleton(void)
-	{
-		return *((MagicFavorites **)0x01B2E39C);
-	}
-};

@@ -145,6 +145,22 @@ namespace papyrusAlias
 
 		g_crosshairRefEventRegs.Unregister<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisForm);
 	}
+
+	void RegisterForActorAction(BGSBaseAlias * thisForm, UInt32 actionType)
+	{
+		if(!thisForm)
+			return;
+
+		g_actionEventRegs.Register<BGSBaseAlias>(actionType, BGSBaseAlias::kTypeID, thisForm);
+	}
+
+	void UnregisterForActorAction(BGSBaseAlias * thisForm, UInt32 actionType)
+	{
+		if(!thisForm)
+			return;
+
+		g_actionEventRegs.Unregister<BGSBaseAlias>(actionType, BGSBaseAlias::kTypeID, thisForm);
+	}
 }
 
 
@@ -210,6 +226,12 @@ void papyrusAlias::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForCrosshairRef", "Alias", papyrusAlias::UnregisterForCrosshairRef, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSBaseAlias, void, UInt32> ("RegisterForActorAction", "Alias", papyrusAlias::RegisterForActorAction, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <BGSBaseAlias, void, UInt32> ("UnregisterForActorAction", "Alias", papyrusAlias::UnregisterForActorAction, registry));
+
 	registry->SetFunctionFlags("Alias", "RegisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "UnregisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "UnregisterForAllKeys", VMClassRegistry::kFunctionFlag_NoWait);
@@ -226,4 +248,6 @@ void papyrusAlias::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Alias", "UnregisterForCameraState", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "RegisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "UnregisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "RegisterForActorAction", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Alias", "UnregisterForActorAction", VMClassRegistry::kFunctionFlag_NoWait);
 }

@@ -26,4 +26,10 @@ namespace papyrusActor
 	void UnequipItemEx(Actor* thisActor, TESForm* item, SInt32 slotId, bool preventEquip);
 
 	void ChangeHeadPart(Actor * thisActor, BGSHeadPart * newPart);
+	void RegenerateHead(Actor * thisActor);
+	void UpdateWeight(Actor * thisActor, float neckDelta);
+
+	bool IsAIEnabled(Actor * thisActor);
+	bool IsSwimming(Actor * thisActor);
+	void SheatheWeapon(Actor * thisActor);
 }

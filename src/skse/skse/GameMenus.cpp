@@ -33,27 +33,7 @@ IMenu * MenuManager::GetMenu(BSFixedString * menuName)
 	return menu;
 }
 
-void MagicFavorites::ClearHotkey(SInt8 idx)
+RaceMenuSlider::RaceMenuSlider(UInt32 filterFlag, const char * sliderName, const char * callbackName, UInt32 sliderId, UInt32 index, UInt32 type, UInt8 unk8, float min, float max, float value, float interval, UInt32 unk13)
 {
-	if (idx < 0 || idx >= hotkeys.count)
-		return;
-
-	hotkeys[idx] = NULL;
-}
-
-void MagicFavorites::SetHotkey(TESForm * form, SInt8 idx)
-{
-	if (idx < 0 || idx >= hotkeys.count)
-		return;
-
-	SInt8 oldIdx = hotkeys.GetItemIndex(form);
-	if (idx == oldIdx)
-		return;
-
-	SInt32 indexOut = -1;
-	if (GetSortIndex(spells, form, indexOut) && indexOut != -1)
-	{
-		hotkeys[oldIdx] = NULL;
-		hotkeys[idx] = form;
-	}	
+	CALL_MEMBER_FN(this, Construct)(filterFlag, sliderName, callbackName, sliderId, index, type, unk8, min, max, value, interval, unk13);
 }

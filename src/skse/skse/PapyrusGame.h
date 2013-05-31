@@ -47,7 +47,15 @@ namespace papyrusGame
 	SInt32 GetCameraState(StaticFunctionTag * base);
 	void SetMiscStat(StaticFunctionTag * base, BSFixedString name, UInt32 value);
 	void SetPlayersLastRiddenHorse(StaticFunctionTag * base, Actor* actor);
+	bool GetPlayerMovementMode(StaticFunctionTag * base);
+	void UpdateThirdPerson(StaticFunctionTag * base);
+
+	void UnbindObjectHotkey(StaticFunctionTag * base, SInt32 hotkey);
+	bool IsObjectHotkeyBound(StaticFunctionTag * base, SInt32 hotkey);
+	TESForm * GetHotkeyBoundObject(StaticFunctionTag * base, SInt32 hotkey);
 
 	SInt32 GetSkillLegendaryLevel(StaticFunctionTag * base, BSFixedString actorValue);
 	void SetSkillLegendaryLevel(StaticFunctionTag * base, BSFixedString actorValue, UInt32 level);
+
+	bool IsObjectFavorited(StaticFunctionTag * base, TESForm * form);
 };

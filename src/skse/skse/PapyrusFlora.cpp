@@ -10,7 +10,7 @@ namespace papyrusFlora
 
 	void SetIngredient(TESFlora* thisFlora, IngredientItem* ingredient)
 	{
-		if(thisFlora) {
+		if (thisFlora) {
 			thisFlora->produce.produce = ingredient;
 		}
 	}
@@ -22,7 +22,7 @@ namespace papyrusFlora
 
 	void SetHarvestSound(TESFlora* thisFlora, BGSSoundDescriptorForm * sound)
 	{
-		if(thisFlora) {
+		if (thisFlora) {
 			thisFlora->produce.harvestSound = sound;
 		}
 	}

@@ -8,11 +8,14 @@ namespace papyrusPerk
 {
 	UInt32 GetNumEntries(BGSPerk * perk)
 	{
-		return perk->perkEntries.count;
+		return (perk) ? perk->perkEntries.count : 0;
 	}
 
 	UInt32 GetNthEntryRank(BGSPerk * perk, UInt32 n)
 	{
+		if(!perk)
+			return 0;
+
 		BGSPerkEntry * perkEntry;
 		if(!perk->perkEntries.GetNthItem(n, perkEntry))
 			return 0;
@@ -22,6 +25,9 @@ namespace papyrusPerk
 
 	UInt32 GetNthEntryPriority(BGSPerk * perk, UInt32 n)
 	{
+		if(!perk)
+			return 0;
+
 		BGSPerkEntry * perkEntry;
 		if(!perk->perkEntries.GetNthItem(n, perkEntry))
 			return 0;
@@ -32,6 +38,9 @@ namespace papyrusPerk
 	// Quest Perk Entry
 	TESQuest * GetNthEntryQuest(BGSPerk * perk, UInt32 n)
 	{
+		if(!perk)
+			return NULL;
+
 		BGSPerkEntry * perkEntry;
 		if(!perk->perkEntries.GetNthItem(n, perkEntry))
 			return NULL;
@@ -45,6 +54,9 @@ namespace papyrusPerk
 
 	UInt32 GetNthEntryStage(BGSPerk * perk, UInt32 n)
 	{
+		if(!perk)
+			return 0;
+
 		BGSPerkEntry * perkEntry;
 		if(!perk->perkEntries.GetNthItem(n, perkEntry))
 			return 0;
@@ -60,6 +72,9 @@ namespace papyrusPerk
 	// EntryPoint Perk Entry
 	SpellItem * GetNthEntrySpell(BGSPerk * perk, UInt32 n)
 	{
+		if(!perk)
+			return NULL;
+
 		BGSPerkEntry * perkEntry;
 		if(!perk->perkEntries.GetNthItem(n, perkEntry))
 			return NULL;
@@ -84,6 +99,9 @@ namespace papyrusPerk
 
 	TESLevItem * GetNthEntryLeveledList(BGSPerk * perk, UInt32 n)
 	{
+		if(!perk)
+			return NULL;
+
 		BGSPerkEntry * perkEntry;
 		if(!perk->perkEntries.GetNthItem(n, perkEntry))
 			return NULL;
@@ -100,6 +118,9 @@ namespace papyrusPerk
 
 	BSFixedString GetNthEntryText(BGSPerk * perk, UInt32 n)
 	{
+		if(!perk)
+			return NULL;
+
 		BGSPerkEntry * perkEntry;
 		if(!perk->perkEntries.GetNthItem(n, perkEntry))
 			return NULL;
@@ -124,7 +145,7 @@ namespace papyrusPerk
 
 	float GetNthEntryValue(BGSPerk * perk, UInt32 n, UInt32 i)
 	{
-		if(i < 0 || i >= BGSEntryPointFunctionDataTwoValue::kNumValues)
+		if(!perk || i >= BGSEntryPointFunctionDataTwoValue::kNumValues)
 			return 0.0;
 
 		BGSPerkEntry * perkEntry;
@@ -147,6 +168,9 @@ namespace papyrusPerk
 
 	bool SetNthEntryRank(BGSPerk * perk, UInt32 n, UInt32 value)
 	{
+		if(!perk)
+			return false;
+
 		BGSPerkEntry * perkEntry;
 		if(perk->perkEntries.GetNthItem(n, perkEntry)) {
 			perkEntry->rank = value;
@@ -158,6 +182,9 @@ namespace papyrusPerk
 
 	bool SetNthEntryPriority(BGSPerk * perk, UInt32 n, UInt32 value)
 	{
+		if(!perk)
+			return false;
+
 		BGSPerkEntry * perkEntry;
 		if(perk->perkEntries.GetNthItem(n, perkEntry)) {
 			perkEntry->priority = value;
@@ -170,6 +197,9 @@ namespace papyrusPerk
 	// Quest Perk Entry
 	bool SetNthEntryQuest(BGSPerk * perk, UInt32 n, TESQuest * quest)
 	{
+		if(!perk)
+			return false;
+
 		BGSPerkEntry * perkEntry;
 		if(perk->perkEntries.GetNthItem(n, perkEntry)) {
 			BGSQuestPerkEntry * questEntry = DYNAMIC_CAST(perkEntry, BGSPerkEntry, BGSQuestPerkEntry);
@@ -184,6 +214,9 @@ namespace papyrusPerk
 
 	bool SetNthEntryStage(BGSPerk * perk, UInt32 n, UInt32 stage)
 	{
+		if(!perk)
+			return false;
+
 		BGSPerkEntry * perkEntry;
 		if(perk->perkEntries.GetNthItem(n, perkEntry)) {
 			BGSQuestPerkEntry * questEntry = DYNAMIC_CAST(perkEntry, BGSPerkEntry, BGSQuestPerkEntry);
@@ -200,6 +233,9 @@ namespace papyrusPerk
 	// EntryPoint Perk Entry
 	bool SetNthEntrySpell(BGSPerk * perk, UInt32 n, SpellItem * spell)
 	{
+		if(!perk)
+			return false;
+
 		BGSPerkEntry * perkEntry;
 		if(perk->perkEntries.GetNthItem(n, perkEntry)) {
 			BGSAbilityPerkEntry * abilityEntry = DYNAMIC_CAST(perkEntry, BGSPerkEntry, BGSAbilityPerkEntry);
@@ -229,6 +265,9 @@ namespace papyrusPerk
 
 	bool SetNthEntryLeveledList(BGSPerk * perk, UInt32 n, TESLevItem * leveledList)
 	{
+		if(!perk)
+			return false;
+
 		BGSPerkEntry * perkEntry;
 		if(perk->perkEntries.GetNthItem(n, perkEntry)) {
 			BGSEntryPointPerkEntry * entryPointEntry = DYNAMIC_CAST(perkEntry, BGSPerkEntry, BGSEntryPointPerkEntry);
@@ -246,6 +285,9 @@ namespace papyrusPerk
 
 	bool SetNthEntryText(BGSPerk * perk, UInt32 n, BSFixedString str)
 	{
+		if(!perk)
+			return false;
+
 		BGSPerkEntry * perkEntry;
 		if(perk->perkEntries.GetNthItem(n, perkEntry)) {
 			BGSEntryPointPerkEntry * entryPointEntry = DYNAMIC_CAST(perkEntry, BGSPerkEntry, BGSEntryPointPerkEntry);
@@ -275,7 +317,7 @@ namespace papyrusPerk
 
 	bool SetNthEntryValue(BGSPerk * perk, UInt32 n, UInt32 i, float value)
 	{
-		if(i >= 0 && i < BGSEntryPointFunctionDataTwoValue::kNumValues) {
+		if(perk && i < BGSEntryPointFunctionDataTwoValue::kNumValues) {
 			BGSPerkEntry * perkEntry;
 			if(perk->perkEntries.GetNthItem(n, perkEntry)) {
 				BGSEntryPointPerkEntry * entryPointEntry = DYNAMIC_CAST(perkEntry, BGSPerkEntry, BGSEntryPointPerkEntry);

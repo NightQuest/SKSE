@@ -246,9 +246,23 @@ bool Cmd_ClearInvalidRegistrations_Execute(COMMAND_ARGS)
 #include "PapyrusObjectReference.h"
 #include "PapyrusStringUtil.h"
 
+#include "NiSerialization.h"
+#include "NiNodes.h"
+
 bool Cmd_SKSETestFunc_Eval(COMMAND_ARGS_EVAL)
 {
-	TESObjectSTAT	* stat = (TESObjectSTAT *)LookupFormByID(0x0005C09F);
+	NiNode	* node = (*g_thePlayer)->GetNiNode();
+
+	UInt8		niStreamMemory[0x5B4];
+	NiStream	* niStream = (NiStream *)niStreamMemory;
+	CALL_MEMBER_FN(niStream, ctor)();
+
+	node->IncRef();
+	niStream->m_rootObjects.Append(node);
+
+	niStream->SavePath("head.nif");
+
+	CALL_MEMBER_FN(niStream, dtor)();
 
 	return true;	
 }

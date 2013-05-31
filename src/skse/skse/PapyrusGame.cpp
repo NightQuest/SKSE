@@ -10,6 +10,7 @@
 #include "GameCamera.h"
 #include "GameMenus.h"
 #include "GameThreads.h"
+#include "GameExtraData.h"
 
 #include "NiNodes.h"
 #include "Colors.h"
@@ -488,6 +489,97 @@ namespace papyrusGame
 			return pPC->skills->SetSkillLegendaryLevel(actorValue, level);
 		}
 	}
+
+	bool GetPlayerMovementMode(StaticFunctionTag * base)
+	{
+		PlayerControls * controls = PlayerControls::GetSingleton();
+		if(controls) {
+			return controls->runMode == 1;
+		}
+
+		return false;
+	}
+
+	void UpdateThirdPerson(StaticFunctionTag * base)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		PlayerCamera * camera = PlayerCamera::GetSingleton();
+		if(pPC && camera) {
+			CALL_MEMBER_FN(camera, UpdateThirdPerson)(pPC->actorState.IsWeaponDrawn());
+		}
+	}
+
+	void UnbindObjectHotkey(StaticFunctionTag * base, SInt32 hotkey)
+	{
+		MagicFavorites * magicFavorites = MagicFavorites::GetSingleton();
+		if(magicFavorites) {
+			magicFavorites->ClearHotkey(hotkey);
+		}
+
+		PlayerCharacter* pPC = (*g_thePlayer);
+		if(pPC && hotkey >= 0) {
+			ExtraContainerChanges* pContainerChanges = static_cast<ExtraContainerChanges*>(pPC->extraData.GetByType(kExtraData_ContainerChanges));
+			if (pContainerChanges) {
+				HotkeyData data = pContainerChanges->FindHotkey(hotkey);
+				if(data.pHotkey)
+					data.pHotkey->hotkey = -1;
+			}
+		}		
+	}
+
+	TESForm * GetHotkeyBoundObject(StaticFunctionTag * base, SInt32 hotkey)
+	{
+		PlayerCharacter* pPC = (*g_thePlayer);
+		if(!pPC || hotkey < 0)
+			return NULL;
+
+		MagicFavorites * magicFavorites = MagicFavorites::GetSingleton();
+		if(magicFavorites) {
+			TESForm * form = magicFavorites->GetSpell(hotkey);
+			if(form)
+				return form;
+		}
+
+		ExtraContainerChanges* pContainerChanges = static_cast<ExtraContainerChanges*>(pPC->extraData.GetByType(kExtraData_ContainerChanges));
+		if (pContainerChanges) {
+			HotkeyData data = pContainerChanges->FindHotkey(hotkey);
+			if(data.pForm)
+				return data.pForm;
+		}
+
+		return NULL;
+	}
+
+	bool IsObjectFavorited(StaticFunctionTag * base, TESForm * form)
+	{
+		PlayerCharacter* player = (*g_thePlayer);
+		if (!player || !form)
+			return false;
+
+		UInt8 formType = form->formType;
+
+		// Spell or shout - check MagicFavorites
+		if (formType == kFormType_Spell || formType == kFormType_Shout)
+		{
+			MagicFavorites * magicFavorites = MagicFavorites::GetSingleton();
+
+			return magicFavorites && magicFavorites->IsFavorited(form);
+		}
+		// Other - check ExtraHotkey. Any hotkey data (including -1) means favorited
+		else
+		{
+			bool result = false;
+			
+			ExtraContainerChanges* pContainerChanges = static_cast<ExtraContainerChanges*>(player->extraData.GetByType(kExtraData_ContainerChanges));
+			if (pContainerChanges) {
+				HotkeyData data = pContainerChanges->FindHotkey(form);
+				if (data.pHotkey)
+					result = true;
+			}
+
+			return result;
+		}
+	}
 }
 
 #include "PapyrusVM.h"
@@ -600,6 +692,22 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, void, Actor*>("SetPlayersLastRiddenHorse", "Game", papyrusGame::SetPlayersLastRiddenHorse, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <StaticFunctionTag, bool>("GetPlayerMovementMode", "Game", papyrusGame::GetPlayerMovementMode, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <StaticFunctionTag, void>("UpdateThirdPerson", "Game", papyrusGame::UpdateThirdPerson, registry));
+
+	// Hotkeys
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, void, SInt32>("UnbindObjectHotkey", "Game", papyrusGame::UnbindObjectHotkey, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, TESForm*, SInt32>("GetHotkeyBoundObject", "Game", papyrusGame::GetHotkeyBoundObject, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, bool, TESForm*>("IsObjectFavorited", "Game", papyrusGame::IsObjectFavorited, registry));
 
 	// Skills
 	registry->RegisterFunction(

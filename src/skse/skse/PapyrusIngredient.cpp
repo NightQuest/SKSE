@@ -22,6 +22,15 @@ namespace papyrusIngredient
 
 	UInt32 GetCostliestEffectIndex(IngredientItem* thisMagic)
 	{ return magicItemUtils::GetCostliestEffectIndex(thisMagic); }
+
+	void SetNthEffectMagnitude(IngredientItem* thisMagic, UInt32 index, float value)
+	{ magicItemUtils::SetNthEffectMagnitude(thisMagic, index, value); }
+
+	void SetNthEffectArea(IngredientItem* thisMagic, UInt32 index, UInt32 value)
+	{ magicItemUtils::SetNthEffectArea(thisMagic, index, value); }
+
+	void SetNthEffectDuration(IngredientItem* thisMagic, UInt32 index, UInt32 value)
+	{ magicItemUtils::SetNthEffectDuration(thisMagic, index, value); }
 }
 
 #include "PapyrusVM.h"
@@ -46,4 +55,14 @@ void papyrusIngredient::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0<IngredientItem, UInt32>("GetCostliestEffectIndex", "Ingredient", papyrusIngredient::GetCostliestEffectIndex, registry));
+
+	// Sets
+	registry->RegisterFunction(
+		new NativeFunction2<IngredientItem, void, UInt32, float>("SetNthEffectMagnitude", "Ingredient", papyrusIngredient::SetNthEffectMagnitude, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2<IngredientItem, void, UInt32, UInt32>("SetNthEffectArea", "Ingredient", papyrusIngredient::SetNthEffectArea, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2<IngredientItem, void, UInt32, UInt32>("SetNthEffectDuration", "Ingredient", papyrusIngredient::SetNthEffectDuration, registry));
 }

@@ -18,6 +18,8 @@ class EnchantmentItem;
 class TESFaction;
 class BGSVoiceType;
 class BGSEquipSlot;
+class Actor;
+class TESObjectARMO;
 
 //// root
 
@@ -252,7 +254,7 @@ public:
 class BGSSkinForm : public BaseFormComponent
 {
 public:
-	UInt32	unk04;	// 04
+	TESObjectARMO	* skin;	// 04
 };
 
 // 18
@@ -974,6 +976,67 @@ public:
 
 	UInt32 ToARGB();
 };
+
+// ??
+class ActorWeightData
+{
+public:
+	UInt32	unk00;		// 00 - Refcount?
+	void	* unk04;	// 04
+	void	* unk08;	// 08
+
+	MEMBER_FN_PREFIX(ActorWeightData);
+	DEFINE_MEMBER_FN(UpdateWeightData, void, 0x0046D690);
+	// DEFINE_MEMBER_FN(Unk_02, void, 0x004145F0);
+};
+
+// ??
+class ActorWeightModel
+{
+public:
+	enum {
+		kWeightModel_Small = 0,
+		kWeightModel_Large = 1
+	};
+	ActorWeightData * weightData;
+};
+
+// A0
+class ActorEquipData
+{
+public:
+	enum {
+		kEquippedHand_Left = 0,
+		kEquippedHand_Right = 1
+	};
+	enum {
+		kFlags_None = 0,
+		kFlags_Unk01 = 1,
+		kFlags_Unk02 = 2,
+		kFlags_Unk03 = 4,
+		kFlags_DrawHead = 8,
+		kFlags_Mobile = 16,
+		kFlags_Reset = 32
+	};
+	UInt32	unk00;						// 00
+	void	* unk04;					// 04
+	void	* unk08;					// 08
+	UInt32	unk0C[(0x68 - 0x0C) >> 2];	// 0C
+	TESForm	* equippedObject[2];		// 68
+	UInt32	unk70[(0x98 - 0x70) >> 2];	// 70
+	UInt8	unk98;						// 98
+	UInt8	unk9A;						// 9A
+	SInt8	unk9B;						// 9B
+	UInt8	unk9C[(0xA0 - 0x9C)];		// 9C
+
+	MEMBER_FN_PREFIX(ActorEquipData);
+	DEFINE_MEMBER_FN(SetEquipFlag, void, 0x0071F520, UInt8 flags);
+	DEFINE_MEMBER_FN(UpdateEquipment, void, 0x007031A0, Actor * actor);
+	DEFINE_MEMBER_FN(SetDataFlag, void, 0x006FD1A0, UInt32 flag); // Sets a number on the 0x08 object
+};
+
+STATIC_ASSERT(offsetof(ActorEquipData, equippedObject) == 0x68);
+STATIC_ASSERT(sizeof(ActorEquipData) == 0xA0);
 
 class PlayerSkills
 {

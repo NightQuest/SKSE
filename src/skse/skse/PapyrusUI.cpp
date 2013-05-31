@@ -30,8 +30,8 @@ namespace papyrusUI
 	}
 
 	// Delegate object pools
-	IThreadSafeBasicMemPool<UIInvokeDelegate,40>		s_invokeDelegatePool;
-	IThreadSafeBasicMemPool<UIInvokeFormDelegate,40>	s_invokeFormDelegatePool;
+	IThreadSafeBasicMemPool<UIInvokeDelegate,64>		s_invokeDelegatePool;
+	IThreadSafeBasicMemPool<UIInvokeFormDelegate,64>	s_invokeFormDelegatePool;
 
 	UIInvokeDelegate * UIInvokeDelegate::Create(const char * nameBuf, const char * targetBuf)
 	{

@@ -71,7 +71,6 @@ EquipManager * EquipManager::GetSingleton(void)
 const _GetEitherHandSlot GetEitherHandSlot = (_GetEitherHandSlot)0x0054C870;
 const _GetRightHandSlot GetRightHandSlot = (_GetRightHandSlot)0x0054C840;
 const _GetLeftHandSlot GetLeftHandSlot = (_GetLeftHandSlot)0x0054C810;
-
 const _LookupActorValueByName LookupActorValueByName = (_LookupActorValueByName)0x005AD5F0;
 
 ActorValueList * ActorValueList::GetSingleton(void)
@@ -84,8 +83,18 @@ ActorValueInfo * ActorValueList::GetActorValue(UInt32 id)
 	return (id < kNumActorValues) ? actorValues[id] : NULL;
 }
 
-const _ChangeActorHeadPart ChangeActorHeadPart = (_ChangeActorHeadPart)0x005AA4E0; // Changes one HeadPart to another
-const _UpdatePlayerTints UpdatePlayerTints = (_UpdatePlayerTints)0x0087EE70; // Regenerates dynamic tints
+FaceMorphList * FaceMorphList::GetSingleton(void)
+{
+	return (FaceMorphList *)0x012593A8;
+}
+
+FacePresetList * FacePresetList::GetSingleton(void)
+{
+	return (FacePresetList *)0x0125948C;
+}
+
+const _ChangeActorHeadPart ChangeActorHeadPart = (_ChangeActorHeadPart)0x005AA4E0;
+const _UpdatePlayerTints UpdatePlayerTints = (_UpdatePlayerTints)0x0087EE70;
 
 FaceGen * FaceGen::GetSingleton(void)
 {
@@ -94,3 +103,47 @@ FaceGen * FaceGen::GetSingleton(void)
 
 const _GetActorBaseOverlays GetActorBaseOverlays = (_GetActorBaseOverlays)0x00568280;
 const _GetNumActorBaseOverlays GetNumActorBaseOverlays = (_GetNumActorBaseOverlays)0x005682F0;
+
+const _ApplyMasksToRenderTarget ApplyMasksToRenderTarget = (_ApplyMasksToRenderTarget)0x005A90A0;
+
+const _CacheTRIFile CacheTRIFile = (_CacheTRIFile)0x005A2B40;
+
+void MagicFavorites::ClearHotkey(SInt8 idx)
+{
+	if (idx < 0 || idx >= hotkeys.count)
+		return;
+
+	hotkeys[idx] = NULL;
+}
+
+void MagicFavorites::SetHotkey(TESForm * form, SInt8 idx)
+{
+	if (idx < 0 || idx >= hotkeys.count)
+		return;
+
+	SInt8 oldIdx = hotkeys.GetItemIndex(form);
+	if (idx == oldIdx)
+		return;
+
+	if (IsFavorited(form))
+	{
+		hotkeys[oldIdx] = NULL;
+		hotkeys[idx] = form;
+	}	
+}
+
+TESForm * MagicFavorites::GetSpell(SInt8 idx)
+{
+	TESForm * form;
+	hotkeys.GetNthItem(idx, form);
+	return form;
+}
+
+bool MagicFavorites::IsFavorited(TESForm * form)
+{
+	SInt32 indexOut = -1;
+	if (GetSortIndex(spells, form, indexOut) && indexOut != -1)
+		return true;
+	else
+		return false;
+}

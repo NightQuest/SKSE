@@ -121,3 +121,20 @@ int Function GetSkillLegendaryLevel(string actorValue) global native
 
 ; Sets the legendary level for the skill
 Function SetSkillLegendaryLevel(string actorValue, int level) global native
+
+; Returns true if in run mode, false if in walk mode
+; Does not reflect actual movement state, only the control mode
+bool Function GetPlayerMovementMode() global native
+
+; Updates the camera when changing Shoulder positions
+Function UpdateThirdPerson() global native
+
+; Hotkeys 0-7 reflect keys 1-8
+; Unbinds a favorited item bound to the specified hotkey
+Function UnbindObjectHotkey(int hotkey) global native
+
+; Returns the base form object that is bound to the specified hotkey
+Form Function GetHotkeyBoundObject(int hotkey) global native
+
+; Returns if base form is favorited by the player
+bool Function IsObjectFavorited(Form form) global native

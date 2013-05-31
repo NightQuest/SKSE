@@ -6,23 +6,17 @@ namespace papyrusTextureSet
 {
 	UInt32 GetNumTexturePaths(BGSTextureSet * thisTextureSet)
 	{
-		if(thisTextureSet)
-			return BGSTextureSet::kNumTextures;
-
-		return 0;
+		return thisTextureSet ? BGSTextureSet::kNumTextures : NULL;
 	}
 
 	BSFixedString GetNthTexturePath(BGSTextureSet * thisTextureSet, UInt32 n)
 	{
-		if(thisTextureSet && n >= 0 && n < BGSTextureSet::kNumTextures)
-			return thisTextureSet->texturePaths[n].str;
-
-		return NULL;
+		return (thisTextureSet && n < BGSTextureSet::kNumTextures) ? thisTextureSet->texturePaths[n].str : NULL;
 	}
 
 	void SetNthTexturePath(BGSTextureSet * thisTextureSet, UInt32 n, BSFixedString texturePath)
 	{
-		if(thisTextureSet && n >= 0 && n < BGSTextureSet::kNumTextures) {
+		if(thisTextureSet && n < BGSTextureSet::kNumTextures) {
 			thisTextureSet->texturePaths[n].str = texturePath;
 		}
 	}

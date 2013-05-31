@@ -7,7 +7,7 @@ namespace papyrusSpell
 {
 	float GetCastTime(SpellItem* thisSpell)
 	{
-		return (thisSpell)? thisSpell->data.castTime : 0.0;
+		return (thisSpell) ? thisSpell->data.castTime : 0.0;
 	}
 
 	BGSPerk* GetPerk(SpellItem* thisSpell)
@@ -35,15 +35,38 @@ namespace papyrusSpell
 
 	UInt32 GetMagickaCost(SpellItem* thisSpell)
 	{
-		return (thisSpell) ? thisSpell->GetMagickaCost() : 0;
+		return thisSpell ? thisSpell->GetMagickaCost() : 0;
 	}
 
 	UInt32 GetEffectiveMagickaCost(SpellItem* thisSpell, Character* caster)
 	{
-		if (!thisSpell)
-			return 0;
+		return thisSpell ? CALL_MEMBER_FN(thisSpell,GetEffectiveMagickaCost)(caster) : 0;
+	}
 
-		return CALL_MEMBER_FN(thisSpell,GetEffectiveMagickaCost)(caster);
+	void SetNthEffectMagnitude(SpellItem* thisMagic, UInt32 index, float value)
+	{ magicItemUtils::SetNthEffectMagnitude(thisMagic, index, value); }
+
+	void SetNthEffectArea(SpellItem* thisMagic, UInt32 index, UInt32 value)
+	{ magicItemUtils::SetNthEffectArea(thisMagic, index, value); }
+
+	void SetNthEffectDuration(SpellItem* thisMagic, UInt32 index, UInt32 value)
+	{ magicItemUtils::SetNthEffectDuration(thisMagic, index, value); }
+
+	BGSEquipSlot * GetEquipType(SpellItem* thisMagic)
+	{
+		if (thisMagic) {
+			return thisMagic->equipType.GetEquipSlot();
+		}
+
+		// Invalid EquipSlot
+		return NULL;
+	}
+
+	void SetEquipType(SpellItem* thisMagic, BGSEquipSlot * slot)
+	{
+		if (thisMagic && slot) {
+			thisMagic->equipType.SetEquipSlot(slot);
+		}
 	}
 }
 
@@ -51,7 +74,7 @@ namespace magicItemUtils
 {
 	UInt32 GetNumEffects(MagicItem* thisMagic)
 	{
-		return (thisMagic) ? thisMagic->effectItemList.count : 0;
+		return thisMagic ? thisMagic->effectItemList.count : 0;
 	}
 
 	float GetNthEffectMagnitude(MagicItem* thisMagic, UInt32 index)
@@ -94,13 +117,44 @@ namespace magicItemUtils
 		return (pEI) ? pEI->mgef : NULL;
 	}
 
+	void SetNthEffectMagnitude(MagicItem* thisMagic, UInt32 index, float value)
+	{
+		if(thisMagic)
+		{
+			MagicItem::EffectItem* pEI = NULL;
+			thisMagic->effectItemList.GetNthItem(index, pEI);
+			if(pEI)
+				pEI->magnitude = value;
+		}
+	}
+
+	void SetNthEffectArea(MagicItem* thisMagic, UInt32 index, UInt32 value)
+	{
+		if (thisMagic) {
+			MagicItem::EffectItem* pEI = NULL;
+			thisMagic->effectItemList.GetNthItem(index, pEI);
+			if(pEI)
+				pEI->area = value;
+		}		
+	}
+
+	void SetNthEffectDuration(MagicItem* thisMagic, UInt32 index, UInt32 value)
+	{
+		if (thisMagic) {
+			MagicItem::EffectItem* pEI = NULL;
+			thisMagic->effectItemList.GetNthItem(index, pEI);
+			if(pEI)
+				pEI->duration = value;
+		}
+	}
+
 	UInt32 GetCostliestEffectIndex(MagicItem* thisMagic)
 	{
 		if (!thisMagic)
 			return 0;
 
 		MagicItem::EffectItem * pEI = CALL_MEMBER_FN(thisMagic, GetCostliestEffectItem)(5, false);
-		return (pEI) ? thisMagic->effectItemList.GetItemIndex(pEI) : 0;
+		return pEI ? thisMagic->effectItemList.GetItemIndex(pEI) : 0;
 	}
 }
 
@@ -138,4 +192,21 @@ void papyrusSpell::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1<SpellItem, UInt32, Character*>("GetEffectiveMagickaCost", "Spell", papyrusSpell::GetEffectiveMagickaCost, registry));
+
+	// Sets
+	registry->RegisterFunction(
+		new NativeFunction2<SpellItem, void, UInt32, float>("SetNthEffectMagnitude", "Spell", papyrusSpell::SetNthEffectMagnitude, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2<SpellItem, void, UInt32, UInt32>("SetNthEffectArea", "Spell", papyrusSpell::SetNthEffectArea, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2<SpellItem, void, UInt32, UInt32>("SetNthEffectDuration", "Spell", papyrusSpell::SetNthEffectDuration, registry));
+
+	// EquipType
+	registry->RegisterFunction(
+		new NativeFunction0 <SpellItem, BGSEquipSlot*>("GetEquipType", "Spell", papyrusSpell::GetEquipType, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <SpellItem, void, BGSEquipSlot*>("SetEquipType", "Spell", papyrusSpell::SetEquipType, registry));
 }

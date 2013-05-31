@@ -29,6 +29,8 @@ public:
  //	ExtraUsedMarkers
  //	ExtraDistantData
  //	ExtraRagDollData
+class ExtraHotkey;
+
 class ExtraContainerChanges : public BSExtraData
 {
 public:
@@ -74,9 +76,18 @@ public:
 		TESForm* pForm;
 		BaseExtraList* pExtraData;
 	};
-	FoundEquipData FindEquipped(FormMatcher& matcher) const;
+
+	struct FoundHotkeyData {
+		TESForm* pForm;
+		ExtraHotkey * pHotkey;
+	};
+
+	FoundEquipData	FindEquipped(FormMatcher& matcher) const;
+	FoundHotkeyData	FindHotkey(SInt32 hotkey) const;
+	FoundHotkeyData	FindHotkey(TESForm * form) const;
 };
 typedef ExtraContainerChanges::FoundEquipData EquipData;
+typedef ExtraContainerChanges::FoundHotkeyData HotkeyData;
  
  class ExtraWorn : public BSExtraData
 {

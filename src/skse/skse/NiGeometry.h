@@ -1,6 +1,7 @@
 #pragma once
 
 #include "skse/NiNodes.h"
+#include "skse/NiProperties.h"
 
 // NiGeometry, NiGeometryData and children
 
@@ -12,12 +13,27 @@ class NiAdditionalGeometryData;
 class NiGeometry : public NiAVObject
 {
 public:
-	void			* m_spPropertyState;	// A8 - unconfirmed
-	void			* m_spEffectState;		// AC - unconfirmed
+	virtual void Unk_33(void); // call controller vtbl+0xA0?
+	virtual void Unk_34(void); // ret 0
+	virtual void Unk_35(void); // same as Unk_33
+	virtual void * Unk_36(void); // ret call m_spModelData vtbl+0x9C
+	virtual void Unk_37(NiGeometryData * unk1); // set and AddRef geometry data
+	virtual void * Unk_38(void); // ret call m_spModelData vtbl+0x94
+	virtual UInt16 Unk_39(bool unk1); // ??
+
+	NiProperty		* m_spPropertyState;	// A8 - unconfirmed
+	NiProperty		* m_spEffectState;		// AC - unconfirmed
 	NiGeometryData	* m_spModelData;		// B0
 	NiSkinInstance	* m_spSkinInstance;		// B4
 
 	// ... materials
+
+	//MEMBER_FN_PREFIX(NiGeometry);
+	//DEFINE_MEMBER_FN(SetEffectState, void, 0x004614A0, NiProperty * effectState);
+	//DEFINE_MEMBER_FN(SetSkinInstance, void, 0x0046AD10, NiSkinInstance * skinInstance);
+	void SetEffectState(NiProperty * effectState);
+	void SetSkinInstance(NiSkinInstance * skinInstance);
+	void SetModelData(NiGeometryData * modelData);
 };
 
 class NiTriBasedGeom : public NiGeometry
@@ -29,6 +45,18 @@ class NiTriShape : public NiTriBasedGeom
 {
 public:
 };
+
+class BSSegmentedTriShape : public NiTriShape
+{
+public:
+};
+
+
+class NiTriStrips : public NiTriBasedGeom
+{
+public:
+};
+
 
 // 48+
 class NiGeometryData : public NiObject
@@ -45,7 +73,7 @@ public:
 	UInt16	m_usDirtyFlags;				// 0C
 	UInt16	m_usDataFlags;				// 0E
 	NiBound	m_kBound;					// 10
-	float	* m_pkVertex;				// 20
+	NiPoint3	* m_pkVertex;			// 20
 	float	* m_pkNormal;				// 24 - all normals, then all binormals etc
 	float	* m_pkColor;				// 28 - yes really, floats (b g r a)
 	float	* m_pkTexture;				// 2C
@@ -149,4 +177,6 @@ public:
 	NiAVObject		* m_pkRootParent;		// 10
 	NiAVObject		** m_ppkBones;			// 14
 	// ...
+	MEMBER_FN_PREFIX(NiSkinInstance);
+	DEFINE_MEMBER_FN(SetSkinPartition, void, 0x0046ACC0, NiSkinPartition * skinPartition);
 };

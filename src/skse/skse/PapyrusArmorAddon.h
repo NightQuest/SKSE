@@ -18,4 +18,9 @@ namespace papyrusArmorAddon
 
 	UInt32 GetNumAdditionalRaces(TESObjectARMA* thisArmorAddon);
 	TESRace* GetNthAdditionalRace(TESObjectARMA* thisArmorAddon, UInt32 n);
+
+	UInt32 GetSlotMask(TESObjectARMA* thisArmorAddon);
+	void SetSlotMask(TESObjectARMA* thisArmorAddon, UInt32 slotMask);
+	UInt32 AddSlotToMask(TESObjectARMA* thisArmorAddon, UInt32 slot);
+	UInt32 RemoveSlotFromMask(TESObjectARMA* thisArmorAddon, UInt32 slot);
 }

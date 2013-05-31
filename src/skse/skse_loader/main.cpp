@@ -104,7 +104,16 @@ int main(int argc, char ** argv)
 		IFileStream	fileCheck;
 		if(!fileCheck.Open(procPath.c_str()))
 		{
-			PrintLoaderError("Couldn't find %s.", procName.c_str());
+			if(usedCustomRuntimeName)
+			{
+				// hurr durr
+				PrintLoaderError("Couldn't find %s. You have customized the runtime name via SKSE's .ini file, and that file does not exist. This can usually be fixed by removing the RuntimeName line from the .ini file.)", procName.c_str());
+			}
+			else
+			{
+				PrintLoaderError("Couldn't find %s.", procName.c_str());
+			}
+
 			return 1;
 		}
 	}
@@ -184,7 +193,7 @@ int main(int argc, char ** argv)
 		}
 
 		// same for standard and nogore
-		const char * kAppID = "72850";
+		const char * kAppID = (g_options.m_launchCS == false ? "72850" : "202480");
 
 		// set this no matter what to work around launch issues
 		SetEnvironmentVariable("SteamGameId", kAppID);

@@ -89,6 +89,9 @@ void Core_SaveCallback(SKSESerializationInterface * intfc)
 
 	_MESSAGE("Saving camera event registrations...");
 	g_cameraEventRegs.Save(intfc, 'CAMR', 1);
+
+	_MESSAGE("Saving actor action event registrations...");
+	g_actionEventRegs.Save(intfc, 'AACT', 1);
 }
 
 void Core_LoadCallback(SKSESerializationInterface * intfc)
@@ -141,6 +144,12 @@ void Core_LoadCallback(SKSESerializationInterface * intfc)
 			g_cameraEventRegs.Load(intfc, 1);
 			break;
 
+		// Actor Actions events
+		case 'AACT':
+			_MESSAGE("Loading actor action event registrations...");
+			g_actionEventRegs.Load(intfc, 1);
+			break;
+
 		default:
 			_MESSAGE("Unhandled chunk type in Core_LoadCallback: %08X (%.4s)", type, &type);
 			continue;
@@ -150,6 +159,7 @@ void Core_LoadCallback(SKSESerializationInterface * intfc)
 
 void Init_CoreSerialization_Callbacks()
 {
+	Serialization::SetUniqueID(0, 0);
 	Serialization::SetRevertCallback(0, Core_RevertCallback);
 	Serialization::SetSaveCallback(0, Core_SaveCallback);
 	Serialization::SetLoadCallback(0, Core_LoadCallback);

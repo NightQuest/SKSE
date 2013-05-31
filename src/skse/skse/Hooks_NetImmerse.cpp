@@ -1,9 +1,6 @@
 #include "Hooks_NetImmerse.h"
 #include "SafeWrite.h"
 #include "Utilities.h"
-#include "GameTypes.h"
-#include "GameFormComponents.h"
-#include "NiObjects.h"
 
 #include "common/ICriticalSection.h"
 
@@ -11,10 +8,6 @@ UInt32 g_tintTextureResolution = 256;
 
 _ClipTextureDimensions ClipTextureDimensions = (_ClipTextureDimensions)0x00C90AC0;
 
-NiDX9Renderer * NiDX9Renderer::GetSingleton()
-{
-	return *((NiDX9Renderer **)0x01BA76FC);
-}
 
 void * __stdcall ClipTextureDimensions_Hook(NiDX9Renderer * renderer, UInt32 type, UInt32 * height, UInt32 * width, UInt32 * a5, UInt32 * a6, UInt32 * a7, UInt32 * a8, UInt32 * a9, UInt32 * a10)
 {

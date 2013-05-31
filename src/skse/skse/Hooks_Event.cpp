@@ -20,6 +20,7 @@ PlayerControls * PlayerControls::ctor_Hook(void)
 	g_modCallbackEventDispatcher.AddEventSink(&g_modCallbackEventHandler);
 	g_cameraEventDispatcher.AddEventSink(&g_cameraEventHandler);
 	g_crosshairRefEventDispatcher.AddEventSink(&g_crosshairRefEventHandler);
+	g_actionEventDispatcher.AddEventSink(&g_actionEventHandler);
 
 	if (*g_inputEventDispatcher) {
 		(*g_inputEventDispatcher)->AddEventSink(&g_inputEventHandler);
@@ -33,5 +34,5 @@ PlayerControls * PlayerControls::ctor_Hook(void)
 void Hooks_Event_Commit(void)
 {
 	// hook ctor of PlayerControls to register SKSE event sinks
-	WriteRelCall(0x0069BFE0 + 0x838, GetFnAddr(&PlayerControls::ctor_Hook));
+	WriteRelCall(0x000069C82F, GetFnAddr(&PlayerControls::ctor_Hook));
 }

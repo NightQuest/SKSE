@@ -138,13 +138,25 @@ namespace papyrusRace
 
 	BGSVoiceType* GetDefaultVoiceType(TESRace* thisRace, bool female)
 	{
-		return thisRace ? thisRace->voiceTypes[female] : NULL;
+		return (thisRace) ? thisRace->voiceTypes[female] : NULL;
 	}
 
 	void SetDefaultVoiceType(TESRace* thisRace, bool female, BGSVoiceType* voiceType)
 	{
 		if(thisRace) {
 			thisRace->voiceTypes[female] = voiceType;
+		}
+	}
+
+	TESObjectARMO * GetSkin(TESRace* thisRace)
+	{
+		return (thisRace) ? thisRace->skin.skin : NULL;
+	}
+
+	void SetSkin(TESRace* thisRace, TESObjectARMO * skin)
+	{
+		if(thisRace) {
+			thisRace->skin.skin = skin;
 		}
 	}
 }
@@ -184,4 +196,10 @@ void papyrusRace::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, TESRace*, UInt32>("GetNthPlayableRace", "Race", papyrusRace::GetNthPlayableRace, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESRace, TESObjectARMO*>("GetSkin", "Race", papyrusRace::GetSkin, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESRace, void, TESObjectARMO*>("SetSkin", "Race", papyrusRace::SetSkin, registry));
 }

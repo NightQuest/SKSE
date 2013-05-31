@@ -118,7 +118,7 @@ EndEvent
 Event OnUpdateGameTime()
 EndEvent
 
-; SKSE additions built 2013-03-19 23:47:10.300000 UTC
+; SKSE additions built 2013-05-30 03:14:16.893000 UTC
 
 ; Returns the typecode for this form object
 Int Function GetType() native
@@ -146,6 +146,9 @@ Keyword Function GetNthKeyword(int index) native
 
 bool Function HasKeywordString(string s)
 	Keyword k = Keyword.GetKeyword(s)
+	if k == None
+		return false
+	endif
 	return HasKeyword(k)
 endFunction
 
@@ -215,6 +218,28 @@ Function UnregisterForCrosshairRef() native
 
 ; Note: ref is none for no target
 Event OnCrosshairRefChange(ObjectReference ref)
+EndEvent
+
+Function RegisterForActorAction(int actionType) native
+Function UnregisterForActorAction(int actionType) native
+
+; ActionTypes
+; 0 - Weapon Swing (Melee weapons that are swung)
+; 1 - Spell Cast (Spells and staves)
+; 2 - Spell Fire (Spells and staves)
+; 3 - Voice Cast
+; 4 - Voice Fire
+; 5 - Bow Draw
+; 6 - Bow Release
+; 7 - Draw Begin
+; 8 - Draw End
+; 9 - Sheathe Begin
+; 10 - Sheathe End
+; Slots
+; 0 - Right Hand
+; 1 - Left Hand
+; 2 - Voice
+Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 EndEvent
 
 ; Returns a temporary clone of this form

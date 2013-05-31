@@ -109,7 +109,7 @@ EndEvent
 Event OnUpdateGameTime()
 EndEvent
 
-; SKSE additions built 2013-03-19 23:47:10.300000 UTC
+; SKSE additions built 2013-05-30 03:14:16.893000 UTC
 ; return the name of the alias
 string Function GetName() native
 
@@ -181,4 +181,11 @@ Function RegisterForCrosshairRef() native
 Function UnregisterForCrosshairRef() native
 	
 Event OnCrosshairRefChange(ObjectReference ref)
+EndEvent
+
+; See Form.psc
+Function RegisterForActorAction(int actionType) native
+Function UnregisterForActorAction(int actionType) native
+
+Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 EndEvent

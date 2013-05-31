@@ -8,7 +8,7 @@ namespace papyrusSound
 {
 	BGSSoundDescriptorForm * GetDescriptor(TESSound* thisSound)
 	{
-		return thisSound->descriptor;
+		return (thisSound) ? thisSound->descriptor : NULL;
 	}	
 }
 

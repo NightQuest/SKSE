@@ -2,6 +2,7 @@
 #include "common/IDirectoryIterator.h"
 #include "GameAPI.h"
 #include "Utilities.h"
+#include "Serialization.h"
 #include "skse_version.h"
 
 PluginManager	g_pluginManager;
@@ -36,6 +37,15 @@ static const SKSEScaleformInterface g_SKSEScaleformInterface =
 	SKSEScaleformInterface::kInterfaceVersion,
 
 	RegisterScaleformPlugin
+};
+
+#include "Hooks_Threads.h"
+
+static const SKSETaskInterface g_SKSETaskInterface =
+{
+	SKSETaskInterface::kInterfaceVersion,
+
+	TaskInterface::AddTask
 };
 
 #ifdef _PPAPI
@@ -116,7 +126,7 @@ PluginInfo * PluginManager::GetInfoByName(const char * name)
 	{
 		LoadedPlugin	* plugin = &(*iter);
 
-		if(plugin->info.name && !strcmp(name, plugin->info.name))
+		if(plugin->info.name && !_stricmp(name, plugin->info.name))
 			return &plugin->info;
 	}
 
@@ -138,6 +148,12 @@ void * PluginManager::QueryInterface(UInt32 id)
 		result = (void *)&g_SKSEPapyrusInterface;
 		break;
 #endif
+	case kInterface_Serialization:
+		result = (void *)&g_SKSESerializationInterface;
+		break;
+	case kInterface_Task:
+		result = (void *)&g_SKSETaskInterface;
+		break;
 
 	default:
 		_WARNING("unknown QueryInterface %08X", id);

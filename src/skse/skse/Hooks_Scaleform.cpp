@@ -460,10 +460,15 @@ class SKSEScaleform_RequestActivePlayerEffects : public GFxFunctionHandler
 			if (e->duration <= 0)
 				return true;
 
-			if(e->effect == NULL || e->effect->mgef == NULL)
+			if (e->effect == NULL || e->effect->mgef == NULL)
 				return true;
 
 			EffectSetting * mgef = e->effect->mgef;
+
+			// Skip effect if condition wasn't evaluated to true or HideInUI flag is set
+			if (e->flags & ActiveEffect::kFlag_Inactive || mgef->properties.flags & EffectSetting::Properties::kEffectType_HideInUI)
+				return true;
+			
 			GFxValue obj;
 			movieView->CreateObject(&obj);
 
@@ -789,6 +794,72 @@ public:
 		g_loadGameLock.Leave();
 	}
 };
+
+typedef std::list<SInt32>							IndexStorageList;
+typedef std::map<std::string,IndexStorageList>		IndexStorageTable;
+
+IndexStorageTable	s_indexTable;
+
+class SKSEScaleform_StoreIndices : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		if(!g_loadGameLock.TryEnter())
+			return;
+
+		ASSERT(args->numArgs >= 2);
+		ASSERT(args->args[0].GetType() == GFxValue::kType_String);
+		ASSERT(args->args[1].GetType() == GFxValue::kType_Array);
+
+		std::string key(args->args[0].GetString());
+		GFxValue * indices = &args->args[1];
+
+		s_indexTable[key].clear();
+
+		for (UInt32 i=0; i<indices->GetArraySize(); i++)
+		{
+			GFxValue t;
+			if (indices->GetElement(i, &t))
+				if (t.GetType() == GFxValue::kType_Number)
+					s_indexTable[key].push_back(t.GetNumber());
+		}
+
+		g_loadGameLock.Leave();
+	}
+};
+
+class SKSEScaleform_LoadIndices : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		if(!g_loadGameLock.TryEnter())
+			return;
+
+		ASSERT(args->numArgs >= 2);
+		ASSERT(args->args[0].GetType() == GFxValue::kType_String);
+		ASSERT(args->args[1].GetType() == GFxValue::kType_Array);
+
+		std::string key(args->args[0].GetString());
+		GFxValue * indicesOut = &args->args[1];
+
+		IndexStorageTable::iterator indices = s_indexTable.find(key);
+
+		if (indices != s_indexTable.end())
+		{
+			for (IndexStorageList::iterator iter = indices->second.begin(); iter != indices->second.end(); ++iter)
+			{
+				GFxValue t;
+				t.SetNumber(*iter);
+				indicesOut->PushBack(&t);
+			}
+		}
+
+		g_loadGameLock.Leave();
+	}
+};
+
 /*
 class GetScriptVariableFunctor : public IForEachScriptObjectFunctor
 {
@@ -1280,6 +1351,8 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	//RegisterFunction <SKSEScaleform_GetVMVariable>(&skse, view, "GetVMVariable");
 	RegisterFunction <SKSEScaleform_EnableMapMenuMouseWheel>(&skse, view, "EnableMapMenuMouseWheel");
 	RegisterFunction <SKSEScaleform_ShowOnMap>(&skse, view, "ShowOnMap");
+	RegisterFunction <SKSEScaleform_StoreIndices>(&skse, view, "StoreIndices");
+	RegisterFunction <SKSEScaleform_LoadIndices>(&skse, view, "LoadIndices");
 
 	// version
 	GFxValue	version;

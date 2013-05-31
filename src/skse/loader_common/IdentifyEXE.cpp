@@ -341,28 +341,38 @@ bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, 
 
 	bool result = false;
 
-	if(isEditor)
+	const UInt64 kCurVersion = 0x0001000900200000;	// 1.9.32.0
+
+	if(version < kCurVersion)
 	{
-		switch(version)
+		PrintLoaderError("Please update to the latest version of %s.", (isEditor ? "the Creation Kit" : "Skyrim"));
+	}
+	else if(version > kCurVersion)
+	{
+		PrintLoaderError("You are using a newer version of %s than this version of SKSE supports. If the patch to this version just came out, please be patient while we update our code. In the meantime, please check http://skse.silverlock.org to make sure you're using the latest version of SKSE. (version = %016I64X %08X)", (isEditor ? "the Creation Kit" : "Skyrim"), version, PACKED_SKSE_VERSION);
+	}
+	else if(isEditor)
+	{
+		switch(hookInfo->procType)
 		{
-			default:
-				PrintLoaderError("Currently the editor does not need to be launched via skse_loader. Please check skse_readme.txt for details. (version = %016I64X %08X)", version, PACKED_SKSE_VERSION);
-				break;
+		case kProcType_Steam:
+		case kProcType_Normal:
+			hookInfo->hookCallAddr = 0x00E7DA9B;
+			hookInfo->loadLibAddr = 0x00FA6118;
+			*dllSuffix = "1_9_32";
+
+			result = true;
+
+			break;
+		case kProcType_Unknown:
+		default:
+			PrintLoaderError("Unsupported editor executable type.");
+			break;
 		}
 	}
 	else
 	{
-		const UInt64 kCurVersion = 0x0001000900200000;	// 1.9.32.0
-
-		if(version < kCurVersion)
-		{
-			PrintLoaderError("Please update to the latest version of Skyrim.");
-		}
-		else if(version > kCurVersion)
-		{
-			PrintLoaderError("You are using a newer version of Skyrim than this version of SKSE supports. If the patch to this version just came out, please be patient while we update our code. In the meantime, please check http://skse.silverlock.org to make sure you're using the latest version of SKSE. (version = %016I64X %08X)", version, PACKED_SKSE_VERSION);
-		}
-		else switch(hookInfo->procType)
+		switch(hookInfo->procType)
 		{
 			case kProcType_Steam:
 			case kProcType_Normal:

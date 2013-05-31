@@ -359,6 +359,107 @@ EquipData ExtraContainerChanges::FindEquipped(FormMatcher& matcher) const
 	return equipData;
 };
 
+class HotkeyDataFinder
+{
+private:
+
+	// Match by either of those, depending on which ctor was used
+	SInt32		m_matchHotkey;
+	TESForm *	m_matchForm;
+
+	HotkeyData	m_found;
+
+public:
+
+	HotkeyDataFinder(SInt32 hotkey) : m_matchHotkey(hotkey)
+	{
+		m_matchForm = NULL;
+
+		m_found.pForm = NULL;
+		m_found.pHotkey = NULL;
+	}
+
+	HotkeyDataFinder(TESForm * form) : m_matchForm(form)
+	{
+		m_matchHotkey = -1;
+
+		m_found.pForm = NULL;
+		m_found.pHotkey = NULL;
+	}
+
+	bool Accept(ExtraContainerChanges::EntryData* pEntryData)
+	{
+		if (!pEntryData)
+			return true;
+
+		// If matching by form, skip if this is not the one we're looking for
+		if (m_matchForm && m_matchForm != pEntryData->type)
+			return true;
+
+		ExtraContainerChanges::ExtendDataList* pExtendList = pEntryData->extendDataList;
+		if (!pExtendList)
+			return true;
+
+		SInt32 n = 0;
+		BaseExtraList* pExtraDataList = pExtendList->GetNthItem(n);
+		while (pExtraDataList)
+		{
+			if (ExtraHotkey * extraHotkey = static_cast<ExtraHotkey*>(pExtraDataList->GetByType(kExtraData_Hotkey)))
+			{
+				// Matching by form - found ExtraHotkey?
+				if (m_matchForm)
+				{
+					m_found.pForm = pEntryData->type;
+					m_found.pHotkey = extraHotkey;
+					return false;
+				}
+				// Matching by hotkey - compare hotkeys
+				else
+				{
+					if (extraHotkey->hotkey == m_matchHotkey)
+					{
+						m_found.pForm = pEntryData->type;
+						m_found.pHotkey = extraHotkey;
+						return false;
+					}
+				}
+			}
+
+			n++;
+			pExtraDataList = pExtendList->GetNthItem(n);
+		}
+
+		return true;
+	}
+
+	HotkeyData& Found()
+	{
+		return m_found;
+	}
+};
+
+HotkeyData ExtraContainerChanges::FindHotkey(SInt32 hotkey) const
+{
+	FoundHotkeyData hotkeyData;
+	if (data && data->objList) {
+		HotkeyDataFinder getHotkey(hotkey);
+		data->objList->Visit(getHotkey);
+		hotkeyData = getHotkey.Found();
+	}
+	return hotkeyData;
+}
+
+HotkeyData ExtraContainerChanges::FindHotkey(TESForm * form) const
+{
+	FoundHotkeyData hotkeyData;
+	if (data && data->objList) {
+		HotkeyDataFinder getHotkey(form);
+		data->objList->Visit(getHotkey);
+		hotkeyData = getHotkey.Found();
+	}
+	return hotkeyData;
+}
+
 ExtraContainerChanges::EntryData * ExtraContainerChanges::EntryData::Create(TESForm * item, UInt32 count)
 {
 	EntryData * p = (EntryData *)FormHeap_Allocate(sizeof(EntryData));

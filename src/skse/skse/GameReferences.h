@@ -10,6 +10,7 @@ class BSAnimationGraphEvent;
 class NiNode;
 class TESObjectREFR;
 class BSFaceGenNiNode;
+class BSFaceGenAnimationData;
 
 // TESObjectREFR and child classes
 
@@ -134,7 +135,7 @@ public:
 	virtual void	Unk_60(void);
 	virtual BSFaceGenNiNode *	GetFaceGenNiNode(void);
 	virtual void	Unk_62(void);
-	virtual void	Unk_63(void);
+	virtual BSFaceGenAnimationData *	GetFaceGenAnimationData(void);
 	virtual void	Unk_64(void);
 	virtual void	Unk_65(void);
 	virtual void	Unk_66(void);
@@ -146,8 +147,8 @@ public:
 	virtual void	Unk_6C(void);
 	virtual void	Unk_6D(void);
 	virtual void	Unk_6E(void);
-	virtual void	Unk_6F(void);
-	virtual NiNode *	GetNiNode(void);	// Root of the skeleton
+	virtual NiNode	* GetNiRootNode(UInt32 firstPerson);
+	virtual NiNode	* GetNiNode(void);	// Root of the skeleton
 	virtual void	Unk_71(void);
 	virtual void	Unk_72(void);
 	virtual void	Unk_73(void);
@@ -161,7 +162,7 @@ public:
 	virtual void	Unk_7B(void);
 	virtual void	Unk_7C(void);
 	virtual void	Unk_7D(void);
-	virtual void	Unk_7E(void);
+	virtual ActorWeightModel	* GetWeightModel(UInt32 weightModel); // 0 Small 1 Large
 	virtual void	Unk_7F(void);
 	virtual void	Unk_80(void);
 	virtual void	Unk_81(void);
@@ -229,7 +230,10 @@ public:
 
 	MEMBER_FN_PREFIX(TESObjectREFR);
 	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D5230);
+	DEFINE_MEMBER_FN(IsOffLimits, bool, 0x004DA760);
+	DEFINE_MEMBER_FN(GetWeight, float, 0x004EA180);
 };
+
 STATIC_ASSERT(sizeof(TESObjectREFR) == 0x54);
 STATIC_ASSERT(offsetof(TESObjectREFR, handleRefObject) == 0x14);
 
@@ -261,6 +265,8 @@ public:
 	// current and future versions store flags as two UInt32s
 
 	enum {
+		kState_Running = 0x40,
+		kState_Walking = 0x80,
 		kState_Sprinting = 0x100,
 		kState_Sneaking = 0x200,
 		kState_Swimming = 0x400
@@ -268,6 +274,11 @@ public:
 
 	UInt32	flags04;
 	UInt32	flags08;
+
+	bool IsWeaponDrawn()
+	{
+		return (flags08 >> 5 & 7) >= 3;
+	}
 };
 
 //STATIC_ASSERT(sizeof(ActorState) == 0x10);
@@ -279,17 +290,49 @@ public:
 	enum { kTypeID = kFormType_Character };
 
 	virtual ~Actor();
+	virtual void Unk_9C(void);
+	virtual void Unk_9D(void);
+	virtual void Unk_9E(void);
+	virtual void Unk_9F(void);
+	virtual void Unk_A0(void);
+	virtual void Unk_A1(void);
+	virtual void Unk_A2(void);
+	virtual void Unk_A3(void);
+	virtual void Unk_A4(void);
+	virtual void DrawSheatheWeapon(bool draw);
 
 	// 0C
-	struct SpellArray
+	class SpellArray
 	{
-		UInt16		allocatedCount;	// 00
-		UInt16		flags;			// Invalid objects appeared when this was anything other than zero
+	public:
+		SpellItem * Get(UInt32 idx)
+		{
+			if(idx >= spellCount) return NULL;
+
+			if(allocatedCount & kLocalAlloc)
+				return (idx == 0) ? singleSpell : NULL;
+			else
+				return spells ? spells[idx] : NULL;
+		}
+
+		UInt32	Length(void)	{ return spellCount; }
+
+	private:
+		enum
+	{
+			kLocalAlloc = 0x80000000,
+		};
+
+		UInt32		allocatedCount;		// 00 - upper bit is set when single-element optimization is used
+		union {
 		SpellItem	** spells;		// 04
+			SpellItem	* singleSpell;	// 04 - used when kLocalAlloc is set
+		};
 		UInt32		spellCount;		// 08
 	};
 
 	enum Flags1 {
+		kFlags_AIEnabled = 0x02,
 		kFlags_IsPlayerTeammate = 0x4000000
 	};
 	enum Flags2 {
@@ -303,13 +346,23 @@ public:
 	BSTEventSink<void*>	characterMoveFinishEvent;	// 074 .?AV?$BSTEventSink@VbhkCharacterMoveFinishEvent@@@@
 	IPostAnimationChannelUpdateFunctor	unk078;		// 078 IPostAnimationChannelUpdateFunctor
 	UInt32	flags1;									// 07C
-	UInt32	unk080[(0x0FC - 0x080) >> 2];			// 080
+	UInt32	unk080;									// 080
+	UInt32	unk084;									// 084
+	ActorEquipData	* equipData;					// 088
+	UInt32	unk08C[(0x0FC - 0x08C) >> 2];			// 08C
 	SpellArray	addedSpells;						// 0FC
-	UInt32	unk108[(0x130 - 0x108) >> 2];			// 108
+	UInt32	unk108[(0x128 - 0x108) >> 2];			// 108
+	TESForm	* equippedShout;						// 128
+	UInt32	unk12C;									// 12C
 	TESRace			* race;							// 130
 	UInt32	unk134;									// 134
 	UInt32	flags2;									// 138
 	UInt32	unk13C[(0x19C - 0x13C) >> 2];
+
+	TESForm * GetEquippedObject(bool abLeftHand);
+
+	MEMBER_FN_PREFIX(Actor);
+	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730EE0, bool updateWeight);
 };
 
 STATIC_ASSERT(offsetof(Actor, magicTarget) == 0x54);
@@ -324,9 +377,6 @@ class Character : public Actor
 {
 public:
 	enum { kTypeID = kFormType_Character };
-
-	MEMBER_FN_PREFIX(Character);
-	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730EE0, bool);
 };
 
 STATIC_ASSERT(sizeof(Character) == 0x19C);
@@ -345,10 +395,14 @@ public:
 	BSTEventSource <void *>	actorDeathEventSource;		// 1D8 .?AV?$BSTEventSource@UBGSActorDeathEvent@@@@
 	BSTEventSource <void *>	positionPlayerEventSource;	// 208 .?AV?$BSTEventSource@UPositionPlayerEvent@@@@
 
-	UInt32	pad238[(0x58C - 0x238) >> 2];	// 238
+	UInt32	pad238[(0x490 - 0x238) >> 2];	// 238
+	UInt32	unk490;							// 490 - Handle
+	UInt32	pad494[(0x568 - 0x494) >> 2];	// 494
+	UInt32	unk568;							// 568 - Handle
+	UInt32	pad56C[(0x58C - 0x56C) >> 2];	// 56C
 	NiNode	* firstPersonSkeleton;			// 58C
 	UInt32	pad590[(0x5AC - 0x590) >> 2];
-	UInt32	lastRiddenHorseHandle;			// 5AC
+	UInt32	lastRiddenHorseHandle;			// 5AC - Handle
 	UInt32	pad5B0[(0x614 - 0x5B0) >> 2];
 	PlayerSkills *	skills;
 	UInt32	pad618[(0x648 - 0x618) >> 2];
@@ -392,6 +446,7 @@ STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1A4);
 STATIC_ASSERT(offsetof(PlayerCharacter, numPerkPoints) == 0x6E1);
 STATIC_ASSERT(offsetof(PlayerCharacter, tintMasks) == 0x6E8);
 STATIC_ASSERT(offsetof(PlayerCharacter, overlayTintMasks) == 0x6F4);
+STATIC_ASSERT(offsetof(PlayerCharacter, unk568) == 0x568);
 STATIC_ASSERT(offsetof(PlayerCharacter, lastRiddenHorseHandle) == 0x5AC);
 STATIC_ASSERT(offsetof(PlayerCharacter, skills) == 0x614);
 

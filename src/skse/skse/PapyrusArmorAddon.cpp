@@ -6,20 +6,19 @@ namespace papyrusArmorAddon
 {
 	BSFixedString GetModelPath(TESObjectARMA* thisArmorAddon, bool bFirst, bool bFemale)
 	{
-		return thisArmorAddon ? thisArmorAddon->models[bFirst][bFemale].GetModelName() : NULL;
+		return (thisArmorAddon) ? thisArmorAddon->models[bFirst][bFemale].GetModelName() : NULL;
 	}
 
 	void SetModelPath(TESObjectARMA* thisArmorAddon, BSFixedString nuPath, bool bFirst, bool bFemale)
 	{
-		if(!thisArmorAddon)
-			return;
-
-		thisArmorAddon->models[bFirst][bFemale].SetModelName(nuPath.data);
+		if(thisArmorAddon) {
+			thisArmorAddon->models[bFirst][bFemale].SetModelName(nuPath.data);
+		}
 	}
 
 	UInt32 GetModelNumTextureSets(TESObjectARMA* thisArmorAddon, bool bFirst, bool bFemale)
 	{
-		return thisArmorAddon ? thisArmorAddon->models[bFirst][bFemale].count : 0;
+		return (thisArmorAddon) ? thisArmorAddon->models[bFirst][bFemale].count : 0;
 	}
 
 	BGSTextureSet* GetModelNthTextureSet(TESObjectARMA* thisArmorAddon, UInt32 n, bool bFirst, bool bFemale)
@@ -50,7 +49,7 @@ namespace papyrusArmorAddon
 
 	UInt32 GetNumAdditionalRaces(TESObjectARMA* thisArmorAddon)
 	{
-		return thisArmorAddon ? thisArmorAddon->additionalRaces.count : 0;
+		return (thisArmorAddon) ? thisArmorAddon->additionalRaces.count : 0;
 	}
 
 	TESRace* GetNthAdditionalRace(TESObjectARMA* thisArmorAddon, UInt32 n)
@@ -63,6 +62,29 @@ namespace papyrusArmorAddon
 			return NULL;
 
 		return race;
+	}
+
+	UInt32 GetSlotMask(TESObjectARMA* thisArmorAddon)
+	{
+		return (thisArmorAddon) ? thisArmorAddon->biped.GetSlotMask() : 0;
+	}
+
+	void SetSlotMask(TESObjectARMA* thisArmorAddon, UInt32 slotMask)
+	{
+		if (thisArmorAddon) {
+			thisArmorAddon->biped.SetSlotMask(slotMask);
+		}
+	}
+
+	UInt32 AddSlotToMask(TESObjectARMA* thisArmorAddon, UInt32 slot)
+	{
+		return (thisArmorAddon) ? thisArmorAddon->biped.AddSlotToMask(slot) : 0;
+
+	}
+
+	UInt32 RemoveSlotFromMask(TESObjectARMA* thisArmorAddon, UInt32 slot)
+	{
+		return (thisArmorAddon) ? thisArmorAddon->biped.RemoveSlotFromMask(slot) : 0;
 	}
 }
 
@@ -96,4 +118,17 @@ void papyrusArmorAddon::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESObjectARMA, TESRace*, UInt32>("GetNthAdditionalRace", "ArmorAddon", papyrusArmorAddon::GetNthAdditionalRace, registry));
+
+	// Slot Mask
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectARMA, UInt32>("GetSlotMask", "ArmorAddon", papyrusArmorAddon::GetSlotMask, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectARMA, void, UInt32>("SetSlotMask", "ArmorAddon", papyrusArmorAddon::SetSlotMask, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectARMA, UInt32, UInt32>("AddSlotToMask", "ArmorAddon", papyrusArmorAddon::AddSlotToMask, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESObjectARMA, UInt32, UInt32>("RemoveSlotFromMask", "ArmorAddon", papyrusArmorAddon::RemoveSlotFromMask, registry));
 }

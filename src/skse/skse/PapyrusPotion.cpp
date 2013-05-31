@@ -26,6 +26,15 @@ namespace papyrusPotion
 
 	UInt32 GetCostliestEffectIndex(AlchemyItem* thisMagic)
 	{ return magicItemUtils::GetCostliestEffectIndex(thisMagic); }
+
+	void SetNthEffectMagnitude(AlchemyItem* thisMagic, UInt32 index, float value)
+	{ magicItemUtils::SetNthEffectMagnitude(thisMagic, index, value); }
+
+	void SetNthEffectArea(AlchemyItem* thisMagic, UInt32 index, UInt32 value)
+	{ magicItemUtils::SetNthEffectArea(thisMagic, index, value); }
+
+	void SetNthEffectDuration(AlchemyItem* thisMagic, UInt32 index, UInt32 value)
+	{ magicItemUtils::SetNthEffectDuration(thisMagic, index, value); }
 }
 
 #include "PapyrusVM.h"
@@ -53,4 +62,14 @@ void papyrusPotion::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0<AlchemyItem, UInt32>("GetCostliestEffectIndex", "Potion", papyrusPotion::GetCostliestEffectIndex, registry));
+
+	// Sets
+	registry->RegisterFunction(
+		new NativeFunction2<AlchemyItem, void, UInt32, float>("SetNthEffectMagnitude", "Potion", papyrusPotion::SetNthEffectMagnitude, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2<AlchemyItem, void, UInt32, UInt32>("SetNthEffectArea", "Potion", papyrusPotion::SetNthEffectArea, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2<AlchemyItem, void, UInt32, UInt32>("SetNthEffectDuration", "Potion", papyrusPotion::SetNthEffectDuration, registry));
 }

@@ -77,6 +77,10 @@ struct MenuOpenCloseEvent
 	char			pad[3];
 };
 
+struct TESFurnitureEvent
+{
+};
+
 // Todo
 struct MenuModeChangeEvent
 {

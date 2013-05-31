@@ -147,6 +147,22 @@ namespace papyrusActiveMagicEffect
 
 		g_crosshairRefEventRegs.Unregister<ActiveEffect>(ActiveEffect::kTypeID, thisForm);
 	}
+
+	void RegisterForActorAction(ActiveEffect * thisForm, UInt32 actionType)
+	{
+		if(!thisForm)
+			return;
+
+		g_actionEventRegs.Register<ActiveEffect>(actionType, ActiveEffect::kTypeID, thisForm);
+	}
+
+	void UnregisterForActorAction(ActiveEffect * thisForm, UInt32 actionType)
+	{
+		if(!thisForm)
+			return;
+
+		g_actionEventRegs.Unregister<ActiveEffect>(actionType, ActiveEffect::kTypeID, thisForm);
+	}
 }
  
 #include "PapyrusVM.h"
@@ -211,6 +227,12 @@ void papyrusActiveMagicEffect::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction0 <ActiveEffect, void> ("UnregisterForCrosshairRef", "ActiveMagicEffect", papyrusActiveMagicEffect::UnregisterForCrosshairRef, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction1 <ActiveEffect, void, UInt32> ("RegisterForActorAction", "ActiveMagicEffect", papyrusActiveMagicEffect::RegisterForActorAction, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <ActiveEffect, void, UInt32> ("UnregisterForActorAction", "ActiveMagicEffect", papyrusActiveMagicEffect::UnregisterForActorAction, registry));
+
 	registry->SetFunctionFlags("ActiveMagicEffect", "RegisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForAllKeys", VMClassRegistry::kFunctionFlag_NoWait);
@@ -227,4 +249,6 @@ void papyrusActiveMagicEffect::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForCameraState", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActiveMagicEffect", "RegisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForCrosshairRef", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActiveMagicEffect", "RegisterForActorAction", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForActorAction", VMClassRegistry::kFunctionFlag_NoWait);
 }

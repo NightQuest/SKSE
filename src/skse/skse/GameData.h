@@ -391,20 +391,110 @@ private:
 	ActorValueInfo * actorValues[kNumActorValues];
 };
 
+class FaceMorphList
+{
+public:
+	enum {
+		kNumMorphs = 19
+	};
+
+	enum {
+		kMorph_NoseShortLong = 0,
+		kMorph_NoseDownUp,
+		kMorph_JawUpDown,
+		kMorph_JawNarrowWide,
+		kMorph_JawBackForward,
+		kMorph_CheeksDownUp,
+		kMorph_CheeksInOut,
+		kMorph_EyesMoveDownUp,
+		kMorph_BrowDownUp,
+		kMorph_BrowInOut,
+		kMorph_BrowBackForward,
+		kMorph_LipMoveDownUp,
+		kMorph_LipMoveInOut,
+		kMorph_ChinThinWide,
+		kMorph_ChinMoveUpDown,
+		kMorph_OverbiteUnderbite,
+		kMorph_EyesBackForward
+	};
+
+	static FaceMorphList * GetSingleton(void);
+
+	struct Morph
+	{
+		UInt32 type;
+		const char * lowerName;
+		const char * upperName;
+	};
+
+	Morph morphs[kNumMorphs];
+};
+
+class FacePresetData
+{
+public:
+	virtual ~FacePresetData();
+
+	UInt32 unk08;	// Always 10?
+	const char * gameSettingName;
+};
+
+class FacePresetList
+{
+public:
+	enum {
+		kNumPresets = 4
+	};
+	enum {
+		kPreset_NoseType,
+		kPreset_BrowType,
+		kPreset_EyesType,
+		kPreset_LipType
+	};
+
+	static FacePresetList * GetSingleton(void);
+
+	struct Preset
+	{
+		const char * presetName;
+		FacePresetData * data;
+	};
+
+	Preset presets[kNumPresets];
+};
+
+// 0x00882290 RaceMenu ctor
+// 0x0087F6E0 Morph Callback Handler
+// 0x005A4870 Apply Morph?
+// 0x005610F0 GetMorphName by Index and value
+// 0x00561180 SetMorph?
+
 class FaceGen
 {
 public:
 	static FaceGen *	GetSingleton(void);
 
+	struct Action {
+		BSFixedString name;
+		UInt32	unk04;
+		float	delta;
+	};
+
+	UInt32	unk00[0x3C >> 2];	// 00
+	UInt8	unk3C;				// 3C
+	UInt8	pad3D[3];			// 3D
+
 	MEMBER_FN_PREFIX(FaceGen);
-	DEFINE_MEMBER_FN(RegenerateHead, void, 0x005A4800, BSFaceGenNiNode * headNode, BGSHeadPart * head, TESNPC * npc);
+	DEFINE_MEMBER_FN(RegenerateHead, void, 0x005A4B80, BSFaceGenNiNode * headNode, BGSHeadPart * head, TESNPC * npc);
+	DEFINE_MEMBER_FN(ApplyMorph, void, 0x005A4070, BSFaceGenNiNode * faceGenNode, BGSHeadPart * headPart, BSFixedString * morphName, float relative);
 };
+STATIC_ASSERT(offsetof(FaceGen, unk3C) == 0x3C);
 
-//typedef void (* _Morph)(BSFaceGenNiNode*, BGSHeadPart* affectedPart /* Usually all of them */, struct Action* /* Name, Value, Delta? */); // 0x005A4070
-
+// Changes one HeadPart to another
 typedef void (* _ChangeActorHeadPart)(Actor*, BGSHeadPart* oldPart, BGSHeadPart* newPart);
 extern const _ChangeActorHeadPart ChangeActorHeadPart;
 
+// Regenerates dynamic tints
 typedef UInt32 (* _UpdatePlayerTints)();
 extern const _UpdatePlayerTints UpdatePlayerTints;
 
@@ -413,3 +503,35 @@ extern const _GetActorBaseOverlays GetActorBaseOverlays;
 
 typedef UInt32 (* _GetNumActorBaseOverlays)(TESNPC * npc);
 extern const _GetNumActorBaseOverlays GetNumActorBaseOverlays;
+
+typedef bool (* _ApplyMasksToRenderTarget)(tArray<TintMask*> * tintMask, NiRenderTarget ** renderTarget);
+extern const _ApplyMasksToRenderTarget ApplyMasksToRenderTarget;
+
+// Loads a TRI file into the FaceGenDB, parameters are unknown ptrs
+// unk1 seems to be inited to zero before calling however
+// unk2 is a numeric value from some other object it seems
+// making it zero seems to cache anyway
+typedef bool (* _CacheTRIFile)(const char * filePath, UInt32 * unk1, UInt32 * unk2);
+extern const _CacheTRIFile CacheTRIFile;
+
+// 20
+class MagicFavorites
+{
+	//	void			** _vtbl;	// 00
+	UInt32			unk004;		// 04
+	UnkFormArray	spells;		// 08
+	UnkFormArray	hotkeys;	// 14
+
+public:
+	virtual	~MagicFavorites();
+
+	void		SetHotkey(TESForm * form, SInt8 idx);
+	void		ClearHotkey(SInt8 idx);
+	TESForm	*	GetSpell(SInt8 idx);
+	bool		IsFavorited(TESForm * form);
+
+	static MagicFavorites * GetSingleton(void)
+	{
+		return *((MagicFavorites **)0x01B2E39C);
+	}
+};

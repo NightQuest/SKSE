@@ -3,6 +3,7 @@
 typedef UInt32	PluginHandle;	// treat this as an opaque type
 class GFxMovieView;
 class GFxValue;
+class TaskDelegate;
 
 enum
 {
@@ -14,6 +15,9 @@ enum
 	kInterface_Invalid = 0,
 	kInterface_Scaleform,
 	kInterface_Papyrus,
+	kInterface_Serialization,
+	kInterface_Task,
+
 	kInterface_Max,
 };
 
@@ -55,17 +59,21 @@ struct SKSESerializationInterface
 {
 	enum
 	{
-		kVersion = 1,
+		kVersion = 2,
 	};
 
 	typedef void (* EventCallback)(SKSESerializationInterface * intfc);
 
+	typedef void (* FormDeleteCallback)(UInt64 handle);
+
 	UInt32	version;
+
+	void	(* SetUniqueID)(PluginHandle plugin, UInt32 uid);
 
 	void	(* SetRevertCallback)(PluginHandle plugin, EventCallback callback);
 	void	(* SetSaveCallback)(PluginHandle plugin, EventCallback callback);
 	void	(* SetLoadCallback)(PluginHandle plugin, EventCallback callback);
-	void	(* SetFormDeleteCallback)(PluginHandle plugin, EventCallback callback);
+	void	(* SetFormDeleteCallback)(PluginHandle plugin, FormDeleteCallback callback);
 
 	bool	(* WriteRecord)(UInt32 type, UInt32 version, const void * buf, UInt32 length);
 	bool	(* OpenRecord)(UInt32 type, UInt32 version);
@@ -76,7 +84,26 @@ struct SKSESerializationInterface
 	bool	(* ResolveHandle)(UInt64 handle, UInt64 * handleOut);
 };
 
+struct SKSETaskInterface
+{
+	enum
+	{
+		kInterfaceVersion = 1
+	};
+
+	UInt32	interfaceVersion;
+
+	// Derive your type from TaskDelegate
+	// Allocate before adding
+	// Define your Run function
+	// Delete your object in the Dispose call
+	void	(* AddTask)(TaskDelegate * task);
+};
+
 #ifdef _PPAPI
+
+// ### this code is unsupported and will be changed in the future
+
 class VMClassRegistry;
 
 struct SKSEPapyrusInterface
@@ -89,6 +116,7 @@ struct SKSEPapyrusInterface
 	typedef bool (* RegisterFunctions)(VMClassRegistry * registry);
 	bool	(* Register)(RegisterFunctions callback);
 };
+
 #endif
 
 struct PluginInfo

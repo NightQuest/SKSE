@@ -298,6 +298,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusEquipSlot.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusEquipSlot.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusFlora.cpp"
 					>
 				</File>
@@ -635,6 +643,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GameHandlers.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GameHandlers.h"
+				>
+			</File>
+			<File
 				RelativePath=".\GameInput.cpp"
 				>
 			</File>
@@ -672,6 +688,14 @@
 			</File>
 			<File
 				RelativePath=".\GameReferences.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GameResources.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\GameResources.h"
 				>
 			</File>
 			<File
@@ -819,6 +843,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Hooks_Handlers.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_Handlers.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Hooks_NetImmerse.cpp"
 				>
 			</File>
@@ -959,6 +991,22 @@
 			Name="netimmerse"
 			>
 			<File
+				RelativePath=".\NiControllers.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NiControllers.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NiExtraData.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NiExtraData.h"
+				>
+			</File>
+			<File
 				RelativePath=".\NiGeometry.cpp"
 				>
 			</File>
@@ -972,6 +1020,14 @@
 			</File>
 			<File
 				RelativePath=".\NiInterpolators.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NiMaterial.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NiMaterial.h"
 				>
 			</File>
 			<File
@@ -991,11 +1047,35 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NiProperties.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NiProperties.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NiRenderer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NiRenderer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\NiRTTI.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\NiRTTI.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NiSerialization.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NiSerialization.h"
 				>
 			</File>
 			<File

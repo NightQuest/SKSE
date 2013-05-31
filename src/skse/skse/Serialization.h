@@ -10,17 +10,27 @@ namespace Serialization
 	struct PluginCallbacks
 	{
 		PluginCallbacks()
-			: revert(NULL), save(NULL), load(NULL), formDelete(NULL) { }
+			:revert(NULL)
+			,save(NULL)
+			,load(NULL)
+			,formDelete(NULL)
+			,uid(0)
+			,hadData(false)
+			,hadUID(false) { }
 
 		SKSESerializationInterface::EventCallback	revert;
 		SKSESerializationInterface::EventCallback	save;
 		SKSESerializationInterface::EventCallback	load;
-		SKSESerializationInterface::EventCallback	formDelete;
+		SKSESerializationInterface::FormDeleteCallback	formDelete;
 		
+		UInt32	uid;
+
 		bool	hadData;
+		bool	hadUID;
 	};
 
 	// plugin API
+	void	SetUniqueID(PluginHandle plugin, UInt32 uid);
 	void	SetRevertCallback(PluginHandle plugin, SKSESerializationInterface::EventCallback callback);
 	void	SetSaveCallback(PluginHandle plugin, SKSESerializationInterface::EventCallback callback);
 	void	SetLoadCallback(PluginHandle plugin, SKSESerializationInterface::EventCallback callback);

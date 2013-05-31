@@ -22,12 +22,12 @@ namespace papyrusBook
 
 	bool IsRead(TESObjectBOOK * thisBook)
 	{
-		return thisBook ? ((thisBook->data.flags & TESObjectBOOK::Data::kType_Read) == TESObjectBOOK::Data::kType_Read) : false;
+		return (thisBook) ? ((thisBook->data.flags & TESObjectBOOK::Data::kType_Read) == TESObjectBOOK::Data::kType_Read) : false;
 	}
 
 	bool IsTakeable(TESObjectBOOK * thisBook)
 	{
-		return thisBook ? ((thisBook->data.flags & TESObjectBOOK::Data::kType_CantBeTaken) == 0) : false;
+		return (thisBook) ? ((thisBook->data.flags & TESObjectBOOK::Data::kType_CantBeTaken) == 0) : false;
 	}
 }
 

@@ -1,3 +1,22 @@
+1.6.14:
+- TESCombatStyle now properly cloned by TempClone (uses our implementation instead of bethesda's)
+- minidump reporting ignores 'known' crash on exit (a bug in the game engine) to avoid creating useless minidumps
+- added ObjectReference.IsOffLimits, fixed Actor.GetNthSpell (generic Actor::SpellArray access), thanks to himika
+- hook up plugin serialization API
+- added Actor.GetEquippedObject, returns the base form of the object equipped in the left, right, and voice slots
+- HasKeywordString returns false when the keyword is not found
+- added Game.IsObjectFavorited/UnbindObjectHotkey/GetHotkeyBoundObject to check if an item/spell has been favorited by the player, unbind a hotkeyed item/spell, or get the hotkeyed item/spell
+- added ActionScript functions StoreIndices/LoadIndices to keep state-related indices between menu sessions
+- tweaked ActionScript function GetActivePlayerEffects to ignore hidden and inactive effects
+- added SKSE.GetPluginVersion
+- added Actor IsSwimming/SheatheWeapon/IsAIEnabled
+- added Game.GetPlayerMovementMode (Control mode)
+- added ActorBase.GetTemplate (Returns the root template of the ActorBase)
+- added Race/ActorBase.Get/SetSkin/Far
+- added ActorAction events (see Form.psc for full list)
+- added Weapon.Get/SetEquipType/Skill/Resist/CritEffect/CritEffectOnDeath/CritMultiplier/EnchantmentValue/EquippedModel
+- hook up plugin task API (For processing heavy NetImmerse tasks)
+
 1.6.13:
 - fix crash in UpdateHairColor
 

@@ -15,16 +15,19 @@ RegistrationMapHolder<BSFixedString,ModCallbackParameters>	g_modCallbackRegs;
 
 RegistrationSetHolder<NullParameters>						g_cameraEventRegs;
 RegistrationSetHolder<NullParameters>						g_crosshairRefEventRegs;
+RegistrationMapHolder<UInt32>								g_actionEventRegs;
 
 EventDispatcher<SKSEModCallbackEvent>	g_modCallbackEventDispatcher;
 EventDispatcher<SKSECameraEvent>		g_cameraEventDispatcher;
 EventDispatcher<SKSECrosshairRefEvent>	g_crosshairRefEventDispatcher;
+EventDispatcher<SKSEActionEvent>		g_actionEventDispatcher;
 
 MenuEventHandler			g_menuEventHandler;
 InputEventHandler			g_inputEventHandler;
 ModCallbackEventHandler		g_modCallbackEventHandler;
 CameraEventHandler			g_cameraEventHandler;
 CrosshairRefEventHandler	g_crosshairRefEventHandler;
+ActionEventHandler			g_actionEventHandler;
 
 //// Generic functors
 
@@ -94,6 +97,37 @@ private:
 	T2				arg2;
 };
 
+template <typename T1, typename T2, typename T3, typename T4>
+class EventQueueFunctor4 : public IFunctionArguments
+{
+public:
+	EventQueueFunctor4(BSFixedString & a_eventName, T1 a_arg1, T2 a_arg2, T3 a_arg3, T4 a_arg4)
+		: eventName(a_eventName.data), arg1(a_arg1), arg2(a_arg2), arg3(a_arg3), arg4(a_arg4) {}
+
+	virtual bool	Copy(Output * dst)
+	{
+		dst->Resize(4);
+		SetVMValue(dst->Get(0), arg1);
+		SetVMValue(dst->Get(1), arg2);
+		SetVMValue(dst->Get(2), arg3);
+		SetVMValue(dst->Get(3), arg4);
+		return true;
+	}
+
+	void			operator() (const EventRegistration<NullParameters> & reg)
+	{
+		VMClassRegistry * registry = (*g_skyrimVM)->GetClassRegistry();
+		registry->QueueEvent(reg.handle, &eventName, this);
+	}
+
+private:
+	BSFixedString	eventName;
+	T1				arg1;
+	T2				arg2;
+	T3				arg3;
+	T4				arg4;
+};
+
 //// Specific functors
 
 class ModCallbackEventFunctor : public IFunctionArguments
@@ -151,61 +185,72 @@ EventResult InputEventHandler::ReceiveEvent(InputEvent ** evns, InputEventDispat
 
 	for (InputEvent * e = *evns; e; e = e->next)
 	{
-		if (e->eventType != InputEvent::kEventType_Button)
-			continue;
-
-		ButtonEvent * t = DYNAMIC_CAST(e, InputEvent, ButtonEvent);
-
-		UInt32	keyCode;
-		UInt32	deviceType = t->deviceType;
-		UInt32	keyMask = t->keyMask;
-
-		// Mouse
-		if (deviceType == kDeviceType_Mouse)
-			keyCode = InputMap::kMacro_MouseButtonOffset + keyMask; 
-		// Gamepad
-		else if (deviceType == kDeviceType_Gamepad)
-			keyCode = InputMap::GamepadMaskToKeycode(keyMask);
-		// Keyboard
-		else
-			keyCode = keyMask;
-
-		// Valid scancode?
-		if (keyCode >= InputMap::kMaxMacros)
-			continue;
-
-		BSFixedString	control	= *t->GetControlID();
-		float			timer	= t->timer;
-
-		bool isDown	= t->flags != 0 && timer == 0.0;
-		bool isUp	= t->flags == 0 && timer != 0;
-
-		if (isDown)
+		switch(e->eventType)
 		{
-			// Used by scaleform skse.GetLastControl
-			SetLastControlDown(control.data, keyCode);
+			case InputEvent::kEventType_Button:
+				{
+					ButtonEvent * t = DYNAMIC_CAST(e, InputEvent, ButtonEvent);
 
-			g_inputKeyEventRegs.ForEach(
-				keyCode,
-				EventQueueFunctor1<SInt32>(BSFixedString("OnKeyDown"), (SInt32)keyCode)
-			);
-			g_inputControlEventRegs.ForEach(
-				control,
-				EventQueueFunctor1<BSFixedString>(BSFixedString("OnControlDown"), control)
-			);
-		}
-		else if (isUp)
-		{
-			SetLastControlUp(control.data, keyCode);
+					UInt32	keyCode;
+					UInt32	deviceType = t->deviceType;
+					UInt32	keyMask = t->keyMask;
 
-			g_inputKeyEventRegs.ForEach(
-				keyCode,
-				EventQueueFunctor2<SInt32, float>(BSFixedString("OnKeyUp"), (SInt32)keyCode, timer)
-			);
-			g_inputControlEventRegs.ForEach(
-				control,
-				EventQueueFunctor2<BSFixedString, float>(BSFixedString("OnControlUp"), control, timer)
-			);
+					// Mouse
+					if (deviceType == kDeviceType_Mouse)
+						keyCode = InputMap::kMacro_MouseButtonOffset + keyMask; 
+					// Gamepad
+					else if (deviceType == kDeviceType_Gamepad)
+						keyCode = InputMap::GamepadMaskToKeycode(keyMask);
+					// Keyboard
+					else
+						keyCode = keyMask;
+
+					// Valid scancode?
+					if (keyCode >= InputMap::kMaxMacros)
+						continue;
+
+					BSFixedString	control	= *t->GetControlID();
+					float			timer	= t->timer;
+
+					bool isDown	= t->flags != 0 && timer == 0.0;
+					bool isUp	= t->flags == 0 && timer != 0;
+
+					if (isDown)
+					{
+						// Used by scaleform skse.GetLastControl
+						SetLastControlDown(control.data, keyCode);
+
+						g_inputKeyEventRegs.ForEach(
+							keyCode,
+							EventQueueFunctor1<SInt32>(BSFixedString("OnKeyDown"), (SInt32)keyCode)
+							);
+						g_inputControlEventRegs.ForEach(
+							control,
+							EventQueueFunctor1<BSFixedString>(BSFixedString("OnControlDown"), control)
+							);
+					}
+					else if (isUp)
+					{
+						SetLastControlUp(control.data, keyCode);
+
+						g_inputKeyEventRegs.ForEach(
+							keyCode,
+							EventQueueFunctor2<SInt32, float>(BSFixedString("OnKeyUp"), (SInt32)keyCode, timer)
+							);
+						g_inputControlEventRegs.ForEach(
+							control,
+							EventQueueFunctor2<BSFixedString, float>(BSFixedString("OnControlUp"), control, timer)
+							);
+					}
+				}
+				break;
+
+			/*case InputEvent::kEventType_Thumbstick:
+				{
+					ThumbstickEvent * t = DYNAMIC_CAST(e, InputEvent, ThumbstickEvent);
+					_MESSAGE("Moved %s Stick X: %f Y: %f", t->keyMask == 0x0B ? "Left" : "Right", t->x, t->y);
+				}
+				break;*/
 		}
 	}
 
@@ -250,6 +295,16 @@ EventResult CrosshairRefEventHandler::ReceiveEvent(SKSECrosshairRefEvent * evn, 
 {
 	g_crosshairRefEventRegs.ForEach(
 		EventQueueFunctor1<TESObjectREFR*>(BSFixedString("OnCrosshairRefChange"), evn->crosshairRef)
+	);
+
+	return kEvent_Continue;
+}
+
+EventResult ActionEventHandler::ReceiveEvent(SKSEActionEvent * evn, EventDispatcher<SKSEActionEvent> * dispatcher)
+{
+	g_actionEventRegs.ForEach(
+		evn->type,
+		EventQueueFunctor4<SInt32, Actor*, TESForm*, UInt32>(BSFixedString("OnActorAction"), evn->type, evn->actor, evn->sourceForm, evn->slot)
 	);
 
 	return kEvent_Continue;

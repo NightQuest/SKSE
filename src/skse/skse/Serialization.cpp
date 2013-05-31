@@ -94,37 +94,54 @@ namespace Serialization
 		return result;
 	}
 
-	// plugin API
-	void SetRevertCallback(PluginHandle plugin, SKSESerializationInterface::EventCallback callback)
+	PluginCallbacks * GetPluginInfo(PluginHandle plugin)
 	{
 		if(plugin >= s_pluginCallbacks.size())
 			s_pluginCallbacks.resize(plugin + 1);
 
-		s_pluginCallbacks[plugin].revert = callback;
+		return &s_pluginCallbacks[plugin];
+	}
+
+	// plugin API
+	void SetUniqueID(PluginHandle plugin, UInt32 uid)
+	{
+		// check existing plugins
+		for(PluginCallbackList::iterator iter = s_pluginCallbacks.begin(); iter != s_pluginCallbacks.end(); ++iter)
+		{
+			if(iter->hadUID && (iter->uid == uid))
+			{
+				UInt32	collidingID = iter - s_pluginCallbacks.begin();
+
+				_ERROR("plugin serialization UID collision (uid = %08X, plugins = %d %d)", plugin, uid, collidingID);
+			}
+		}
+
+		PluginCallbacks * info = GetPluginInfo(plugin);
+
+		ASSERT(!info->hadUID);
+
+		info->uid = uid;
+		info->hadUID = true;
+	}
+
+	void SetRevertCallback(PluginHandle plugin, SKSESerializationInterface::EventCallback callback)
+	{
+		GetPluginInfo(plugin)->revert = callback;
 	}
 
 	void SetSaveCallback(PluginHandle plugin, SKSESerializationInterface::EventCallback callback)
 	{
-		if(plugin >= s_pluginCallbacks.size())
-			s_pluginCallbacks.resize(plugin + 1);
-
-		s_pluginCallbacks[plugin].save = callback;
+		GetPluginInfo(plugin)->save = callback;
 	}
 
 	void SetLoadCallback(PluginHandle plugin, SKSESerializationInterface::EventCallback callback)
 	{
-		if(plugin >= s_pluginCallbacks.size())
-			s_pluginCallbacks.resize(plugin + 1);
-
-		s_pluginCallbacks[plugin].load = callback;
+		GetPluginInfo(plugin)->load = callback;
 	}
 
-	void SetFormDeleteCallback(PluginHandle plugin, SKSESerializationInterface::EventCallback callback)
+	void SetFormDeleteCallback(PluginHandle plugin, SKSESerializationInterface::FormDeleteCallback callback)
 	{
-		if(plugin >= s_pluginCallbacks.size())
-			s_pluginCallbacks.resize(plugin + 1);
-
-		s_pluginCallbacks[plugin].formDelete = callback;
+		GetPluginInfo(plugin)->formDelete = callback;
 	}
 
 	void SetSaveName(const char * name)
@@ -304,21 +321,21 @@ namespace Serialization
 			// iterate through plugins
 			for(UInt32 i = 0; i < s_pluginCallbacks.size(); i++)
 			{
-				if(s_pluginCallbacks[i].save)
+				PluginCallbacks	* info = &s_pluginCallbacks[i];
+
+				if(info->save && info->hadUID)
 				{
 					// set up header info
 					s_currentPlugin = i;
 
-					// TODO:
-					// Set s_pluginHeader.signature to value from plugin header.
-
+					s_pluginHeader.signature = info->uid;
 					s_pluginHeader.numChunks = 0;
 					s_pluginHeader.length = 0;
 
 					s_chunkOpen = false;
 
 					// call the plugin
-					s_pluginCallbacks[i].save(&g_SKSESerializationInterface);
+					info->save(&g_SKSESerializationInterface);
 
 					// flush the remaining chunk data
 					FlushWriteChunk();
@@ -393,20 +410,27 @@ namespace Serialization
 
 				UInt64	pluginChunkStart = s_currentFile.GetOffset();
 
-				// TODO:
-				// This would have to look up the plugin index by signature
-				
-				//find the corresponding plugin
-				UInt32	pluginIdx = 0;
+				UInt32	pluginIdx = kPluginHandle_Invalid;
+
+				for(PluginCallbackList::iterator iter = s_pluginCallbacks.begin(); iter != s_pluginCallbacks.end(); ++iter)
+					if(iter->hadUID && (iter->uid == s_pluginHeader.signature))
+						pluginIdx = iter - s_pluginCallbacks.begin();
+
 				if(pluginIdx != kPluginHandle_Invalid)
 				{
-					s_pluginCallbacks[pluginIdx].hadData = true;
+					PluginCallbacks	* info = &s_pluginCallbacks[pluginIdx];
 
-					if(s_pluginCallbacks[pluginIdx].load)
+					info->hadData = true;
+
+					if(info->load)
 					{
 						s_chunkOpen = false;
-						s_pluginCallbacks[pluginIdx].load(&g_SKSESerializationInterface);
+						info->load(&g_SKSESerializationInterface);
 					}
+				}
+				else
+				{
+					_WARNING("plugin with signature %08X not loaded", s_pluginHeader.signature);
 				}
 
 				UInt64	expectedOffset = pluginChunkStart + s_pluginHeader.length;
@@ -414,6 +438,13 @@ namespace Serialization
 				{
 					_WARNING("plugin did not read all of its data (at %016I64X expected %016I64X)", s_currentFile.GetOffset(), expectedOffset);
 					s_currentFile.SetOffset(expectedOffset);
+				}
+			}
+
+			// call load on plugins that had no data
+			for(PluginCallbackList::iterator iter = s_pluginCallbacks.begin(); iter != s_pluginCallbacks.end(); ++iter) {
+				if(!iter->hadData && iter->load) {
+					iter->load(&g_SKSESerializationInterface);
 				}
 			}
 		}
@@ -478,6 +509,8 @@ namespace Serialization
 SKSESerializationInterface	g_SKSESerializationInterface =
 {
 	SKSESerializationInterface::kVersion,
+
+	Serialization::SetUniqueID,
 
 	Serialization::SetRevertCallback,
 	Serialization::SetSaveCallback,

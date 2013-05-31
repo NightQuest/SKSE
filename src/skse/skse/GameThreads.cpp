@@ -5,10 +5,13 @@
 #include "GameForms.h"
 #include "GameRTTI.h"
 
+#include "NiNodes.h"
+
 #include "common/IMemPool.h"
 
 IThreadSafeBasicMemPool<SKSETaskUpdateTintMasks,10>		s_updateTintMasksDelegatePool;
 IThreadSafeBasicMemPool<SKSETaskUpdateHairColor,10>		s_updateHairColorDelegatePool;
+IThreadSafeBasicMemPool<SKSETaskUpdateWeight,10>		s_updateWeightDelegatePool;
 IThreadSafeBasicMemPool<SKSETaskRegenHead,10>			s_regenHeadDelegatePool;
 IThreadSafeBasicMemPool<SKSETaskChangeHeadPart,10>		s_changeHeadPartDelegatePool;
 
@@ -36,9 +39,17 @@ void BSTaskPool::RegenerateHead(Actor * actor)
 	}
 }
 
-void BSTaskPool::ChangeHeadPart(Actor * actor, BGSHeadPart * headPart)
+void BSTaskPool::ChangeHeadPart(Actor * actor, BGSHeadPart * oldPart, BGSHeadPart * newPart)
 {
-	SKSETaskChangeHeadPart * cmd = SKSETaskChangeHeadPart::Create(actor, headPart);
+	SKSETaskChangeHeadPart * cmd = SKSETaskChangeHeadPart::Create(actor, oldPart, newPart);
+	if(cmd) {
+		QueueTask(cmd);
+	}
+}
+
+void BSTaskPool::UpdateWeight(Actor * actor, float delta)
+{
+	SKSETaskUpdateWeight * cmd = SKSETaskUpdateWeight::Create(actor, delta);
 	if(cmd) {
 		QueueTask(cmd);
 	}
@@ -96,13 +107,14 @@ void SKSETaskRegenHead::Run()
 }
 
 
-SKSETaskChangeHeadPart * SKSETaskChangeHeadPart::Create(Actor * actor, BGSHeadPart* newPart)
+SKSETaskChangeHeadPart * SKSETaskChangeHeadPart::Create(Actor * actor, BGSHeadPart* oldPart, BGSHeadPart* newPart)
 {
 	SKSETaskChangeHeadPart * cmd = s_changeHeadPartDelegatePool.Allocate();
 	if (cmd)
 	{
 		cmd->m_actor = actor;
 		cmd->m_newPart = newPart;
+		cmd->m_oldPart = oldPart;
 	}
 	return cmd;
 }
@@ -114,18 +126,58 @@ void SKSETaskChangeHeadPart::Dispose(void)
 
 void SKSETaskChangeHeadPart::Run()
 {
-	if(m_actor && m_newPart) {
-		if(m_newPart->type != BGSHeadPart::kTypeMisc) {
-			TESNPC * npc = DYNAMIC_CAST(m_actor->baseForm, TESForm, TESNPC);
-			if(npc) {
-				BGSHeadPart * oldPart = NULL;
-				if(CALL_MEMBER_FN(npc, HasOverlays)())
-					oldPart = npc->GetHeadPartOverlayByType(m_newPart->type);
-				if(!oldPart)
-					oldPart = CALL_MEMBER_FN(npc, GetHeadPartByType)(m_newPart->type);
+	if(m_actor) {
+		ChangeActorHeadPart(m_actor, m_oldPart, m_newPart);
+	}
+}
 
-				CALL_MEMBER_FN(npc, ChangeHeadPart)(m_newPart);
-				ChangeActorHeadPart(m_actor, oldPart, m_newPart);
+SKSETaskUpdateWeight * SKSETaskUpdateWeight::Create(Actor * actor, float delta)
+{
+	SKSETaskUpdateWeight * cmd = s_updateWeightDelegatePool.Allocate();
+	if (cmd)
+	{
+		cmd->m_actor = actor;
+		cmd->m_delta = delta;
+	}
+	return cmd;
+}
+
+void SKSETaskUpdateWeight::Dispose(void)
+{
+	s_updateWeightDelegatePool.Free(this);
+}
+
+void SKSETaskUpdateWeight::Run()
+{
+	if(m_actor) {
+		TESNPC * npc = DYNAMIC_CAST(m_actor->baseForm, TESForm, TESNPC);
+		if(npc) {
+			BSFaceGenNiNode * faceNode = m_actor->GetFaceGenNiNode();
+			CALL_MEMBER_FN(faceNode, AdjustHeadMorph)(BSFaceGenNiNode::kAdjustType_Neck, 0, m_delta);
+			UpdateModelFace(faceNode);
+
+			ActorWeightModel * lowModel = m_actor->GetWeightModel(ActorWeightModel::kWeightModel_Small);
+			if(lowModel && lowModel->weightData)
+				CALL_MEMBER_FN(lowModel->weightData, UpdateWeightData)();
+
+			ActorWeightModel * highModel = m_actor->GetWeightModel(ActorWeightModel::kWeightModel_Large);
+			if(highModel && highModel->weightData)
+				CALL_MEMBER_FN(highModel->weightData, UpdateWeightData)();
+
+			UInt32 updateFlags = ActorEquipData::kFlags_Unk01 | ActorEquipData::kFlags_Unk02 | ActorEquipData::kFlags_Unk03 | ActorEquipData::kFlags_Mobile;
+			 // Resets ActorState
+			//updateFlags |= ActorEquipData::kFlags_DrawHead | ActorEquipData::kFlags_Reset;
+			
+
+			CALL_MEMBER_FN(m_actor->equipData, SetEquipFlag)(updateFlags);
+			CALL_MEMBER_FN(m_actor->equipData, UpdateEquipment)(m_actor);
+
+			// Force redraw weapon, weight model update causes weapon position to be reset
+			// Looking at DrawSheatheWeapon there is a lot of stuff going on, hard to find
+			// out how to just manually move the weapon to its intended position
+			if(m_actor->actorState.IsWeaponDrawn()) {
+				m_actor->DrawSheatheWeapon(false);
+				m_actor->DrawSheatheWeapon(true);
 			}
 		}
 	}

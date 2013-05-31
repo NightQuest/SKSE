@@ -10,7 +10,7 @@ namespace papyrusActorBase
 {
 	TESCombatStyle* GetCombatStyle(TESNPC* thisNPC)
 	{
-		return thisNPC ? thisNPC->combatStyle : NULL;
+		return (thisNPC) ? thisNPC->combatStyle : NULL;
 	}
 
 	void SetCombatStyle(TESNPC* thisNPC, TESCombatStyle* cs)
@@ -36,29 +36,29 @@ namespace papyrusActorBase
 
 	UInt32 GetSpellCount(TESNPC* thisNPC)
 	{
-		return thisNPC ? thisNPC->spellList.GetSpellCount() : 0;
+		return (thisNPC) ? thisNPC->spellList.GetSpellCount() : 0;
 	}
 
 	SpellItem* GetNthSpell(TESNPC* thisNPC, UInt32 n)
 	{
-		return thisNPC ? thisNPC->spellList.GetNthSpell(n) : NULL;
+		return (thisNPC) ? thisNPC->spellList.GetNthSpell(n) : NULL;
 	}
 
 	BGSVoiceType* GetVoiceType(TESNPC* thisNPC)
 	{
-		return thisNPC ? thisNPC->actorData.voiceType : NULL;
+		return (thisNPC) ? thisNPC->actorData.voiceType : NULL;
 	}
 
 	void SetVoiceType(TESNPC* thisNPC, BGSVoiceType * newVoice)
 	{
-		if(thisNPC) {
+		if (thisNPC) {
 			thisNPC->actorData.voiceType = newVoice;
 		}
 	}
 
 	float GetWeight(TESNPC* thisNPC)
 	{
-		return thisNPC ? thisNPC->weight : 0.0;
+		return (thisNPC) ? thisNPC->weight : 0.0;
 	}
 
 	void SetWeight(TESNPC* thisNPC, float weight)
@@ -70,7 +70,7 @@ namespace papyrusActorBase
 
 	float GetHeight(TESNPC* thisNPC)
 	{
-		return thisNPC ? thisNPC->height : 0.0;
+		return (thisNPC) ? thisNPC->height : 0.0;
 	}
 
 	void SetHeight(TESNPC* thisNPC, float height)
@@ -82,7 +82,7 @@ namespace papyrusActorBase
 
 	UInt32 GetNumHeadParts(TESNPC* thisNPC)
 	{
-		return thisNPC ? thisNPC->numHeadParts : 0;
+		return (thisNPC) ? thisNPC->numHeadParts : 0;
 	}
 
 	BGSHeadPart* GetNthHeadPart(TESNPC* thisNPC, UInt32 n)
@@ -145,7 +145,7 @@ namespace papyrusActorBase
 
 	void SetHairColor(TESNPC* thisNPC, BGSColorForm* colorForm)
 	{
-		if(thisNPC && colorForm && thisNPC->headData) {
+		if (thisNPC && colorForm && thisNPC->headData) {
 			thisNPC->headData->hairColor = colorForm;
 		}
 	}
@@ -157,9 +157,38 @@ namespace papyrusActorBase
 
 	void SetFaceTextureSet(TESNPC* thisNPC, BGSTextureSet * textureSet)
 	{
-		if(thisNPC && thisNPC->headData) {
+		if (thisNPC && thisNPC->headData) {
 			thisNPC->headData->headTexture = textureSet;
 		}
+	}
+
+	TESObjectARMO * GetSkin(TESNPC* thisNPC)
+	{
+		return (thisNPC) ? thisNPC->skinForm.skin : NULL;
+	}
+
+	void SetSkin(TESNPC* thisNPC, TESObjectARMO * skin)
+	{
+		if (thisNPC) {
+			thisNPC->skinForm.skin = skin;
+		}
+	}
+
+	TESObjectARMO * GetSkinFar(TESNPC* thisNPC)
+	{
+		return (thisNPC) ? thisNPC->skinFar : NULL;
+	}
+
+	void SetSkinFar(TESNPC* thisNPC, TESObjectARMO * skin)
+	{
+		if (thisNPC) {
+			thisNPC->skinFar = skin;
+		}
+	}
+
+	TESNPC* GetTemplate(TESNPC* thisNPC)
+	{
+		return thisNPC ? thisNPC->GetRootTemplate() : NULL;
 	}
 }
 
@@ -242,6 +271,21 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <TESNPC, void, BGSTextureSet*>("SetFaceTextureSet", "ActorBase", papyrusActorBase::SetFaceTextureSet, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, TESObjectARMO*>("GetSkin", "ActorBase", papyrusActorBase::GetSkin, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, void, TESObjectARMO*>("SetSkin", "ActorBase", papyrusActorBase::SetSkin, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, TESObjectARMO*>("GetSkinFar", "ActorBase", papyrusActorBase::GetSkinFar, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESNPC, void, TESObjectARMO*>("SetSkinFar", "ActorBase", papyrusActorBase::SetSkinFar, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESNPC, TESNPC*>("GetTemplate", "ActorBase", papyrusActorBase::GetTemplate, registry));
+
 	registry->SetFunctionFlags("ActorBase", "GetCombatStyle", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "SetCombatStyle", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "GetOutfit", VMClassRegistry::kFunctionFlag_NoWait);
@@ -265,4 +309,7 @@ void papyrusActorBase::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("ActorBase", "GetHairColor", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "GetFaceTextureSet", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActorBase", "SetFaceTextureSet", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetSkin", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "SetSkin", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("ActorBase", "GetTemplate", VMClassRegistry::kFunctionFlag_NoWait);
 }

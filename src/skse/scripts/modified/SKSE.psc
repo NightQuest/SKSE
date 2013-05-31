@@ -15,3 +15,6 @@ int Function GetVersionRelease() global native
 int Function GetScriptVersionRelease() global
 	return 41
 endFunction
+
+; get a plugins version number, -1 if the plugin is not loaded
+int Function GetPluginVersion(string name) global native

@@ -5,6 +5,7 @@ class SpellItem;
 class BGSVoiceType;
 class VMClassRegistry;
 struct StaticFunctionTag;
+class TESObjectARMO;
 
 namespace papyrusRace
 {
@@ -22,4 +23,7 @@ namespace papyrusRace
 
 	BGSVoiceType* GetDefaultVoiceType(TESRace* thisRace, bool female);
 	void SetDefaultVoiceType(TESRace* thisRace, bool female, BGSVoiceType* voiceType);
+
+	TESObjectARMO * GetSkin(TESRace* thisRace);
+	void SetSkin(TESRace* thisRace, TESObjectARMO * skin);
 }

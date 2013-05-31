@@ -3,6 +3,7 @@
 #include "PapyrusNativeFunctions.h"
 #include "PapyrusVM.h"
 #include "PapyrusArgs.h"
+#include "PapyrusClass.h"
 #include "GameAPI.h"
 #include "GameObjects.h"
 #include "GameReferences.h"
@@ -50,6 +51,7 @@
 #include "PapyrusTextureSet.h"
 #include "PapyrusFlora.h"
 #include "PapyrusPerk.h"
+#include "PapyrusEquipSlot.h"
 
 #ifdef PAPYRUS_CUSTOM_CLASS
 #include "PapyrusTintMask.h"
@@ -111,6 +113,9 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// ColorForm
 	papyrusColorComponent::RegisterFuncs(registry);
 	papyrusColorForm::RegisterFuncs(registry);
+
+	// EquipSlot
+	papyrusEquipSlot::RegisterFuncs(registry);
 
 	// HeadPart
 	papyrusHeadPart::RegisterFuncs(registry);
@@ -247,6 +252,7 @@ void SkyrimVM::OnFormDelete_Hook(UInt64 handle)
 	g_inputKeyEventRegs.UnregisterAll(handle);
 	g_inputControlEventRegs.UnregisterAll(handle);
 	g_modCallbackRegs.UnregisterAll(handle);
+	g_actionEventRegs.UnregisterAll(handle);
 	
 	g_cameraEventRegs.Unregister(handle);
 	g_crosshairRefEventRegs.Unregister(handle);
@@ -295,4 +301,17 @@ void Hooks_Papyrus_Commit(void)
 	WriteRelCall(0x008D6D00 + 0x0116, GetFnAddr(&SkyrimVM::RevertGlobalData_Hook)); // New script reload command
 	WriteRelCall(0x008D3750 + 0x0101, GetFnAddr(&SkyrimVM::SaveGlobalData_Hook));
 	WriteRelCall(0x008D69C0 + 0x01B9, GetFnAddr(&SkyrimVM::LoadGlobalData_Hook));
+
+//	SafeWrite32(0x01149B98 + 4 * 3, GetFnAddr(&VMClassLoader::Load_Hook));
+}
+
+bool VMClassLoader::Load_Hook(const char * name, VMClass * out)
+{
+	bool	result = CALL_MEMBER_FN(this, Load_Impl)(name, out);
+	if(result)
+	{
+		_MESSAGE("%s", out->objectName.data);
+	}
+
+	return result;
 }

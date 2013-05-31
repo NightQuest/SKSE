@@ -7,9 +7,7 @@ namespace papyrusCombatStyle
 
 	float GetOffensiveMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->general.offensiveMult;
+		return (thisCombatStyle) ? thisCombatStyle->general.offensiveMult : 0.0;
 	}
 
 	void SetOffensiveMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -21,9 +19,7 @@ namespace papyrusCombatStyle
 
 	float GetDefensiveMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->general.defensiveMult;
+		return (thisCombatStyle) ? thisCombatStyle->general.defensiveMult : 0.0;
 	}
 
 	void SetDefensiveMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -35,9 +31,7 @@ namespace papyrusCombatStyle
 
 	float GetGroupOffensiveMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->general.groupOffensiveMult;
+		return (thisCombatStyle) ? thisCombatStyle->general.groupOffensiveMult : 0.0;
 	}
 
 	void SetGroupOffensiveMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -49,9 +43,7 @@ namespace papyrusCombatStyle
 
 	float GetMeleeMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->general.meleeMult;
+		return (thisCombatStyle) ? thisCombatStyle->general.meleeMult : 0.0;
 	}
 
 	void SetMeleeMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -63,9 +55,7 @@ namespace papyrusCombatStyle
 
 	float GetRangedMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->general.rangedMult;
+		return (thisCombatStyle) ? thisCombatStyle->general.rangedMult : 0.0;
 	}
 
 	void SetRangedMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -77,9 +67,7 @@ namespace papyrusCombatStyle
 
 	float GetMagicMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->general.magicMult;
+		return (thisCombatStyle) ? thisCombatStyle->general.magicMult : 0.0;
 	}
 
 	void SetMagicMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -91,9 +79,7 @@ namespace papyrusCombatStyle
 
 	float GetShoutMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->general.shoutMult;
+		return (thisCombatStyle) ? thisCombatStyle->general.shoutMult : 0.0;
 	}
 
 	void SetShoutMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -105,9 +91,7 @@ namespace papyrusCombatStyle
 
 	float GetStaffMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->general.staffMult;
+		return (thisCombatStyle) ? thisCombatStyle->general.staffMult : 0.0;
 	}
 
 	void SetStaffMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -119,9 +103,7 @@ namespace papyrusCombatStyle
 
 	float GetUnarmedMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->general.unarmedMult;
+		return (thisCombatStyle) ? thisCombatStyle->general.unarmedMult : 0.0;
 	}
 
 	void SetUnarmedMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -133,9 +115,7 @@ namespace papyrusCombatStyle
 
 	float GetAvoidThreatChance(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->general.avoidThreatChance;
+		return (thisCombatStyle) ? thisCombatStyle->general.avoidThreatChance : 0.0;
 	}
 
 	void SetAvoidThreatChance(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -147,9 +127,7 @@ namespace papyrusCombatStyle
 
 	float GetMeleeAttackStaggeredMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->melee.attackStaggeredMult;
+		return (thisCombatStyle) ? thisCombatStyle->melee.attackStaggeredMult : 0.0;
 	}
 
 	void SetMeleeAttackStaggeredMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -161,9 +139,7 @@ namespace papyrusCombatStyle
 
 	float GetMeleePowerAttackStaggeredMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->melee.powerAttackStaggeredMult;
+		return (thisCombatStyle) ? thisCombatStyle->melee.powerAttackStaggeredMult : 0.0;
 	}
 
 	void SetMeleePowerAttackStaggeredMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -175,9 +151,7 @@ namespace papyrusCombatStyle
 
 	float GetMeleePowerAttackBlockingMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->melee.powerAttackBlockingMult;
+		return (thisCombatStyle) ? thisCombatStyle->melee.powerAttackBlockingMult : 0.0;
 	}
 
 	void SetMeleePowerAttackBlockingMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -189,9 +163,7 @@ namespace papyrusCombatStyle
 
 	float GetMeleeBashMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->melee.bashMult;
+		return (thisCombatStyle) ? thisCombatStyle->melee.bashMult : 0.0;
 	}
 
 	void SetMeleeBashMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -203,9 +175,7 @@ namespace papyrusCombatStyle
 
 	float GetMeleeBashRecoiledMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->melee.bashRecoiledMult;
+		return (thisCombatStyle) ? thisCombatStyle->melee.bashRecoiledMult : 0.0;
 	}
 
 	void SetMeleeBashRecoiledMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -217,9 +187,7 @@ namespace papyrusCombatStyle
 
 	float GetMeleeBashAttackMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->melee.bashAttackMult;
+		return (thisCombatStyle) ? thisCombatStyle->melee.bashAttackMult : 0.0;
 	}
 
 	void SetMeleeBashAttackMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -231,9 +199,7 @@ namespace papyrusCombatStyle
 
 	float GetMeleeBashPowerAttackMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->melee.bashPowerAttackMult;
+		return (thisCombatStyle) ? thisCombatStyle->melee.bashPowerAttackMult : 0.0;
 	}
 
 	void SetMeleeBashPowerAttackMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -245,9 +211,7 @@ namespace papyrusCombatStyle
 
 	float GetMeleeSpecialAttackMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->melee.specialAttackMult;
+		return (thisCombatStyle) ? thisCombatStyle->melee.specialAttackMult : 0.0;
 	}
 
 	void SetMeleeSpecialAttackMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -259,9 +223,7 @@ namespace papyrusCombatStyle
 
 	float GetCloseRangeDuelingCircleMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->closeRange.duelingCircleMult;
+		return (thisCombatStyle) ? thisCombatStyle->closeRange.duelingCircleMult : 0.0;
 	}
 
 	void SetCloseRangeDuelingCircleMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -273,9 +235,7 @@ namespace papyrusCombatStyle
 
 	float GetCloseRangeDuelingFallbackMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->closeRange.duelingFallbackMult;
+		return (thisCombatStyle) ? thisCombatStyle->closeRange.duelingFallbackMult : 0.0;
 	}
 
 	void SetCloseRangeDuelingFallbackMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -287,9 +247,7 @@ namespace papyrusCombatStyle
 
 	float GetCloseRangeFlankingFlankDistance(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->closeRange.flankingFlankDistance;
+		return (thisCombatStyle) ? thisCombatStyle->closeRange.flankingFlankDistance : 0.0;
 	}
 
 	void SetCloseRangeFlankingFlankDistance(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -301,9 +259,7 @@ namespace papyrusCombatStyle
 
 	float GetCloseRangeFlankingStalkTime(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->closeRange.flankingStalkTime;
+		return (thisCombatStyle) ? thisCombatStyle->closeRange.flankingStalkTime : 0.0;
 	}
 
 	void SetCloseRangeFlankingStalkTime(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -315,9 +271,7 @@ namespace papyrusCombatStyle
 
 	float GetLongRangeStrafeMult(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->longRange.strafeMult;
+		return (thisCombatStyle) ? thisCombatStyle->longRange.strafeMult : 0.0;
 	}
 
 	void SetLongRangeStrafeMult(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -330,9 +284,7 @@ namespace papyrusCombatStyle
 
 	float GetFlightHoverChance(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->flight.hoverChance;
+		return (thisCombatStyle) ? thisCombatStyle->flight.hoverChance : 0.0;
 	}
 
 	void SetFlightHoverChance(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -344,9 +296,7 @@ namespace papyrusCombatStyle
 
 	float GetFlightDiveBombChance(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->flight.diveBombChance;
+		return (thisCombatStyle) ? thisCombatStyle->flight.diveBombChance : 0.0;
 	}
 
 	void SetFlightDiveBombChance(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -359,9 +309,7 @@ namespace papyrusCombatStyle
 	// undecoded
 	float GetFlightFlyingAttackChance(TESCombatStyle* thisCombatStyle)
 	{
-		if (!thisCombatStyle)
-			return 0.0;
-		return thisCombatStyle->flight.flyingAttackChance;
+		return (thisCombatStyle) ? thisCombatStyle->flight.flyingAttackChance : 0.0;
 	}
 
 	void SetFlightFlyingAttackChance(TESCombatStyle* thisCombatStyle, float nuVal)
@@ -375,13 +323,16 @@ namespace papyrusCombatStyle
 	{
 		if (!thisCombatStyle)
 			return false;
-		return thisCombatStyle->allowDualWielding ? true : false;
+		return (thisCombatStyle->flags & TESCombatStyle::kFlag_AllowDualWielding) == TESCombatStyle::kFlag_AllowDualWielding ? true : false;
 	}
 
 	void SetAllowDualWielding(TESCombatStyle* thisCombatStyle, bool bAllow)
 	{
 		if (thisCombatStyle) {
-			thisCombatStyle->allowDualWielding = (bAllow) ? 1 : 0;
+			if(bAllow)
+				thisCombatStyle->flags |= TESCombatStyle::kFlag_AllowDualWielding;
+			else
+				thisCombatStyle->flags &= ~TESCombatStyle::kFlag_AllowDualWielding;
 		}
 	}
 }

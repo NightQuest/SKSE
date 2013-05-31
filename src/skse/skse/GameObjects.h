@@ -287,14 +287,37 @@ public:
 	TESModelTextureSwap	texSwap;	// 20
 };
 
+class BSShaderTextureSet;
+
 // 08
 class BSTextureSet : public NiObject
 {
 public:
-	virtual void	Unk_21(void);
-	virtual void	Unk_22(void);
-	virtual void	Unk_23(void);
+	virtual const char * GetTexturePath(UInt32 index);
+	virtual void	SetTexture(UInt32 index, NiSourceTexture * texture);
+	virtual void	SetTexturePath(UInt32 index, const char * path);
+
+	enum
+	{
+		kNumTextures = 9
+	};
 };
+
+// 2C
+class BSShaderTextureSet : public BSTextureSet
+{
+public:
+	UInt32	unk08;
+	UInt32	unk0C;
+	UInt32	unk10;
+	UInt32	unk14;
+	UInt32	unk18;
+	UInt32	unk1C;
+	UInt32	unk20;
+	UInt32	unk24;
+	UInt32	unk28;
+};
+STATIC_ASSERT(sizeof(BSShaderTextureSet) == 0x2C);
 
 // D0
 class BGSTextureSet : public TESBoundObject
@@ -623,6 +646,8 @@ public:
 STATIC_ASSERT(offsetof(TESActorBase, keyword) == 0xA0);
 STATIC_ASSERT(sizeof(TESActorBase) == 0xC0);
 
+class BSFaceGenNiNode;
+
 // 164
 class TESNPC : public TESActorBase
 {
@@ -666,14 +691,14 @@ public:
 	TESCombatStyle*	combatStyle;// 118
 	UInt32		unk11C;			// 11C
 	UInt32		unk120;			// 120
-	UInt32		unk124;			// 124
+	TESNPC		* nextTemplate;	// 124
 	float		height;			// 128
 	float		weight;			// 12C
 
 	UInt32		pad130;			// 130
 	
 	StringCache::Ref	shortName;	// 134
-	UInt32		unk138;			// 138
+	TESObjectARMO*		skinFar;	// 138
 	BGSOutfit*	defaultOutfit;		// 13C
 	BGSOutfit*	sleepOutfit;		// 140
 	UInt32		unk144;			// 144
@@ -697,11 +722,19 @@ public:
 	DEFINE_MEMBER_FN(GetSex, char, 0x0055B510);
 	DEFINE_MEMBER_FN(ChangeHeadPart, void, 0x00567CE0, BGSHeadPart *);
 	DEFINE_MEMBER_FN(HasOverlays, bool, 0x005681C0);
+
+	struct MorphAction {
+		BSFaceGenNiNode * faceNode;
+		TESNPC * npc;
+		BSFixedString * morphName;
+		float	value;
+	};
 	
+	DEFINE_MEMBER_FN(ApplyMorph, void, 0x005A4870, MorphAction * morphAction);
+	DEFINE_MEMBER_FN(UpdateNeck, void, 0x00567C30, BSFaceGenNiNode * faceNode);
+
 	BGSHeadPart * GetHeadPartOverlayByType(UInt32 type);
-	//DEFINE_MEMBER_FN(SetHeadPart, void, 0x00567F30, UInt32); // Not sure what this one does exactly
-	//DEFINE_MEMBER_FN(GetMorph, float, 0x005611D0, UInt32 index);
-	//DEFINE_MEMBER_FN(GetPreset, float, 0x00561230, UInt32 index);
+	TESNPC * GetRootTemplate();
 };
 
 STATIC_ASSERT(sizeof(TESNPC) == 0x164);
@@ -1278,7 +1311,7 @@ public:
 	BGSSoundDescriptorForm	* equipSound;		// 118
 	BGSSoundDescriptorForm	* unequipSound;		// 11C
 	BGSImpactDataSet	* impactDataSet;	// 120
-	TESForm	* firstPersonModel;				// 124
+	TESObjectSTAT	* model;				// 124
 	TESForm	* templateForm;					// 128
 	BSFixedString	embeddedNode;			// 12C
 	UInt32	pad130;							// 130
@@ -1328,6 +1361,8 @@ public:
 	tArray<TESRace*>			additionalRaces;		// B4
 	BGSFootstepSet				* footstepSet;			// C0
 	UInt32						unkC4;					// C4
+
+	void GetNodeName(char * dstBuff, TESObjectREFR * refr, TESObjectARMO * armor, float weightOverride);
 };
 
 STATIC_ASSERT(sizeof(TESObjectARMA) == 0xC8);
@@ -1349,6 +1384,11 @@ class ActiveEffect
 public:
 	enum { kTypeID = kFormType_ActiveMagicEffect };
 
+	enum
+	{
+		kFlag_Inactive = 0x8000
+	};
+
 	virtual ~ActiveEffect();
 
 //	void					** _vtbl;		// 00
@@ -1364,7 +1404,7 @@ public:
 	float					elapsed;		// 48
 	float					duration;		// 4C
 	float					magnitude;		// 50
-	UInt32					unk54;			// 54
+	UInt32					flags;			// 54
 	UInt32					unk58;			// 58
 	UInt32					effectNum;		// 5C - Somekind of counter used to determine whether the ActiveMagicEffect handle is valid
 	UInt32					unk60;			// 60

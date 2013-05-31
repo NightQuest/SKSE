@@ -19,6 +19,10 @@ VoiceType Function GetDefaultVoiceType(bool female) native
 ; Sets the races default voice type
 Function SetDefaultVoiceType(bool female, VoiceType voice) native
 
+; Gets/sets the skin of the race
+Armor Function GetSkin() native
+Function SetSkin(Armor skin) native
+
 ; Returns the number of playable races
 int Function GetNumPlayableRaces() native global
 

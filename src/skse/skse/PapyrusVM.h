@@ -2,11 +2,11 @@
 
 #include "skse/Utilities.h"
 #include "skse/GameTypes.h"
-#include "skse/GameEvents.h"
 
 class IFunction;
 class VMIdentifier;
 class VMValue;
+class VMClassRegistry;
 class IFunctionArguments;
 
 class IObjectHandlePolicy
@@ -114,6 +114,35 @@ public:
 //	void	** _vtbl;	// 00
 };
 
+// 48+
+class VMUnlinkedClassList
+{
+	virtual ~VMUnlinkedClassList()	{ }
+	virtual VMUnlinkedClassList *	Create(void);
+	virtual void					SetUnk0C(void * arg);
+	virtual bool					Link(StringCache::Ref * className);
+
+//	void	** _vtbl;	// 00
+	VMClassRegistry	* unk04;	// 04
+	void	* unk08;	// 08
+	void	* unk0C;	// 0C - loader
+	UInt8	unk10;		// 10
+	UInt8	pad11[3];	// 11
+	UInt32	unk14;		// 14
+	UInt32	unk18;		// 18
+	UInt32	unk1C;		// 1C
+	void	* unk20;	// 20
+	UInt32	unk24;		// 24
+	UInt32	unk28;		// 28
+	UInt32	unk2C;		// 2C
+	void	* unk30;	// 30
+	UInt32	unk34;		// 34
+	UInt32	unk38;		// 38
+	UInt32	unk3C;		// 3C
+	void	* unk40;	// 40
+	UInt32	unk44;		// 44
+};
+
 // 4B04
 // this does more than hold on to class registrations, but for now that's all we care about
 class VMClassRegistry
@@ -182,12 +211,18 @@ public:
 	virtual void	Unk_32(void);
 	virtual void	Unk_33(void);
 
-//	void	** _vtbl;		// 0000
-	UInt32	unk0004;		// 0004 - refcount?
-	void	** vtbl0008;	// 0008
-	void	** vtbl000C;	// 000C
-	void	** vtbl0010;	// 0010
+//	void		** _vtbl;		// 0000
+	UInt32		unk0004;		// 0004 - refcount?
+	void		** vtbl0008;	// 0008
+	void		** vtbl000C;	// 000C
+	void		** vtbl0010;	// 0010
+	UInt32		unk0014[(0x006C - 0x0014) >> 2];	// 0014
+	VMUnlinkedClassList	unlinkedClassList;			// 006C
+	UInt32		unk00B4[(0x4B04 - 0x00B4) >> 2];	// 00B4
 };
+
+STATIC_ASSERT(offsetof(VMClassRegistry, unlinkedClassList) == 0x006C);
+STATIC_ASSERT(sizeof(VMClassRegistry) == 0x4B04);
 
 // 45D0
 class SkyrimVM
@@ -199,7 +234,7 @@ public:
 	virtual void	Unk_01(void);
 
 //	void						** _vtbl;				// 0000
-	BSTEventSink<void>			eventSinks[63];			// 0004
+	UInt32						eventSinks[63];		// 0004
 	VMClassRegistry				* m_classRegistry;		// 0100
 	UInt8						pad104[0x46C - 0x104];	// 0104
 	SimpleLock					m_updateLock;			// 046C
@@ -223,6 +258,7 @@ public:
 	bool SaveGlobalData_Hook(void * handleReaderWriter, void * saveStorageWrapper);
 	bool LoadGlobalData_Hook(void * handleReaderWriter, void * loadStorageWrapper);
 };
+STATIC_ASSERT(offsetof(SkyrimVM, m_classRegistry) == 0x100);
 
 extern SkyrimVM	** g_skyrimVM;
 

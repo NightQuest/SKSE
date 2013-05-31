@@ -759,7 +759,7 @@ int Property Motion_ThinBoxIntertia = 6 AutoReadOnly
 int Property Motion_Character = 7 AutoReadOnly
 
 
-; SKSE additions built 2013-03-19 23:47:10.300000 UTC
+; SKSE additions built 2013-05-30 03:14:16.893000 UTC
 
 ; Container-only functions
 int Function GetNumItems() native
@@ -780,3 +780,5 @@ float Function GetItemCharge() native
 Function SetItemCharge(float charge) native
 
 Function ResetInventory() native
+
+bool Function IsOffLimits() native

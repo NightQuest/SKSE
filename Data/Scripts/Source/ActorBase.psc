@@ -43,7 +43,7 @@ Function SetProtected(bool abProtected = true) native
 Function SetOutfit( Outfit akOutfit, bool abSleepOutfit = false ) native
 
 
-; SKSE additions built 2013-03-19 23:47:10.300000 UTC
+; SKSE additions built 2013-05-30 03:14:16.893000 UTC
 ; get/set the CombatStyle of the actor
 CombatStyle Function GetCombatStyle() native
 Function SetCombatStyle(CombatStyle cs) native
@@ -93,5 +93,17 @@ Spell Function GetNthSpell(int n) native
 TextureSet Function GetFaceTextureSet() native
 Function SetFaceTextureSet(TextureSet textures) native
 
+; Gets/sets the Actor's voicetype
 VoiceType Function GetVoiceType() native
 Function SetVoiceType(VoiceType nVoice) native
+
+; Gets/sets the skin of the actorbase
+Armor Function GetSkin() native
+Function SetSkin(Armor skin) native
+
+; Gets/sets the far away skin of the actorbase
+Armor Function GetSkinFar() native
+Function SetSkinFar(Armor skin) native
+
+; Gets the root template of the ActorBase
+ActorBase Function GetTemplate() native

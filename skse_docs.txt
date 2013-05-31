@@ -168,6 +168,18 @@ dynamic intrinsic class skse
 
 	// centers map on the marker with the given index. only works if the map is open
 	function ShowOnMap(markerIndex : Number) : Void;
+
+	// centers map on the marker with the given index. only works if the map is open
+	function ShowOnMap(markerIndex : Number) : Void;
+
+	// centers map on the marker with the given index. only works if the map is open
+	function ShowOnMap(markerIndex : Number) : Void;
+
+	// store an array of numbers under the given key. any existing data under the same key will be replaced
+	function StoreIndices(key : String, indicesIn : Array) : Void;
+
+	// load an array of numbers associated with the given key into the passed indicesOut
+	function LoadIndices(key : String, indicesOut : Array) : Void;
 	
 	dynamic intrinsic class version
 	{
@@ -226,3 +238,4 @@ dynamic intrinsic class skse
 //	1.6.11	1.9.29.0	39
 //	1.6.12	1.9.32.0	40
 //	1.6.13	1.9.32.0	41
+//	1.6.14	1.9.32.0	42

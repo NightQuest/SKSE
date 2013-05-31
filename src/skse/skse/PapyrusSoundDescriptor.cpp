@@ -13,8 +13,7 @@ namespace papyrusSoundDescriptor
 
 	void SetDecibelAttenuation(BGSSoundDescriptorForm* thisDescriptor, float dbAttenuation)
 	{
-		if(thisDescriptor && thisDescriptor->standardSoundDef)
-		{
+		if(thisDescriptor && thisDescriptor->standardSoundDef) {
 			thisDescriptor->standardSoundDef->soundCharacteristics.dbAttenuation = (UInt16)(dbAttenuation * 100);
 		}
 	}
@@ -26,8 +25,7 @@ namespace papyrusSoundDescriptor
 
 	void SetDecibelVariance(BGSSoundDescriptorForm* thisDescriptor, UInt32 dbVariance)
 	{
-		if(thisDescriptor && thisDescriptor->standardSoundDef && dbVariance < 255)
-		{
+		if(thisDescriptor && thisDescriptor->standardSoundDef && dbVariance < 255) {
 			thisDescriptor->standardSoundDef->soundCharacteristics.dbVariance = dbVariance;
 		}
 	}
@@ -39,8 +37,7 @@ namespace papyrusSoundDescriptor
 
 	void SetFrequencyVariance(BGSSoundDescriptorForm* thisDescriptor, UInt32 freqVariance)
 	{
-		if(thisDescriptor && thisDescriptor->standardSoundDef && freqVariance < 255)
-		{
+		if(thisDescriptor && thisDescriptor->standardSoundDef && freqVariance < 255) {
 			thisDescriptor->standardSoundDef->soundCharacteristics.frequencyVariance = freqVariance;
 		}
 	}
@@ -52,8 +49,7 @@ namespace papyrusSoundDescriptor
 
 	void SetFrequencyShift(BGSSoundDescriptorForm* thisDescriptor, UInt32 freqShift)
 	{
-		if(thisDescriptor && thisDescriptor->standardSoundDef && freqShift < 255)
-		{
+		if(thisDescriptor && thisDescriptor->standardSoundDef && freqShift < 255) {
 			thisDescriptor->standardSoundDef->soundCharacteristics.frequencyShift = freqShift;
 		}
 	}

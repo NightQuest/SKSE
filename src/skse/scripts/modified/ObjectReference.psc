@@ -18,3 +18,5 @@ float Function GetItemCharge() native
 Function SetItemCharge(float charge) native
 
 Function ResetInventory() native
+
+bool Function IsOffLimits() native

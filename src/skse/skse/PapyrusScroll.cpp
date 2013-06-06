@@ -64,6 +64,8 @@ namespace papyrusScroll
 
 void papyrusScroll::RegisterFuncs(VMClassRegistry* registry)
 {
+	registry->RegisterFunction(
+		new NativeFunction0<ScrollItem, float>("GetCastTime", "Scroll", papyrusScroll::GetCastTime, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0<ScrollItem, UInt32>("GetNumEffects", "Scroll", papyrusScroll::GetNumEffects, registry));

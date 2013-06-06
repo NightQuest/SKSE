@@ -39,6 +39,7 @@
 #include "PapyrusRace.h"
 #include "PapyrusSKSE.h"
 #include "PapyrusSpell.h"
+#include "PapyrusScroll.h"
 #include "PapyrusSound.h"
 #include "PapyrusSoundDescriptor.h"
 #include "PapyrusStringUtil.h"
@@ -173,6 +174,9 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 
 	// Ingredient
 	papyrusIngredient::RegisterFuncs(registry);
+
+	// Scroll
+	papyrusScroll::RegisterFuncs(registry);
 
 	// StringUtil
 	papyrusStringUtil::RegisterFuncs(registry);

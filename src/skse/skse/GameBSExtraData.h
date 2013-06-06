@@ -2,6 +2,8 @@
 
 #include "Utilities.h"
 
+class ExtraTextDisplayData;
+
 enum ExtraDataType
 {
 	kExtraData_Havok			= 0x1,
@@ -191,6 +193,7 @@ class BSExtraData
 public:
 	BSExtraData();
 	virtual ~BSExtraData();
+	virtual UInt32 GetType(void);
 
 	BSExtraData* next;		// 04
 	//UInt8 type;				// 08
@@ -238,6 +241,8 @@ public:
 
 	bool CheckContainerExtraData(bool isEquipped);
 
+	const char * GetDisplayName(TESForm * type);
+
 	BSExtraData* GetByType(UInt32 type) const;
 	BSExtraData			* m_data;		// 00
 	PresenceBitfield	* m_presence;	// 04
@@ -245,6 +250,8 @@ public:
 private:
 	MEMBER_FN_PREFIX(BaseExtraList);
 	DEFINE_MEMBER_FN(CheckContainerExtraData_Internal, bool, 0x0040ABF0, bool isEquipped);	
+	// This also does some internal ReferenceHandle lookup
+	DEFINE_MEMBER_FN(GetExtraTextDisplayData_Internal, ExtraTextDisplayData*, 0x00418590);	
 };
 
 STATIC_ASSERT(sizeof(BaseExtraList) == 0x08);

@@ -1,3 +1,11 @@
+1.6.15:
+- fixed EquipItemEx bug causing two items of the same type with different enhancements unable to be equipped in both left and right
+- fixed Game.UnbindObjectHotkey/GetHotkeyBoundObject/IsObjectFavorited (Could only be used once until the hotkey was manually re-bound)
+- bound all of the existing Scroll functions (They were defined but never natively bound)
+- added Scroll.GetCastTime
+- changed ActorAction slot value to match other functions 0-left 1-right 2-voice
+- added Actor.EquipItemById/GetEquippedItemId/GetWornItemId
+
 1.6.14:
 - TESCombatStyle now properly cloned by TempClone (uses our implementation instead of bethesda's)
 - minidump reporting ignores 'known' crash on exit (a bug in the game engine) to avoid creating useless minidumps

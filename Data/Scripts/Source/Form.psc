@@ -118,7 +118,7 @@ EndEvent
 Event OnUpdateGameTime()
 EndEvent
 
-; SKSE additions built 2013-05-30 03:14:16.893000 UTC
+; SKSE additions built 2013-06-06 02:29:15.175000 UTC
 
 ; Returns the typecode for this form object
 Int Function GetType() native
@@ -224,20 +224,20 @@ Function RegisterForActorAction(int actionType) native
 Function UnregisterForActorAction(int actionType) native
 
 ; ActionTypes
-; 0 - Weapon Swing (Melee weapons that are swung)
+; 0 - Weapon Swing (Melee weapons that are swung, also barehand)
 ; 1 - Spell Cast (Spells and staves)
 ; 2 - Spell Fire (Spells and staves)
 ; 3 - Voice Cast
 ; 4 - Voice Fire
 ; 5 - Bow Draw
 ; 6 - Bow Release
-; 7 - Draw Begin
-; 8 - Draw End
+; 7 - Unsheathe Begin
+; 8 - Unsheathe End
 ; 9 - Sheathe Begin
 ; 10 - Sheathe End
 ; Slots
-; 0 - Right Hand
-; 1 - Left Hand
+; 0 - Left Hand
+; 1 - Right Hand
 ; 2 - Voice
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 EndEvent

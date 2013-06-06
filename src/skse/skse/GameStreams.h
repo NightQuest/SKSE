@@ -11,7 +11,7 @@
 // class BSStreamParserData
 
 // Not sure if this is right
-/*class NiBinaryStream
+class NiBinaryStream
 {
 public:
 	virtual ~NiBinaryStream() { };
@@ -21,9 +21,9 @@ public:
 	virtual UInt32	GetOffset(void) { return 0; }
 	virtual void	Unk_04(void) { }
 	virtual void	EnableEndianSwap(bool swap) = 0;
-};*/
+};
 
-class BSResourceNiBinaryStream// : public NiBinaryStream
+class BSResourceNiBinaryStream : public NiBinaryStream
 {
 public:
 	BSResourceNiBinaryStream();
@@ -38,7 +38,7 @@ public:
 	virtual void	EnableEndianSwap(bool swap);
 
 //	void	** _vtbl;	// 00
-//	UInt32	pad04;		// 04 - align for UInt64
+	UInt32	pad04;		// 04 - align for UInt64
 	void	* readFn;	// 08
 	void	* writeFn;	// 0C
 	void	* unk10;	// 10

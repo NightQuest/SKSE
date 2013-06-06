@@ -266,7 +266,7 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2013-05-30 03:14:16.893000 UTC
+; SKSE additions built 2013-06-06 02:29:15.175000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native

@@ -7,6 +7,7 @@
 #include "GameExtraData.h"
 #include "GameRTTI.h"
 #include "GameThreads.h"
+#include "HashUtil.h"
 
 class MatchBySlot : public FormMatcher
 {
@@ -27,6 +28,15 @@ public:
 		}
 		return false;
 	}
+};
+
+class MatchByForm : public FormMatcher
+{
+	TESForm * m_form;
+public:
+	MatchByForm(TESForm * form) : m_form(form) {}
+
+	bool Matches(TESForm* pForm) const { return m_form == pForm; }
 };
 
 bool CanEquipBothHands(Actor* actor, TESForm * item)
@@ -70,6 +80,27 @@ BGSEquipSlot * GetEquipSlotById(SInt32 slotId)
 		return NULL;
 }
 
+SInt32 CalcItemId(TESForm * form, BaseExtraList * extraList)
+{
+	if (!form || !extraList)
+		return 0;
+
+	const char * name = extraList->GetDisplayName(form);
+
+	// No name in extra data? Use base form name
+	if (!name)
+	{
+		TESFullName* pFullName = DYNAMIC_CAST(form, TESForm, TESFullName);
+		if (pFullName)
+			name = pFullName->name.data;
+	}
+
+	if (!name)
+		return 0;
+
+	return (SInt32)HashUtil::CRC32(name, form->formID);
+}
+
 namespace papyrusActor
 {
 
@@ -82,6 +113,18 @@ namespace papyrusActor
 			return eqD.pForm;
 		}
 		return NULL;
+	}
+
+	SInt32 GetWornItemId(Actor* thisActor, UInt32 mask)
+	{
+		ExtraContainerChanges* containerChanges = static_cast<ExtraContainerChanges*>(thisActor->extraData.GetByType(kExtraData_ContainerChanges));
+		if (!containerChanges)
+			return 0;
+
+		MatchBySlot matcher(mask);	
+		EquipData equipData = containerChanges->FindEquipped(matcher);
+
+		return CalcItemId(equipData.pForm, equipData.pExtraData);
 	}
 
 	TESForm * GetEquippedObject(Actor * thisActor, UInt32 slot)
@@ -99,6 +142,31 @@ namespace papyrusActor
 			return thisActor->equippedShout;
 		else
 			return thisActor->GetEquippedObject(slot == kSlotID_Left);
+	}
+
+	SInt32 GetEquippedItemId(Actor * thisActor, UInt32 slot)
+	{
+		enum
+		{
+			kSlotID_Left = 0,
+			kSlotID_Right
+		};
+
+		if (!thisActor)
+			return NULL;
+
+		TESForm * equippedForm = thisActor->GetEquippedObject(slot == kSlotID_Left);
+		if (!equippedForm)
+			return 0;
+
+		ExtraContainerChanges* containerChanges = static_cast<ExtraContainerChanges*>(thisActor->extraData.GetByType(kExtraData_ContainerChanges));
+		if (!containerChanges)
+			return 0;
+
+		MatchByForm matcher(equippedForm);
+		EquipData equipData = containerChanges->FindEquipped(matcher, slot == kSlotID_Right, slot == kSlotID_Left);
+
+		return CalcItemId(equipData.pForm, equipData.pExtraData);
 	}
 
 	UInt32 GetSpellCount(Actor* thisActor)
@@ -203,7 +271,7 @@ namespace papyrusActor
 			{
 				isTargetSlotInUse = targetEquipSlot == GetRightHandSlot();
 				curEquipList = rightEquipList;
-				enchantList = rightEquipList;
+				enchantList = NULL;
 			}
 			// Case 3: Already equipped in left hand.
 			else if (leftEquipList)
@@ -244,6 +312,102 @@ namespace papyrusActor
 
 		if (!isTargetSlotInUse && hasItemMinCount)
 			CALL_MEMBER_FN(equipManager, EquipItem)(thisActor, item, enchantList, equipCount, targetEquipSlot, equipSound, preventUnequip, false, NULL);
+	}
+
+	void EquipItemById(Actor* thisActor, TESForm* item, SInt32 itemId, SInt32 slotId, bool preventUnequip /*unused*/, bool equipSound)
+	{
+		if (!item || !item->Has3D())
+			return;
+
+		// Can't be improved or enchanted, no need for itemId => delegate
+		if (item->IsAmmo())
+		{
+			EquipItemEx(thisActor, item, slotId, preventUnequip, equipSound);
+			return;
+		}
+
+		EquipManager* equipManager = EquipManager::GetSingleton();
+		if (!equipManager)
+			return;
+
+		ExtraContainerChanges* containerChanges = static_cast<ExtraContainerChanges*>(thisActor->extraData.GetByType(kExtraData_ContainerChanges));
+		ExtraContainerChanges::Data* containerData = containerChanges ? containerChanges->data : NULL;
+		if (!containerData)
+			return;
+
+		// Copy/merge of extraData and container base. Free after use.
+		// First element of extendDataList is selected entry, rest of the list may contain worn left/right lists.
+		ExtraContainerChanges::EntryData* entryData = containerData->CreateEquipEntryData(item, itemId);
+		if (!entryData)
+			return;
+
+		BGSEquipSlot * targetEquipSlot = GetEquipSlotById(slotId);
+		bool isTargetSlotInUse = false;
+
+		SInt32 itemCount = entryData->countDelta;
+
+		// Need at least 1 (maybe 2 for dual wield, checked later)
+		bool hasItemMinCount = itemCount > 0;
+		bool canDualWield = false;
+
+		BaseExtraList * newEquipList = NULL;
+		BaseExtraList * rightEquipList = NULL;
+		BaseExtraList * leftEquipList = NULL;
+
+		if (hasItemMinCount)
+		{
+			newEquipList = entryData->extendDataList->GetNthItem(0);
+			entryData->GetExtraWornBaseLists(&rightEquipList, &leftEquipList);
+
+			// Case 1: Type already equipped in both hands.
+			if (leftEquipList && rightEquipList)
+			{
+				isTargetSlotInUse = true;
+			}
+			// Case 2: Type already equipped in right hand.
+			else if (rightEquipList)
+			{
+				isTargetSlotInUse = targetEquipSlot == GetRightHandSlot();
+			}
+			// Case 3: Type already equipped in left hand.
+			else if (leftEquipList)
+			{
+				isTargetSlotInUse = targetEquipSlot == GetLeftHandSlot();
+			}
+			// Case 4: Type not equipped yet.
+			else
+			{
+				isTargetSlotInUse = false;
+			}
+		}
+
+		// Free temp equip entryData
+		entryData->Delete();
+
+		// This includes the scenario where the target slot is in use by another weapon of the same type.
+		// Could easily handle this, but switching them here causes a bug (0 damage) for some reason.
+		// So we just skip it. Can be handled in the Papyrus side.
+		if (isTargetSlotInUse || !hasItemMinCount)
+			return;
+
+		bool isEquippedRight = newEquipList && rightEquipList && (rightEquipList == newEquipList);
+		bool isEquippedLeft = newEquipList && leftEquipList && (leftEquipList == newEquipList);
+		bool isEquipped = isEquippedRight || isEquippedLeft;
+
+		// For dual wield, prevent that 1 item can be equipped in two hands if its already equipped
+		if (targetEquipSlot && isEquipped && CanEquipBothHands(thisActor, item))
+			canDualWield = itemCount > 1;
+
+		// Not enough items to dual wield, weapon has to swap hands
+		if (!canDualWield)
+		{
+			if (isEquippedRight)
+				CALL_MEMBER_FN(equipManager, UnequipItem)(thisActor, item, rightEquipList, 1, 0, false, false, true, false, NULL);
+			else if (isEquippedLeft)
+				CALL_MEMBER_FN(equipManager, UnequipItem)(thisActor, item, leftEquipList, 1, 0, false, false, true, false, NULL);
+		}
+
+		CALL_MEMBER_FN(equipManager, EquipItem)(thisActor, item, newEquipList, 1, targetEquipSlot, equipSound, preventUnequip, false, NULL);
 	}
 
 	void UnequipItemEx(Actor* thisActor, TESForm* item, SInt32 slotId, bool preventEquip)
@@ -425,4 +589,13 @@ void papyrusActor::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0 <Actor, void>("SheatheWeapon", "Actor", papyrusActor::SheatheWeapon, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction5 <Actor, void, TESForm*, SInt32, SInt32, bool, bool>("EquipItemById", "Actor", papyrusActor::EquipItemById, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <Actor, SInt32, UInt32>("GetEquippedItemId", "Actor", papyrusActor::GetEquippedItemId, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <Actor, SInt32, UInt32>("GetWornItemId", "Actor", papyrusActor::GetWornItemId, registry));
 }

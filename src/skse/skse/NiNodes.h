@@ -24,6 +24,7 @@ public:
 
 STATIC_ASSERT(sizeof(NiNode) == 0xB8);
 
+// EC
 class BSFaceGenNiNode : public NiNode
 {
 public:

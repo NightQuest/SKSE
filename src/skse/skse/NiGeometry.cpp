@@ -49,13 +49,13 @@ void NiGeometry::SetEffectState(NiProperty * effectState)
 	{
 		if(m_spEffectState)
 		{
-			if(!InterlockedDecrement(&m_spEffectState->m_uiRefCount))
+			if(m_spEffectState->Release())
 				m_spEffectState->DeleteThis();
 		}
 
 		m_spEffectState = effectState;
 		if(effectState)
-			InterlockedIncrement(&effectState->m_uiRefCount);
+			effectState->IncRef();
 	}
 }
 
@@ -65,13 +65,13 @@ void NiGeometry::SetSkinInstance(NiSkinInstance * skinInstance)
 	{
 		if(m_spSkinInstance)
 		{
-			if(!InterlockedDecrement(&m_spSkinInstance->m_uiRefCount))
+			if(m_spSkinInstance->Release())
 				m_spSkinInstance->DeleteThis();
 		}
 
 		m_spSkinInstance = skinInstance;
 		if(skinInstance)
-			InterlockedIncrement(&skinInstance->m_uiRefCount);
+			skinInstance->IncRef();
 	}
 }
 
@@ -81,12 +81,12 @@ void NiGeometry::SetModelData(NiGeometryData * modelData)
 	{
 		if(m_spSkinInstance)
 		{
-			if(!InterlockedDecrement(&m_spModelData->m_uiRefCount))
+			if(m_spModelData->Release())
 				m_spModelData->DeleteThis();
 		}
 
 		m_spModelData = modelData;
 		if(modelData)
-			InterlockedIncrement(&modelData->m_uiRefCount);
+			modelData->IncRef();
 	}
 }

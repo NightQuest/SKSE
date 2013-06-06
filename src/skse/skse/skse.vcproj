@@ -927,6 +927,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\HashUtil.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\HashUtil.h"
+				>
+			</File>
+			<File
 				RelativePath=".\InputMap.cpp"
 				>
 			</File>

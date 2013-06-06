@@ -432,6 +432,9 @@ public:
 		TESForm					* form;
 		tList<BaseExtraList>	* extraData;
 		SInt32					countDelta;
+
+		MEMBER_FN_PREFIX(ObjDesc);
+		DEFINE_MEMBER_FN(GenerateName, const char *, 0x00475AA0);
 	};
 
 	MEMBER_FN_PREFIX(PlayerCharacter);

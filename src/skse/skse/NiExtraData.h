@@ -36,7 +36,7 @@ STATIC_ASSERT(sizeof(BSFaceGenKeyframeMultiple) == 0x18);
 class NiExtraData : public NiObject
 {
 public:
-	UInt32	unk08;	// 08
+	const char *	unk08;	// 08
 };
 
 // 1B4

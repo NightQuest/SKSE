@@ -3,6 +3,7 @@
 #include "GameRTTI.h"
 #include "GameAPI.h"
 #include "GameData.h"
+#include "HashUtil.h"
 
 extern const void * RTTIForExtraType[0xB4] = 
 {
@@ -256,6 +257,27 @@ bool BaseExtraList::CheckContainerExtraData(bool isEquipped)
 	return CALL_MEMBER_FN(this, CheckContainerExtraData_Internal)(isEquipped);
 }
 
+const char * BaseExtraList::GetDisplayName(TESForm * type)
+{
+	float healthValue = 1.0;
+
+	ExtraHealth* xHealth = static_cast<ExtraHealth*>(GetByType(kExtraData_Health));
+	if(xHealth)
+		healthValue = xHealth->health;
+
+	ExtraTextDisplayData * xText = CALL_MEMBER_FN(this, GetExtraTextDisplayData_Internal)();
+	if (!xText && healthValue != 1.0)
+	{
+		xText = ExtraTextDisplayData::Create();
+		Add(kExtraData_TextDisplayData, xText);
+	}
+
+	if (xText)
+		return xText->GenerateName(type, healthValue);
+	else
+		return NULL;
+}
+
 BSExtraData* BSExtraData::Create(UInt32 size, UInt32 vtbl)
 {
 	void* memory = FormHeap_Allocate(size);
@@ -309,50 +331,68 @@ ExtraTextDisplayData* ExtraTextDisplayData::Create()
 {
 	ExtraTextDisplayData* xText = (ExtraTextDisplayData*)BSExtraData::Create(sizeof(ExtraTextDisplayData), s_ExtraTextDisplayVtbl);
 	xText->unk14 = -1;
-	xText->unk18 = 1.0;
+	xText->extraHealthValue = 1.0;
 	return xText;
 }
 
-struct GetMatchingEquipped {
-	FormMatcher& m_matcher;
-	EquipData m_found;
+const char* ExtraTextDisplayData::GenerateName(TESForm * form, float extraHealthValue)
+{
+	return CALL_MEMBER_FN(this, GenerateName_Internal)(form, extraHealthValue);
+}
 
-	GetMatchingEquipped(FormMatcher& matcher) : m_matcher(matcher) {
+	
+
+struct GetMatchingEquipped
+{
+	FormMatcher&	m_matcher;
+	EquipData		m_found;
+	bool			m_isWorn;
+	bool			m_isWornLeft;
+
+	GetMatchingEquipped(FormMatcher& matcher, bool isWorn = true, bool isWornLeft = true) : m_matcher(matcher), m_isWorn(isWorn), m_isWornLeft(isWornLeft)
+	{
 		m_found.pForm = NULL;
 		m_found.pExtraData = NULL;
 	}
 
-	bool Accept(ExtraContainerChanges::EntryData* pEntryData) {
-		if (pEntryData) {
+	bool Accept(ExtraContainerChanges::EntryData* pEntryData)
+	{
+		if (pEntryData)
+		{
 			// quick check - needs an extendData or can't be equipped
 			ExtraContainerChanges::ExtendDataList* pExtendList = pEntryData->extendDataList;
-			if (pExtendList && m_matcher.Matches(pEntryData->type)) { 
-				SInt32 n = 0;
-				BaseExtraList* pExtraDataList = pExtendList->GetNthItem(n);
-				while (pExtraDataList) {
-					if (pExtraDataList->HasType(kExtraData_Worn) || pExtraDataList->HasType(kExtraData_WornLeft)) {
-						m_found.pForm = pEntryData->type;
-						m_found.pExtraData = pExtraDataList;
-						return false;
+			if (pExtendList && m_matcher.Matches(pEntryData->type))
+			{
+				for (ExtraContainerChanges::ExtendDataList::Iterator it = pExtendList->Begin(); !it.End(); ++it)
+				{
+					BaseExtraList * pExtraDataList = it.Get();
+
+					if (pExtraDataList)
+					{
+						if ((m_isWorn && pExtraDataList->HasType(kExtraData_Worn)) || (m_isWornLeft && pExtraDataList->HasType(kExtraData_WornLeft)))
+						{
+							m_found.pForm = pEntryData->type;
+							m_found.pExtraData = pExtraDataList;
+							return false;
+						}
 					}
-					n++;
-					pExtraDataList = pExtendList->GetNthItem(n);
 				}
 			}
 		}
 		return true;
 	}
 
-	EquipData Found() {
+	EquipData Found()
+	{
 		return m_found;
 	}
 };
 
-EquipData ExtraContainerChanges::FindEquipped(FormMatcher& matcher) const
+EquipData ExtraContainerChanges::FindEquipped(FormMatcher& matcher, bool isWorn, bool isWornLeft) const
 {
 	FoundEquipData equipData;
 	if (data && data->objList) {
-		GetMatchingEquipped getEquipped(matcher);
+		GetMatchingEquipped getEquipped(matcher, isWorn, isWornLeft);
 		data->objList->Visit(getEquipped);
 		equipData = getEquipped.Found();
 	}
@@ -520,6 +560,35 @@ void ExtraContainerChanges::EntryData::GetExtraWornBaseLists(BaseExtraList ** pW
 	}
 }
 
+BaseExtraList * ExtraContainerChanges::EntryData::FindBaseExtraList(SInt32 itemId, bool checkFallback) const
+{
+	if (!extendDataList || itemId == 0)		
+		return NULL;
+
+	// Search for match based on textDisplayData
+	for (ExtendDataList::Iterator it = extendDataList->Begin(); !it.End(); ++it)
+	{
+		BaseExtraList * xList = it.Get();
+		if (!xList)
+			continue;
+
+		const char * displayName = xList->GetDisplayName(type);
+
+		if (displayName && !checkFallback)
+		{
+			SInt32 xItemId = (SInt32) HashUtil::CRC32(displayName, type->formID);
+			if (itemId == xItemId)
+				return xList;
+		}
+		else if (!displayName && checkFallback)
+		{
+			return xList;
+		}
+	}
+
+	return NULL;
+}
+
 ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::FindItemEntry(TESForm * item) const
 {
 	typedef ExtraContainerChanges::EntryDataList::Iterator	EntryDataIterator;
@@ -577,6 +646,78 @@ ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::CreateEquipEntry
 	}
 	else
 	{
+		if (baseCount > 0)
+		{
+			newEntryData = EntryData::Create(item, baseCount);
+		}
+	}
+
+	return newEntryData;
+}
+
+ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::CreateEquipEntryData(TESForm * item, SInt32 itemId)
+{
+	// Get count from baseForm container
+	UInt32 baseCount = 0;
+	if (owner && owner->baseForm)
+	{
+		TESContainer * container = DYNAMIC_CAST(owner->baseForm, TESForm, TESContainer);
+		if (container)
+			baseCount = container->CountItem(item);
+	}
+
+	EntryData * newEntryData = NULL;
+
+	bool matchedBaseForm = false;
+
+	// Test base form name for itemId
+	TESFullName* pFullName = DYNAMIC_CAST(item, TESForm, TESFullName);
+	if (pFullName)
+	{
+		const char * name = pFullName->name.data;
+		SInt32 baseItemId = (SInt32)HashUtil::CRC32(name, item->formID);
+
+		if (baseItemId == itemId)
+			matchedBaseForm = true;
+	}
+
+	// Find existing entryData for this item
+	EntryData * curEntryData = FindItemEntry(item);
+
+	// Found entryData
+	if (curEntryData)
+	{
+		// Find BaseExtraList matching itemId if !matchedBaseForm, otherwise find one without a name override
+		BaseExtraList * xList = curEntryData->FindBaseExtraList(itemId, matchedBaseForm);
+		if (xList)
+		{
+			// Using a particular entry, count 1 (todo: ExtraCount?)
+			if ((baseCount + curEntryData->countDelta) > 0)
+			{
+				BaseExtraList * rightList = NULL;
+				BaseExtraList * leftList = NULL;
+				curEntryData->GetExtraWornBaseLists(&rightList, &leftList);
+
+				newEntryData = EntryData::Create(item, 1);
+
+				newEntryData->extendDataList->Insert(xList);
+				if (rightList)
+					newEntryData->extendDataList->Push(rightList);
+				if (leftList)
+					newEntryData->extendDataList->Push(leftList);
+			}
+		}
+		// Base form name matched itemId, but we found no suitable default extra list
+		else if (matchedBaseForm)
+		{
+			// Subtract number of unique extra lists => base object count
+			newEntryData = EntryData::Create(item, baseCount + curEntryData->countDelta - curEntryData->extendDataList->Count());
+		}
+	}
+	// If base form name matched itemId, but there was no entryData yet, we are allowed to create it
+	else if (matchedBaseForm)
+	{
+		
 		if (baseCount > 0)
 		{
 			newEntryData = EntryData::Create(item, baseCount);

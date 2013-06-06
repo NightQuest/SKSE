@@ -32,4 +32,6 @@ namespace papyrusActor
 	bool IsAIEnabled(Actor * thisActor);
 	bool IsSwimming(Actor * thisActor);
 	void SheatheWeapon(Actor * thisActor);
+
+	void EquipItemById(Actor* thisActor, TESForm* item, SInt32 itemId, SInt32 slotId, bool preventUnequip, bool equipSound);
 }

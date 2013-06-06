@@ -1323,6 +1323,8 @@ public:
 	float maxRange() { return gameData.maxRange; }
 	UInt8 type() { return gameData.type; }
 	UInt16 critDamage() { return critData.critDamage; }
+
+	void GetNodeName(char * dstBuff);
 };
 
 STATIC_ASSERT(sizeof(TESObjectWEAP) == 0x134);

@@ -59,8 +59,8 @@ void TESObjectARMA::GetNodeName(char * dstBuff, TESObjectREFR * refr, TESObjectA
 	weight *= 100.0;
 	
 	UInt32 sex = npc ? CALL_MEMBER_FN(npc, GetSex)() : 0;
-	/*sprintf_s(dstBuff, 0x104, "%s (%08X)[%d]/%s (%08X) [%2.0f%%]", 
-		this->Unk_32(), // I really have no idea why they used a string here for a boolean value
+	/*sprintf_s(dstBuff, MAX_PATH, "%s (%08X)[%d]/%s (%08X) [%2.0f%%]", 
+		this->Unk_32(), // I really have no idea why they used a string here for a boolean value, probably legacy code
 		this->formID,
 		sex,
 		armor->Unk_32(), 
@@ -71,4 +71,15 @@ void TESObjectARMA::GetNodeName(char * dstBuff, TESObjectREFR * refr, TESObjectA
 		sex,
 		armor->formID, 
 		weight);
+}
+
+void TESObjectWEAP::GetNodeName(char * dstBuff)
+{
+	/*sprintf_s(dstBuff, MAX_PATH, "%s %s (%08X)",
+		"Weapon",
+		this->Unk_34(), // I really have no idea why they used a string here for a boolean value, probably legacy code
+		this->formID);*/
+	sprintf_s(dstBuff, MAX_PATH, "%s  (%08X)",
+		"Weapon",
+		this->formID);
 }

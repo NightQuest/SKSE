@@ -566,8 +566,8 @@ struct SKSEActionEvent
 		kType_EndSheathe = 10
 	};
 	enum {
-		kSlot_Right = 0,
-		kSlot_Left = 1,
+		kSlot_Left = 0,
+		kSlot_Right = 1,
 		kSlot_Voice = 2
 	};
 	UInt32 type;

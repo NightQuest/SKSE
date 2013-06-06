@@ -47,10 +47,12 @@ public:
 		SInt32 countDelta;
 
 		static EntryData * Create(TESForm * item, UInt32 count);
-
 		void Delete(void);
 
 		void GetExtraWornBaseLists(BaseExtraList ** pWornBaseListOut, BaseExtraList ** pWornLeftBaseListOut) const;
+		
+		// If checkFallback is set, return the first BaseExtraList without a name override
+		BaseExtraList * FindBaseExtraList(SInt32 itemId, bool checkFallback = false) const;
 	};
 
 	typedef tList<EntryData> EntryDataList;
@@ -68,6 +70,7 @@ public:
 		// Allocate new entry data as a merge between base container data and extra data
 		// Uses BaseExtraList*'s from original extra data and combined count
 		EntryData * CreateEquipEntryData(TESForm * item);
+		EntryData * CreateEquipEntryData(TESForm * item, SInt32 itemId);
 	};
 
 	Data * data;
@@ -82,7 +85,7 @@ public:
 		ExtraHotkey * pHotkey;
 	};
 
-	FoundEquipData	FindEquipped(FormMatcher& matcher) const;
+	FoundEquipData	FindEquipped(FormMatcher& matcher, bool isWorn = true, bool isWornLeft = true) const;
 	FoundHotkeyData	FindHotkey(SInt32 hotkey) const;
 	FoundHotkeyData	FindHotkey(TESForm * form) const;
 };
@@ -206,7 +209,7 @@ public:
 	ExtraHotkey();
 	virtual ~ExtraHotkey();
 
-	SInt32	hotkey;	// 08 (1 to 8, -1 unbound)
+	SInt8	hotkey;	// 08 (1 to 8, -1 unbound)
 
 	static ExtraHotkey* Create();
 };
@@ -367,13 +370,19 @@ public:
 	ExtraTextDisplayData();
 	virtual ~ExtraTextDisplayData();
 
-	BSFixedString	name;
-	BGSMessage		* message;
-	TESQuest		* owner;
-	UInt32			unk14;
-	float			unk18;
+	BSFixedString	name;				// 08
+	BGSMessage		* message;			// 0C
+	TESQuest		* owner;			// 10
+	UInt32			unk14;				// 14
+	float			extraHealthValue;	// 18
+
+	const char* GenerateName(TESForm * form, float extraHealthValue);
 
 	static ExtraTextDisplayData* Create();
+
+private:
+	MEMBER_FN_PREFIX(ExtraTextDisplayData);
+	DEFINE_MEMBER_FN(GenerateName_Internal, const char*, 0x00428CA0, TESForm * form, float extraHealthValue);	
 };
  //	ExtraAlphaCutoff
 class ExtraEnchantment : public BSExtraData

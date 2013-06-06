@@ -24,6 +24,7 @@
 #include "GlobalLocks.h"
 #include "Hooks_UI.h"
 #include "common/IMemPool.h"
+#include "HashUtil.h"
 
 //// plugin API
 
@@ -1161,6 +1162,11 @@ namespace favMenuDataHook
 			scaleformExtend::StandardItemData(dataContainer, objDesc->form);
 			scaleformExtend::InventoryData(dataContainer, movieView, objDesc);
 			scaleformExtend::MagicItemData(dataContainer, movieView, objDesc->form, true, false);
+
+			// itemId to uniquely identify items
+			const char* name = CALL_MEMBER_FN(objDesc, GenerateName)();
+			SInt32 itemId = (SInt32)HashUtil::CRC32(name, objDesc->form->formID);
+			RegisterNumber(dataContainer, "itemId", itemId);
 		}
 	};
 
@@ -1170,6 +1176,16 @@ namespace favMenuDataHook
 		{
 			scaleformExtend::CommonItemData(dataContainer, form);
 			scaleformExtend::MagicItemData(dataContainer, movieView, form, true, false);
+
+			// itemId to uniquely identify items
+			TESFullName* pFullName = DYNAMIC_CAST(form, TESForm, TESFullName);
+			const char * name;
+			if (pFullName)
+				name = pFullName->name.data;
+			else
+				name = NULL;
+			SInt32 itemId = (SInt32)HashUtil::CRC32(name, form->formID);
+			RegisterNumber(dataContainer, "itemId", itemId);
 		}
 	};
 

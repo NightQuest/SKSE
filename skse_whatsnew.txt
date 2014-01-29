@@ -1,3 +1,31 @@
+1.7.0:
+- added Game.GetFormEx that works for formIds >= 0x80000000
+- added UI.Open/CloseCustomMenu
+- added Actor.ReplaceHeadPart, ActorBase.GetNumOverlayHeadParts, GetNthOverlayHeadPart, GetIndexOfOverlayHeadPartByType
+- added Math.Log
+- added Ingredient.GetIsNthEffectKnown
+- fixed SetPlayerTintMaskColor alpha
+- enabled previously-temporary Papyrus plugin API - it isn't what I wanted it to be, but I don't think I have the time to do it the right way
+- added ActiveMagicEffect.GetMagnitude
+- added Art.Get/SetModelPath
+- added many MagicEffect and Tree functions
+- added ModEvent and UICallback, see associated .psc for details
+- added ObjectReference.Get/SetDisplayName
+- added Enchantment.SetNthEffectMagnitude/Area/Duration
+- added Form.SetPlayerKnows
+- added Enchantment.GetBaseEnchantment
+- added Perk.GetNextPerk
+- added ActorValueInfo, see ActorValueInfo.psc for details
+- added LeveledActor/Item/Spell, see associated .psc for details
+- added Game.Get/SetPlayerExperience, GetExperienceForLevel
+- added ObjectReference.GetEnableParent, Get/Set/CreateEnchantment, GetNumReferenceAliases, GetNthReferenceAlias
+- fixed Get/SetGoldValue for AlchemyItems
+- added DefaultObjectManager
+- thanks to sheson: added configuration of some initial pool sizes
+	[Memory]
+	DefaultHeapInitialAllocMB= <default heap initial allocation size in megabytes, vanilla size is 512>
+	ScrapHeapSizeMB= <scrap heap size in megabytes, vanilla size is 256>
+
 1.6.16:
 - fixed EquipItemById not properly handling stacks of items
 - fixed crash when retrieving magic favorites

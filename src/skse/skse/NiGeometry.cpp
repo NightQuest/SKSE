@@ -4,28 +4,28 @@
 void NiGeometryData::AllocateVerts(UInt32 numVerts)
 {
 	m_pkVertex = (NiPoint3 *)FormHeap_Allocate(sizeof(NiPoint3) * numVerts);
-	m_pkTexture = (float *)FormHeap_Allocate(sizeof(float) * 2 * numVerts);
+	m_pkTexture = (NiPoint2 *)FormHeap_Allocate(sizeof(NiPoint2) * numVerts);
 
 	memset(m_pkVertex, 0, sizeof(NiPoint3) * numVerts);
-	memset(m_pkTexture, 0, sizeof(float) * 2 * numVerts);
+	memset(m_pkTexture, 0, sizeof(NiPoint2) * numVerts);
 }
 
 void NiGeometryData::AllocateNormals(UInt32 numVerts)
 {
-	m_pkNormal = (float *)FormHeap_Allocate(sizeof(float) * 3 * numVerts);
-	memset(m_pkNormal, 0, sizeof(float) * 3 * numVerts);
+	m_pkNormal = (NiPoint3 *)FormHeap_Allocate(sizeof(NiPoint3) * numVerts);
+	memset(m_pkNormal, 0, sizeof(NiPoint3) * numVerts);
 }
 
 void NiGeometryData::AllocateNBT(UInt32 numVerts)
 {
-	m_pkNormal = (float *)FormHeap_Allocate(sizeof(float) * 3 * 3 * numVerts);
-	memset(m_pkNormal, 0, sizeof(float) * 3 * 3 * numVerts);
+	m_pkNormal = (NiPoint3 *)FormHeap_Allocate(sizeof(NiPoint3) * 3 * numVerts);
+	memset(m_pkNormal, 0, sizeof(NiPoint3) * 3 * numVerts);
 }
 
 void NiGeometryData::AllocateColors(UInt32 numVerts)
 {
-	m_pkColor = (float *)FormHeap_Allocate(sizeof(float) * 4 * numVerts);
-	memset(m_pkColor, 0, sizeof(float) * 4 * numVerts);
+	m_pkColor = (NiColorA *)FormHeap_Allocate(sizeof(NiColorA) * numVerts);
+	memset(m_pkColor, 0, sizeof(NiColorA) * numVerts);
 }
 
 void NiSkinPartition::Partition::AllocateWeights(UInt32 numVerts)

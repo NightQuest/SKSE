@@ -9,9 +9,9 @@
 #include "GameReferences.h"
 #include "PapyrusEvents.h"
 #include "Serialization.h"
-#ifdef _PPAPI
+//#ifdef _PPAPI
 #include <list>
-#endif
+//#endif
 
 #include "PapyrusActiveMagicEffect.h"
 #include "PapyrusActor.h"
@@ -53,6 +53,17 @@
 #include "PapyrusFlora.h"
 #include "PapyrusPerk.h"
 #include "PapyrusEquipSlot.h"
+#include "PapyrusMagicEffect.h"
+#include "PapyrusArt.h"
+#include "PapyrusTree.h"
+#include "PapyrusActorValueInfo.h"
+#include "PapyrusLeveledItem.h"
+#include "PapyrusLeveledSpell.h"
+#include "PapyrusLeveledActor.h"
+#include "PapyrusUICallback.h"
+#include "PapyrusModEvent.h"
+#include "PapyrusWornObject.h"
+#include "PapyrusDefaultObjectManager.h"
 
 #ifdef PAPYRUS_CUSTOM_CLASS
 #include "PapyrusTintMask.h"
@@ -63,7 +74,7 @@
 typedef void (* _RegisterPapyrusFunctions)(VMClassRegistry ** registry);
 _RegisterPapyrusFunctions RegisterPapyrusFunctions = (_RegisterPapyrusFunctions)0x008F9720;
 
-#ifdef _PPAPI
+//#ifdef _PPAPI
 typedef std::list <SKSEPapyrusInterface::RegisterFunctions> PapyrusPluginList;
 static PapyrusPluginList s_pap_plugins;
 
@@ -72,7 +83,7 @@ bool RegisterPapyrusPlugin(SKSEPapyrusInterface::RegisterFunctions callback)
 	s_pap_plugins.push_back(callback);
 	return true;
 }
-#endif
+//#endif
 
 #if LOG_PAPYRUS_FUNCTIONS
 struct VTableProxy
@@ -111,9 +122,15 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// TESForm
 	papyrusForm::RegisterFuncs(registry);
 
+	// DefaultObjectManager
+	papyrusDefaultObjectManager::RegisterFuncs(registry);
+
 	// ColorForm
 	papyrusColorComponent::RegisterFuncs(registry);
 	papyrusColorForm::RegisterFuncs(registry);
+
+	// Art
+	papyrusArt::RegisterFuncs(registry);
 
 	// EquipSlot
 	papyrusEquipSlot::RegisterFuncs(registry);
@@ -231,19 +248,46 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// TextureSet
 	papyrusTextureSet::RegisterFuncs(registry);
 
+	// Tree
+	papyrusTree::RegisterFuncs(registry);
+
 	// Flora
 	papyrusFlora::RegisterFuncs(registry);
 
 	// Perk
 	papyrusPerk::RegisterFuncs(registry);
 
-#ifdef _PPAPI
+	// MagicEffect
+	papyrusMagicEffect::RegisterFuncs(registry);
+
+	// UICallback
+	papyrusUICallback::RegisterFuncs(registry);
+
+	// ModEvent
+	papyrusModEvent::RegisterFuncs(registry);
+
+	// ActorValueInfo
+	papyrusActorValueInfo::RegisterFuncs(registry);
+
+	// LeveledItem
+	papyrusLeveledItem::RegisterFuncs(registry);
+
+	// LeveledSpell
+	papyrusLeveledSpell::RegisterFuncs(registry);
+
+	// LeveledActor
+	papyrusLeveledActor::RegisterFuncs(registry);
+
+	// WornObject
+	papyrusWornObject::RegisterFuncs(registry);
+
+//#ifdef _PPAPI
 	// Plugins
 	for(PapyrusPluginList::iterator iter = s_pap_plugins.begin(); iter != s_pap_plugins.end(); ++iter)
 	{
 		(*iter)(registry);
 	}
-#endif
+//#endif
 }
 
 //// Event registration hooks
@@ -267,6 +311,9 @@ void SkyrimVM::RevertGlobalData_Hook(void)
 	CALL_MEMBER_FN(this, RevertGlobalData_Internal)();
 
 	Serialization::HandleRevertGlobalData();
+
+	papyrusUICallback::RevertGlobalData();
+	papyrusModEvent::RevertGlobalData();
 }
 
 bool SkyrimVM::SaveGlobalData_Hook(void * handleReaderWriter, void * saveStorageWrapper)

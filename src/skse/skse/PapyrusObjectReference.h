@@ -1,10 +1,13 @@
 #pragma once
 
 #include "GameTypes.h"
+#include "PapyrusArgs.h"
 
 class TESObjectREFR;
 class TESForm;
+class EnchantmentItem;
 class VMClassRegistry;
+class EffectSetting;
 
 namespace papyrusObjectReference
 {
@@ -18,6 +21,16 @@ namespace papyrusObjectReference
 	float GetItemCharge(TESObjectREFR* object);
 	float GetItemMaxCharge(TESObjectREFR* object);
 	void SetItemCharge(TESObjectREFR* object, float value);
+	EnchantmentItem * GetEnchantment(TESObjectREFR* object);
+
+	void CreateEnchantment(TESObjectREFR* object, float maxCharge, VMArray<EffectSetting*> effects, VMArray<float> magnitudes, VMArray<UInt32> areas, VMArray<UInt32> durations);
+	void SetEnchantment(TESObjectREFR* object, EnchantmentItem * form, float maxCharge);
+
+	void ResetInventory(TESObjectREFR * obj);
+	bool IsOffLimits(TESObjectREFR * obj);
+	BSFixedString GetDisplayName(TESObjectREFR* object);
+	bool SetDisplayName(TESObjectREFR* object, BSFixedString value, bool force);
+	TESObjectREFR * GetEnableParent(TESObjectREFR* object);
 
 	bool IsHarvested(TESObjectREFR* pProduceRef);
 

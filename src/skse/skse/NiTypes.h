@@ -89,6 +89,30 @@ T_to * niptr_cast(const T_from & src)
 }
 
 // 10
+template <class T>
+class NiRect
+{
+public:
+	T	m_left;		// 00
+	T	m_right;	// 04
+	T	m_top;		// 08
+	T	m_bottom;	// 0C
+};
+
+// 1C
+class NiFrustum
+{
+public:
+	float	m_fLeft;	// 00
+	float	m_fRight;	// 04
+	float	m_fTop;		// 08
+	float	m_fBottom;	// 0C
+	float	m_fNear;	// 10
+	float	m_fFar;		// 14
+	bool	m_bOrtho;	// 18
+};
+
+// 10
 class NiQuaternion
 {
 public:
@@ -98,6 +122,14 @@ public:
 	float	m_fX;	// 4
 	float	m_fY;	// 8
 	float	m_fZ;	// C
+};
+
+// 8
+class NiPoint2
+{
+public:
+	float	x;	// 0
+	float	y;	// 4
 };
 
 // C

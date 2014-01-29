@@ -2,6 +2,34 @@
 
 const _CreateUIMessageData CreateUIMessageData = (_CreateUIMessageData)0x00547A00;
 
+IMenu::IMenu() :
+	view(NULL),
+	unk0C(3),
+	flags(0),
+	unk14(0x12),
+	unk18(NULL)
+{
+}
+
+UInt32 IMenu::ProcessUnkData1(UnkData1* data)
+{
+	if (data->unk04 == 6)
+	{
+		if (view && data->data)
+		{
+			view->HandleEvent(data->data->unk08);
+			return 0;
+		}
+	}
+	return 2;
+}
+
+void IMenu::Render(void)
+{
+	if (view)
+		view->Render();
+}
+
 bool MenuManager::IsMenuOpen(BSFixedString * menuName)
 {
 	return CALL_MEMBER_FN(this, IsMenuOpen)(menuName);

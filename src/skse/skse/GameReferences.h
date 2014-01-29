@@ -43,6 +43,9 @@ extern const _CreateRefHandleByREFR CreateRefHandleByREFR;
 typedef bool (* _LookupREFRByHandle)(UInt32 * refHandle, TESObjectREFR ** refrOut);
 extern const _LookupREFRByHandle LookupREFRByHandle;
 
+typedef bool (* _LookupREFRByHandle2)(UInt32 * refHandle, TESObjectREFR ** refrOut);
+extern const _LookupREFRByHandle2 LookupREFRByHandle;
+
 extern const UInt32 * g_invalidRefHandle;
 
 // 4
@@ -143,12 +146,12 @@ public:
 	virtual void	Unk_68(void);
 	virtual void	Unk_69(void);
 	virtual void	Unk_6A(void);
-	virtual void *	Unk_6B(void);	// tested in HasLoaded3D, possibly NiNode * Get3D()
+	virtual void 	Unk_6B(void);
 	virtual void	Unk_6C(void);
-	virtual void	Unk_6D(void);
+	virtual void	SetNiNode(NiNode * root, UInt32 unk1); // NULL, 1?
 	virtual void	Unk_6E(void);
 	virtual NiNode	* GetNiRootNode(UInt32 firstPerson);
-	virtual NiNode	* GetNiNode(void);	// Root of the skeleton
+	virtual NiNode	* GetNiNode(void);	// Root of the skeleton (Get3D)
 	virtual void	Unk_71(void);
 	virtual void	Unk_72(void);
 	virtual void	Unk_73(void);
@@ -214,13 +217,9 @@ public:
 
 	// members
 	TESForm* baseForm;	// 24
-	float	rotX;		// 28
-	float	rotY;		// 2C
-	float	rotZ;		// 30
-	float	posX;		// 34
-	float	posY;		// 38
-	float	posZ;		// 3C
-	
+	NiPoint3	rot;	// 28
+	NiPoint3	pos;	// 34
+
 	TESObjectCELL	* parentCell;	// 40
 	LoadedState		* loadedState;	// 44
 	BaseExtraList	extraData;		// 48
@@ -232,6 +231,7 @@ public:
 	DEFINE_MEMBER_FN(GetBaseScale, float, 0x004D5230);
 	DEFINE_MEMBER_FN(IsOffLimits, bool, 0x004DA760);
 	DEFINE_MEMBER_FN(GetWeight, float, 0x004EA180);
+	DEFINE_MEMBER_FN(GetReferenceName, const char *, 0x004DE820);
 };
 
 STATIC_ASSERT(sizeof(TESObjectREFR) == 0x54);
@@ -300,6 +300,92 @@ public:
 	virtual void Unk_A3(void);
 	virtual void Unk_A4(void);
 	virtual void DrawSheatheWeapon(bool draw);
+	virtual void Unk_A6(void);
+	virtual void Unk_A7(void);
+	virtual void Unk_A8(void);
+	virtual void Unk_A9(void);
+	virtual void Unk_AA(void);
+	virtual void Unk_AB(void);
+	virtual void Unk_AC(void);
+	virtual void Unk_AD(void);
+	virtual void Unk_AE(void);
+	virtual void Unk_AF(void);
+	virtual void Unk_B0(void);
+	virtual void Unk_B1(void);
+	virtual void Unk_B2(void);
+	virtual void Unk_B3(void);
+	virtual void Unk_B4(void);
+	virtual void Unk_B5(void);
+	virtual void Unk_B6(void);
+	virtual void Unk_B7(void);
+	virtual void Unk_B8(void);
+	virtual void Unk_B9(void);
+	virtual void Unk_BA(void);
+	virtual void Unk_BB(void);
+	virtual void Unk_BC(void);
+	virtual void Unk_BD(void);
+	virtual void Unk_BE(void);
+	virtual void Unk_BF(void);
+	virtual void Unk_C0(void);
+	virtual void Unk_C1(void);
+	virtual void Unk_C2(void);
+	virtual void Unk_C3(void);
+	virtual void Unk_C4(void);
+	virtual void Unk_C5(void);
+	virtual void Unk_C6(void);
+	virtual void Unk_C7(void);
+	virtual void Unk_C8(void);
+	virtual void Unk_C9(void);
+	virtual void Unk_CA(void);
+	virtual void Unk_CB(void);
+	virtual void Unk_CC(void);
+	virtual void Unk_CD(void);
+	virtual void Unk_CE(void);
+	virtual void Unk_CF(void);
+	virtual void Unk_D0(void);
+	virtual void Unk_D1(void);
+	virtual void Unk_D2(void);
+	virtual void Unk_D3(void);
+	virtual void Unk_D4(void);
+	virtual void Unk_D5(void);
+	virtual void Unk_D6(void);
+	virtual void Unk_D7(void);
+	virtual void Unk_D8(void);
+	virtual void Unk_D9(void);
+	virtual void Unk_DA(void);
+	virtual void Unk_DB(void);
+	virtual void Unk_DC(void);
+	virtual void Unk_DD(void);
+	virtual void Unk_DE(void);
+	virtual void Unk_DF(void);
+	virtual void Unk_E0(void);
+	virtual void Unk_E1(void);
+	virtual void Unk_E2(void);
+	virtual void Unk_E3(void);
+	virtual void Unk_E4(void);
+	virtual void Unk_E5(void);
+	virtual void Unk_E6(void);
+	virtual void Unk_E7(void);
+	virtual void Unk_E8(void);
+	virtual void Unk_E9(void);
+	virtual void Unk_EA(void);
+	virtual void Unk_EB(void);
+	virtual void Unk_EC(void);
+	virtual void Unk_ED(void);
+	virtual void Unk_EE(void);
+	virtual void Unk_EF(void);
+	virtual void Unk_F0(void);
+	virtual void Unk_F1(void);
+	virtual void Unk_F2(void);
+	virtual void Unk_F3(void);
+	virtual void Unk_F4(void);
+	virtual void Unk_F5(void);
+	virtual void AdvanceSkill(UInt32 skillId, float points, UInt32 unk1, UInt32 unk2);
+	virtual void Unk_F7(void);
+	virtual void AddPerk(void);
+	virtual void VisitPerks(void); // BGSPerk::FindPerkInRanksVisitor
+	virtual void Unk_FA(void);
+	virtual void RemovePerk(void);
 
 	// 0C
 	class SpellArray
@@ -348,7 +434,7 @@ public:
 	UInt32	flags1;									// 07C
 	UInt32	unk080;									// 080
 	UInt32	unk084;									// 084
-	ActorEquipData	* equipData;					// 088
+	ActorProcessManager	* processManager;			// 088
 	UInt32	unk08C[(0x0FC - 0x08C) >> 2];			// 08C
 	SpellArray	addedSpells;						// 0FC
 	UInt32	unk108[(0x128 - 0x108) >> 2];			// 108
@@ -363,6 +449,21 @@ public:
 
 	MEMBER_FN_PREFIX(Actor);
 	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730EE0, bool updateWeight);
+	DEFINE_MEMBER_FN(HasPerk, bool, 0x006AA190, BGSPerk * perk);
+	DEFINE_MEMBER_FN(GetLevel, UInt16, 0x006A7320);
+
+
+
+	DEFINE_MEMBER_FN(UpdateWeaponAbility, void, 0x006ED980, TESForm*, BaseExtraList * extraData, bool bLeftHand);
+	DEFINE_MEMBER_FN(UpdateArmorAbility, void, 0x006E8650, TESForm*, BaseExtraList * extraData);
+
+	bool HasItemAbility(TESForm* form, BaseExtraList * extraData);
+	void UpdateItemAbility(TESForm* form, BaseExtraList * extraData, bool bLeftHand);
+
+	//  - TESForm, ExtraData, Unknown
+
+	void UpdateSkinColor();
+	void UpdateHairColor();
 };
 
 STATIC_ASSERT(offsetof(Actor, magicTarget) == 0x54);
@@ -420,9 +521,6 @@ public:
 	// occasionally they can have no type so index matching
 	// is required to set anything on the tint
 	TintMask * GetOverlayTintMask(TintMask * original);
-
-	void UpdateSkinColor();
-	void UpdateHairColor();
 
 	// Confirmed - Same as ExtraContainerChanges::EntryData
 	// This type is used by scaleform to extend data

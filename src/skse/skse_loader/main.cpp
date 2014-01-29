@@ -247,9 +247,16 @@ int main(int argc, char ** argv)
 	}
 
 	bool	injectionSucceeded = false;
+	UInt32	procType = procHookInfo.procType;
+
+	if(g_options.m_forceSteamLoader)
+	{
+		_MESSAGE("forcing steam loader");
+		procType = kProcType_Steam;
+	}
 
 	// inject the dll
-	switch(procHookInfo.procType)
+	switch(procType)
 	{
 		case kProcType_Steam:
 		{
@@ -283,7 +290,12 @@ int main(int argc, char ** argv)
 	{
 		_MESSAGE("launching");
 
-		ResumeThread(procInfo.hThread);
+		if(!ResumeThread(procInfo.hThread))
+		{
+			_WARNING("WARNING: something has started the runtime outside of skse_loader's control.");
+			_WARNING("SKSE will probably not function correctly.");
+			_WARNING("Try running skse_loader as an administrator, or check for conflicts with a virus scanner.");
+		}
 
 		if(g_options.m_moduleInfo)
 		{

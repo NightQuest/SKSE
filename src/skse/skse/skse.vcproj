@@ -226,6 +226,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusActorValueInfo.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusActorValueInfo.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusAlias.cpp"
 					>
 				</File>
@@ -247,6 +255,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusArmorAddon.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusArt.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusArt.h"
 					>
 				</File>
 				<File
@@ -287,6 +303,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusConstructibleObject.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusDefaultObjectManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusDefaultObjectManager.h"
 					>
 				</File>
 				<File
@@ -362,6 +386,38 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusLeveledActor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusLeveledActor.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusLeveledItem.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusLeveledItem.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusLeveledSpell.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusLeveledSpell.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusMagicEffect.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusMagicEffect.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusMath.cpp"
 					>
 				</File>
@@ -375,6 +431,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusMisc.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusModEvent.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusModEvent.h"
 					>
 				</File>
 				<File
@@ -490,11 +554,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusTree.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusTree.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusUI.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\PapyrusUI.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusUICallback.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusUICallback.h"
 					>
 				</File>
 				<File
@@ -519,6 +599,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusWeather.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusWornObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusWornObject.h"
 					>
 				</File>
 			</Filter>
@@ -575,6 +663,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusEvents.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusObjects.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusObjects.h"
 					>
 				</File>
 			</Filter>
@@ -859,6 +955,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Hooks_Memory.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_Memory.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Hooks_NetImmerse.cpp"
 				>
 			</File>
@@ -924,6 +1028,14 @@
 			</File>
 			<File
 				RelativePath=".\Colors.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CustomMenu.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CustomMenu.h"
 				>
 			</File>
 			<File

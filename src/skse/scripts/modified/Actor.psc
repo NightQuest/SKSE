@@ -46,6 +46,10 @@ Function UnequipItemEx(Form item, int equipSlot = 0, bool preventEquip = false) 
 ; Beware: This function also affects the ActorBase
 Function ChangeHeadPart(HeadPart hPart) native
 
+; Replaces a headpart on the loaded mesh does not affect ActorBase
+; Both old and new must exist, and be of the same type
+Function ReplaceHeadPart(HeadPart oPart, HeadPart newPart) native
+
 ; Visually updates the actors weight
 ; neckDelta = (oldWeight / 100) - (newWeight / 100)
 ; Neck changes are player persistent, but actor per-session

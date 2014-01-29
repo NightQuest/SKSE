@@ -3,6 +3,7 @@
 #include "skse/ScaleformState.h"
 
 class NiTexture;
+class IMenu;
 
 class GFxImageLoader : public GFxState
 {
@@ -31,8 +32,13 @@ public:
 
 	static GFxLoader * GetSingleton();	
 
+
+
 	MEMBER_FN_PREFIX(GFxLoader);
 	DEFINE_MEMBER_FN(ctor, UInt32, 0x00A60FE0);
+
+	// Note: Probably in subclass
+	DEFINE_MEMBER_FN(LoadMovie, bool, 0xA60C80, IMenu* menu, GFxMovieView** viewOut, const char* name, int arg4, float arg5);
 
 	enum { kCtorHookAddress = 0x0069D1D0 + 0x07D7 };
 

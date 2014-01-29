@@ -83,6 +83,7 @@ class GString
 {
 public:
 	GString()	{ }
+	GString(const char * string)	{ CALL_MEMBER_FN(this, ctor)(string); }
 	~GString()	{ }
 
 	enum
@@ -112,6 +113,8 @@ public:
 	void	Destroy(void);
 
 	MEMBER_FN_PREFIX(GString);
+	DEFINE_MEMBER_FN(ctor, GString *, 0x009259D0, const char * string);
+	
 };
 
 #pragma warning (pop)

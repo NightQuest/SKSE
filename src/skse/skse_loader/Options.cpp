@@ -14,6 +14,7 @@ Options::Options()
 ,m_skipLauncher(true)
 ,m_launchSteam(false)
 ,m_noTimeout(false)
+,m_forceSteamLoader(false)
 ,m_fpsLimit(0)
 ,m_affinity(0)
 {
@@ -196,6 +197,10 @@ bool Options::Read(int argc, char ** argv)
 						return false;
 					}
 				}
+				else if(!_stricmp(arg, "forcesteamloader"))
+				{
+					m_forceSteamLoader = true;
+				}
 				else
 				{
 					_ERROR("unknown switch (%s)", arg);
@@ -251,6 +256,7 @@ void Options::PrintUsage(void)
 	_MESSAGE("                    note: specifying this option may cause compatibility problems");
 	_MESSAGE("  -launchsteam - attempt to launch steam if it is not running");
 	_MESSAGE("  -affinity <mask> - set the processor affinity mask");
+	_MESSAGE("  -forcesteamloader - override exe type detection and use steam loader");
 }
 
 bool Options::Verify(void)

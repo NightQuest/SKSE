@@ -136,13 +136,19 @@ STATIC_ASSERT(sizeof(BSCullingProcess) == 0x170);
 class LocalMapCullingProcess : public BSCullingProcess
 {
 public:
-	LocalMapCamera	localMapCamera;					// 170
-	void			* shaderAccumulator;			// 1BC
-	NiRenderTarget	* localMapTexture;				// 1C0
-	UInt32			unk1C4[(0x230 - 0x1C4) >> 2];	// 1C4
-	UInt32			width;							// 230
-	UInt32			height;							// 234
-	NiNode			* niNode;						// 238
+	LocalMapCamera		localMapCamera;					// 170
+	void				* shaderAccumulator;			// 1BC
+	BSRenderTargetGroup	* localMapTexture;				// 1C0
+	UInt32				unk1C4[(0x230 - 0x1C4) >> 2];	// 1C4
+	UInt32				width;							// 230
+	UInt32				height;							// 234
+	NiNode				* niNode;						// 238
+
+	MEMBER_FN_PREFIX(LocalMapCullingProcess);
+	DEFINE_MEMBER_FN(ctor, void, 0x00487610);
+	DEFINE_MEMBER_FN(CreateMapTarget, BSRenderTargetGroup **, 0x00486590, UInt32 width, UInt32 height);
+	DEFINE_MEMBER_FN(Init, void, 0x00487D20);
+	DEFINE_MEMBER_FN(Process, void, 0x00487900);
 };
 
 STATIC_ASSERT(offsetof(LocalMapCullingProcess, localMapCamera) == 0x170);

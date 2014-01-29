@@ -343,7 +343,7 @@ EndEvent
 
 
 
-; SKSE additions built 2013-06-23 19:50:29.214000 UTC
+; SKSE additions built 2014-01-29 08:07:50.058000 UTC
 ; Additional useful effect information
 float Function GetDuration() native
 float Function GetTimeElapsed() native
@@ -421,3 +421,6 @@ Function UnregisterForActorAction(int actionType) native
 
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 EndEvent
+
+; returns the magnitude of the active effect
+float Function GetMagnitude() native

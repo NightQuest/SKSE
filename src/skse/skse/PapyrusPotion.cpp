@@ -72,4 +72,16 @@ void papyrusPotion::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction2<AlchemyItem, void, UInt32, UInt32>("SetNthEffectDuration", "Potion", papyrusPotion::SetNthEffectDuration, registry));
+
+	registry->SetFunctionFlags("Potion", "IsFood", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Potion", "GetNumEffects", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Potion", "GetNthEffectMagnitude", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Potion", "GetNthEffectArea", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Potion", "GetNthEffectDuration", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Potion", "GetNthEffectMagicEffect", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Potion", "GetCostliestEffectIndex", VMClassRegistry::kFunctionFlag_NoWait);
+
+	registry->SetFunctionFlags("Potion", "SetNthEffectMagnitude", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Potion", "SetNthEffectArea", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Potion", "SetNthEffectDuration", VMClassRegistry::kFunctionFlag_NoWait);
 }

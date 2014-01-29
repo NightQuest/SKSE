@@ -15,6 +15,9 @@ class NiAlphaProperty : public NiProperty
 {
 public:
 	virtual ~NiAlphaProperty();
+
+	UInt16	alphaFlags;			// 18
+	UInt16	alphaThreshold;		// 1A
 };
 
 class NiShadeProperty : public NiProperty

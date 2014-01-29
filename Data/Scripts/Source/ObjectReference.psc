@@ -759,7 +759,7 @@ int Property Motion_ThinBoxIntertia = 6 AutoReadOnly
 int Property Motion_Character = 7 AutoReadOnly
 
 
-; SKSE additions built 2013-06-23 19:50:29.214000 UTC
+; SKSE additions built 2014-01-29 08:07:50.058000 UTC
 
 ; Container-only functions
 int Function GetNumItems() native
@@ -775,10 +775,48 @@ Function SetHarvested(bool harvested) native
 Function SetItemHealthPercent(float health) native
 
 ; Charges
+
+; Only works on ObjectReferences that have user-enchants
+Function SetItemMaxCharge(float maxCharge) native
+; Works on any enchanted item
 float Function GetItemMaxCharge() native
+
 float Function GetItemCharge() native
 Function SetItemCharge(float charge) native
 
 Function ResetInventory() native
 
 bool Function IsOffLimits() native
+
+; Returns the name of this reference
+; this is the name that is displayed
+string Function GetDisplayName() native
+
+; Sets a reference's display name
+; returns false if force is false and the reference
+; is held by an alias using 'Stored Text' or 'Uses Stored Text'
+; Text Replacement does not use this name and may be lost if forced
+bool Function SetDisplayName(string name, bool force = false) native
+
+; Returns the enable parent object
+ObjectReference Function GetEnableParent() native
+
+; Returns the player-made enchantment if there is one
+Enchantment Function GetEnchantment() native
+
+; Changes an item's player-made enchantment to something else
+; None enchantment will remove the existing enchantment
+; does not delete the custom enchantment, only removes it
+Function SetEnchantment(Enchantment source, float maxCharge) native
+
+; Creates a new enchantment on the item given the specified parameters
+; all arrays must be the same size
+; created enchantments are not purged from the save when removed or overwritten
+; exact same enchantments are re-used by the game
+Function CreateEnchantment(float maxCharge, MagicEffect[] effects, float[] magnitudes, int[] areas, int[] durations) native
+
+; Returns the number of ref aliases holding this reference
+int Function GetNumReferenceAliases() native
+
+; Returns the nth ReferenceAlias holding this reference
+ReferenceAlias Function GetNthReferenceAlias(int n) native

@@ -20,6 +20,7 @@ namespace papyrusForm
 	void SetGoldValue(TESForm* thisForm, UInt32 value);
 	UInt32 GetNumKeywords(TESForm* thisForm);
 	BGSKeyword* GetNthKeyword(TESForm* thisForm, UInt32 index);
+	void SetPlayerKnows(TESForm * thisForm, bool knows);
 
 	void UpdateKeys(UInt8 * data);
 

@@ -32,6 +32,9 @@ struct SKSEInterface
 	// call during your Query or Load functions to get a PluginHandle uniquely identifying your plugin
 	// invalid if called at any other time, so call it once and save the result
 	PluginHandle	(* GetPluginHandle)(void);
+	
+	// returns the SKSE build's release index
+	UInt32			(* GetReleaseIndex)(void);
 };
 
 struct SKSEScaleformInterface
@@ -100,7 +103,7 @@ struct SKSETaskInterface
 	void	(* AddTask)(TaskDelegate * task);
 };
 
-#ifdef _PPAPI
+//#ifdef _PPAPI
 
 // ### this code is unsupported and will be changed in the future
 
@@ -117,7 +120,7 @@ struct SKSEPapyrusInterface
 	bool	(* Register)(RegisterFunctions callback);
 };
 
-#endif
+//#endif
 
 struct PluginInfo
 {

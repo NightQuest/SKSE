@@ -75,3 +75,6 @@ Function UnregisterForActorAction(int actionType) native
 
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 EndEvent
+
+; returns the magnitude of the active effect
+float Function GetMagnitude() native

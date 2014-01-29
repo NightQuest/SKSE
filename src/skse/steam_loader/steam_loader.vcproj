@@ -188,6 +188,18 @@
 		/>
 	</References>
 	<Files>
+		<Filter
+			Name="hooks"
+			>
+			<File
+				RelativePath="..\skse\Hooks_Memory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\skse\Hooks_Memory.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\main.cpp"
 			>

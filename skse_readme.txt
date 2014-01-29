@@ -1,13 +1,12 @@
-Skyrim Script Extender v1.6.16
-by Ian Patterson and Stephen Abel
-(ianpatt and behippo)
+Skyrim Script Extender v1.7.0 alpha
+by Ian Patterson and Stephen Abel (ianpatt and behippo)
 Thanks to: Paul Connelly (scruggsywuggsy the ferret), gibbed, Purple Lunchbox, snakster
 
 The Skyrim Script Extender, or SKSE for short, is a modder's resource that expands the scripting capabilities of Skyrim. It does so without modifying the executable files on disk, so there are no permanent side effects.
 
 Compatibility:
 
-SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.9.32.0.*). When a new version is released, we will update as soon as possible; please be patient. The editor does not appear to need modification, however a custom set of .pex/psc files must be installed.
+SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.9.32.0.*). When a new version is released, we will update as soon as possible; please be patient. The editor does not currently need modification, however a custom set of .pex/psc files must be installed.
 
 [ Installation ]
 
@@ -67,6 +66,9 @@ If your mod requires SKSE, please provide a link to the main SKSE website <http:
 
 Before contacting us, make sure that your game launches properly without SKSE first. If SKSE doesn't appear to be working, follow the steps in the FAQ first, then send us skse.log, skse_loader.log, and skse_steam_loader.log as attachments. These files may be found in <My Documents>\My Games\Skyrim\SKSE\.
 
+### MAKE SURE TO INCLUDE YOUR LOG FILES AS ATTACHMENTS ###
+We cannot help you solve load order problems.
+
 Entire Team
 Send email to team [at] skse [dot] silverlock [dot] org
 
@@ -79,5 +81,3 @@ Send email to gamer [at] silverlock [dot] org
 [ Standard Disclaimer ]
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-Thank you MIT license for providing a standard boilerplate legal disclaimer.

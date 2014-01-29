@@ -12,6 +12,30 @@ UInt32 TESObjectBOOK::Data::GetSanitizedType(void)
 	return kType_None;
 }
 
+BGSHeadPart * TESNPC::GetCurrentHeadPartByType(UInt32 type)
+{
+	BGSHeadPart * facePart = NULL;
+	if(CALL_MEMBER_FN(this, HasOverlays)()) {
+		facePart = GetHeadPartOverlayByType(type);
+	} else {
+		facePart = GetHeadPartByType(type);
+	}
+
+	return facePart;
+}
+
+BGSHeadPart * TESNPC::GetHeadPartByType(UInt32 type)
+{
+	if(headparts) {
+		for(UInt32 i = 0; i < numHeadParts; i++) {
+			if(headparts[i] && headparts[i]->type == type)
+				return headparts[i];
+		}
+	}
+
+	return NULL;
+}
+
 BGSHeadPart * TESNPC::GetHeadPartOverlayByType(UInt32 type)
 {
 	UInt32 numOverlays = GetNumActorBaseOverlays(this);
@@ -82,4 +106,40 @@ void TESObjectWEAP::GetNodeName(char * dstBuff)
 	sprintf_s(dstBuff, MAX_PATH, "%s  (%08X)",
 		"Weapon",
 		this->formID);
+}
+
+bool TESObjectARMA::isValidRace(TESRace * race) const
+{
+	for(UInt32 i = 0; i < additionalRaces.count; i++)
+	{
+		TESRace * currentRace = NULL;
+		additionalRaces.GetNthItem(i, currentRace);
+		if(currentRace == race) {
+			return true;
+			break;
+		}
+	}
+
+	return false;
+}
+
+// Reference Function - 1.9.32 - 00560200
+void TESNPC::SetFaceTexture(BGSTextureSet * textureSet)
+{
+	if(!headData)
+	{
+		if(textureSet)
+		{
+			HeadData * newHeadData = (HeadData *)FormHeap_Allocate(sizeof(HeadData));
+			if(newHeadData) {
+				newHeadData->hairColor = NULL;
+				newHeadData->headTexture = NULL;
+			} else {
+				newHeadData = NULL;
+			}
+			headData = newHeadData;
+		}
+	}
+	if(headData)
+		headData->headTexture = textureSet;
 }

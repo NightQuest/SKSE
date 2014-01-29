@@ -16,6 +16,7 @@
 #include "GameObjects.h"
 #include "GameReferences.h"
 #include "GameRTTI.h"
+#include "GameData.h"
 #include <new>
 #include <list>
 #include "PapyrusEvents.h"
@@ -862,6 +863,39 @@ public:
 	}
 };
 
+class SKSEScaleform_GetModList : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args * args)
+	{
+		if(!g_loadGameLock.TryEnter())
+			return;
+
+		DataHandler* pDataHandler = DataHandler::GetSingleton();
+
+		args->movie->CreateArray(args->result);
+
+		for(UInt32 i = 0; i < pDataHandler->modList.modInfoList.Count(); i++)
+		{
+			ModInfo* modInfo = pDataHandler->modList.modInfoList.GetNthItem(i);
+			if(modInfo)
+			{
+				GFxValue info;
+				args->movie->CreateObject(&info);
+
+				RegisterNumber(&info, "index", i);
+				RegisterString(&info, args->movie, "name", modInfo->name);
+				RegisterString(&info, args->movie, "author", modInfo->author.Get());
+				RegisterString(&info, args->movie, "description", modInfo->description.Get());
+
+				args->result->PushBack(&info);
+			}
+		}
+
+		g_loadGameLock.Leave();
+	}
+};
+
 /*
 class GetScriptVariableFunctor : public IForEachScriptObjectFunctor
 {
@@ -1343,6 +1377,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	RegisterFunction <SKSEScaleform_ShowOnMap>(&skse, view, "ShowOnMap");
 	RegisterFunction <SKSEScaleform_StoreIndices>(&skse, view, "StoreIndices");
 	RegisterFunction <SKSEScaleform_LoadIndices>(&skse, view, "LoadIndices");
+	RegisterFunction <SKSEScaleform_GetModList>(&skse, view, "GetModList");
 
 	// version
 	GFxValue	version;

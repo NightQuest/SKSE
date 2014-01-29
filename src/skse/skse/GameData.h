@@ -4,6 +4,7 @@
 #include "GameForms.h"
 #include "GameObjects.h"
 #include "GameReferences.h"
+#include "GameResources.h"
 
 class BSFile;
 
@@ -96,6 +97,82 @@ struct ModList
 	UInt32				loadedModCount;
 	ModInfo*			loadedMods[0xFF];
 };
+
+// E8
+class TES
+{
+public:
+	virtual ~TES();
+
+	UInt32 unk04;
+	UInt32 unk08;
+	UInt32 unk0C;
+	UInt32 unk10;
+	UInt32 unk14;
+	UInt32 unk18;
+	UInt32 unk1C;
+	UInt32 unk20;
+	UInt32 unk24;
+	UInt32 unk28;
+	UInt32 unk2C;
+	UInt32 unk30;
+	UInt32 unk34;
+	UInt32 unk38;
+	UInt32 unk3C;
+	UInt32 gridCellArray; //40 GridCellArray 0x24
+	NiNode * objectLODRoot; // 44
+	NiNode * landLOD; // 48
+	NiNode * waterLOD; // 4C
+	UInt32 tempNodeManager;//BSTempNodeManager
+	UInt32 unk54;
+	UInt32 unk58;
+	UInt32 unk5C; // 7FFFFFFF
+	UInt32 unk60; // 7FFFFFFF
+	UInt32 unk64; // 7FFFFFFF
+	UInt32 unk68; // 7FFFFFFF
+	TESObjectCELL * currentCell;
+	TESObjectCELL **  interiorCellBuffer; // idk, visited cells perhaps?
+	UInt32 unk74;
+	UInt32 unk78; // 0
+	UInt32 unk7C; // 0
+	UInt32 unk80; // 7FFFFFFF
+	UInt32 unk84; // 7FFFFFFF
+	UInt32 unk88;
+	UInt32 unk8C;
+	UInt32 unk90;
+	UInt32 sky; // Sky
+	UInt32 imageSpaceModifier; // ImageSpaceModifierInstanceForm
+	UInt32 unk9C; // ImageSpaceModifierInstanceDOF ** ??
+	UInt32 unkA0;
+	UInt32 unkA4;
+	UInt8  unkA8;
+	UInt8  unkA9;
+	UInt8  unkAA;
+	UInt8  unkAB;
+	UInt8  unkAC;
+	UInt8  unkAD;
+	UInt8  unkAE;
+	UInt8  unkAF;
+	UInt8  unkB0;
+	UInt8  padB1[3];
+	UInt32 unkB4; // 4579A000
+	UInt32 unkB8; // 457D2000
+	UInt32 worldSpace; // TESWorldSpace
+	UInt32 npcs; // TESNPC ** ??
+	UInt32 unkC4; // TESNPC next?
+	UInt32 queuedFile; // QueuedFile
+	NiSourceTexture* someTexture;
+	UInt32 queuedFile1; // QueuedFile
+	UInt32 queuedFile2;
+	UInt32 unkD8; // BSFadeNode ** ??
+	UInt32 unkDC;
+	UInt32 navMeshInfoMap; // NavMeshInfoMap
+	LoadedAreaBound * loadedAreaBound;
+};
+STATIC_ASSERT(sizeof(TES) == 0xE8);
+STATIC_ASSERT(offsetof(TES, loadedAreaBound)  == 0xE4);
+
+extern TES ** g_TES;
 
 class DataHandler
 {
@@ -391,6 +468,25 @@ private:
 	ActorValueInfo * actorValues[kNumActorValues];
 };
 
+class DefaultObjectList
+{
+public:
+	enum {
+		kNumDefaultObjects = 0x15A
+	};
+	struct DefaultObject
+	{
+		const char	* description;	// 00
+		UInt32		unk04;			// 04
+		UInt32		key;			// 08
+		UInt32		unk0C;			// 0C
+	};
+
+	static DefaultObjectList * GetSingleton(void);
+
+	DefaultObject	objects[kNumDefaultObjects];
+};
+
 class FaceMorphList
 {
 public:
@@ -480,9 +576,24 @@ public:
 		float	delta;
 	};
 
-	UInt32	unk00[0x3C >> 2];	// 00
-	UInt8	unk3C;				// 3C
-	UInt8	pad3D[3];			// 3D
+	class MorphDatabase
+	{
+	public:
+		MEMBER_FN_PREFIX(MorphDatabase);
+		DEFINE_MEMBER_FN(GetFaceGenModelMapEntry, bool, 0x005A6230, const char * meshPath, BSFaceGenModelMap ** entry);
+		DEFINE_MEMBER_FN(SetFaceGenModelMapEntry, void, 0x005A6540, const char * meshPath, BSFaceGenModel * model);
+
+		UInt32 unk00;	// 00 - Doesn't seem to be anything here?
+	};
+
+	UInt32			unk00;						// 00
+	UInt32			unk04;						// 04
+	UInt32			unk08;						// 08
+	UInt32			unk0C;						// 0C
+	MorphDatabase	morphDatabase;				// 10
+	UInt32			unk14[(0x3C - 0x14) >> 2];	// 14
+	UInt8			unk3C;						// 3C
+	UInt8			pad3D[3];					// 3D
 
 	MEMBER_FN_PREFIX(FaceGen);
 	DEFINE_MEMBER_FN(RegenerateHead, void, 0x005A4B80, BSFaceGenNiNode * headNode, BGSHeadPart * head, TESNPC * npc);
@@ -504,14 +615,14 @@ extern const _GetActorBaseOverlays GetActorBaseOverlays;
 typedef UInt32 (* _GetNumActorBaseOverlays)(TESNPC * npc);
 extern const _GetNumActorBaseOverlays GetNumActorBaseOverlays;
 
-typedef bool (* _ApplyMasksToRenderTarget)(tArray<TintMask*> * tintMask, NiRenderTarget ** renderTarget);
+typedef bool (* _ApplyMasksToRenderTarget)(tArray<TintMask*> * tintMask, BSRenderTargetGroup ** renderTarget);
 extern const _ApplyMasksToRenderTarget ApplyMasksToRenderTarget;
 
 // Loads a TRI file into the FaceGenDB, parameters are unknown ptrs
 // unk1 seems to be inited to zero before calling however
 // unk2 is a numeric value from some other object it seems
 // making it zero seems to cache anyway
-typedef bool (* _CacheTRIFile)(const char * filePath, UInt32 * unk1, UInt32 * unk2);
+typedef bool (* _CacheTRIFile)(const char * filePath, BSFaceGenDB::TRI::DBTraits::MorphSet ** morphSet, UInt32 * unk1);
 extern const _CacheTRIFile CacheTRIFile;
 
 // 20
@@ -534,4 +645,82 @@ public:
 	{
 		return *((MagicFavorites **)0x01B2E39C);
 	}
+};
+
+// 84?
+class PersistentFormManager
+{
+public:
+	struct EnchantData
+	{
+		EnchantmentItem *	enchantment;	// 00
+		volatile SInt32		refCount;		// 04
+	};
+
+	UInt32	unk00;	// 00
+	tArray<EnchantData>	weaponEnchants;	// 04
+	tArray<EnchantData>	armorEnchants;	// 10
+	UInt32	unk1C;	// 1C
+	UInt32	unk20;	// 20
+	UInt32	unk24[(0x80 - 0x24) >> 2];	// 24
+
+	static PersistentFormManager * GetSingleton(void)
+	{
+		return *((PersistentFormManager **)0x012E3300);
+	}
+
+	void IncRefEnchantment(EnchantmentItem * enchantment)
+	{
+		if(enchantment && enchantment->formID >= 0xFF000000) {
+			for(UInt32 i = 0; i < weaponEnchants.count; i++) {
+				EnchantData foundData;
+				weaponEnchants.GetNthItem(i, foundData);
+				if(foundData.enchantment == enchantment) {
+					InterlockedIncrement(&weaponEnchants[i].refCount);
+					break;
+				}
+			}
+			for(UInt32 i = 0; i < armorEnchants.count; i++) {
+				EnchantData foundData;
+				armorEnchants.GetNthItem(i, foundData);
+				if(foundData.enchantment == enchantment) {
+					InterlockedIncrement(&armorEnchants[i].refCount);
+					break;
+				}
+			}
+		}
+	}
+
+	// The game doesn't bother to dec ref or even delete custom enchants
+	// when they are no longer used, maybe we can fix this?
+	void DecRefEnchantment(EnchantmentItem * enchantment)
+	{
+		if(enchantment && enchantment->formID >= 0xFF000000) {
+			for(UInt32 i = 0; i < weaponEnchants.count; i++) {
+				EnchantData foundData;
+				weaponEnchants.GetNthItem(i, foundData);
+				if(foundData.enchantment == enchantment) {
+					if(!InterlockedDecrement(&weaponEnchants[i].refCount))
+						CALL_MEMBER_FN(this, ScheduleForDeletion)(enchantment);
+					break;
+				}
+			}
+			for(UInt32 i = 0; i < armorEnchants.count; i++) {
+				EnchantData foundData;
+				armorEnchants.GetNthItem(i, foundData);
+				if(foundData.enchantment == enchantment) {
+					if(!InterlockedDecrement(&armorEnchants[i].refCount))
+						CALL_MEMBER_FN(this, ScheduleForDeletion)(enchantment);
+					break;
+				}
+			}
+		}
+	}
+
+	MEMBER_FN_PREFIX(PersistentFormManager);
+	DEFINE_MEMBER_FN(CreateOffensiveEnchantment, EnchantmentItem *, 0x00689D30, tArray<MagicItem::EffectItem> * effectArray);
+	DEFINE_MEMBER_FN(CreateDefensiveEnchantment, EnchantmentItem *, 0x00689D80, tArray<MagicItem::EffectItem> * effectArray);
+	DEFINE_MEMBER_FN(CreatePotion, void, 0x0068ACB0, AlchemyItem ** potion, tArray<MagicItem::EffectItem> * effectArray);
+	//DEFINE_MEMBER_FN(AddPersistentForm, void, 0x0068A0F0, TESForm *);
+	DEFINE_MEMBER_FN(ScheduleForDeletion, void, 0x0068A1B0, TESForm *);
 };

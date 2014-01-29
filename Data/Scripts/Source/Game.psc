@@ -266,7 +266,7 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2013-06-23 19:50:29.214000 UTC
+; SKSE additions built 2014-01-29 08:07:50.058000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native
@@ -386,10 +386,26 @@ Function SetPlayersLastRiddenHorse(Actor horse) global native
 
 ; Returns the legendary level for the skill
 ; -1 indicates the particular skill cannot have a legendary level
-int Function GetSkillLegendaryLevel(string actorValue) global native
+; DEPRECATED
+int Function GetSkillLegendaryLevel(string actorValue) global
+	return ActorValueInfo.GetActorValueInfoByName(actorValue).GetSkillLegendaryLevel()
+EndFunction
 
 ; Sets the legendary level for the skill
-Function SetSkillLegendaryLevel(string actorValue, int level) global native
+; DEPRECATED
+Function SetSkillLegendaryLevel(string actorValue, int level) global
+	ActorValueInfo.GetActorValueInfoByName(actorValue).SetSkillLegendaryLevel(level)
+EndFunction
+
+; Returns the players experience for this level (not total experience)
+float Function GetPlayerExperience() global native
+
+; Sets the players experience, does not trigger level-up notification
+Function SetPlayerExperience(float exp) global native
+
+; Calculates the experience required for to level-up
+; (fXPLevelUpBase + currentLevel * fXPLevelUpMult)
+float Function GetExperienceForLevel(int currentLevel) global native
 
 ; Returns true if in run mode, false if in walk mode
 ; Does not reflect actual movement state, only the control mode
@@ -407,3 +423,6 @@ Form Function GetHotkeyBoundObject(int hotkey) global native
 
 ; Returns if base form is favorited by the player
 bool Function IsObjectFavorited(Form form) global native
+
+; Same as GetForm, but also works for formIds >= 0x80000000
+Form Function GetFormEx(int formId) global native

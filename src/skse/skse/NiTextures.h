@@ -31,6 +31,61 @@ public:
 	NiComponentSpec	components[4];	// 14
 };
 
+
+class NiPersistentSrcTextureRendererData : public NiObject
+{
+public:
+	virtual ~NiPersistentSrcTextureRendererData();
+};
+
+MAKE_NI_POINTER(NiPersistentSrcTextureRendererData);
+
+class NiDX9PersistentSrcTextureRendererData : public NiPersistentSrcTextureRendererData
+{
+public:
+	virtual ~NiDX9PersistentSrcTextureRendererData();
+};
+
+class NiPixelData : public NiObject
+{
+public:
+	virtual ~NiPixelData();
+
+	NiPixelFormat	pixelFormat;		// 08
+	void *			unk0C;				// 4C
+
+	UInt8 *			m_pucPixels;		// 50	[mipmapLevels]
+	UInt32 *		m_puiWidth;			// 54	[mipmapLevels]
+	UInt32 *		m_puiHeight;		// 58	[mipmapLevels]
+	UInt32 *		m_puiOffset;		// 5C	[mipmapLevels + 1]
+
+	UInt32			m_uiMipmapLevels;	// 60
+	UInt32			m_uiPixelStride;	// 64
+
+	UInt32			unk68;				// 68
+	UInt32			m_uiFaces;			// 6C
+	UInt8			unk70;				// 70
+	UInt8			pad71[3];			// 71
+
+	UInt32 GetWidth(UInt32 mipmapLevel)
+	{
+		return m_puiWidth[mipmapLevel];
+	}
+
+	UInt32 GetHeight(UInt32 mipmapLevel)
+	{
+		return m_puiHeight[mipmapLevel];
+	}
+
+	UInt8 * GetPixels(UInt32 uiMipmapLevel = 0, UInt32 uiFace = 0)
+	{
+		return m_pucPixels + uiFace*m_puiOffset[uiMipmapLevel] +
+			m_puiOffset[uiMipmapLevel];
+	};
+};
+
+MAKE_NI_POINTER(NiPixelData);
+
 // 14
 class Ni2DBuffer : public NiObject
 {
@@ -134,5 +189,8 @@ public:
 class NiSourceTexture : public NiTexture
 {
 public:
-	// ###
+	NiPersistentSrcTextureRendererDataPtr	persistentSrcRendererData;		// 24
+	NiPixelDataPtr							pixelData;						// 28
+	UInt32									unk2C;							// 2C
+	UInt8									flags;							// 30
 };

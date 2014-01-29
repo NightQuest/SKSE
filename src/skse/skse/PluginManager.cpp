@@ -25,7 +25,8 @@ static const SKSEInterface g_SKSEInterface =
 #endif
 
 	PluginManager::QueryInterface,
-	PluginManager::GetPluginHandle
+	PluginManager::GetPluginHandle,
+	PluginManager::GetReleaseIndex
 };
 
 #ifdef RUNTIME
@@ -48,7 +49,7 @@ static const SKSETaskInterface g_SKSETaskInterface =
 	TaskInterface::AddTask
 };
 
-#ifdef _PPAPI
+//#ifdef _PPAPI
 #include "Hooks_Papyrus.h"
 #include "PapyrusVM.h"
 
@@ -58,7 +59,7 @@ static const SKSEPapyrusInterface g_SKSEPapyrusInterface =
 	RegisterPapyrusPlugin
 };
 
-#endif
+//#endif
 #endif
 
 PluginManager::PluginManager()
@@ -143,11 +144,11 @@ void * PluginManager::QueryInterface(UInt32 id)
 	case kInterface_Scaleform:
 		result = (void *)&g_SKSEScaleformInterface;
 		break;
-#ifdef _PPAPI
+//#ifdef _PPAPI
 	case kInterface_Papyrus:
 		result = (void *)&g_SKSEPapyrusInterface;
 		break;
-#endif
+//#endif
 	case kInterface_Serialization:
 		result = (void *)&g_SKSESerializationInterface;
 		break;
@@ -171,6 +172,11 @@ PluginHandle PluginManager::GetPluginHandle(void)
 	ASSERT_STR(s_currentPluginHandle, "A plugin has called SKSEInterface::GetPluginHandle outside of its Query/Load handlers");
 
 	return s_currentPluginHandle;
+}
+
+UInt32 PluginManager::GetReleaseIndex( void )
+{
+	return SKSE_VERSION_RELEASEIDX;
 }
 
 bool PluginManager::FindPluginDirectory(void)

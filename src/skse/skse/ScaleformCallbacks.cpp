@@ -159,3 +159,5 @@ GFxFunctionHandler::~GFxFunctionHandler()
 }
 
 FunctionHandlerCache g_functionHandlerCache;
+
+const FxDelegateHandler::Callback PlaySoundCallback = (FxDelegateHandler::Callback)0x00899940;

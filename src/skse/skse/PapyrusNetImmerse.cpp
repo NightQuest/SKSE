@@ -25,7 +25,7 @@ namespace papyrusNetImmerse
 			result = firstPerson ? player->firstPersonSkeleton : player->loadedState->node;
 
 		// name lookup
-		if(nodeName.data[0] && result)
+		if(obj && nodeName.data[0] && result)
 			result = result->GetObjectByName(&nodeName.data);
 
 		return result;
@@ -73,8 +73,9 @@ namespace papyrusNetImmerse
 		if(object)
 		{
 			object->m_localTransform.scale = value;
-			NiAVObject::ControllerUpdateContext ctx;
-			object->UpdateWorldData(&ctx);
+			BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+			if(taskPool)
+				taskPool->UpdateWorldData(object);
 		}
 	}
 
@@ -126,10 +127,10 @@ void papyrusNetImmerse::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction4<StaticFunctionTag, void, TESObjectREFR*, BSFixedString, BGSTextureSet*, bool>("SetNodeTextureSet", "NetImmerse", papyrusNetImmerse::SetNodeTextureSet, registry));
 
-	registry->SetFunctionFlags("NetImmerse", "HasNode", VMClassRegistry::kFunctionFlag_NoWait);
+	/*registry->SetFunctionFlags("NetImmerse", "HasNode", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("NetImmerse", "GetNodePositionX", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("NetImmerse", "GetNodePositionY", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("NetImmerse", "GetNodePositionZ", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("NetImmerse", "GetNodeScale", VMClassRegistry::kFunctionFlag_NoWait);
-	registry->SetFunctionFlags("NetImmerse", "SetNodeScale", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("NetImmerse", "SetNodeScale", VMClassRegistry::kFunctionFlag_NoWait);*/
 }

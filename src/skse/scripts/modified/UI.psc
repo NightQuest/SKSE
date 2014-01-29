@@ -109,3 +109,11 @@ Function InvokeForm(string menuName, string target, Form arg) global native
 ; returns if scaleform is in 'text input' mode
 ; this is useful for ignoring keys that should get swallowed by an editable text box
 bool Function IsTextInputEnabled() global native
+
+; open a custom menu named "CustomMenu" by loading the given swf from the interface folder
+; (filename without extension)
+; there can only be a single custom menu open at the same time
+Function OpenCustomMenu(string swfPath, int flags = 0) global native
+
+; close the custom menu if it's currently open.
+Function CloseCustomMenu() global native

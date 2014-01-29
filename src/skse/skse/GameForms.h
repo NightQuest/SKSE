@@ -335,6 +335,10 @@ class TESForm : public BaseFormComponent
 public:
 	enum { kTypeID = 0 };	// special-case
 
+	enum {
+		kFlagPlayerKnows = 0x40
+	};
+
 	virtual void			Unk_04(void);		// reset/init? would leak pointers if called on a live object
 	virtual void			Unk_05(void);		// release pointers?
 	virtual bool			LoadForm(UInt32 arg);
@@ -415,6 +419,13 @@ public:
 	TESDescription		description;	// 1C
 	TESIcon				icon;			// 28
 
+	enum {
+		kSkillUseMult = 0,
+		kSkillOffsetMult,
+		kSkillImproveMult,
+		kSkillImproveOffset
+	};
+
 	// members
 	const char *		name;			// 30 - second ctor argument
 	StringCache::Ref	unk34;			// 34
@@ -425,10 +436,10 @@ public:
 	UInt32				unk48[0x0F];	// 48 - init'd to 0xA4
 	UInt32				numSubTypes;			// 84
 	const char *		subTypes[0x0A];	// 88 - init'd to 0
-	void				* unkB0;		// B0
+	float *				skillUsages;	// B0
 	UInt32				unkB4;			// B4
 	UInt32				unkB8;			// B8
-	UInt32				unkBC;			// BC - BGSSkillPerkTreeNode
+	BGSSkillPerkTreeNode *	perkTree;			// BC - BGSSkillPerkTreeNode
 
 	UInt8	padC0[8];	// C0 - ? not initialized
 };
@@ -647,9 +658,13 @@ public:
 class BGSDefaultObjectManager : public TESForm
 {
 public:
+	enum { kTypeID = kFormType_DOBJ };
+
 	// cleared to 0 in ctor
-	TESForm	* objects[0xD9];			// 14
-	UInt8	pad[0x4BC - (0xD9 * 4)];	// just pad out the rest of the space
+	TESForm	* objects[0x15A];			// 14
+	UInt8	pad[0x15A];					// just pad out the rest of the space
+
+	static BGSDefaultObjectManager *	GetSingleton(void);
 };
 
 // 24
@@ -718,7 +733,7 @@ public:
 	TESModelTextureSwap		model;          // 1C
 
 	// members
-	UInt8					unk38;          // 38 // Flag Inconsistencies (Is Extra Part?) (Use Solid Tint?)
+	UInt8					partFlags;          // 38 // Flag Inconsistencies (Is Extra Part?) (Use Solid Tint?)
 	UInt8					pad39[3];       // 39
 	enum {
 		kTypeMisc = 0,
@@ -727,7 +742,17 @@ public:
 		kTypeHair,
 		kTypeFacialHair,
 		kTypeScar,
-		kTypeBrows
+		kTypeBrows,
+		kNumTypes
+	};
+
+	enum 
+	{
+		kFlagPlayable	= 1 << 0,
+		kFlagMale		= 1 << 1,
+		kFlagFemale		= 1 << 2,
+		kFlagExtraPart	= 1 << 3,
+		kFlagSolidTint	= 1 << 4
 	};
 
 	UInt32					type;			// 3C
@@ -781,6 +806,26 @@ public:
 	
 	UInt32	pad74;			// 74
 };
+
+// 38
+class BGSImpactDataSet : public TESForm
+{
+public:
+	enum { kTypeID = kFormType_ImpactDataSet };
+
+	BGSPreloadable	preloadable;	// 14
+
+	UInt32	unk18;	// 18
+	UInt32	unk1C;	// 1C
+	UInt32	unk20;	// 20
+	UInt32	unk24;	// 24
+	UInt32	unk28;	// 28
+	UInt32	unk2C;	// 2C
+	UInt32	unk30;	// 30
+	UInt32	unk34;	// 34
+};
+
+STATIC_ASSERT(sizeof(BGSImpactDataSet) == 0x38);
 
 // 1C
 class BGSKeyword : public TESForm
@@ -860,6 +905,11 @@ public:
 	tArray<TESForm*>	forms;	// 14
 	tArray<UInt32> *	addedForms;	// 20
 	UInt32				unk24;	// 24
+
+	MEMBER_FN_PREFIX(BGSListForm);
+	DEFINE_MEMBER_FN(AddFormToList, void, 0x004FB380, TESForm * form);
+
+	UInt32 GetSize();
 };
 
 // 88
@@ -973,19 +1023,34 @@ class BGSMovementType : public TESForm
 public:
 	enum { kTypeID = kFormType_MovementType };
 
-	// 8
-	struct Data
-	{
-		UInt32	unk0;
-		UInt32	unk4;
+	enum {
+		kType_Walk = 0,
+		kType_Run,
+		kType_Max
 	};
 
-	StringCache::Ref	unk14;	// 14
-	Data	unk18[4];	// 18
-	float	unk38;		// 38 - init'd to pi
-	float	unk3C;		// 3C - init'd to pi
-	float	unk40;		// 40 - init'd to pi
-	UInt32	unk44[3];	// 44 - read from INAM chunk
+	enum
+	{
+		kDefaultData_Left = 0,
+		kDefaultData_Right,
+		kDefaultData_Forward,
+		kDefaultData_Back,
+		kDefaultData_RotateInPlace,
+		kDefaultData_Max
+	};
+
+	enum
+	{
+		kAnimChangeThresholds_Direction = 0,
+		kAnimChangeThresholds_MovementSpeed,
+		kAnimChangeThresholds_RotationSpeed,
+		kAnimChangeThresholds_Max
+	};
+
+	StringCache::Ref	typeId;									// 14
+	float				data[kDefaultData_Max][kType_Max];		// 18
+	float				rotateWhileMoving;						// 40 - init'd to pi
+	float				thresholds[kAnimChangeThresholds_Max];	// 44 - read from INAM chunk
 };
 
 // 20
@@ -1045,7 +1110,7 @@ public:
 	UInt8							pad35[3];	// 35
 	Condition						* conditions;	// 38
 	tArray<BGSPerkEntry*>			perkEntries;	// 3C
-	UInt32							unk48;		// 48
+	BGSPerk *						nextPerk;		// 48
 };
 
 // 124
@@ -1480,6 +1545,9 @@ public:
 	UInt32		unk144;		// 144
 	UInt32		unk148;		// 148
 	UnkArray	unk14C;		// 14C
+
+	MEMBER_FN_PREFIX(TESQuest);
+	DEFINE_MEMBER_FN(ForceRefTo, UInt32, 0x005728C0, UInt32 aliasId, TESObjectREFR * reference);	
 };
 
 STATIC_ASSERT(sizeof(TESQuest) == 0x158);
@@ -1784,7 +1852,9 @@ public:
 	// 24
 	struct Data30
 	{
-		UInt8	unk00[0x6];		// 00
+		UInt8	unk00[0x4];		// 00
+		UInt8	trainSkill;		// 04 (AV-6)
+		UInt8	maxTrainingLevel;	// 05
 		UInt8	oneHanded;		// 06
 		UInt8	twoHanded;		// 07
 		UInt8	archery;
@@ -2223,6 +2293,9 @@ public:
 	UInt32						unk80;		// 80
 	UInt32						unk84;		// 84
 	UInt32						unk88;		// 88
+
+	MEMBER_FN_PREFIX(TESObjectCELL);
+	DEFINE_MEMBER_FN(GetNorthRotation, double, 0x004C0FC0);
 };
 STATIC_ASSERT(offsetof(TESObjectCELL, objectList) == 0x4C);
 

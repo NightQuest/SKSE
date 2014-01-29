@@ -7,6 +7,7 @@ class Actor;
 class BGSHeadPart;
 class NiAVObject;
 class BGSTextureSet;
+class NiAVObject;
 
 class TaskDelegate
 {
@@ -56,13 +57,26 @@ private:
 class SKSETaskUpdateWeight : public TaskDelegate
 {
 public:
-	static SKSETaskUpdateWeight * Create(Actor * actor, float delta);
+	static SKSETaskUpdateWeight * Create(Actor * actor, float delta, UInt32 updateFlags, bool redrawWeapon);
 	virtual void Run();
 	virtual void Dispose();
 
 private:
 	Actor	* m_actor;
 	float	m_delta;
+	UInt32	m_updateFlags;
+	bool	m_redraw;
+};
+
+class SKSETaskUpdateWorldData : public TaskDelegate
+{
+public:
+	static SKSETaskUpdateWorldData * Create(NiAVObject * object);
+	virtual void Run();
+	virtual void Dispose();
+
+private:
+	NiAVObject * m_object;
 };
 
 
@@ -82,7 +96,8 @@ public:
 
 	void RegenerateHead(Actor * actor);
 	void ChangeHeadPart(Actor * actor, BGSHeadPart * oldPart, BGSHeadPart * newPart);
-	void UpdateWeight(Actor * actor, float delta);
+	void UpdateWeight(Actor * actor, float delta, UInt32 updateFlags, bool redrawWeapon);
+	void UpdateWorldData(NiAVObject * object);
 
 	static BSTaskPool *	GetSingleton(void)
 	{

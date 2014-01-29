@@ -285,7 +285,7 @@ namespace Serialization
 			return false;
 
 		// fixup ID, success
-		*handleOut = (loadedModID << 24) | (handle & 0xFFFFFFFF00FFFFFF);
+		*handleOut = (handle & 0xFFFFFFFF00FFFFFF) | (((UInt64)loadedModID) << 24);
 
 		return true;
 	}

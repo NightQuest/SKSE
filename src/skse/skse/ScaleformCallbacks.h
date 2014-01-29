@@ -224,8 +224,8 @@ public:
 class FxDelegateHandler : public GRefCountBase
 {
 public:
-	FxDelegateHandler();
-	~FxDelegateHandler();
+	//FxDelegateHandler();
+	//~FxDelegateHandler();
 
 	typedef void (* Callback)(const FxDelegateArgs & params);
 
@@ -248,5 +248,7 @@ public:
 		void				* callbackHashTable;
 	};
 
-	virtual void	Add(CallbackProcessor * processor);
+	virtual void	Accept(CallbackProcessor * processor) = 0;
 };
+
+extern const FxDelegateHandler::Callback PlaySoundCallback;

@@ -29,3 +29,5 @@ void ScaleformHeap_Free(void * ptr)
 {
 	(*g_scaleformHeap)->Free(ptr);
 }
+
+const _InvokeFunction InvokeFunction = (_InvokeFunction)0x00A63C40;

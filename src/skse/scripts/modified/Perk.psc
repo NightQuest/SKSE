@@ -1,3 +1,4 @@
+Perk Function GetNextPerk() native
 
 int Function GetNumEntries() native
 

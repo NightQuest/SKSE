@@ -23,6 +23,7 @@ public:
 	bool	m_skipLauncher;
 	bool	m_launchSteam;
 	bool	m_noTimeout;
+	bool	m_forceSteamLoader;
 
 	UInt32	m_fpsLimit;
 

@@ -20,6 +20,7 @@ public:
 
 	static void *		QueryInterface(UInt32 id);
 	static PluginHandle	GetPluginHandle(void);
+	static UInt32		GetReleaseIndex(void);
 
 private:
 	struct LoadedPlugin

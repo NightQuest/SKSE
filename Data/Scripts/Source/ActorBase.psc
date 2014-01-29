@@ -43,7 +43,7 @@ Function SetProtected(bool abProtected = true) native
 Function SetOutfit( Outfit akOutfit, bool abSleepOutfit = false ) native
 
 
-; SKSE additions built 2013-06-23 19:50:29.214000 UTC
+; SKSE additions built 2014-01-29 08:07:50.058000 UTC
 ; get/set the CombatStyle of the actor
 CombatStyle Function GetCombatStyle() native
 Function SetCombatStyle(CombatStyle cs) native
@@ -67,6 +67,13 @@ int Function GetNumHeadParts() native
 HeadPart Function GetNthHeadPart(int slotPart) native
 Function SetNthHeadPart(HeadPart headPart, int slotPart) native
 int Function GetIndexOfHeadPartByType(int type) native
+
+; These functions are READ-ONLY they are for accessing the
+; HeadPart list when the ActorBase's Race has been overlayed
+; with another race (e.g. Vampires)
+int Function GetNumOverlayHeadParts() native
+HeadPart Function GetNthOverlayHeadPart(int slotPart) native
+int Function GetIndexOfOverlayHeadPartByType(int type) native
 
 ; Get/Set actors face morph value by index
 float Function GetFaceMorph(int index) native

@@ -821,7 +821,7 @@ Function ForceTargetAngle(float afXAngle = 0.0, float afYAngle = 0.0, float afZA
 Function ClearForcedMovement() native
 
 
-; SKSE additions built 2013-06-23 19:50:29.214000 UTC
+; SKSE additions built 2014-01-29 08:07:50.058000 UTC
 ; returns the form for the item worn at the specified slotMask
 ; use Armor.GetMaskForSlot() to generate appropriate slotMask
 Form Function GetWornForm(int slotMask) native
@@ -869,6 +869,10 @@ Function UnequipItemEx(Form item, int equipSlot = 0, bool preventEquip = false) 
 ; Adds a headpart, if the type exists it will replace, must not be misc type
 ; Beware: This function also affects the ActorBase
 Function ChangeHeadPart(HeadPart hPart) native
+
+; Replaces a headpart on the loaded mesh does not affect ActorBase
+; Both old and new must exist, and be of the same type
+Function ReplaceHeadPart(HeadPart oPart, HeadPart newPart) native
 
 ; Visually updates the actors weight
 ; neckDelta = (oldWeight / 100) - (newWeight / 100)

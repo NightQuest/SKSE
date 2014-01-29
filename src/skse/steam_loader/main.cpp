@@ -4,6 +4,7 @@
 #include "skse/skse_version.h"
 #include "skse/SafeWrite.h"
 #include "skse/Utilities.h"
+#include "skse/Hooks_Memory.h"
 #include "common/IFileStream.h"
 #include "loader_common/IdentifyEXE.h"
 #include <tlhelp32.h>
@@ -180,6 +181,8 @@ void InstallHook(void * retaddr, UInt32 hookSrc)
 	UInt32	newHookDst = ((UInt32)OnHook) - hookBaseAddr - 5;
 
 	SafeWrite32(hookBaseAddr + 1, newHookDst);
+
+	Hooks_Memory_PreloadCommit();
 
 	FlushInstructionCache(GetCurrentProcess(), NULL, 0);
 }

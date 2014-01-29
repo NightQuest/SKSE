@@ -75,9 +75,9 @@ public:
 	UInt16	m_usDataFlags;				// 0E
 	NiBound	m_kBound;					// 10
 	NiPoint3	* m_pkVertex;			// 20
-	float	* m_pkNormal;				// 24 - all normals, then all binormals etc
-	float	* m_pkColor;				// 28 - yes really, floats (b g r a)
-	float	* m_pkTexture;				// 2C
+	NiPoint3	* m_pkNormal;			// 24 - all normals, then all binormals etc
+	NiColorA	* m_pkColor;			// 28 - yes really, floats (b g r a)
+	NiPoint2	* m_pkTexture;			// 2C
 	UInt32	unk30;						// 30
 	UInt32	unk34;						// 34
 	UInt32	unkInt2;					// 38

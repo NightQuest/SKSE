@@ -22,6 +22,13 @@ HeadPart Function GetNthHeadPart(int slotPart) native
 Function SetNthHeadPart(HeadPart headPart, int slotPart) native
 int Function GetIndexOfHeadPartByType(int type) native
 
+; These functions are READ-ONLY they are for accessing the
+; HeadPart list when the ActorBase's Race has been overlayed
+; with another race (e.g. Vampires)
+int Function GetNumOverlayHeadParts() native
+HeadPart Function GetNthOverlayHeadPart(int slotPart) native
+int Function GetIndexOfOverlayHeadPartByType(int type) native
+
 ; Get/Set actors face morph value by index
 float Function GetFaceMorph(int index) native
 Function SetFaceMorph(float value, int index) native

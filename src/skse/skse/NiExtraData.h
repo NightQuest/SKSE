@@ -36,7 +36,20 @@ STATIC_ASSERT(sizeof(BSFaceGenKeyframeMultiple) == 0x18);
 class NiExtraData : public NiObject
 {
 public:
-	const char *	unk08;	// 08
+	NiExtraData();
+	~NiExtraData();
+
+	char *	m_pcName;	// 08
+};
+
+// 10
+class NiStringExtraData : public NiExtraData
+{
+public:
+	NiStringExtraData();
+	~NiStringExtraData();
+
+	char	* m_pString;	// 0C
 };
 
 // 1B4
@@ -67,3 +80,14 @@ public:
 
 STATIC_ASSERT(offsetof(BSFaceGenAnimationData, overrideFlag) == 0x1A6);
 STATIC_ASSERT(sizeof(BSFaceGenAnimationData) == 0x1B4);
+
+
+// 30
+class BSFaceGenModelExtraData : public NiExtraData
+{
+public:
+	BSFaceGenModel* m_model;
+	BSFixedString bones[8];
+	
+};
+STATIC_ASSERT(sizeof(BSFaceGenModelExtraData) == 0x30);

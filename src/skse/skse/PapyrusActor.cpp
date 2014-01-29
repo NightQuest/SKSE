@@ -445,6 +445,7 @@ namespace papyrusActor
 			BSExtraData* xCannotWear = rightEquipList->GetByType(kExtraData_CannotWear);
 			if (xCannotWear)
 				rightEquipList->Remove(kExtraData_CannotWear, xCannotWear);
+
 			CALL_MEMBER_FN(equipManager, UnequipItem)(thisActor, item, rightEquipList, equipCount, GetRightHandSlot(), true, preventEquip, true, false, NULL);
 		}
 
@@ -453,6 +454,7 @@ namespace papyrusActor
 			BSExtraData* xCannotWear = leftEquipList->GetByType(kExtraData_CannotWear);
 			if (xCannotWear)
 				leftEquipList->Remove(kExtraData_CannotWear, xCannotWear);
+
 			CALL_MEMBER_FN(equipManager, UnequipItem)(thisActor, item, leftEquipList, equipCount, GetLeftHandSlot(), true, preventEquip, true, false, NULL);
 		}
 	}
@@ -476,19 +478,36 @@ namespace papyrusActor
 	void ChangeHeadPart(Actor * thisActor, BGSHeadPart * newPart)
 	{
 		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
-		if(taskPool) {
-			TESNPC* npc = DYNAMIC_CAST(thisActor->baseForm, TESForm, TESNPC);
-			if(npc) {
-				if(newPart->type != BGSHeadPart::kTypeMisc) {
-					BGSHeadPart * oldPart = NULL;
-					if(CALL_MEMBER_FN(npc, HasOverlays)())
-						oldPart = npc->GetHeadPartOverlayByType(newPart->type);
-					if(!oldPart)
-						oldPart = CALL_MEMBER_FN(npc, GetHeadPartByType)(newPart->type);
+		if(!taskPool || !thisActor || !newPart)
+			return;
 
-					//CALL_MEMBER_FN(npc, ChangeHeadPart)(newPart); // Changes the HeadPart list, this should be a mesh only change
-					taskPool->ChangeHeadPart(thisActor, oldPart, newPart);
-				}
+		TESNPC* npc = DYNAMIC_CAST(thisActor->baseForm, TESForm, TESNPC);
+		if(npc) {
+			if(newPart->type != BGSHeadPart::kTypeMisc) {
+				BGSHeadPart * oldPart = npc->GetCurrentHeadPartByType(newPart->type);
+
+				// Alters the ActorBase's HeadPart list
+				CALL_MEMBER_FN(npc, ChangeHeadPart)(newPart);
+
+				// Alters the loaded mesh
+				taskPool->ChangeHeadPart(thisActor, oldPart, newPart);
+			}
+		}
+	}
+
+	void ReplaceHeadPart(Actor * thisActor, BGSHeadPart * oldPart, BGSHeadPart * newPart)
+	{
+		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+		if(!taskPool || !thisActor || !newPart)
+			return;
+
+		TESNPC* npc = DYNAMIC_CAST(thisActor->baseForm, TESForm, TESNPC);
+		if(npc) {
+			if(!oldPart) {
+				oldPart = npc->GetCurrentHeadPartByType(newPart->type);
+			}
+			if(newPart->type != BGSHeadPart::kTypeMisc && oldPart && oldPart->type == newPart->type) {
+				taskPool->ChangeHeadPart(thisActor, oldPart, newPart);
 			}
 		}
 	}
@@ -497,7 +516,7 @@ namespace papyrusActor
 	{
 		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
 		if(taskPool) {
-			taskPool->UpdateWeight(thisActor, neckDelta);
+			taskPool->UpdateWeight(thisActor, neckDelta,  ActorProcessManager::kFlags_Unk01 | ActorProcessManager::kFlags_Unk02 | ActorProcessManager::kFlags_Unk03 | ActorProcessManager::kFlags_Mobile, true);
 		}
 	}
 
@@ -561,6 +580,9 @@ void papyrusActor::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <Actor, void, BGSHeadPart*>("ChangeHeadPart", "Actor", papyrusActor::ChangeHeadPart, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <Actor, void, BGSHeadPart*, BGSHeadPart*>("ReplaceHeadPart", "Actor", papyrusActor::ReplaceHeadPart, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0 <Actor, void>("RegenerateHead", "Actor", papyrusActor::RegenerateHead, registry));

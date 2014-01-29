@@ -1,5 +1,7 @@
 #include "GameData.h"
 
+TES	** g_TES = (TES **)0x01B2E864;
+
 DataHandler * DataHandler::GetSingleton()
 {
 	return *((DataHandler **)0x012E2CB8);
@@ -81,6 +83,11 @@ ActorValueList * ActorValueList::GetSingleton(void)
 ActorValueInfo * ActorValueList::GetActorValue(UInt32 id)
 {
 	return (id < kNumActorValues) ? actorValues[id] : NULL;
+}
+
+DefaultObjectList * DefaultObjectList::GetSingleton(void)
+{
+	return (DefaultObjectList*)0x01245C60;
 }
 
 FaceMorphList * FaceMorphList::GetSingleton(void)

@@ -49,7 +49,7 @@ class BSShaderMaterialBase : public BSShaderMaterial
 public:
 	virtual ~BSShaderMaterialBase();
 
-	virtual void SetTexturePath(UInt32 index, const char * meshPath);
+	virtual void SetTexture(UInt32 index, BSTextureSet * texture, SInt32 unk1);
 	virtual void ReleaseTextures(void); // ReleaseRefs
 	virtual void Unk_0A(UInt8 unk1, UInt8 unk2, UInt8 unk3, UInt8 unk4, UInt8 unk5, UInt32 unk6, UInt32 unk7); // AddRefs
 	virtual void Unk_0B(UInt32 unk1);

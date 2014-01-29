@@ -118,7 +118,7 @@ EndEvent
 Event OnUpdateGameTime()
 EndEvent
 
-; SKSE additions built 2013-06-23 19:50:29.214000 UTC
+; SKSE additions built 2014-01-29 08:07:50.058000 UTC
 
 ; Returns the typecode for this form object
 Int Function GetType() native
@@ -151,6 +151,11 @@ bool Function HasKeywordString(string s)
 	endif
 	return HasKeyword(k)
 endFunction
+
+; Sets whether the player knows this form
+; Should only be used for Magic Effects,
+; Words of Power, and Enchantments
+Function SetPlayerKnows(bool knows) native
 
 ; Registers for OnKeyDown and OnKeyUp events for the given keycode.
 Function RegisterForKey(int keyCode) native

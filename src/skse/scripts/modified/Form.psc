@@ -31,6 +31,11 @@ bool Function HasKeywordString(string s)
 	return HasKeyword(k)
 endFunction
 
+; Sets whether the player knows this form
+; Should only be used for Magic Effects,
+; Words of Power, and Enchantments
+Function SetPlayerKnows(bool knows) native
+
 ; Registers for OnKeyDown and OnKeyUp events for the given keycode.
 Function RegisterForKey(int keyCode) native
 Function UnregisterForKey(int keyCode) native

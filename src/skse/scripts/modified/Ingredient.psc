@@ -24,3 +24,6 @@ Function SetNthEffectArea(int index, int value) native
 
 ; sets the duration of the specified effect
 Function SetNthEffectDuration(int index, int value) native
+
+; determines whether the player knows this effect
+bool Function GetIsNthEffectKnown(int index) native

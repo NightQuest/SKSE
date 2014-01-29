@@ -1,6 +1,7 @@
 #include "PapyrusForm.h"
 
 #include "GameForms.h"
+#include "GameObjects.h"
 #include "GameRTTI.h"
 #include "PapyrusVM.h"
 #include "PapyrusEvents.h"
@@ -72,6 +73,11 @@ namespace papyrusForm
 		TESValueForm* pValue = DYNAMIC_CAST(thisForm, TESForm, TESValueForm);
 		if (pValue)
 			return pValue->value;
+		else {
+			AlchemyItem* alchemyItem = DYNAMIC_CAST(thisForm, TESForm, AlchemyItem);
+			if(alchemyItem && (alchemyItem->itemData.flags & AlchemyItem::kFlag_ManualCalc) == AlchemyItem::kFlag_ManualCalc)
+				return alchemyItem->itemData.value;
+		}
 		return 0;
 	}
 
@@ -81,7 +87,12 @@ namespace papyrusForm
 			return;
 		TESValueForm* pValue = DYNAMIC_CAST(thisForm, TESForm, TESValueForm);
 		if (pValue)
-			pValue->value = value;		
+			pValue->value = value;
+		else {
+			AlchemyItem* alchemyItem = DYNAMIC_CAST(thisForm, TESForm, AlchemyItem);
+			if(alchemyItem && (alchemyItem->itemData.flags & AlchemyItem::kFlag_ManualCalc) == AlchemyItem::kFlag_ManualCalc)
+				alchemyItem->itemData.value = value;
+		}
 	}
 
 	UInt32 GetNumKeywords(TESForm* thisForm)
@@ -103,6 +114,14 @@ namespace papyrusForm
 			return pKeywords->keywords[index];
 		}
 		return NULL;
+	}
+
+	void SetPlayerKnows(TESForm * thisForm, bool knows)
+	{
+		if(!thisForm)
+			return;
+
+		knows ? thisForm->flags |= TESForm::kFlagPlayerKnows : thisForm->flags &= ~TESForm::kFlagPlayerKnows;
 	}
 
 	void RegisterForKey(TESForm * thisForm, UInt32 key)
@@ -344,6 +363,9 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction1 <TESForm, BGSKeyword *, UInt32> ("GetNthKeyword", "Form", papyrusForm::GetNthKeyword, registry));
 
 	registry->RegisterFunction(
+		new NativeFunction1 <TESForm, void, bool> ("SetPlayerKnows", "Form", papyrusForm::SetPlayerKnows, registry));
+
+	registry->RegisterFunction(
 		new NativeFunction1 <TESForm, void, UInt32> ("RegisterForKey", "Form", papyrusForm::RegisterForKey, registry));
 
 	registry->RegisterFunction(
@@ -403,6 +425,7 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <TESForm, void, UInt32> ("UnregisterForActorAction", "Form", papyrusForm::UnregisterForActorAction, registry));
 
+	registry->SetFunctionFlags("Form", "SetPlayerKnows", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Form", "RegisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Form", "UnregisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Form", "UnregisterForAllKeys", VMClassRegistry::kFunctionFlag_NoWait);

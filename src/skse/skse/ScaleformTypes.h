@@ -122,3 +122,30 @@ class GArray
 public:
 	// ### todo
 };
+
+class GViewport
+{
+public:
+	enum
+	{
+		kFlags_IsRenderTexture    = 1 << 0,
+		kFlags_AlphaComposite     = 1 << 1,
+		kFlags_UseScissorRect     = 1 << 2,
+		kFlags_NoSetState         = 1 << 3,
+		kFlags_RenderTextureAlpha = kFlags_IsRenderTexture|kFlags_AlphaComposite
+	};
+
+	SInt32	bufferWidth;
+	SInt32	bufferHeight;
+	SInt32	left;
+	SInt32	top;
+	SInt32	width;
+	SInt32	height;
+	SInt32	scissorLeft;
+	SInt32	scissorTop;
+	SInt32	scissorWidth;
+	SInt32	scissorHeight;
+	float	scale;
+	float	aspectRatio;
+	UInt32	flags;
+};

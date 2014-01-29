@@ -726,7 +726,7 @@ public:
 	struct MorphAction {
 		BSFaceGenNiNode * faceNode;
 		TESNPC * npc;
-		BSFixedString * morphName;
+		const char ** morphName;
 		float	value;
 	};
 	

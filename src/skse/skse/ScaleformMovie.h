@@ -35,5 +35,7 @@ public:
 	virtual bool	Invoke(const char * name, GFxValue * result, GFxValue * args, UInt32 numArgs);
 	virtual bool	Invoke(const char * name, GFxValue * result, const char * fmt, ...);
 	virtual bool	Invoke_v(const char * name, GFxValue * result, const char * fmt, va_list args);
+	virtual void	SetViewport(const GViewport & viewDesc);
+	virtual void	GetViewport(GViewport *pviewDesc) const;
 	// more
 };

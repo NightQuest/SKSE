@@ -134,7 +134,7 @@ void MagicFavorites::SetHotkey(TESForm * form, SInt8 idx)
 
 TESForm * MagicFavorites::GetSpell(SInt8 idx)
 {
-	TESForm * form;
+	TESForm * form = NULL;
 	hotkeys.GetNthItem(idx, form);
 	return form;
 }

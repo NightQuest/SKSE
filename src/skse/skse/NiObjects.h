@@ -35,6 +35,7 @@ public:
 	virtual void	DeleteThis(void);	// calls virtual dtor
 
 	void	IncRef(void);
+	void	DecRef(void);
 	bool	Release(void);
 
 //	void	** _vtbl;		// 00

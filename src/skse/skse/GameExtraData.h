@@ -39,6 +39,23 @@ public:
 
 	typedef tList<BaseExtraList> ExtendDataList;
 
+	struct EquipItemData
+	{
+		SInt32			itemCount;
+
+		BaseExtraList*	itemExtraList;
+
+		BaseExtraList*	wornExtraList;
+		BaseExtraList*	wornLeftExtraList;
+
+		bool			isItemWorn;
+		bool			isItemWornLeft;
+		bool			isTypeWorn;
+		bool			isTypeWornLeft;
+
+		EquipItemData();
+	};
+
 	class EntryData
 	{
 	public:
@@ -50,9 +67,8 @@ public:
 		void Delete(void);
 
 		void GetExtraWornBaseLists(BaseExtraList ** pWornBaseListOut, BaseExtraList ** pWornLeftBaseListOut) const;
-		
-		// If checkFallback is set, return the first BaseExtraList without a name override
-		BaseExtraList * FindBaseExtraList(SInt32 itemId, bool checkFallback = false) const;
+
+		void GetEquipItemData(EquipItemData& stateOut, SInt32 itemId, SInt32 baseCount) const;
 	};
 
 	typedef tList<EntryData> EntryDataList;
@@ -70,7 +86,8 @@ public:
 		// Allocate new entry data as a merge between base container data and extra data
 		// Uses BaseExtraList*'s from original extra data and combined count
 		EntryData * CreateEquipEntryData(TESForm * item);
-		EntryData * CreateEquipEntryData(TESForm * item, SInt32 itemId);
+
+		void GetEquipItemData(EquipItemData& stateOut, TESForm * item, SInt32 itemId) const;
 	};
 
 	Data * data;

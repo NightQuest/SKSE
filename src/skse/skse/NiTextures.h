@@ -1,6 +1,7 @@
 #pragma once
 
 #include "skse/NiObjects.h"
+#include "skse/GameTypes.h"
 
 // 44
 class NiPixelFormat
@@ -83,7 +84,7 @@ public:
 
 	FormatPrefs		formatPrefs;	// 08
 	RendererData	* rendererData;	// 14
-	UInt32			unk18;			// 18
+	BSFixedString	name;			// 18
 	NiTexture		* prevTexture;	// 1C
 	NiTexture		* nextTexture;	// 20
 };
@@ -105,6 +106,13 @@ public:
 	UInt8	align33;		// 33
 	UInt32	unk34;			// 34
 	UInt32	unk38;			// 38
+
+	MEMBER_FN_PREFIX(NiRenderedTexture);
+	DEFINE_MEMBER_FN(ctor, void, 0x00FB5E10);
+	DEFINE_MEMBER_FN(UpdateVirtualImage, void, 0x00A61D20, NiRenderedTexture * newTexture);
+	DEFINE_MEMBER_FN(AddVirtualImage, UInt8, 0x00A61D80, BSFixedString linkageName);
+	DEFINE_MEMBER_FN(ReleaseVirtualImage, void, 0x00A61CC0);
+	DEFINE_MEMBER_FN(ReleaseVirtualImage2, void, 0x00A61DB0); // Also calls ReleaseVirtualImage
 };
 
 // 58

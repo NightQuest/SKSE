@@ -1,3 +1,7 @@
+1.6.16:
+- fixed EquipItemById not properly handling stacks of items
+- fixed crash when retrieving magic favorites
+
 1.6.15:
 - fixed EquipItemEx bug causing two items of the same type with different enhancements unable to be equipped in both left and right
 - fixed Game.UnbindObjectHotkey/GetHotkeyBoundObject/IsObjectFavorited (Could only be used once until the hotkey was manually re-bound)

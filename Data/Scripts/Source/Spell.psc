@@ -22,7 +22,7 @@ Function Preload() native
 Function Unload() native
 
 
-; SKSE additions built 2013-06-06 02:29:15.175000 UTC
+; SKSE additions built 2013-06-23 19:50:29.214000 UTC
 ; return the casting time
 float Function GetCastTime() native
 

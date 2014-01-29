@@ -3,6 +3,9 @@
 #include "GameTypes.h"
 #include "GameInput.h"
 
+#include "skse/NiObjects.h"
+#include "skse/NiTypes.h"
+
 class TESCamera;
 class NiNode;
 
@@ -184,6 +187,16 @@ public:
 STATIC_ASSERT(offsetof(ThirdPersonState, fOverShoulderPosX) == 0x3C);
 STATIC_ASSERT(offsetof(ThirdPersonState, unk48) == 0x48);
 
+class LocalMapCameraState : public TESCameraState
+{
+public:
+	NiPoint3	unk10;	// 10
+	NiPoint3	unk1C;	// 1C
+	UInt32		unk28;	// 28
+	float		minFrustumWidth;
+	float		minFrustumHeight;
+};
+
 class BleedoutCameraState : public ThirdPersonState
 {
 public:
@@ -235,12 +248,22 @@ public:
 	DEFINE_MEMBER_FN(SetCameraState, UInt32, 0x006533D0, TESCameraState * cameraState);
 };
 
+STATIC_ASSERT(offsetof(TESCamera, niNode) == 0x1C);
+
 class LocalMapCamera : public TESCamera
 {
 public:
 	LocalMapCamera();
 	virtual ~LocalMapCamera();
+
+	NiPoint3	areaBoundsMin;	// 28
+	NiPoint3	areaBoundsMax;	// 34
+	LocalMapCameraState	* defaultState;	// 40
+	NiObject	* niCamera;		// 44
+	float		northRotation;	// 48
 };
+
+STATIC_ASSERT(offsetof(LocalMapCamera, northRotation) == 0x48);
 
 class MapCamera : public TESCamera
 {

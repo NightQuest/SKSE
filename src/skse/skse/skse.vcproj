@@ -767,6 +767,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ScaleformLoader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ScaleformLoader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ScaleformMovie.cpp"
 				>
 			</File>

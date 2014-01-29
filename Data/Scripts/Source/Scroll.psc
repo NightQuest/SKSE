@@ -3,7 +3,7 @@ Scriptname Scroll extends Form Hidden
 ; Cast this scroll from an ObjectReference, optionally toward another.
 Function Cast(ObjectReference akSource, ObjectReference akTarget=NONE) native	
 
-; SKSE additions built 2013-06-06 02:29:15.175000 UTC
+; SKSE additions built 2013-06-23 19:50:29.214000 UTC
 ; return the casting time
 float Function GetCastTime() native
 

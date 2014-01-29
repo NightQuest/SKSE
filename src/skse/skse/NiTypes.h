@@ -1,12 +1,92 @@
 #pragma once
 
 // 4
-template <typename T>
+template <class T>
 class NiPointer
 {
 public:
-	T	* m_pObject;
+	T	* m_pObject;	// 00
+
+	inline NiPointer(T* pObject)
+	{
+		m_pObject = pObject;
+		if(m_pObject) m_pObject->IncRef();
+	}
+
+	inline ~NiPointer()
+	{
+		if(m_pObject) m_pObject->DecRef();
+	}
+
+	inline operator T *() const
+	{
+		return m_pObject;
+	}
+
+	inline T & operator*() const
+	{
+		return *m_pObject;
+	}
+
+	inline T * operator->() const
+	{
+		return m_pObject;
+	}
+
+	inline NiPointer <T> & operator=(const NiPointer & rhs)
+	{
+		if(m_pObject != rhs.m_pObject)
+		{
+			if(rhs) rhs.m_pObject->IncRef();
+			if(m_pObject) m_pObject->DecRef();
+
+			m_pObject = rhs.m_pObject;
+		}
+
+		return *this;
+	}
+
+	inline NiPointer <T> & operator=(T * rhs)
+	{
+		if(m_pObject != rhs)
+		{
+			if(rhs) rhs->IncRef();
+			if(m_pObject) m_pObject->DecRef();
+
+			m_pObject = rhs;
+		}
+
+		return *this;
+	}
+
+	inline bool operator==(T * pObject) const
+	{
+		return m_pObject == pObject;
+	}
+
+	inline bool operator!=(T * pObject) const
+	{
+		return m_pObject != pObject;
+	}
+
+	inline bool operator==(const NiPointer & ptr) const
+	{
+		return m_pObject == ptr.m_pObject;
+	}
+
+	inline bool operator!=(const NiPointer & ptr) const
+	{
+		return m_pObject != ptr.m_pObject;
+	}
 };
+
+#define MAKE_NI_POINTER(x)	class x; typedef NiPointer <x> x##Ptr
+
+template <class T_to, class T_from>
+T_to * niptr_cast(const T_from & src)
+{
+	return static_cast <T_to *>(src.m_pObject);
+}
 
 // 10
 class NiQuaternion

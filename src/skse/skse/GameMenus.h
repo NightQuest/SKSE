@@ -7,6 +7,7 @@
 #include "skse/Hooks_UI.h"
 #include "skse/GameCamera.h"
 #include "skse/GameReferences.h"
+#include "skse/NiNodes.h"
 
 class TESObjectREFR;
 class TESFullName;
@@ -86,8 +87,8 @@ public:
 	float	interval;	// 0C
 	UInt32	filterFlag;	// 10
 	UInt32	type;	// 14
-	char	* name;	// 18
-	char	callback[0x104];	// 1C
+	const char	* name;	// 18
+	char	callback[MAX_PATH];	// 1C
 	UInt32	index;	// 120
 	UInt32	id;	// 124
 	UInt32	unk128;	// 128
@@ -114,7 +115,7 @@ public:
 	tArray<BGSHeadPart*>	brows;			// 70
 	RaceSexCamera			camera;			// 7C
 
-	float					unk94[0x07];	// 94
+	float					unkA4[0x07];	// A4
 
 	struct RaceComponent
 	{
@@ -123,15 +124,14 @@ public:
 		UInt32				unk10;			// 10
 	};
 
-	tArray<RaceComponent>	race1;			// C0
-	tArray<RaceComponent>	sliderData;		// CC
+	tArray<RaceComponent>	sliderData[2];	// C0
 	UInt32					unkD8;			// D8
 	UInt32					unkDC;			// DC
 	UInt32					unkE0;			// E0
 	UInt32					raceIndex;		// E4
 };
 
-STATIC_ASSERT(offsetof(RaceSexMenu, race1) == 0xC0);
+STATIC_ASSERT(offsetof(RaceSexMenu, sliderData) == 0xC0);
 STATIC_ASSERT(offsetof(RaceSexMenu, raceIndex) == 0xE4);
 
 class MapMenu : public IMenu
@@ -155,10 +155,46 @@ public:
 		UInt32		unk1C;			// 1C
 	};
 
-	UInt32				pad01C[(0x2F0-0x01C) >> 2];	// 01C
-	tArray<MarkerData>	markers;					// 2F0
+	struct LocalMap
+	{
+		UInt32					unk00;							// 00
+		UInt32					unk04;							// 04
+		UInt32					unk08;							// 08
+		UInt32					unk0C;							// 0C
+		GFxValue				markerData;						// 10
+		UInt32					unk20;							// 20
+		UInt32					unk24;							// 24
+		UInt32					unk28;							// 28
+		UInt32					unk2C;							// 2C
+		LocalMapCullingProcess	cullingProcess;					// 30
+		NiRenderedTexture		* renderedLocalMapTexture;		// 26C
+		UInt32					unk270;							// 270
+		UInt32					unk274;							// 274
+		GFxValue				localMapRoot;					// 278
+		GFxValue				mapRoot;						// 288
+		GFxMovieView			* view;							// 298
+		void					* localMapInputHandler;			// 29C
+		UInt32					unk2A0;							// 2A0
+		UInt8					unk2A4[4];						// 2A4
+	};
+
+	void				* eventSinkMenuOpenCloseEvent; 			// 1C
+	void				* mapCameraCallback;					// 20
+	UInt32				mapMoveHandler; 						// 24
+	UInt32				mapLookHandler; 						// 28
+	UInt32				mapZoomHandler; 						// 2C
+	UInt32				unk30; 									// 30
+	UInt32				unk34; 									// 34
+	LocalMap			localMap;								// 38
+	UInt32				unk2E0[4];								// 2E0
+	tArray<MarkerData>	markers;								// 2F0
 	// ..
 };
+
+STATIC_ASSERT(offsetof(MapMenu, localMap) == 0x38);
+STATIC_ASSERT(offsetof(MapMenu::LocalMap, cullingProcess) == 0x30);
+STATIC_ASSERT(offsetof(MapMenu::LocalMap, renderedLocalMapTexture) == 0x26C);
+STATIC_ASSERT(offsetof(MapMenu, markers) == 0x2F0);
 
 //// menu management
 

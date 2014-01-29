@@ -9,3 +9,9 @@ bool NiRefObject::Release(void)
 {
 	return InterlockedDecrement(&m_uiRefCount) == 0;
 }
+
+void NiRefObject::DecRef(void)
+{
+	if(Release())
+		DeleteThis();
+}

@@ -98,7 +98,7 @@ SInt32 CalcItemId(TESForm * form, BaseExtraList * extraList)
 	if (!name)
 		return 0;
 
-	return (SInt32)HashUtil::CRC32(name, form->formID);
+	return (SInt32)HashUtil::CRC32(name, form->formID & 0x00FFFFFF);
 }
 
 namespace papyrusActor
@@ -316,10 +316,10 @@ namespace papyrusActor
 
 	void EquipItemById(Actor* thisActor, TESForm* item, SInt32 itemId, SInt32 slotId, bool preventUnequip /*unused*/, bool equipSound)
 	{
-		if (!item || !item->Has3D())
+		if (!item || !item->Has3D() || itemId == 0)
 			return;
 
-		// Can't be improved or enchanted, no need for itemId => delegate
+		// Can't be improved or enchanted, no need for itemId
 		if (item->IsAmmo())
 		{
 			EquipItemEx(thisActor, item, slotId, preventUnequip, equipSound);
@@ -335,42 +335,34 @@ namespace papyrusActor
 		if (!containerData)
 			return;
 
-		// Copy/merge of extraData and container base. Free after use.
-		// First element of extendDataList is selected entry, rest of the list may contain worn left/right lists.
-		ExtraContainerChanges::EntryData* entryData = containerData->CreateEquipEntryData(item, itemId);
-		if (!entryData)
-			return;
+		ExtraContainerChanges::EquipItemData itemData;
+		containerData->GetEquipItemData(itemData, item, itemId);
 
 		BGSEquipSlot * targetEquipSlot = GetEquipSlotById(slotId);
 		bool isTargetSlotInUse = false;
 
-		SInt32 itemCount = entryData->countDelta;
+		SInt32 itemCount = itemData.itemCount;
 
 		// Need at least 1 (maybe 2 for dual wield, checked later)
 		bool hasItemMinCount = itemCount > 0;
 		bool canDualWield = false;
 
-		BaseExtraList * newEquipList = NULL;
-		BaseExtraList * rightEquipList = NULL;
-		BaseExtraList * leftEquipList = NULL;
+		BaseExtraList * newEquipList = itemData.itemExtraList;
 
 		if (hasItemMinCount)
 		{
-			newEquipList = entryData->extendDataList->GetNthItem(0);
-			entryData->GetExtraWornBaseLists(&rightEquipList, &leftEquipList);
-
 			// Case 1: Type already equipped in both hands.
-			if (leftEquipList && rightEquipList)
+			if (itemData.isTypeWorn && itemData.isTypeWornLeft)
 			{
 				isTargetSlotInUse = true;
 			}
 			// Case 2: Type already equipped in right hand.
-			else if (rightEquipList)
+			else if (itemData.isTypeWorn)
 			{
-				isTargetSlotInUse = targetEquipSlot == GetRightHandSlot();
+				isTargetSlotInUse = targetEquipSlot == GetRightHandSlot() || targetEquipSlot == NULL;
 			}
 			// Case 3: Type already equipped in left hand.
-			else if (leftEquipList)
+			else if (itemData.isTypeWornLeft)
 			{
 				isTargetSlotInUse = targetEquipSlot == GetLeftHandSlot();
 			}
@@ -381,30 +373,25 @@ namespace papyrusActor
 			}
 		}
 
-		// Free temp equip entryData
-		entryData->Delete();
-
-		// This includes the scenario where the target slot is in use by another weapon of the same type.
-		// Could easily handle this, but switching them here causes a bug (0 damage) for some reason.
-		// So we just skip it. Can be handled in the Papyrus side.
+		// This also returns if the target slot is in use by another weapon of the same type.
+		// Could handle this, but switching them here causes a bug (0 damage) for some reason.
+		// So we just skip it. Can be handled on the Papyrus side.
 		if (isTargetSlotInUse || !hasItemMinCount)
 			return;
 
-		bool isEquippedRight = newEquipList && rightEquipList && (rightEquipList == newEquipList);
-		bool isEquippedLeft = newEquipList && leftEquipList && (leftEquipList == newEquipList);
-		bool isEquipped = isEquippedRight || isEquippedLeft;
+		bool isItemEquipped = itemData.isItemWorn || itemData.isItemWornLeft;
 
-		// For dual wield, prevent that 1 item can be equipped in two hands if its already equipped
-		if (targetEquipSlot && isEquipped && CanEquipBothHands(thisActor, item))
-			canDualWield = itemCount > 1;
+		// Does this item qualify for dual wield?
+		if (item->IsWeapon() && targetEquipSlot && isItemEquipped && CanEquipBothHands(thisActor, item))
+			canDualWield = true;
 
 		// Not enough items to dual wield, weapon has to swap hands
-		if (!canDualWield)
+		if (canDualWield && itemCount < 2)
 		{
-			if (isEquippedRight)
-				CALL_MEMBER_FN(equipManager, UnequipItem)(thisActor, item, rightEquipList, 1, 0, false, false, true, false, NULL);
-			else if (isEquippedLeft)
-				CALL_MEMBER_FN(equipManager, UnequipItem)(thisActor, item, leftEquipList, 1, 0, false, false, true, false, NULL);
+			BaseExtraList* unequipList = itemData.isItemWornLeft ? itemData.wornLeftExtraList : itemData.wornExtraList;
+
+			// Unequip might destroy passed list (return value indicates that).
+			newEquipList = CALL_MEMBER_FN(equipManager, UnequipItem)(thisActor, item, unequipList, 1, 0, false, false, true, false, NULL) ? NULL : unequipList;
 		}
 
 		CALL_MEMBER_FN(equipManager, EquipItem)(thisActor, item, newEquipList, 1, targetEquipSlot, equipSound, preventUnequip, false, NULL);

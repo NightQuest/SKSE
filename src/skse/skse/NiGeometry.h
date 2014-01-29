@@ -4,9 +4,10 @@
 #include "skse/NiProperties.h"
 
 // NiGeometry, NiGeometryData and children
+MAKE_NI_POINTER(NiGeometryData);
+MAKE_NI_POINTER(NiSkinInstance);
+MAKE_NI_POINTER(NiProperty);
 
-class NiGeometryData;
-class NiSkinInstance;
 class NiAdditionalGeometryData;
 
 // B8+
@@ -21,10 +22,10 @@ public:
 	virtual void * Unk_38(void); // ret call m_spModelData vtbl+0x94
 	virtual UInt16 Unk_39(bool unk1); // ??
 
-	NiProperty		* m_spPropertyState;	// A8 - unconfirmed
-	NiProperty		* m_spEffectState;		// AC - unconfirmed
-	NiGeometryData	* m_spModelData;		// B0
-	NiSkinInstance	* m_spSkinInstance;		// B4
+	NiPropertyPtr	m_spPropertyState;	// A8 - unconfirmed
+	NiPropertyPtr	m_spEffectState;		// AC - unconfirmed
+	NiGeometryDataPtr m_spModelData;		// B0
+	NiSkinInstancePtr m_spSkinInstance;		// B4
 
 	// ... materials
 

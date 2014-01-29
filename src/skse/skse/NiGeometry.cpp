@@ -45,7 +45,7 @@ void NiSkinData::BoneData::AllocateWeights(UInt32 numWeights)
 
 void NiGeometry::SetEffectState(NiProperty * effectState)
 {
-	if(m_spEffectState != effectState)
+	/*if(m_spEffectState != effectState)
 	{
 		if(m_spEffectState)
 		{
@@ -56,12 +56,13 @@ void NiGeometry::SetEffectState(NiProperty * effectState)
 		m_spEffectState = effectState;
 		if(effectState)
 			effectState->IncRef();
-	}
+	}*/
+	m_spEffectState = effectState; // handled by NiPointer now
 }
 
 void NiGeometry::SetSkinInstance(NiSkinInstance * skinInstance)
 {
-	if(m_spSkinInstance != skinInstance)
+	/*if(m_spSkinInstance != skinInstance)
 	{
 		if(m_spSkinInstance)
 		{
@@ -72,12 +73,13 @@ void NiGeometry::SetSkinInstance(NiSkinInstance * skinInstance)
 		m_spSkinInstance = skinInstance;
 		if(skinInstance)
 			skinInstance->IncRef();
-	}
+	}*/
+	m_spSkinInstance = skinInstance; // handled by NiPointer now
 }
 
 void NiGeometry::SetModelData(NiGeometryData * modelData)
 {
-	if(m_spModelData != modelData)
+	/*if(m_spModelData != modelData)
 	{
 		if(m_spSkinInstance)
 		{
@@ -88,5 +90,6 @@ void NiGeometry::SetModelData(NiGeometryData * modelData)
 		m_spModelData = modelData;
 		if(modelData)
 			modelData->IncRef();
-	}
+	}*/
+	m_spModelData = modelData; // handled by NiPointer now
 }

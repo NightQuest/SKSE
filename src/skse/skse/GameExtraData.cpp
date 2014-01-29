@@ -560,10 +560,25 @@ void ExtraContainerChanges::EntryData::GetExtraWornBaseLists(BaseExtraList ** pW
 	}
 }
 
-BaseExtraList * ExtraContainerChanges::EntryData::FindBaseExtraList(SInt32 itemId, bool checkFallback) const
+ExtraContainerChanges::EquipItemData::EquipItemData() :
+	itemCount(0),
+	itemExtraList(NULL),
+	wornExtraList(NULL),
+	wornLeftExtraList(NULL),
+	isItemWorn(false),
+	isItemWornLeft(false),
+	isTypeWorn(false),
+	isTypeWornLeft(false)
 {
-	if (!extendDataList || itemId == 0)		
-		return NULL;
+}
+
+void ExtraContainerChanges::EntryData::GetEquipItemData(EquipItemData& stateOut, SInt32 itemId, SInt32 baseCount) const
+{
+	bool checkDisplayName = itemId != 0;
+
+	// When searching for a specific itemId, start at 0 and count up for every match.
+	// When searching for the base item, start at baseCount+delta and subtract 1 for every named item.
+	stateOut.itemCount = checkDisplayName ? 0 : (baseCount + countDelta);
 
 	// Search for match based on textDisplayData
 	for (ExtendDataList::Iterator it = extendDataList->Begin(); !it.End(); ++it)
@@ -572,21 +587,64 @@ BaseExtraList * ExtraContainerChanges::EntryData::FindBaseExtraList(SInt32 itemI
 		if (!xList)
 			continue;
 
+		SInt32 count = 1;
+
+		ExtraCount* xCount = static_cast<ExtraCount*>(xList->GetByType(kExtraData_Count));
+		if (xCount)
+			count = xCount->count;
+
 		const char * displayName = xList->GetDisplayName(type);
 
-		if (displayName && !checkFallback)
+		bool isWorn = xList->HasType(kExtraData_Worn);
+		bool isWornLeft = xList->HasType(kExtraData_WornLeft);
+
+		if (isWorn)
 		{
-			SInt32 xItemId = (SInt32) HashUtil::CRC32(displayName, type->formID);
-			if (itemId == xItemId)
-				return xList;
+			stateOut.isTypeWorn = true;
+			stateOut.wornExtraList = xList;
 		}
-		else if (!displayName && checkFallback)
+
+		if (isWornLeft)
 		{
-			return xList;
+			stateOut.isTypeWornLeft = true;
+			stateOut.wornLeftExtraList = xList;
+		}
+
+		if (checkDisplayName)
+		{
+			if (displayName)
+			{
+				SInt32 xItemId = (SInt32) HashUtil::CRC32(displayName, type->formID & 0x00FFFFFF);
+				if (itemId == xItemId)
+				{
+					if (isWorn)
+						stateOut.isItemWorn = true;
+					else if (isWornLeft)
+						stateOut.isItemWornLeft = true;
+					else
+						stateOut.itemExtraList = xList;
+
+					stateOut.itemCount += count;
+				}
+			}
+		}
+		else
+		{
+			if (!displayName)
+			{
+				if (isWorn)
+					stateOut.isItemWorn = true;
+				else if (isWornLeft)
+					stateOut.isItemWornLeft = true;
+				else
+					stateOut.itemExtraList = xList;
+			}
+			else
+			{
+				stateOut.itemCount -= count;
+			}
 		}
 	}
-
-	return NULL;
 }
 
 ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::FindItemEntry(TESForm * item) const
@@ -655,7 +713,7 @@ ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::CreateEquipEntry
 	return newEntryData;
 }
 
-ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::CreateEquipEntryData(TESForm * item, SInt32 itemId)
+void ExtraContainerChanges::Data::GetEquipItemData(EquipItemData& stateOut, TESForm * item, SInt32 itemId) const
 {
 	// Get count from baseForm container
 	UInt32 baseCount = 0;
@@ -666,8 +724,6 @@ ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::CreateEquipEntry
 			baseCount = container->CountItem(item);
 	}
 
-	EntryData * newEntryData = NULL;
-
 	bool matchedBaseForm = false;
 
 	// Test base form name for itemId
@@ -675,7 +731,7 @@ ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::CreateEquipEntry
 	if (pFullName)
 	{
 		const char * name = pFullName->name.data;
-		SInt32 baseItemId = (SInt32)HashUtil::CRC32(name, item->formID);
+		SInt32 baseItemId = (SInt32)HashUtil::CRC32(name, item->formID & 0x00FFFFFF);
 
 		if (baseItemId == itemId)
 			matchedBaseForm = true;
@@ -687,42 +743,10 @@ ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::CreateEquipEntry
 	// Found entryData
 	if (curEntryData)
 	{
-		// Find BaseExtraList matching itemId if !matchedBaseForm, otherwise find one without a name override
-		BaseExtraList * xList = curEntryData->FindBaseExtraList(itemId, matchedBaseForm);
-		if (xList)
-		{
-			// Using a particular entry, count 1 (todo: ExtraCount?)
-			if ((baseCount + curEntryData->countDelta) > 0)
-			{
-				BaseExtraList * rightList = NULL;
-				BaseExtraList * leftList = NULL;
-				curEntryData->GetExtraWornBaseLists(&rightList, &leftList);
-
-				newEntryData = EntryData::Create(item, 1);
-
-				newEntryData->extendDataList->Insert(xList);
-				if (rightList)
-					newEntryData->extendDataList->Push(rightList);
-				if (leftList)
-					newEntryData->extendDataList->Push(leftList);
-			}
-		}
-		// Base form name matched itemId, but we found no suitable default extra list
-		else if (matchedBaseForm)
-		{
-			// Subtract number of unique extra lists => base object count
-			newEntryData = EntryData::Create(item, baseCount + curEntryData->countDelta - curEntryData->extendDataList->Count());
-		}
+		curEntryData->GetEquipItemData(stateOut, (matchedBaseForm ? 0 : itemId), baseCount);
 	}
-	// If base form name matched itemId, but there was no entryData yet, we are allowed to create it
 	else if (matchedBaseForm)
 	{
-		
-		if (baseCount > 0)
-		{
-			newEntryData = EntryData::Create(item, baseCount);
-		}
+		stateOut.itemCount = baseCount;
 	}
-
-	return newEntryData;
 }

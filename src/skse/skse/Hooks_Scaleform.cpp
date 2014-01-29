@@ -6,6 +6,7 @@
 #include "ScaleformMovie.h"
 #include "ScaleformAPI.h"
 #include "ScaleformExtendedData.h"
+#include "ScaleformLoader.h"
 #include "GameAPI.h"
 #include "GameSettings.h"
 #include "GameMenus.h"
@@ -1165,7 +1166,7 @@ namespace favMenuDataHook
 
 			// itemId to uniquely identify items
 			const char* name = CALL_MEMBER_FN(objDesc, GenerateName)();
-			SInt32 itemId = (SInt32)HashUtil::CRC32(name, objDesc->form->formID);
+			SInt32 itemId = (SInt32)HashUtil::CRC32(name, objDesc->form->formID & 0x00FFFFFF);
 			RegisterNumber(dataContainer, "itemId", itemId);
 		}
 	};
@@ -1184,7 +1185,7 @@ namespace favMenuDataHook
 				name = pFullName->name.data;
 			else
 				name = NULL;
-			SInt32 itemId = (SInt32)HashUtil::CRC32(name, form->formID);
+			SInt32 itemId = (SInt32)HashUtil::CRC32(name, form->formID & 0x00FFFFFF);
 			RegisterNumber(dataContainer, "itemId", itemId);
 		}
 	};
@@ -1298,33 +1299,6 @@ namespace favMenuDataHook
 	};
 }
 
-
-//// translations
-
-class GFxLoaderHook
-{
-public:
-	UInt32			unk_000;
-	GFxStateBag		* stateBag;
-
-	MEMBER_FN_PREFIX(GFxLoaderHook);
-	DEFINE_MEMBER_FN(Hooked, UInt32, 0x00A60FE0);
-
-	enum { kCtorHookAddress = 0x0069D1D0 + 0x07D7 };
-
-	UInt32 Hook(void);
-};
-
-UInt32 GFxLoaderHook::Hook(void)
-{
-	UInt32 result = CALL_MEMBER_FN(this, Hooked)();
-
-	// Read plugin list, load translation files
-	Translation::ImportTranslationFiles(stateBag->GetTranslator());
-
-	return result;
-}
-
 //// core hook
 void __stdcall InstallHooks(GFxMovieView * view)
 {
@@ -1436,5 +1410,5 @@ void Hooks_Scaleform_Commit(void)
 	WriteRelJump(favMenuDataHook::kSetVampireData_Base + 0x64, (UInt32)favMenuDataHook::SetVampireData_Entry);
 
 	// gfxloader creation hook
-	WriteRelCall(GFxLoaderHook::kCtorHookAddress, GetFnAddr(&GFxLoaderHook::Hook));
+	WriteRelCall(GFxLoader::kCtorHookAddress, GetFnAddr(&GFxLoader::ctor_Hook));
 }

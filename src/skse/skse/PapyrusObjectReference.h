@@ -8,6 +8,7 @@ class TESForm;
 class EnchantmentItem;
 class VMClassRegistry;
 class EffectSetting;
+class BGSListForm;
 
 namespace papyrusObjectReference
 {
@@ -40,4 +41,6 @@ namespace papyrusObjectReference
 	float GetNiNodePositionZ(TESObjectREFR * obj, BSFixedString nodeName);
 	float GetNiNodeScale(TESObjectREFR * obj, BSFixedString nodeName);
 	void SetNiNodeScale(TESObjectREFR * obj, BSFixedString nodeName, float value);
+
+	void GetAllForms(TESObjectREFR* pContainerRef, BGSListForm * list);
 }

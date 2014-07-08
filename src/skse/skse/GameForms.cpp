@@ -70,3 +70,32 @@ UInt32 BGSListForm::GetSize()
 
 	return totalSize;
 }
+
+bool BGSListForm::Visit(BGSListForm::Visitor & visitor)
+{
+	// Base Added Forms
+	for(UInt32 i = 0; i < forms.count; i++)
+	{
+		TESForm* childForm = NULL;
+		if(forms.GetNthItem(i, childForm))
+		{
+			if(visitor.Accept(childForm))
+				return true;
+		}
+	}
+
+	// Script Added Forms
+	if(addedForms) {
+		for(int i = 0; i < addedForms->count; i++) {
+			UInt32 formid = 0;
+			addedForms->GetNthItem(i, formid);
+			TESForm* childForm = LookupFormByID(formid);
+			if(childForm) {
+				if(visitor.Accept(childForm))
+					return true;
+			}
+		}
+	}
+
+	return false;
+}

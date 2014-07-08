@@ -5,6 +5,7 @@
 class TESForm;
 class BGSKeyword;
 class VMClassRegistry;
+class BGSTextureSet;
 
 namespace papyrusForm
 {
@@ -46,4 +47,11 @@ namespace papyrusForm
 
 	void RegisterForCrosshairRef(TESForm * thisForm);
 	void UnregisterForCrosshairRef(TESForm * thisForm);
+
+	bool HasWorldModel(TESForm * thisForm);
+	BSFixedString GetWorldModelPath(TESForm * thisForm);
+	void SetWorldModelPath(TESForm * thisForm, BSFixedString nuPath);
+	UInt32 GetWorldModelNumTextureSets(TESForm * thisForm);
+	BGSTextureSet* GetWorldModelNthTextureSet(TESForm * thisForm, UInt32 n);
+	void SetWorldModelNthTextureSet(TESForm * thisForm, BGSTextureSet* textureSet, UInt32 n);
 }

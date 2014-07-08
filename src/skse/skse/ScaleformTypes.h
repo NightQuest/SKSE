@@ -120,6 +120,24 @@ public:
 #pragma warning (pop)
 
 template <typename T>
+class GRect
+{
+public:
+	T	left;
+	T	top;
+	T	right;
+	T	bottom;
+};
+
+class GMatrix3D
+{
+public:
+	float	m[4][4];
+};
+
+typedef GRect<float>	GRectF;
+
+template <typename T>
 class GArray
 {
 public:
@@ -151,4 +169,28 @@ public:
 	float	scale;
 	float	aspectRatio;
 	UInt32	flags;
+};
+
+class GSysAllocBase
+{
+public:
+	virtual ~GSysAllocBase();
+
+	virtual void Unk_01(void);
+	virtual void Unk_02(void);
+};
+
+class GSysAlloc : public GSysAllocBase
+{
+public:
+	virtual ~GSysAlloc();
+};
+
+class ScaleformAllocator : public GSysAlloc
+{
+public:
+	virtual ~ScaleformAllocator();
+
+	virtual void Unk_03(void);
+	virtual void Unk_04(void);
 };

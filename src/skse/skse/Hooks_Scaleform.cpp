@@ -1429,9 +1429,26 @@ __declspec(naked) void InstallHooks_Entry(void)
 		jmp		[kInstallHooks_Entry_retn]
 	}
 }
-
+/*
+void * GFxAllocateHeap_Hook(HeapDesc * heap, ScaleformAllocator * allocator)
+{
+	heap->flags |= HeapDesc::kHeap_FastTinyBlocks | HeapDesc::kHeap_Root;
+	heap->threshold = ~0;
+	return GFxAllocateHeap(heap, allocator);
+}
+*/
 void Hooks_Scaleform_Commit(void)
 {
+
+	UInt32	logScaleform = 0;
+	if(GetConfigOption_UInt32("Interface", "bEnableGFXLog", &logScaleform))
+	{
+		if(logScaleform)
+		{
+			g_logScaleform = true;
+		}
+	}
+
 	// movie creation hook
 	WriteRelJump(kInstallHooks_Base + 0xB8, (UInt32)InstallHooks_Entry);
 
@@ -1446,4 +1463,7 @@ void Hooks_Scaleform_Commit(void)
 
 	// gfxloader creation hook
 	WriteRelCall(GFxLoader::kCtorHookAddress, GetFnAddr(&GFxLoader::ctor_Hook));
+
+	// GFx Heap Allocation hook
+	//WriteRelCall(0x00A60FE0 + 0xB0, (UInt32)GFxAllocateHeap_Hook);
 }

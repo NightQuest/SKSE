@@ -79,6 +79,20 @@ private:
 	NiAVObject * m_object;
 };
 
+class SKSETaskUpdateExpression : public TaskDelegate
+{
+public:
+	static SKSETaskUpdateExpression * Create(Actor * actor, UInt8 type, UInt16 index, float value);
+	virtual void Run();
+	virtual void Dispose();
+
+private:
+	UInt8	m_type;
+	UInt16	m_index;
+	Actor	* m_actor;
+	float	m_value;
+};
+
 
 class BSTaskPool
 {
@@ -98,6 +112,7 @@ public:
 	void ChangeHeadPart(Actor * actor, BGSHeadPart * oldPart, BGSHeadPart * newPart);
 	void UpdateWeight(Actor * actor, float delta, UInt32 updateFlags, bool redrawWeapon);
 	void UpdateWorldData(NiAVObject * object);
+	void UpdateExpression(Actor * actor, UInt8 type, UInt16 index, float value);
 
 	static BSTaskPool *	GetSingleton(void)
 	{

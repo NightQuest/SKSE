@@ -17,6 +17,7 @@
 #include "PapyrusActor.h"
 #include "PapyrusActorBase.h"
 #include "PapyrusAlias.h"
+#include "PapyrusAmmo.h"
 #include "PapyrusArmor.h"
 #include "PapyrusArmorAddon.h"
 #include "PapyrusBook.h"
@@ -165,6 +166,9 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// Weapon
 	papyrusWeapon::RegisterFuncs(registry);
 
+	// Ammo
+	papyrusAmmo::RegisterFuncs(registry);
+
 	// CombatStyle
 	papyrusCombatStyle::RegisterFuncs(registry);
 
@@ -304,6 +308,8 @@ void SkyrimVM::OnFormDelete_Hook(UInt64 handle)
 	
 	g_cameraEventRegs.Unregister(handle);
 	g_crosshairRefEventRegs.Unregister(handle);
+
+	Serialization::HandleDeletedForm(handle);
 }
 
 void SkyrimVM::RevertGlobalData_Hook(void)

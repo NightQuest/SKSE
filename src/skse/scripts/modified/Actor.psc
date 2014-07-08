@@ -66,3 +66,46 @@ bool Function IsSwimming() native
 
 ; Sheathes the actors weapon
 Function SheatheWeapon() native
+
+; Returns the reference of the furniture the actor is currently using
+ObjectReference Function GetFurnitureReference() native
+
+; 0 - "Aah"
+; 1 - "BigAah"
+; 2 - "BMP"
+; 3 - "ChJSh"
+; 4 - "DST"
+; 5 - "Eee"
+; 6 - "Eh"
+; 7 - "FV"
+; 8 - "I"
+; 9 - "K"
+; 10 - "N"
+; 11 - "Oh"
+; 12 - "OohQ"
+; 13 - "R"
+; 14 - "Th"
+; 15 - "W"
+Function SetExpressionPhoneme(int index, float value) native
+
+; 0 - "BlinkLeft"
+; 1 - "BlinkRight"
+; 2 - "BrowDownLeft"
+; 3 - "BrowDownRight"
+; 4 - "BrowInLeft"
+; 5 - "BrowInRight"
+; 6 - "BrowUpLeft"
+; 7 - "BrowUpRight"
+; 8 - "LookDown"
+; 9 - "LookLeft"
+; 10 - "LookRight"
+; 11 - "LookUp"
+; 12 - "SquintLeft"
+; 13 - "SquintRight"
+; 14 - "HeadPitch"
+; 15 - "HeadRoll"
+; 16 - "HeadYaw"
+Function SetExpressionModifier(int index, float value) native
+
+; Resets all expression, phoneme, and modifiers
+Function ResetExpressionOverrides() native

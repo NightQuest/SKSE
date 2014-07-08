@@ -328,6 +328,11 @@ public:
 	UInt32	unk20;
 	UInt32	unk24;
 	UInt32	unk28;
+
+	static BSShaderTextureSet * Create();
+
+	MEMBER_FN_PREFIX(BSShaderTextureSet);
+	DEFINE_MEMBER_FN(ctor, BSShaderTextureSet *, 0x00501EA0);
 };
 STATIC_ASSERT(sizeof(BSShaderTextureSet) == 0x2C);
 
@@ -434,7 +439,7 @@ public:
 	};
 
 	tArray<EffectItem*> effectItemList;	// 34
-	UInt32				unk40;	// 40
+	UInt32				hostile;	// 40
 	EffectSetting*		unk44;	// 44
 	UInt32				unk48;	// 48
 	UInt32				unk4C;	// 4C
@@ -485,6 +490,7 @@ public:
 	TESIcon	unkB8;		// B8
 
 	bool IsFood() { return (itemData.flags & kFlag_Food) != 0; }
+	bool IsPoison() { return (itemData.flags & kFlag_Poison) != 0; }
 };
 
 // 74
@@ -493,21 +499,26 @@ class EnchantmentItem : public MagicItem
 public:
 	enum { kTypeID = kFormType_Enchantment };
 
+	enum
+	{
+		kFlag_ManualCalc =	0x00000001,
+	};
+
 	// 24
 	struct Data
 	{
-		struct Data0
+		struct Calculations
 		{
-			UInt32	unk00;	// 00
-			UInt32	unk04;	// 04
+			UInt32	cost;	// 00
+			UInt32	flags;	// 04
 		};
 
-		Data0	unk00;	// 00
-		UInt32	unk08;	// 08
-		UInt32	unk0C;	// 0C
-		UInt32	unk10;	// 10
-		UInt32	unk14;	// 14
-		UInt32	unk18;	// 18
+		Calculations	calculations;	// 00
+		UInt32	unk08;					// 08
+		UInt32	unk0C;					// 0C
+		UInt32	deliveryType;			// 10
+		UInt32	unk14;					// 14
+		UInt32	unk18;					// 18
 		EnchantmentItem	* baseEnchantment;	// 1C
 		BGSListForm		* restrictions;	// 20
 	};
@@ -573,19 +584,31 @@ public:
 
 	// members
 
+	enum
+	{
+		kTypeSpell = 0,
+		kTypeDisease,
+		kTypePower,
+		kTypeLesserPower,
+		kTypeAbility,
+		kTypePoison,
+		kTypeAddition,
+		kTypeVoice
+	};
+
 	// 24
 	struct Data
 	{
 		struct Data0
 		{
 			UInt32	cost;	// 00
-			UInt32	unk04;	// 04
+			UInt32	flags;	// 04
 		};
 
 		Data0	unk00;	// 00
 		UInt32	type;	// 08
 		float	castTime;	// 0C
-		UInt32	unk10;	// 10
+		UInt32	castType;	// 10
 		UInt32	unk14;	// 14
 		UInt32	unk18;	// 18
 		UInt32	unk1C;	// 1C
@@ -638,22 +661,14 @@ public:
 		float			damage;
 	};
 
-	/*
-		6 - None
-		2 - Bolt
-		4 - Playable
-		7 - Ignores Resist
-		0 - Playable Bolt
-		1 - Ignores Resist, Playable, Bolt
-		5 - Ignores Resist, Playable
-		3 - Ignores Resist, Bolt
-	*/
-
 	enum {
-		kFlag_Bolt = 0x04
+		kIgnoreNormalResist = (1 << 0),
+		kNotPlayable		= (1 << 1),
+		kNotBolt			= (1 << 2)
 	};
 
-	bool isBolt() { return (settings.flags >= 0 && settings.flags <= 3); }
+	bool isBolt() { return (settings.flags & kNotBolt) != kNotBolt; }
+	bool isPlayable() { return (settings.flags & kNotPlayable) != kNotPlayable; }
 
 	AmmoSettings		settings;	// 8C
 	StringCache::Ref	unk98;	// 98
@@ -786,6 +801,8 @@ public:
 	DEFINE_MEMBER_FN(SetSkinFromTint, void, 0x005643C0, NiColorA * result, TintMask * tintMask, UInt32 compute, UInt32 unk1);
 
 	void SetFaceTexture(BGSTextureSet * textureSet);
+	void SetHairColor(BGSColorForm * hairColor);
+
 	BGSHeadPart * GetHeadPartByType(UInt32 type);
 	BGSHeadPart * GetHeadPartOverlayByType(UInt32 type);
 	BGSHeadPart * GetCurrentHeadPartByType(UInt32 type);
@@ -1367,7 +1384,7 @@ public:
 	BGSSoundDescriptorForm	* unequipSound;		// 11C
 	BGSImpactDataSet	* impactDataSet;	// 120
 	TESObjectSTAT	* model;				// 124
-	TESForm	* templateForm;					// 128
+	TESObjectWEAP	* templateForm;			// 128 - Non-weapon templates don't make sense here and would probably crash anyway so assume it
 	BSFixedString	embeddedNode;			// 12C
 	UInt32	pad130;							// 130
 

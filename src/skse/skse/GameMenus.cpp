@@ -65,3 +65,16 @@ RaceMenuSlider::RaceMenuSlider(UInt32 filterFlag, const char * sliderName, const
 {
 	CALL_MEMBER_FN(this, Construct)(filterFlag, sliderName, callbackName, sliderId, index, type, unk8, min, max, value, interval, unk13);
 }
+
+TESObjectREFR * EnemyHealth::GetTarget() const
+{
+	TESObjectREFR * refr = NULL;
+	UInt32 refHandle = (*g_thePlayer)->targetHandle;
+	LookupREFRByHandle(&refHandle, &refr);
+	if(!refr) {
+		refHandle = handle;
+		LookupREFRByHandle(&refHandle, &refr);
+	}
+
+	return refr;
+}

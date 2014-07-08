@@ -75,6 +75,25 @@ void RegisterKeywords(GFxValue * pFxVal, GFxMovieView * view, BGSKeywordForm * k
 	pFxVal->SetMember("keywords", &keywordRoot);
 }
 
+class FormListExtender : public BGSListForm::Visitor
+{
+	GFxValue		* m_array;
+	GFxMovieView	* m_movie;
+	bool	m_bExtra;
+	bool	m_bRecursive;
+	
+public:
+	FormListExtender::FormListExtender(GFxValue	* formArray, GFxMovieView * movie, bool bExtra, bool bRecursive) : m_array(formArray), m_movie(movie), m_bExtra(bExtra), m_bRecursive(bRecursive) { }
+	virtual bool Accept(TESForm * form)
+	{
+		GFxValue arrArg;
+		m_movie->CreateObject(&arrArg);
+		scaleformExtend::FormData(&arrArg, m_movie, form, m_bRecursive ? m_bExtra : false, m_bRecursive);
+		m_array->PushBack(&arrArg);
+		return false;
+	};
+};
+
 // Data extensions
 namespace scaleformExtend
 {
@@ -534,34 +553,8 @@ namespace scaleformExtend
 					GFxValue formArray;
 					movieView->CreateArray(&formArray);
 
-					// Base Added Forms
-					for(int i = 0; i < formList->forms.count; i++)
-					{
-						TESForm* childForm;
-						if(formList->forms.GetNthItem(i, childForm))
-						{
-							GFxValue arrArg;
-							movieView->CreateObject(&arrArg);
-							scaleformExtend::FormData(&arrArg, movieView, childForm, bRecursive ? bExtra : false, bRecursive);
-							formArray.PushBack(&arrArg);
-						}
-					}
-
-					// Script Added Forms
-					if(formList->addedForms) {
-						for(int i = 0; i < formList->addedForms->count; i++)
-						{
-							UInt32 formid;
-							formList->addedForms->GetNthItem(i, formid);
-							TESForm* childForm = LookupFormByID(formid);
-							if(childForm) {
-								GFxValue arrArg;
-								movieView->CreateObject(&arrArg);
-								scaleformExtend::FormData(&arrArg, movieView, childForm, bRecursive ? bExtra : false, bRecursive);
-								formArray.PushBack(&arrArg);
-							}
-						}
-					}
+					FormListExtender extender(&formArray, movieView, bExtra, bRecursive);
+					formList->Visit(extender);
 
 					pFxVal->SetMember("forms", &formArray);
 				}

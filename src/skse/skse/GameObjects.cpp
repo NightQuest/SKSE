@@ -108,19 +108,46 @@ void TESObjectWEAP::GetNodeName(char * dstBuff)
 		this->formID);
 }
 
-bool TESObjectARMA::isValidRace(TESRace * race) const
+bool HasArmorRace(TESRace * sourceRace, TESRace * targetRace)
 {
+	if(sourceRace == targetRace)
+		return true;
+
+	// Check if this race inherits the source race
+	TESRace * armorRace = sourceRace->armorRace;
+	while(armorRace) {
+		if(armorRace == targetRace)
+			return true;
+		armorRace = armorRace->armorRace;
+	}
+
+	return false;
+}
+
+bool TESObjectARMA::isValidRace(TESRace * sourceRace) const
+{
+	// Found race is the race this armor is designed for, or inherits a race this armor is designed for
+	if(HasArmorRace(sourceRace, race.race))
+		return true;
+
 	for(UInt32 i = 0; i < additionalRaces.count; i++)
 	{
 		TESRace * currentRace = NULL;
 		additionalRaces.GetNthItem(i, currentRace);
-		if(currentRace == race) {
+
+		// Source race is a found race, or inherits one of the found races
+		if(HasArmorRace(sourceRace, currentRace))
 			return true;
-			break;
-		}
 	}
 
 	return false;
+}
+
+BSShaderTextureSet * BSShaderTextureSet::Create()
+{
+	BSShaderTextureSet * textureSet = (BSShaderTextureSet*)FormHeap_Allocate(sizeof(BSShaderTextureSet));
+	CALL_MEMBER_FN(textureSet, ctor)();
+	return textureSet;
 }
 
 // Reference Function - 1.9.32 - 00560200
@@ -142,4 +169,24 @@ void TESNPC::SetFaceTexture(BGSTextureSet * textureSet)
 	}
 	if(headData)
 		headData->headTexture = textureSet;
+}
+
+void TESNPC::SetHairColor(BGSColorForm * hairColor)
+{
+	if(!headData)
+	{
+		if(hairColor)
+		{
+			HeadData * newHeadData = (HeadData *)FormHeap_Allocate(sizeof(HeadData));
+			if(newHeadData) {
+				newHeadData->hairColor = NULL;
+				newHeadData->headTexture = NULL;
+			} else {
+				newHeadData = NULL;
+			}
+			headData = newHeadData;
+		}
+	}
+	if(headData)
+		headData->hairColor = hairColor;
 }

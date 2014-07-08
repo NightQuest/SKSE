@@ -3,6 +3,10 @@
 #include "skse/NiObjects.h"
 #include "skse/GameTypes.h"
 
+#include <d3d9.h>
+
+class NiDX9Renderer;
+
 // 44
 class NiPixelFormat
 {
@@ -122,6 +126,12 @@ public:
 	class RendererData : public NiObject
 	{
 	public:
+		virtual void Unk_21(void);
+		virtual void Unk_22(void);
+		virtual void Unk_23(void);
+		virtual void Unk_24(void);
+		virtual void * Unk_25(void);
+
 		NiTexture		* parent;	// 08
 		UInt32			width;		// 0C
 		UInt32			height;		// 10
@@ -131,10 +141,17 @@ public:
 		UInt8			unk5A;		// 5A
 		UInt8			unk5B;		// 5B
 		UInt32			unk5C;		// 5C
-		UInt32			unk60;		// 60
-		UInt32			unk64;		// 64
-		UInt32			unk68;		// 68
-		UInt32			unk6C;		// 6C
+		
+	};
+
+	class NiDX9TextureData : public RendererData
+	{
+	public:
+		NiDX9Renderer	* renderer;		// 60
+		LPDIRECT3DBASETEXTURE9 texture;	// 64
+		UInt16			levels;			// 68
+		UInt16			textureType;	// 6A
+		UInt32			unk6C;			// 6C
 	};
 
 	FormatPrefs		formatPrefs;	// 08
@@ -189,6 +206,10 @@ public:
 class NiSourceTexture : public NiTexture
 {
 public:
+	virtual void LoadPixelDataFromFile(void);
+	virtual void DestroyAppPixelData(void);
+	virtual bool CreateRendererData(void);
+
 	NiPersistentSrcTextureRendererDataPtr	persistentSrcRendererData;		// 24
 	NiPixelDataPtr							pixelData;						// 28
 	UInt32									unk2C;							// 2C

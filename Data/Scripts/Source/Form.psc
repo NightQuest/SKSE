@@ -118,7 +118,7 @@ EndEvent
 Event OnUpdateGameTime()
 EndEvent
 
-; SKSE additions built 2014-01-29 08:07:50.058000 UTC
+; SKSE additions built 2014-07-08 04:02:05.441000 UTC
 
 ; Returns the typecode for this form object
 Int Function GetType() native
@@ -249,3 +249,22 @@ EndEvent
 
 ; Returns a temporary clone of this form
 Form Function TempClone() native
+
+; Returns whether this Form has a World Model (fast)
+bool Function HasWorldModel() native
+
+; Returns the world model path of this Form, if it has a world model
+string Function GetWorldModelPath() native
+Function SetWorldModelPath(string path) native
+
+; Returns the number of texture sets the world model has, if its textures can be swapped
+int Function GetWorldModelNumTextureSets() native
+
+; Returns the Nth texture set of the world model, if the textures can be swapped
+TextureSet Function GetWorldModelNthTextureSet(int n) native
+
+; Sets the world models Nth texture set, if the textures can be set
+Function SetWorldModelNthTextureSet(TextureSet nSet, int n) native
+
+; Returns whether this Form is playable, only applied to Forms with the playable flag
+bool Function IsPlayable() native

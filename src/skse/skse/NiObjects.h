@@ -30,6 +30,12 @@ class TESObjectCELL;
 class TESModelTri;
 class BSFaceGenMorphData;
 
+extern float * g_worldToCamMatrix;
+extern NiRect<float> * g_viewPort;
+
+typedef bool (* _WorldPtToScreenPt3_Internal)(float * worldToCamMatrix, NiRect<float> * port, NiPoint3 * p_in, float * x_out, float * y_out, float * z_out, float zeroTolerance);
+extern const _WorldPtToScreenPt3_Internal WorldPtToScreenPt3_Internal;
+
 // 08
 class NiRefObject
 {
@@ -118,6 +124,12 @@ public:
 	NiExtraData	** m_extraData;			// 10 extra data
 	UInt16		m_extraDataLen;			// 14 max valid entry
 	UInt16		m_extraDataCapacity;	// 16 array len
+
+	// UNTESTED
+	void AddExtraData(NiExtraData * extraData);
+	bool RemoveExtraData(NiExtraData * extraData);
+	SInt32 GetIndexOf(NiExtraData * extraData);
+	NiExtraData * GetExtraData(const char * name);
 };
 
 STATIC_ASSERT(sizeof(NiObjectNET) == 0x18);
@@ -312,6 +324,8 @@ public:
 	float			m_fMaxFarNearRatio;		// 108
 	NiRect<float>	m_kPort;				// 10C
 	float			m_fLODAdjust;			// 11C
+
+	bool WorldPtToScreenPt3(NiPoint3 * p_in, float * x_out, float * y_out, float * z_out, float zeroTolerance = 1e-5);
 };
 STATIC_ASSERT(offsetof(NiCamera, m_frustum) == 0xE8);
 STATIC_ASSERT(offsetof(NiCamera, m_fLODAdjust) == 0x11C);

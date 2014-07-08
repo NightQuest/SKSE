@@ -31,3 +31,4 @@ void ScaleformHeap_Free(void * ptr)
 }
 
 const _InvokeFunction InvokeFunction = (_InvokeFunction)0x00A63C40;
+const _GFxAllocateHeap GFxAllocateHeap = (_GFxAllocateHeap)0x00F7AF80;

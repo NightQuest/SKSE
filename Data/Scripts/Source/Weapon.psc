@@ -4,7 +4,7 @@ Scriptname Weapon extends Form Hidden
 Function Fire(ObjectReference akSource, Ammo akAmmo = None) native
 
 
-; SKSE additions built 2014-01-29 08:07:50.058000 UTC
+; SKSE additions built 2014-07-08 04:02:05.441000 UTC
 
 int Function GetBaseDamage() native
 Function SetBaseDamage(int damage) native
@@ -81,6 +81,9 @@ Function SetCritEffectOnDeath(bool ceod) native
 ; Gets/sets the weapons crit multiplier
 float Function GetCritMultiplier() native
 Function SetCritMultiplier(float crit) native
+
+; returns the weapon template of this weapon
+Weapon Function GetTemplate() native
 
 bool Function IsBattleaxe()
 	return HasKeywordString("WeapTypeBattleaxe")

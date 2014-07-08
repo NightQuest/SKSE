@@ -75,6 +75,9 @@ Function SetCritEffectOnDeath(bool ceod) native
 float Function GetCritMultiplier() native
 Function SetCritMultiplier(float crit) native
 
+; returns the weapon template of this weapon
+Weapon Function GetTemplate() native
+
 bool Function IsBattleaxe()
 	return HasKeywordString("WeapTypeBattleaxe")
 endFunction

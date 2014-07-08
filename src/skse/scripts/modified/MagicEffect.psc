@@ -75,3 +75,15 @@ Function SetImageSpaceMod(ImageSpaceModifier obj) native
 
 Perk Function GetPerk() native
 Function SetPerk(Perk obj) native
+
+int Function GetCastingType() native
+; Constant Effect     0
+; Fire And Forget     1
+; Concentration       2
+
+int Function GetDeliveryType() native
+; Self                0
+; Contact             1
+; Aimed               2
+; Target Actor        3
+; Target Location     4

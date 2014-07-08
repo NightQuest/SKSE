@@ -4,17 +4,21 @@
 
 class NiTexture;
 class IMenu;
+class GImageInfoBase;
+
+extern bool g_logScaleform;
 
 class GFxImageLoader : public GFxState
 {
 public:
+	virtual GImageInfoBase*	LoadImage(const char * url) = 0;
 };
 
 class BSScaleformImageLoader : public GFxImageLoader
 {
 public:
 	virtual ~BSScaleformImageLoader();
-	virtual UInt32	Unk_01(UInt32 unk1);
+	virtual GImageInfoBase*	LoadImage(const char * url);
 
 	MEMBER_FN_PREFIX(BSScaleformImageLoader);
 	DEFINE_MEMBER_FN(AddVirtualImage, UInt8, 0x00A65710, NiTexture ** texture);

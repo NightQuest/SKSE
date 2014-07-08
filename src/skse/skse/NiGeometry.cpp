@@ -45,51 +45,43 @@ void NiSkinData::BoneData::AllocateWeights(UInt32 numWeights)
 
 void NiGeometry::SetEffectState(NiProperty * effectState)
 {
-	/*if(m_spEffectState != effectState)
-	{
-		if(m_spEffectState)
-		{
-			if(m_spEffectState->Release())
-				m_spEffectState->DeleteThis();
-		}
-
-		m_spEffectState = effectState;
-		if(effectState)
-			effectState->IncRef();
-	}*/
 	m_spEffectState = effectState; // handled by NiPointer now
 }
 
 void NiGeometry::SetSkinInstance(NiSkinInstance * skinInstance)
 {
-	/*if(m_spSkinInstance != skinInstance)
-	{
-		if(m_spSkinInstance)
-		{
-			if(m_spSkinInstance->Release())
-				m_spSkinInstance->DeleteThis();
-		}
-
-		m_spSkinInstance = skinInstance;
-		if(skinInstance)
-			skinInstance->IncRef();
-	}*/
 	m_spSkinInstance = skinInstance; // handled by NiPointer now
 }
 
 void NiGeometry::SetModelData(NiGeometryData * modelData)
 {
-	/*if(m_spModelData != modelData)
-	{
-		if(m_spSkinInstance)
-		{
-			if(m_spModelData->Release())
-				m_spModelData->DeleteThis();
-		}
-
-		m_spModelData = modelData;
-		if(modelData)
-			modelData->IncRef();
-	}*/
 	m_spModelData = modelData; // handled by NiPointer now
+}
+
+
+NiTriShape * NiTriShape::Create(NiTriShapeData * geometry)
+{
+	void* memory = FormHeap_Allocate(sizeof(NiTriShape));
+	memset(memory, 0, sizeof(NiTriShape));
+	NiTriShape* xData = (NiTriShape*)memory;
+	CALL_MEMBER_FN(xData, ctor)(geometry);
+	return xData;
+}
+
+NiSkinInstance * NiSkinInstance::Create()
+{
+	void* memory = FormHeap_Allocate(sizeof(NiSkinInstance));
+	memset(memory, 0, sizeof(NiSkinInstance));
+	NiSkinInstance* xData = (NiSkinInstance*)memory;
+	CALL_MEMBER_FN(xData, ctor)();
+	return xData;
+}
+
+BSDismemberSkinInstance * BSDismemberSkinInstance::Create()
+{
+	void* memory = FormHeap_Allocate(sizeof(BSDismemberSkinInstance));
+	memset(memory, 0, sizeof(BSDismemberSkinInstance));
+	BSDismemberSkinInstance* xData = (BSDismemberSkinInstance*)memory;
+	CALL_MEMBER_FN(xData, ctor)();
+	return xData;
 }

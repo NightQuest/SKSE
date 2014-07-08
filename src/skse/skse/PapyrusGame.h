@@ -5,9 +5,9 @@ class VMClassRegistry;
 class Setting;
 class Actor;
 class TESForm;
+class TESObjectREFR;
 
 #include "GameTypes.h"
-#include "Hooks_UI.h"
 
 namespace papyrusGame
 {
@@ -65,4 +65,6 @@ namespace papyrusGame
 	bool IsObjectFavorited(StaticFunctionTag * base, TESForm * form);
 
 	TESForm* GetFormEx(StaticFunctionTag * base, UInt32 formId);
+
+	TESObjectREFR* GetCurrentCrosshairRef(StaticFunctionTag * base);
 };

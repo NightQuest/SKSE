@@ -22,3 +22,6 @@ int Function GetIndexOfExtraPart(HeadPart p) native
 ; Returns a formlist of the valid races for this head part
 FormList Function GetValidRaces() native
 Function SetValidRaces(FormList vRaces) native
+
+; Returns whether the head part is an extra part
+bool Function IsExtraPart() native

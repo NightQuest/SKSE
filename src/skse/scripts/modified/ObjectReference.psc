@@ -58,3 +58,9 @@ int Function GetNumReferenceAliases() native
 
 ; Returns the nth ReferenceAlias holding this reference
 ReferenceAlias Function GetNthReferenceAlias(int n) native
+
+; Returns the poison applied to the weapon
+Potion Function GetPoison() native
+
+; Returns all base forms in the inventory/container into the specified FormList
+Function GetAllForms(FormList toFill) native

@@ -58,7 +58,7 @@ int Function GetCurrentBudget(int aiBudgetNumber) native global
 bool Function OverBudget(int aiBudgetNumber) native global
 string Function GetBudgetName(int aiBudgetNumber) native global
 
-; SKSE additions built 2014-01-29 08:07:50.058000 UTC
+; SKSE additions built 2014-07-08 04:02:05.441000 UTC
 
 float Function GetINIFloat(string ini) global native
 int Function GetINIInt(string ini) global native

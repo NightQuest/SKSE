@@ -3,11 +3,12 @@
 #include "GameForms.h"
 #include "GameExtraData.h"
 #include "GameRTTI.h"
+#include "GameData.h"
 #include "NiNodes.h"
 
 const _CreateRefHandleByREFR	CreateRefHandleByREFR = (_CreateRefHandleByREFR)0x0065CC00;
 const _LookupREFRByHandle		LookupREFRByHandle = (_LookupREFRByHandle)0x004A9180;
-const _LookupREFRByHandle2		LookupREFRByHandle2 = (_LookupREFRByHandle2)0x004951F0;
+const _LookupREFRObjectByHandle		LookupREFRObjectByHandle = (_LookupREFRObjectByHandle)0x004951F0;
 
 const UInt32 * g_invalidRefHandle = (UInt32*)0x01310630;
 
@@ -99,44 +100,5 @@ void Actor::UpdateSkinColor()
 		if(firstPerson) {
 			UpdateModelSkin(firstPerson, &color); // Update for 1st Person
 		}
-	}
-}
-
-bool Actor::HasItemAbility(TESForm* baseForm, BaseExtraList * extraData)
-{
-	if(baseForm) {
-		tList<ActiveEffect> * effects = magicTarget.GetActiveEffects();
-		for(UInt32 i = 0; i < effects->Count(); i++) {
-			ActiveEffect* effect = effects->GetNthItem(i);
-			if(effect->sourceItem == baseForm) { // Check the item
-				EnchantmentItem * enchantment = NULL;
-				TESEnchantableForm * enchantable = DYNAMIC_CAST(baseForm, TESForm, TESEnchantableForm);
-				if(enchantable) { // Check the item for a base enchantment
-					enchantment = enchantable->enchantment;
-				}
-				if(extraData) { // Check the extra data for enchantment
-					ExtraEnchantment* extraEnchant = static_cast<ExtraEnchantment*>(extraData->GetByType(kExtraData_Enchantment));
-					if(extraEnchant) {
-						enchantment = extraEnchant->enchant;
-					}
-				}
-
-				if(effect->item == enchantment) {
-					return true;
-				}
-			}
-		}
-	}
-
-	return false;
-}
-
-void Actor::UpdateItemAbility(TESForm* form, BaseExtraList * extraData, bool bLeftHand)
-{
-	if(form) {
-		if(baseForm->formType == TESObjectWEAP::kTypeID)
-			CALL_MEMBER_FN(this, UpdateWeaponAbility)(form, extraData, bLeftHand);
-		else if(baseForm->formType == TESObjectARMO::kTypeID)
-			CALL_MEMBER_FN(this, UpdateArmorAbility)(form, extraData);
 	}
 }

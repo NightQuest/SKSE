@@ -9,6 +9,16 @@ namespace papyrusPotion
 		return (thisPotion) ? thisPotion->IsFood() : false;
 	}
 
+	bool IsPoison(AlchemyItem* thisPotion)
+	{
+		return (thisPotion) ? thisPotion->IsPoison() : false;
+	}
+
+	BGSSoundDescriptorForm* GetUseSound(AlchemyItem* thisPotion)
+	{
+		return (thisPotion) ? thisPotion->itemData.useSound : NULL;
+	}
+
 	UInt32 GetNumEffects(AlchemyItem* thisMagic)
 	{ return magicItemUtils::GetNumEffects(thisMagic); }
 
@@ -46,6 +56,9 @@ void papyrusPotion::RegisterFuncs(VMClassRegistry* registry)
 		new NativeFunction0 <AlchemyItem, bool>("IsFood", "Potion", papyrusPotion::IsFood, registry));
 
 	registry->RegisterFunction(
+		new NativeFunction0 <AlchemyItem, bool>("IsPoison", "Potion", papyrusPotion::IsPoison, registry));
+
+	registry->RegisterFunction(
 		new NativeFunction0<AlchemyItem, UInt32>("GetNumEffects", "Potion", papyrusPotion::GetNumEffects, registry));
 
 	registry->RegisterFunction(
@@ -62,6 +75,9 @@ void papyrusPotion::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0<AlchemyItem, UInt32>("GetCostliestEffectIndex", "Potion", papyrusPotion::GetCostliestEffectIndex, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<AlchemyItem, BGSSoundDescriptorForm*>("GetUseSound", "Potion", papyrusPotion::GetUseSound, registry));
 
 	// Sets
 	registry->RegisterFunction(

@@ -24,6 +24,9 @@ class TESIdleForm;
 class BGSPerk;
 class ActorValueInfo;
 class TESGlobal;
+class TESRegion;
+class BGSMusicType;
+class TESWeather;
 
 //// root
 
@@ -230,8 +233,8 @@ public:
 	// 08
 	struct Data
 	{
-		UInt32	unk00;		// 00
-		UInt8	unk04;		// 04
+		BGSPerk	* perk;		// 00
+		UInt8	rank;		// 04
 		UInt8	pad05[3];	// 05
 	};
 
@@ -945,8 +948,13 @@ STATIC_ASSERT(sizeof(Condition) == 0x20);
 class TintMask
 {
 public:
-	TintMask();
-	~TintMask();
+	TintMask()
+	{
+		alpha = 0.0;
+		tintType = 0;
+		texture = NULL;
+	};
+	~TintMask() { };
 
 #ifdef PAPYRUS_CUSTOM_CLASS
 	enum { kTypeID = 300 };
@@ -1056,7 +1064,19 @@ public:
 	UInt32	unk24;	// 24
 	UInt32	unk28;	// 28
 	float	unk2C;	// 2C
-	UInt32	unk30;	// 30
+
+	struct Data30
+	{
+		UInt32	unk00;	// 00
+		UInt32	unk04;	// 04
+		UInt32	unk08;	// 08
+		UInt32	unk0C;	// 0C
+		UInt32	unk10;	// 10
+		UInt32	unk14;	// 14
+		UInt32	unk18;	// 18 - (AggroRadius Violated - 14)
+	};
+
+	Data30	* unk30;	// 30
 	UInt32	unk34;	// 34
 	UInt32	unk38;	// 38
 	UInt32	unk3C;	// 3C
@@ -1108,11 +1128,11 @@ public:
 	UInt32	unk11C;	// 11C
 	UInt32	unk120;	// 120
 	UInt32	unk124;	// 124
-	UInt32	unk128;	// 128 - FFFFFFFF
-	UInt32	unk12C;	// 12C
-	UInt32	unk130;	// 130 - FF7FFFFF
-	UInt32	furnitureHandle;	// 134
-	UInt32	unk138;	// 138
+	UInt32	unk128;	// 128
+	UInt32	unk12C;	// 12C - FFFFFFFF
+	UInt32	unk130;	// 130
+	UInt32	unk134;	// 134 - FF7FFFFF
+	UInt32	furnitureHandle;	// 138
 	UInt32	unk13C;	// 13C
 	UInt32	unk140;	// 140
 	UInt32	unk144;	// 144
@@ -1148,7 +1168,7 @@ public:
 };
 
 STATIC_ASSERT(offsetof(MiddleProcess, currentIdle) == 0x148);
-STATIC_ASSERT(offsetof(MiddleProcess, furnitureHandle) == 0x134);
+STATIC_ASSERT(offsetof(MiddleProcess, furnitureHandle) == 0x138);
 STATIC_ASSERT(offsetof(MiddleProcess, actorAlpha) == 0x1B4);
 
 // A0
@@ -1171,7 +1191,9 @@ public:
 	UInt32	unk00;						// 00
 	MiddleProcess	* middleProcess;	// 04
 	void	* unk08;					// 08
-	UInt32	unk0C[(0x68 - 0x0C) >> 2];	// 0C
+	UInt32	unk0C[(0x54 - 0x0C) >> 2];	// 0C
+	float	timeOfDeath;				// 54 - GetTimeDead = (GameDaysPassed*24) - timeOfDeath
+	UInt32	unk58[(0x68 - 0x58) >> 2];	// 58
 	TESForm	* equippedObject[2];		// 68
 	UInt32	unk70[(0x98 - 0x70) >> 2];	// 70
 	UInt8	unk98;						// 98
@@ -1264,4 +1286,128 @@ public:
 	MEMBER_FN_PREFIX(PlayerSkills);
 	DEFINE_MEMBER_FN(GetSkillData, UInt32, 0x00760150, UInt32 actorValue, float * level, float * points, float * pointsMax, UInt32 * unk6);
 	DEFINE_MEMBER_FN(IncrementLegendary, UInt32, 0x00760110, UInt32 actorValue);
+};
+
+// 08
+class TESRegionData
+{
+public:
+	virtual ~TESRegionData();
+
+	virtual void Unk_01(void);
+	virtual void Unk_02(void);
+	virtual SInt32 GetType(void); // pure
+	virtual void Unk_04(void); // pure - Init?
+	virtual void Unk_05(void); // pure
+	virtual void Unk_06(void); // pure
+	virtual void Unk_07(void); // pure
+
+	UInt8	unk04;	// 04
+	UInt8	unk05;	// 05
+	UInt8	unk06;	// 06
+	UInt8	pad07;	// 07
+};
+
+class TESRegionObjectBase
+{
+public:
+	virtual ~TESRegionObjectBase();
+
+	virtual void Unk_01(void); // pure
+	virtual void Unk_02(void); // pure
+};
+
+// 0C
+class TESRegionGrassObject : public TESRegionObjectBase
+{
+public:
+	virtual ~TESRegionGrassObject();
+
+	virtual void Unk_03(void);
+	virtual void Unk_04(void);
+	virtual void Unk_05(void);
+	virtual void Unk_06(void);
+
+	UInt32	unk04;	// 04
+	UInt32	unk08;	// 08
+};
+
+// 14
+class TESRegionGrassObjectList : public tList<TESRegionGrassObject*>
+{
+public:
+	virtual ~TESRegionGrassObjectList();
+
+	UInt32	unk0C;	// 0C
+	UInt32	unk10;	// 10
+};
+
+// 10
+class TESRegionList : public tList<TESRegion*>
+{
+public:
+	virtual ~TESRegionList();
+
+	UInt32	unk0C;	// 0C
+};
+
+// 0C
+class TESRegionDataGrass : public TESRegionData
+{
+public:
+	virtual ~TESRegionDataGrass();
+
+	TESRegionGrassObjectList * grassObjectList;	// 0C
+};
+
+// 18
+class TESRegionDataSound : public TESRegionData
+{
+public:
+	virtual ~TESRegionDataSound();
+
+	BGSMusicType	* musicType;	// 08
+
+	struct SoundData
+	{
+		BGSSoundDescriptorForm	* soundDescriptor;	// 00
+		UInt32					flags;				// 04
+		float					chance;				// 08
+	};
+
+	tArray<SoundData*>	soundData;	// 0C
+};
+
+// 0C
+class TESRegionDataLandscape : public TESRegionData
+{
+public:
+	virtual ~TESRegionDataLandscape();
+
+	UInt32	unk08;	// 08
+};
+
+// 0C
+class TESRegionDataMap : public TESRegionData
+{
+public:
+	virtual ~TESRegionDataMap();
+
+	UInt32	unk08;	// 08
+};
+
+// 10
+class TESRegionDataWeather : public TESRegionData
+{
+public:
+	virtual ~TESRegionDataWeather();
+
+	struct WeatherData
+	{
+		TESWeather	* weather;		// 00
+		UInt32		chance;			// 04
+		TESGlobal	* globalChance;	// 08
+	};
+
+	tList<WeatherData*> weatherData;	// 08
 };

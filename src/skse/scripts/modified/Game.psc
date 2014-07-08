@@ -157,3 +157,9 @@ bool Function IsObjectFavorited(Form form) global native
 
 ; Same as GetForm, but also works for formIds >= 0x80000000
 Form Function GetFormEx(int formId) global native
+
+; Returns the object reference the player is in dialogue with
+ObjectReference Function GetDialogueTarget() global native
+
+; Returns the current crosshair ref
+ObjectReference Function GetCurrentCrosshairRef() global native

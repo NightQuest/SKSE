@@ -15,6 +15,9 @@
 #include "NiNodes.h"
 #include "Colors.h"
 
+#include "Hooks_Gameplay.h"
+#include "Hooks_UI.h"
+
 namespace papyrusGame
 {
 	UInt32 GetPerkPoints(StaticFunctionTag*)
@@ -596,6 +599,17 @@ namespace papyrusGame
 	{
 		return LookupFormByID(formId);
 	}
+
+	TESObjectREFR * GetDialogueTarget(StaticFunctionTag * base)
+	{
+		MenuTopicManager * topicManager = MenuTopicManager::GetSingleton();
+		return topicManager ? topicManager->GetDialogueTarget() : NULL;
+	}
+
+	TESObjectREFR * GetCurrentCrosshairRef(StaticFunctionTag * base)
+	{
+		return Hooks_Gameplay_GetCrosshairRef();
+	}	
 }
 
 #include "PapyrusVM.h"
@@ -739,7 +753,13 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, bool, TESForm*>("IsObjectFavorited", "Game", papyrusGame::IsObjectFavorited, registry));
 
+	// Dialogue
+	registry->RegisterFunction(
+		new NativeFunction0 <StaticFunctionTag, TESObjectREFR*>("GetDialogueTarget", "Game", papyrusGame::GetDialogueTarget, registry));
 
+	// Crosshair ref
+	registry->RegisterFunction(
+		new NativeFunction0 <StaticFunctionTag, TESObjectREFR*>("GetCurrentCrosshairRef", "Game", papyrusGame::GetCurrentCrosshairRef, registry));
 
 	// Mod
 	registry->SetFunctionFlags("Game", "GetModCount", VMClassRegistry::kFunctionFlag_NoWait);
@@ -786,6 +806,8 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Game", "GetPlayerExperience", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "SetPlayerExperience", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Game", "GetExperienceForLevel", VMClassRegistry::kFunctionFlag_NoWait);
+
+	registry->SetFunctionFlags("Game", "GetDialogueTarget", VMClassRegistry::kFunctionFlag_NoWait);
 
 	//registry->SetFunctionFlags("Game", "UpdateTintMaskColors", VMClassRegistry::kFunctionFlag_NoWait);
 	//registry->SetFunctionFlags("Game", "UpdateHairColor", VMClassRegistry::kFunctionFlag_NoWait);

@@ -479,6 +479,13 @@ namespace Serialization
 		}
 	}
 
+	void HandleDeletedForm(UInt64 handle)
+	{
+		for(UInt32 i = 0; i < s_pluginCallbacks.size(); i++)
+			if(s_pluginCallbacks[i].formDelete)
+				s_pluginCallbacks[i].formDelete(handle);
+	}
+
 	template <>
 	bool WriteData<BSFixedString>(SKSESerializationInterface * intfc, const BSFixedString * str)
 	{

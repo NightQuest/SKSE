@@ -8,7 +8,13 @@ class NiProperty : public NiObjectNET
 public:
 	virtual ~NiProperty();
 
-	virtual void Unk_22(void);
+	enum
+	{
+		kTypeAlpha = 0,
+		kTypeShade = 1
+	};
+
+	virtual SInt32 GetType(void);
 };
 
 class NiAlphaProperty : public NiProperty

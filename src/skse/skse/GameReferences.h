@@ -25,7 +25,13 @@ public:
 
 	UInt32 GetRefCount() const
 	{
-		return m_uiRefCount & 0x3FF;
+		return m_uiRefCount & kMask_RefCount;
+	}
+
+	void DecRefHandle()
+	{
+		if((InterlockedDecrement(&m_uiRefCount) & kMask_RefCount) == 0)
+			DeleteThis();
 	}
 };
 
@@ -43,8 +49,8 @@ extern const _CreateRefHandleByREFR CreateRefHandleByREFR;
 typedef bool (* _LookupREFRByHandle)(UInt32 * refHandle, TESObjectREFR ** refrOut);
 extern const _LookupREFRByHandle LookupREFRByHandle;
 
-typedef bool (* _LookupREFRByHandle2)(UInt32 * refHandle, TESObjectREFR ** refrOut);
-extern const _LookupREFRByHandle2 LookupREFRByHandle;
+typedef bool (* _LookupREFRObjectByHandle)(UInt32 * refHandle, BSHandleRefObject ** refrOut);
+extern const _LookupREFRObjectByHandle LookupREFRObjectByHandle;
 
 extern const UInt32 * g_invalidRefHandle;
 
@@ -120,7 +126,7 @@ public:
 	virtual void	Unk_4E(void);
 	virtual void	Unk_4F(void);
 	virtual void	Unk_50(void);
-	virtual void	GetStartingPos(float * pos);
+	virtual void	GetStartingPos(NiPoint3 * pos);
 	virtual void	Unk_52(void);
 	virtual void	Unk_53(void);
 	virtual void	Unk_54(void);
@@ -130,7 +136,7 @@ public:
 	virtual void	Unk_58(void);
 	virtual void	Unk_59(void);
 	virtual void	Unk_5A(void);
-	virtual void	Unk_5B(void);
+	virtual void	GetMarkerPosition(NiPoint3 * pos);
 	virtual void	Unk_5C(void);
 	virtual void	Unk_5D(void);
 	virtual void	Unk_5E(void);
@@ -192,7 +198,7 @@ public:
 	virtual void	Unk_96(void);
 	virtual void	Unk_97(void);
 	virtual void	Unk_98(void);
-	virtual void	Unk_99(void);
+	virtual bool	IsDead(UInt8 unk1); // unk1 = 1 for Actors
 	virtual void	Unk_9A(void);
 	virtual void	Unk_9B(void);
 
@@ -360,7 +366,7 @@ public:
 	virtual void Unk_DF(void);
 	virtual void Unk_E0(void);
 	virtual void Unk_E1(void);
-	virtual void Unk_E2(void);
+	virtual bool IsInCombat(void);
 	virtual void Unk_E3(void);
 	virtual void Unk_E4(void);
 	virtual void Unk_E5(void);
@@ -382,10 +388,10 @@ public:
 	virtual void Unk_F5(void);
 	virtual void AdvanceSkill(UInt32 skillId, float points, UInt32 unk1, UInt32 unk2);
 	virtual void Unk_F7(void);
-	virtual void AddPerk(void);
+	virtual void Unk_F8(void);
 	virtual void VisitPerks(void); // BGSPerk::FindPerkInRanksVisitor
-	virtual void Unk_FA(void);
-	virtual void RemovePerk(void);
+	virtual void AddPerk(BGSPerk * perk, UInt32 unk1);
+	virtual void RemovePerk(BGSPerk * perk);
 
 	// 0C
 	class SpellArray
@@ -451,16 +457,11 @@ public:
 	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730EE0, bool updateWeight);
 	DEFINE_MEMBER_FN(HasPerk, bool, 0x006AA190, BGSPerk * perk);
 	DEFINE_MEMBER_FN(GetLevel, UInt16, 0x006A7320);
-
+	DEFINE_MEMBER_FN(SetRace, void, 0x006AF590, TESRace*, bool isPlayer);
 
 
 	DEFINE_MEMBER_FN(UpdateWeaponAbility, void, 0x006ED980, TESForm*, BaseExtraList * extraData, bool bLeftHand);
 	DEFINE_MEMBER_FN(UpdateArmorAbility, void, 0x006E8650, TESForm*, BaseExtraList * extraData);
-
-	bool HasItemAbility(TESForm* form, BaseExtraList * extraData);
-	void UpdateItemAbility(TESForm* form, BaseExtraList * extraData, bool bLeftHand);
-
-	//  - TESForm, ExtraData, Unknown
 
 	void UpdateSkinColor();
 	void UpdateHairColor();
@@ -505,8 +506,17 @@ public:
 	UInt32	pad590[(0x5AC - 0x590) >> 2];
 	UInt32	lastRiddenHorseHandle;			// 5AC - Handle
 	UInt32	pad5B0[(0x614 - 0x5B0) >> 2];
-	PlayerSkills *	skills;
-	UInt32	pad618[(0x648 - 0x618) >> 2];
+	PlayerSkills *	skills;					// 614
+	UInt32	targetHandle;					// 618
+	UInt32	unk61C;							// 61C
+	UInt32	unk620;							// 620
+	UInt32	unk624;							// 624
+	UInt32	unk628;							// 628
+	UInt32	unk62C;							// 62C
+	tArray<UInt32>	hostileHandles;			// 630
+	UInt32	unk63C;							// 63C
+	UInt32	unk640;							// 640
+	TESForm	* tempPoison;					// 644
 	UInt32	numTeammates;					// 648
 	UInt32	pad64C[(0x6E0 - 0x64C) >> 2];
 	UInt8	unk6E0;							// 6E0
@@ -550,6 +560,8 @@ STATIC_ASSERT(offsetof(PlayerCharacter, overlayTintMasks) == 0x6F4);
 STATIC_ASSERT(offsetof(PlayerCharacter, unk568) == 0x568);
 STATIC_ASSERT(offsetof(PlayerCharacter, lastRiddenHorseHandle) == 0x5AC);
 STATIC_ASSERT(offsetof(PlayerCharacter, skills) == 0x614);
+STATIC_ASSERT(offsetof(PlayerCharacter, tempPoison) == 0x644);
+STATIC_ASSERT(offsetof(PlayerCharacter, hostileHandles) == 0x630);
 
 // D8
 class Explosion : public TESObjectREFR

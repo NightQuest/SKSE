@@ -7,6 +7,7 @@ class SpellItem;
 class ActiveEffect;
 class VMClassRegistry;
 class BGSHeadPart;
+class TESObjectREFR;
 
 namespace papyrusActor
 {
@@ -35,4 +36,5 @@ namespace papyrusActor
 	void SheatheWeapon(Actor * thisActor);
 
 	void EquipItemById(Actor* thisActor, TESForm* item, SInt32 itemId, SInt32 slotId, bool preventUnequip, bool equipSound);
+	TESObjectREFR * GetFurnitureReference(Actor * thisActor);
 }

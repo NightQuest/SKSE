@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\.."
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)\..&quot;;&quot;$(DXSDK_DIR)\Include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x09200000"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -123,7 +123,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(SolutionDir);$(SolutionDir)\.."
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)\..&quot;;&quot;$(DXSDK_DIR)\Include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;RUNTIME;RUNTIME_VERSION=0x09200000"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -239,6 +239,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusAlias.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusAmmo.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusAmmo.h"
 					>
 				</File>
 				<File
@@ -1148,6 +1156,14 @@
 			</File>
 			<File
 				RelativePath=".\NiInterpolators.h"
+				>
+			</File>
+			<File
+				RelativePath=".\NiLight.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NiLight.h"
 				>
 			</File>
 			<File

@@ -41,7 +41,7 @@ public:
 	virtual void	Unk_1C(void);	// 070
 	virtual void	Unk_1D(void);
 	virtual void	Unk_1E(void);
-	virtual void	Unk_1F(void);
+	virtual GRectF	GetVisibleFrameRect(void);
 	virtual void	Unk_20(void);	// 080
 	virtual void	Unk_21(void);
 	virtual void	Unk_22(void);
@@ -56,5 +56,29 @@ public:
 	virtual void	Unk_2B(void);
 	virtual void	Unk_2C(void);	// 0B0
 	virtual UInt32	HandleEvent(void* data);
+	virtual void	Unk_2E(void);
+	virtual void	Unk_2F(void);
+	virtual void	Unk_30(void);
+	virtual void	Unk_31(void);
+	virtual void	Unk_32(void);
+	virtual void	Unk_33(void);
+	virtual void	Unk_34(void);
+	virtual void	Unk_35(void);
+	virtual void	Unk_36(void);
+	virtual void	Unk_37(void);
+	virtual void	Unk_38(void);
+	virtual void	Unk_39(void);
+	virtual void	Unk_3A(void);
+	virtual void	Unk_3B(void);
+	virtual void	Unk_3C(void);
+	virtual void	Unk_3D(void);
+	virtual void	Unk_3E(void);
+	virtual void	Unk_3F(void);
+	virtual void	Unk_40(void);
+	virtual void	Unk_41(void);
+	virtual void	Unk_42(void);
+	virtual void	Unk_43(void);
+	virtual void	Unk_44(void);
+	virtual void	ForceCollectGarbage(void);
 	// more
 };

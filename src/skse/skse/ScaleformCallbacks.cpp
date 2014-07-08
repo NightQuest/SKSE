@@ -6,6 +6,12 @@ GFxValue::~GFxValue()
 	CleanManaged();
 }
 
+void GFxValue::AddManaged(void)
+{
+	if(IsManaged())
+		CALL_MEMBER_FN(objectInterface, AddManaged_Internal)(this, data.obj);
+}
+
 void GFxValue::CleanManaged(void)
 {
 	if(IsManaged())
@@ -143,6 +149,16 @@ UInt32 GFxValue::GetArraySize()
 bool GFxValue::GetElement(UInt32 index, GFxValue * value)
 {
 	return CALL_MEMBER_FN(objectInterface, GetElement)(data.obj, index, value);
+}
+
+bool GFxValue::GetDisplayInfo(DisplayInfo * displayInfo)
+{
+	return CALL_MEMBER_FN(objectInterface, GetDisplayInfo)(data.obj, displayInfo);
+}
+
+bool GFxValue::SetDisplayInfo(DisplayInfo * displayInfo)
+{
+	return CALL_MEMBER_FN(objectInterface, SetDisplayInfo)(data.obj, displayInfo);
 }
 
 

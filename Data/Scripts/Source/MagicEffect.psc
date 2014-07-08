@@ -2,7 +2,7 @@ Scriptname MagicEffect extends Form Hidden
 ; Get the Associated Skill for this MagicEffect
 string Function GetAssociatedSkill() native
 
-; SKSE additions built 2014-01-29 08:07:50.058000 UTC
+; SKSE additions built 2014-07-08 04:02:05.441000 UTC
 Function SetAssociatedSkill(string skill) native
 
 string Function GetResistance() native
@@ -80,3 +80,15 @@ Function SetImageSpaceMod(ImageSpaceModifier obj) native
 
 Perk Function GetPerk() native
 Function SetPerk(Perk obj) native
+
+int Function GetCastingType() native
+; Constant Effect     0
+; Fire And Forget     1
+; Concentration       2
+
+int Function GetDeliveryType() native
+; Self                0
+; Contact             1
+; Aimed               2
+; Target Actor        3
+; Target Location     4

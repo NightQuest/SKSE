@@ -759,7 +759,7 @@ int Property Motion_ThinBoxIntertia = 6 AutoReadOnly
 int Property Motion_Character = 7 AutoReadOnly
 
 
-; SKSE additions built 2014-01-29 08:07:50.058000 UTC
+; SKSE additions built 2014-07-08 04:02:05.441000 UTC
 
 ; Container-only functions
 int Function GetNumItems() native
@@ -820,3 +820,9 @@ int Function GetNumReferenceAliases() native
 
 ; Returns the nth ReferenceAlias holding this reference
 ReferenceAlias Function GetNthReferenceAlias(int n) native
+
+; Returns the poison applied to the weapon
+Potion Function GetPoison() native
+
+; Returns all base forms in the inventory/container into the specified FormList
+Function GetAllForms(FormList toFill) native

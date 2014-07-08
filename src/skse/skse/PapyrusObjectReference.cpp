@@ -1,5 +1,6 @@
 #include "PapyrusObjectReference.h"
 #include "PapyrusWornObject.h"
+#include "PapyrusForm.h"
 
 #include "GameAPI.h"
 #include "GameFormComponents.h"
@@ -89,19 +90,32 @@ public:
 		return count;
 	}
 
-	// returns the count of items left in the vector
-	//UInt32 GetTotalWeight() {
-	//	ExtraDataVec::iterator itEnd = m_vec.end();
-	//	ExtraDataVec::iterator it = m_vec.begin();
-	//	while (it != itEnd) {
-	//		ExtraContainerChanges::EntryData* extraData = (*it);
-	//		if (extraData && (extraData->countDelta > 0)) {
-	//			
-	//		}
-	//		++it;
-	//	}
-	//	return count;
-	//}
+	// returns the weight of items left in the vector
+	float GetTotalWeight() {
+		float weight = 0.0;
+		ExtraDataVec::iterator itEnd = m_vec.end();
+		ExtraDataVec::iterator it = m_vec.begin();
+		while (it != itEnd) {
+			ExtraContainerChanges::EntryData* extraData = (*it);
+			if (extraData && (extraData->countDelta > 0)) {
+				weight += papyrusForm::GetWeight(extraData->type);
+			}
+			++it;
+		}
+		return weight;
+	}
+
+	void GetRemainingForms(BGSListForm * list) {
+		ExtraDataVec::iterator itEnd = m_vec.end();
+		ExtraDataVec::iterator it = m_vec.begin();
+		while (it != itEnd) {
+			ExtraContainerChanges::EntryData* extraData = (*it);
+			if (extraData && (extraData->countDelta > 0)) {
+				CALL_MEMBER_FN(list, AddFormToList)(extraData->type);
+			}
+			++it;
+		}
+	}
 
 
 	ExtraContainerChanges::EntryData* GetNth(UInt32 n, UInt32 count) {
@@ -160,17 +174,43 @@ public:
 	UInt32 GetCurIdx() { return m_curIndex; }
 };
 
-//class ContainerTotalWeight
-//{
-//	ExtraContainerInfo& m_info;
-//	float totalWeight;
-//public:
-//	ContainerTotalWeight(ExtraContainerInfo& info) : m_info(info), totalWeight(0.0) { }
-//
-//	bool Accept(TESCOntainer::Entry* pEntry)
-//
-//
-//}
+class ContainerTotalWeight
+{
+	ExtraContainerInfo& m_info;
+	float m_totalWeight;
+public:
+	ContainerTotalWeight(ExtraContainerInfo& info) : m_info(info), m_totalWeight(0.0) { }
+
+	bool Accept(TESContainer::Entry* pEntry)
+	{
+		SInt32 numObjects = 0;
+		if (m_info.IsValidEntry(pEntry, numObjects)) {
+			m_totalWeight += papyrusForm::GetWeight(pEntry->form) * numObjects;
+		}
+
+		return true;
+	}
+
+	float GetTotalWeight() { return m_totalWeight; }
+};
+
+class ContainerFormFiller
+{
+	ExtraContainerInfo& m_info;
+	BGSListForm * m_formList;
+public:
+	ContainerFormFiller(ExtraContainerInfo& info, BGSListForm * formList) : m_info(info), m_formList(formList) { }
+
+	bool Accept(TESContainer::Entry* pEntry)
+	{
+		SInt32 numObjects = 0;
+		if (m_info.IsValidEntry(pEntry, numObjects)) {
+			CALL_MEMBER_FN(m_formList, AddFormToList)(pEntry->form);
+		}
+
+		return true;
+	}
+};
 
 namespace papyrusObjectReference
 {
@@ -255,8 +295,29 @@ namespace papyrusObjectReference
 		if (pContainerRef == *g_thePlayer)
 			return pXContainerChanges->data->totalWeight;
 
-		// but not so much for anything else - so we need to calculate
-		return 0.0;
+		// Compute the weight for non-players
+		float weight = 0.0;
+		TESContainer* pContainer = NULL;
+		TESForm* pBaseForm = pContainerRef->baseForm;
+		if (pBaseForm) {
+			pContainer = DYNAMIC_CAST(pBaseForm, TESForm, TESContainer);
+		}
+
+		if (!pContainer)
+			return 0;
+
+		ExtraContainerInfo info(pXContainerChanges ? pXContainerChanges->data->objList : NULL);
+
+		// first walk the base container
+		if (pContainer) {
+			ContainerTotalWeight weightCounter(info);
+			pContainer->Visit(weightCounter);
+			weight = weightCounter.GetTotalWeight();
+		}
+
+		// now sum the remaining weight
+		weight += info.GetTotalWeight();
+		return weight;
 	}
 
 	float GetTotalArmorWeight(TESObjectREFR* pContainerRef)
@@ -348,6 +409,14 @@ namespace papyrusObjectReference
 		}
 	}
 
+	AlchemyItem * GetPoison(TESObjectREFR* object)
+	{
+		if (!object)
+			return NULL;
+
+		return referenceUtils::GetPoison(&object->extraData);
+	}
+
 
 	void ResetInventory(TESObjectREFR * obj)
 	{
@@ -395,6 +464,28 @@ namespace papyrusObjectReference
 			return 0;
 
 		return referenceUtils::GetNthReferenceAlias(&object->extraData, n);
+	}
+
+	void GetAllForms(TESObjectREFR* pContainerRef, BGSListForm * list)
+	{
+		if(pContainerRef && list) {
+			ExtraContainerChanges* pXContainerChanges = static_cast<ExtraContainerChanges*>(pContainerRef->extraData.GetByType(kExtraData_ContainerChanges));
+			if (pXContainerChanges) {
+				TESContainer* pContainer = NULL;
+				TESForm* pBaseForm = pContainerRef->baseForm;
+				if (pBaseForm)
+					pContainer = DYNAMIC_CAST(pBaseForm, TESForm, TESContainer);
+
+				ExtraContainerInfo info(pXContainerChanges ? pXContainerChanges->data->objList : NULL);
+				// first walk the base container
+				if (pContainer) {
+					ContainerFormFiller formFiller(info, list);
+					pContainer->Visit(formFiller);
+				}
+
+				info.GetRemainingForms(list);
+			}
+		}
 	}
 };
 
@@ -446,6 +537,9 @@ void papyrusObjectReference::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction5<TESObjectREFR, void, float, VMArray<EffectSetting*>, VMArray<float>, VMArray<UInt32>, VMArray<UInt32>>("CreateEnchantment", "ObjectReference", papyrusObjectReference::CreateEnchantment, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectREFR, AlchemyItem*>("GetPoison", "ObjectReference", papyrusObjectReference::GetPoison, registry));
+
 
 	registry->RegisterFunction(
 		new NativeFunction0<TESObjectREFR, BSFixedString>("GetDisplayName", "ObjectReference", papyrusObjectReference::GetDisplayName, registry));
@@ -467,4 +561,7 @@ void papyrusObjectReference::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1<TESObjectREFR, BGSRefAlias*, UInt32>("GetNthReferenceAlias", "ObjectReference", papyrusObjectReference::GetNthReferenceAlias, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<TESObjectREFR, void, BGSListForm*>("GetAllForms", "ObjectReference", papyrusObjectReference::GetAllForms, registry));
 }

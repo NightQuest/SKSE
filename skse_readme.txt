@@ -1,4 +1,4 @@
-Skyrim Script Extender v1.7.0 alpha
+Skyrim Script Extender v1.7.1
 by Ian Patterson and Stephen Abel (ianpatt and behippo)
 Thanks to: Paul Connelly (scruggsywuggsy the ferret), gibbed, Purple Lunchbox, snakster
 

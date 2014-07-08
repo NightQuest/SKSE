@@ -266,7 +266,7 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2014-01-29 08:07:50.058000 UTC
+; SKSE additions built 2014-07-08 04:02:05.441000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native
@@ -426,3 +426,9 @@ bool Function IsObjectFavorited(Form form) global native
 
 ; Same as GetForm, but also works for formIds >= 0x80000000
 Form Function GetFormEx(int formId) global native
+
+; Returns the object reference the player is in dialogue with
+ObjectReference Function GetDialogueTarget() global native
+
+; Returns the current crosshair ref
+ObjectReference Function GetCurrentCrosshairRef() global native

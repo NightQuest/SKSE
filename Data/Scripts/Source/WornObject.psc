@@ -55,3 +55,5 @@ int Function GetNumReferenceAliases(Actor akActor, int handSlot, int slotMask) g
 ; Returns the nth ReferenceAlias holding this reference
 ReferenceAlias Function GetNthReferenceAlias(Actor akActor, int handSlot, int slotMask, int n) global native
 
+; Returns the poison on the specified item
+Potion Function GetPoison(Actor akActor, int handSlot, int slotMask) global native

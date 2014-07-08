@@ -1,13 +1,15 @@
 #pragma once
 
-#include "skse/ScaleformCallbacks.h"
-#include "ScaleformMovie.h"
 #include "skse/GameTypes.h"
 #include "skse/GameEvents.h"
-#include "skse/Utilities.h"
-#include "skse/Hooks_UI.h"
 #include "skse/GameCamera.h"
 #include "skse/GameReferences.h"
+
+#include "skse/ScaleformCallbacks.h"
+#include "skse/ScaleformMovie.h"
+
+#include "skse/Utilities.h"
+#include "skse/Hooks_UI.h"
 #include "skse/NiNodes.h"
 
 class TESObjectREFR;
@@ -265,6 +267,180 @@ STATIC_ASSERT(offsetof(MapMenu, localMap) == 0x38);
 STATIC_ASSERT(offsetof(MapMenu::LocalMap, cullingProcess) == 0x30);
 STATIC_ASSERT(offsetof(MapMenu::LocalMap, renderedLocalMapTexture) == 0x26C);
 STATIC_ASSERT(offsetof(MapMenu, markers) == 0x2F0);
+
+// 18
+class HUDObject
+{
+public:
+	HUDObject::HUDObject(GFxMovieView* movie)
+	{
+		if(movie)
+			InterlockedIncrement(&movie->refCount);
+		view = movie;
+	}
+	virtual ~HUDObject(void)
+	{
+		object.CleanManaged();
+
+		GFxMovieView * thisView = view;
+		if(thisView)
+			thisView->ForceCollectGarbage();
+	}
+
+	virtual void Update(void) = 0;	// Called per-frame
+	virtual UInt8 Unk_02(void * unk1) { return 0; };
+	virtual void * Unk_03(void * unk1) { return CALL_MEMBER_FN(this, Impl_Fn03)(unk1); };
+	virtual void Unk_04(void) { }; // No implementation?
+
+	UInt32			unk04;		// 04
+	GFxMovieView	* view;		// 08
+	UInt32			unk0C;		// 0C
+	GFxValue		object;		// 10
+	
+	MEMBER_FN_PREFIX(HUDObject);
+	DEFINE_MEMBER_FN(dtor, void, 0x0085FF10);
+	DEFINE_MEMBER_FN(Impl_Fn03, void *, 0x0085F030, void * unk1);
+
+	// redirect to formheap
+	static void * operator new(std::size_t size)
+	{
+		return FormHeap_Allocate(size);
+	}
+
+	static void * operator new(std::size_t size, const std::nothrow_t &)
+	{
+		return FormHeap_Allocate(size);
+	}
+
+	// placement new
+	static void * operator new(std::size_t size, void * ptr)
+	{
+		return ptr;
+	}
+
+	static void operator delete(void * ptr)
+	{
+		FormHeap_Free(ptr);
+	}
+
+	static void operator delete(void * ptr, const std::nothrow_t &)
+	{
+		FormHeap_Free(ptr);
+	}
+
+	static void operator delete(void *, void *)
+	{
+		// placement delete
+	}
+};
+STATIC_ASSERT(sizeof(HUDObject) == 0x20);
+
+// 30
+class Compass : public HUDObject
+{
+public:
+	UInt32	unk20;	// 20
+	UInt32	unk24;	// 24
+	UInt32	unk28;	// 28
+	UInt32	unk2C;	// 2C
+};
+STATIC_ASSERT(sizeof(Compass) == 0x30);
+
+// A0
+class FloatingQuestMarker : public HUDObject
+{
+public:
+	
+};
+
+// 58
+class HUDNotifications : public HUDObject
+{
+public:
+
+};
+
+// 68
+class EnemyHealth : public HUDObject
+{
+public:
+	UInt32			handle;			// 20
+	UInt32			unk24;			// 24
+	UInt32			unk28;			// 28
+	UInt32			unk2C;			// 2C
+	GFxValue		unk30;			// 30
+	GFxValue		unk40;			// 40
+	GFxValue		text;			// 50
+	UInt32			unk5C;			// 5C
+	UInt32			unk60;			// 60
+	UInt32			unk64;			// 64
+
+	TESObjectREFR	* GetTarget() const;
+};
+STATIC_ASSERT(offsetof(EnemyHealth, handle) == 0x20);
+
+// 70
+class StealthMeter : public HUDObject
+{
+public:
+
+};
+
+// 28
+class HUDChargeMeter : public HUDObject
+{
+public:
+
+};
+
+// 38?
+class HUDMeter : public HUDObject
+{
+public:
+	virtual double GetMaxValue(void);
+	
+	char	* setMeterPercent;	// 20
+	char	* startBlinking;	// 24
+	char	* fadeOut;			// 28
+	float	unk28;				// 2C
+	UInt32	unk2C;				// 30
+	UInt32	unk34;				// 34
+};
+STATIC_ASSERT(sizeof(HUDMeter) == 0x38);
+
+// 38
+class ActorValueMeter : public HUDMeter
+{
+public:
+	
+};
+
+// 38
+class ShoutMeter : public HUDMeter
+{
+public:
+	
+};
+
+// 58
+class HUDMenu : public IMenu
+{
+public:
+	BSTEventSink<void>	unk1C;	// UserEventEnabledEvent
+	tArray<HUDObject*>	hudComponents;	// 20
+	UInt32	unk2C;
+	UInt32	unk30;
+	UInt32	unk34;
+	UInt32	unk38;
+	UInt32	unk3C;
+	UInt32	unk40;
+	UInt32	unk44;
+	UInt32	unk48;
+	UInt32	unk4C;
+	UInt32	unk50;
+	UInt32	unk54;
+};
+STATIC_ASSERT(sizeof(HUDMenu) == 0x58);
 
 // HUDMenu
 // unk0C - 2

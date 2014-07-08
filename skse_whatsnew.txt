@@ -1,3 +1,30 @@
+1.7.1:
+- fixed IsValidRace for armor races
+- added MagicEffect.GetCasting/DeliveryType
+- fixed crash when calling UpdateWeight on non-facegen Actors
+- GetTotalItemWeight computed correctly for non-players
+- added Potion.IsPoison, GetUseSound
+- added Weapon.GetTemplate
+- added Ammo.IsBolt, GetProjectile, GetDamage
+- added Game.GetDialogueTarget
+- added SKSETaskInterface::AddUITask
+- serialization understands deleted forms
+- added SKSEMessagingInterface
+- plugin messages sent on save, preload, postload, delete
+- WornObject.GetDisplayName returns base form name if no display name is present
+- added WornObject, ObjectReference.GetPoison
+- DirectX SDK now required for compilation
+- fixed WornObject slot/mask lookup
+- added NetImmerse.SetNodePosition
+- added Actor.GetFurnitureReference
+- added Game.GetCurrentCrosshairRef
+- added NetImmerse.GetRelativeNodePositionX/Y/Z
+- added Actor.Set/ResetExpressionPhoneme/Modifier
+- added Form.HasWorldModel, Get/SetWorldModelPath/NumTextureSets/NthTextureSet/SetWorldModelNthTextureSet
+- added HeadPart.IsExtraPart
+- added Form.IsPlayable
+- added ObjectReference.GetAllForms
+
 1.7.0:
 - added Game.GetFormEx that works for formIds >= 0x80000000
 - added UI.Open/CloseCustomMenu

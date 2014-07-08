@@ -9,6 +9,8 @@
 #include "GameThreads.h"
 #include "HashUtil.h"
 
+#include "NiExtraData.h"
+
 class MatchBySlot : public FormMatcher
 {
 	UInt32 m_mask;
@@ -516,7 +518,8 @@ namespace papyrusActor
 	{
 		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
 		if(taskPool) {
-			taskPool->UpdateWeight(thisActor, neckDelta,  ActorProcessManager::kFlags_Unk01 | ActorProcessManager::kFlags_Unk02 | ActorProcessManager::kFlags_Unk03 | ActorProcessManager::kFlags_Mobile, true);
+			CALL_MEMBER_FN(thisActor, QueueNiNodeUpdate)(true);
+			taskPool->UpdateWeight(thisActor, neckDelta,  0, true);
 		}
 	}
 
@@ -540,6 +543,50 @@ namespace papyrusActor
 	{
 		if (thisActor) {
 			thisActor->DrawSheatheWeapon(false);
+		}
+	}
+
+	TESObjectREFR * GetFurnitureReference(Actor * thisActor)
+	{
+		if(!thisActor)
+			return NULL;
+		ActorProcessManager * processManager = thisActor->processManager;
+		if(!processManager)
+			return NULL;
+		MiddleProcess * middleProcess = processManager->middleProcess;
+		if(!middleProcess)
+			return NULL;
+
+		TESObjectREFR * refr = NULL;
+		UInt32 furnitureHandle = middleProcess->furnitureHandle;
+		if(furnitureHandle == (*g_invalidRefHandle) || furnitureHandle == 0)
+			return NULL;
+
+		LookupREFRByHandle(&furnitureHandle, &refr);
+		return refr;
+	}
+
+	void SetExpressionPhoneme(Actor * thisActor, UInt32 index, float value)
+	{
+		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+		if(taskPool) {
+			taskPool->UpdateExpression(thisActor, BSFaceGenAnimationData::kKeyframeType_Phoneme, index, value);
+		}
+	}
+
+	void SetExpressionModifier(Actor * thisActor, UInt32 index, float value)
+	{
+		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+		if(taskPool) {
+			taskPool->UpdateExpression(thisActor, BSFaceGenAnimationData::kKeyframeType_Modifier, index, value);
+		}
+	}
+
+	void ResetExpressionOverrides(Actor * thisActor)
+	{
+		BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+		if(taskPool) {
+			taskPool->UpdateExpression(thisActor, BSFaceGenAnimationData::kKeyframeType_Reset, 0, 0);
 		}
 	}
 }
@@ -607,4 +654,16 @@ void papyrusActor::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <Actor, SInt32, UInt32>("GetWornItemId", "Actor", papyrusActor::GetWornItemId, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <Actor, TESObjectREFR*>("GetFurnitureReference", "Actor", papyrusActor::GetFurnitureReference, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <Actor, void, UInt32, float>("SetExpressionPhoneme", "Actor", papyrusActor::SetExpressionPhoneme, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <Actor, void, UInt32, float>("SetExpressionModifier", "Actor", papyrusActor::SetExpressionModifier, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <Actor, void>("ResetExpressionOverrides", "Actor", papyrusActor::ResetExpressionOverrides, registry));
 }

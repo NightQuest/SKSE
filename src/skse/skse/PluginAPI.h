@@ -165,7 +165,7 @@ struct SKSEMessagingInterface
 	typedef void (* EventCallback)(Message* msg);
 
 	enum {
-		kInterfaceVersion = 1
+		kInterfaceVersion = 2
 	};
 
 	// SKSE messages
@@ -185,6 +185,7 @@ struct SKSEMessagingInterface
 		kMessage_DeleteGame,	// sent right before deleting the .skse cosave and the .ess save.
 								// dataLen: length of file path, data: char* file path of .ess savegame file
 		kMessage_InputLoaded,	// sent right after game input is loaded, right before the main menu initializes
+		kMessage_NewGame		// sent after a new game is created, before the game has loaded (Sends CharGen TESQuest pointer)
 	};
 
 	UInt32	interfaceVersion;
@@ -196,7 +197,8 @@ struct SKSEMessagingInterface
 		kDispatcher_ModEvent = 0,
 		kDispatcher_CameraEvent,
 		kDispatcher_CrosshairEvent,
-		kDispatcher_ActionEvent
+		kDispatcher_ActionEvent,
+		kDispatcher_NiNodeUpdateEvent
 	};
 
 	// Use this to acquire SKSE's internal EventDispatchers so that you can sink to them

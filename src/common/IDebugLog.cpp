@@ -56,7 +56,12 @@ void IDebugLog::OpenRelative(int folderID, const char * relPath)
 {
 	char	path[MAX_PATH];
 
-	ASSERT(SUCCEEDED(SHGetFolderPath(NULL, folderID, NULL, SHGFP_TYPE_CURRENT, path)));
+	HRESULT err = SHGetFolderPath(NULL, folderID, NULL, SHGFP_TYPE_CURRENT, path);
+	if(!SUCCEEDED(err))
+	{
+		_ERROR("SHGetFolderPath %08X failed (result = %08X lasterr = %08X)", folderID, err, GetLastError());
+	}
+	ASSERT_CODE(SUCCEEDED(err), err);
 
 	strcat_s(path, sizeof(path), relPath);
 

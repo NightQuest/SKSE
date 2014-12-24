@@ -36,6 +36,18 @@ namespace papyrusEnchantment
 	{
 		return thisMagic ? thisMagic->data.baseEnchantment : NULL;
 	}
+
+	BGSListForm * GetKeywordRestrictions(EnchantmentItem* thisMagic)
+	{
+		return thisMagic ? thisMagic->data.restrictions : NULL;
+	}
+
+	void SetKeywordRestrictions(EnchantmentItem* thisMagic, BGSListForm * list)
+	{
+		if(thisMagic) {
+			thisMagic->data.restrictions = list;
+		}
+	}
 }
 
 #include "PapyrusVM.h"
@@ -64,6 +76,9 @@ void papyrusEnchantment::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction0<EnchantmentItem, EnchantmentItem*>("GetBaseEnchantment", "Enchantment", papyrusEnchantment::GetBaseEnchantment, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction0<EnchantmentItem, BGSListForm*>("GetKeywordRestrictions", "Enchantment", papyrusEnchantment::GetKeywordRestrictions, registry));
+
 	// Sets
 	registry->RegisterFunction(
 		new NativeFunction2<EnchantmentItem, void, UInt32, float>("SetNthEffectMagnitude", "Enchantment", papyrusEnchantment::SetNthEffectMagnitude, registry));
@@ -73,6 +88,9 @@ void papyrusEnchantment::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction2<EnchantmentItem, void, UInt32, UInt32>("SetNthEffectDuration", "Enchantment", papyrusEnchantment::SetNthEffectDuration, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<EnchantmentItem, void, BGSListForm*>("SetKeywordRestrictions", "Enchantment", papyrusEnchantment::SetKeywordRestrictions, registry));
 
 	registry->SetFunctionFlags("Enchantment", "GetNumEffects", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Enchantment", "GetNthEffectMagnitude", VMClassRegistry::kFunctionFlag_NoWait);

@@ -52,6 +52,14 @@ namespace papyrusCell
 		}
 		return NULL;
 	}
+
+	float GetWaterLevel(TESObjectCELL * thisCell)
+	{
+		if (!thisCell)
+			return LONG_MIN;
+
+		return thisCell->waterLevel;
+	}
 }
 
 #include "PapyrusVM.h"
@@ -64,4 +72,7 @@ void papyrusCell::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction2 <TESObjectCELL, TESObjectREFR*, UInt32, UInt32>("GetNthRef", "Cell", papyrusCell::GetNthRef, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESObjectCELL, float>("GetWaterLevel", "Cell", papyrusCell::GetWaterLevel, registry));
 }

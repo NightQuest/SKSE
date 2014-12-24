@@ -4,6 +4,7 @@
 #include "skse/GameTypes.h"
 
 MAKE_NI_POINTER(BSTextureSet);
+MAKE_NI_POINTER(NiTexture);
 
 class BSShaderMaterial
 {
@@ -20,16 +21,24 @@ public:
 	enum {
 		kShaderType_Default = 0,
 		kShaderType_EnvironmentMap,
-		kShaderType_GlowShader,
-		kShaderType_Heightmap,
-		kShaderType_FaceTint,
-		kShaderType_SkinTint,
+		kShaderType_GlowMap,
+		kShaderType_Parallax,
+		kShaderType_FaceGen,
+		kShaderType_FaceGenRGBTint,
 		kShaderType_HairTint,
-		kShaderType_ParallaxOccMaterial,
-		kShaderType_WorldMultitexture,
-		kShaderType_WorldMap1,
-		kShaderType_Unknown,
-		kShaderType_MultilayerParallax
+		kShaderType_ParallaxOcc,
+		kShaderType_MultiTexLand,
+		kShaderType_LODLand,
+		kShaderType_Unknown1,
+		kShaderType_MultilayerParallax,
+		kShaderType_TreeAnim,
+		kShaderType_Unknown2,
+		kShaderType_MultiIndexTriShapeSnow,
+		kShaderType_LODObjectsHD,
+		kShaderType_Eye,
+		kShaderType_Cloud,
+		kShaderType_LODLandNoise,
+		kShaderType_MultiTexLandLODBlend
 	};
 
 	UInt32	unk04;	// 04 BSIntrusiveRefCounted?
@@ -86,10 +95,10 @@ public:
 	float	unk30;
 	float	unk34;
 	float	unk38;
-	NiSourceTexture	* diffuse;	// 3C inited to 0
-	NiSourceTexture	* normalMap;	// 40 inited to 0
-	NiSourceTexture	* heightMap;	// 44 inited to 0
-	NiSourceTexture	* specular;	// 48 inited to 0
+	NiTexturePtr diffuse;	// 3C inited to 0
+	NiTexturePtr normalMap;	// 40 inited to 0
+	NiTexturePtr heightMap;	// 44 inited to 0
+	NiTexturePtr specular;	// 48 inited to 0
 	UInt32	unk4C;				// 4C inited to 3
 	BSTextureSetPtr	textureSet;		// 50 inited to 0
 	float	alpha;				// 54 inited to 1.0
@@ -112,9 +121,9 @@ class BSMaskedShaderMaterial : public BSLightingShaderMaterial
 public:
 	virtual ~BSMaskedShaderMaterial();
 
-	NiRenderedTexture * renderedTexture;	// 70 inited to 0
-	NiSourceTexture * unk74;				// 74 inited to 0
-	NiSourceTexture * unk78;				// 78 inited to 0
+	NiTexturePtr renderedTexture;	// 70 inited to 0
+	NiTexturePtr unk74;				// 74 inited to 0
+	NiTexturePtr unk78;				// 78 inited to 0
 
 	//static BSMaskedShaderMaterial * CreateFromLightingShader(BSLightingShaderMaterial * source);
 };

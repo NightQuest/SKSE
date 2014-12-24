@@ -266,7 +266,7 @@ Function UnlockWord(WordOfPower akWord) native global
 bool Function UsingGamepad() native global
 
 
-; SKSE additions built 2014-07-08 04:02:05.441000 UTC
+; SKSE additions built 2014-12-23 07:36:08.038000 UTC
 ; Get/Set Perk Points
 int Function GetPerkPoints() global native
 Function SetPerkPoints(int perkPoints) global native
@@ -432,3 +432,9 @@ ObjectReference Function GetDialogueTarget() global native
 
 ; Returns the current crosshair ref
 ObjectReference Function GetCurrentCrosshairRef() global native
+
+; Returns the currently selected ref in the console
+ObjectReference Function GetCurrentConsoleRef() global native
+
+; Sets the player level
+Function SetPlayerLevel(int level) global native

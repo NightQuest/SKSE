@@ -10,11 +10,15 @@ class AlchemyItem;
 class Actor;
 class EffectSetting;
 
+#include "GameExtraData.h"
+
 #include "PapyrusArgs.h"
 #include "GameTypes.h"
 
 namespace referenceUtils
 {
+	EquipData ResolveEquippedObject(Actor * actor, UInt32 weaponSlot, UInt32 slotMask);
+
 	float GetItemHealthPercent(TESForm * baseForm, BaseExtraList* extraData);
 	void SetItemHealthPercent(TESForm * baseForm, BaseExtraList* extraData, float value);
 

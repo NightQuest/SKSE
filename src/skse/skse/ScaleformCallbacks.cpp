@@ -161,6 +161,11 @@ bool GFxValue::SetDisplayInfo(DisplayInfo * displayInfo)
 	return CALL_MEMBER_FN(objectInterface, SetDisplayInfo)(data.obj, displayInfo);
 }
 
+bool GFxValue::SetText(const char * text, bool html)
+{
+	return CALL_MEMBER_FN(objectInterface, SetText)(data.obj, text, html);
+}
+
 
 UInt32 g_GFxFunctionHandler_count = 0;
 
@@ -177,3 +182,23 @@ GFxFunctionHandler::~GFxFunctionHandler()
 FunctionHandlerCache g_functionHandlerCache;
 
 const FxDelegateHandler::Callback PlaySoundCallback = (FxDelegateHandler::Callback)0x00899940;
+
+FxResponseArgsList::FxResponseArgsList()
+{
+	CALL_MEMBER_FN(this, ctor)();
+}
+FxResponseArgsList::~FxResponseArgsList()
+{
+	Clear();
+}
+
+void FxResponseArgsList::Clear()
+{
+	if (args.values) {
+		for (UInt32 i = 0; i < args.size; i++)
+			args.values[i].CleanManaged();
+		ScaleformHeap_Free(args.values);
+		args.values = NULL;
+		args.size = 0;
+	}
+}

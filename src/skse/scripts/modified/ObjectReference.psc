@@ -64,3 +64,6 @@ Potion Function GetPoison() native
 
 ; Returns all base forms in the inventory/container into the specified FormList
 Function GetAllForms(FormList toFill) native
+
+; Returns all base forms from the container into a new array
+Form[] Function GetContainerForms() native

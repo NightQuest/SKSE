@@ -15,6 +15,7 @@ void FormHeap_Free(void * ptr)
 
 PlayerCharacter	** g_thePlayer = (PlayerCharacter **)0x01B2E8E4;
 const UInt32 * g_TlsIndexPtr = (UInt32 *)0x01BBEB54;
+UInt32 * g_consoleHandle = (UInt32*)0x01B3E6EC;
 
 struct TLSData
 {

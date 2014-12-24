@@ -161,6 +161,22 @@ namespace papyrusAlias
 
 		g_actionEventRegs.Unregister<BGSBaseAlias>(actionType, BGSBaseAlias::kTypeID, thisForm);
 	}
+
+	void UnregisterForNiNodeUpdate(BGSBaseAlias * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_ninodeUpdateEventRegs.Unregister<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisForm);
+	}
+
+	void RegisterForNiNodeUpdate(BGSBaseAlias * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_ninodeUpdateEventRegs.Register<BGSBaseAlias>(BGSBaseAlias::kTypeID, thisForm);
+	}
 }
 
 
@@ -231,6 +247,12 @@ void papyrusAlias::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <BGSBaseAlias, void, UInt32> ("UnregisterForActorAction", "Alias", papyrusAlias::UnregisterForActorAction, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSBaseAlias, void> ("RegisterForNiNodeUpdate", "Alias", papyrusAlias::RegisterForNiNodeUpdate, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <BGSBaseAlias, void> ("UnregisterForNiNodeUpdate", "Alias", papyrusAlias::UnregisterForNiNodeUpdate, registry));
 
 	registry->SetFunctionFlags("Alias", "RegisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Alias", "UnregisterForKey", VMClassRegistry::kFunctionFlag_NoWait);

@@ -17,6 +17,7 @@ IThreadSafeBasicMemPool<SKSETaskRegenHead,10>			s_regenHeadDelegatePool;
 IThreadSafeBasicMemPool<SKSETaskChangeHeadPart,10>		s_changeHeadPartDelegatePool;
 IThreadSafeBasicMemPool<SKSETaskUpdateWorldData,10>		s_updateWorldDataDelegatePool;
 IThreadSafeBasicMemPool<SKSETaskUpdateExpression,10>	s_updateExpressionDelegatePool;
+IThreadSafeBasicMemPool<SKSETaskUpdateHarvestModel,10>	s_updateHarvestModelDelegatePool;
 
 void BSTaskPool::UpdateTintMasks()
 {
@@ -69,6 +70,14 @@ void BSTaskPool::UpdateWorldData(NiAVObject * object)
 void BSTaskPool::UpdateExpression(Actor * actor, UInt8 type, UInt16 index, float value)
 {
 	SKSETaskUpdateExpression * cmd = SKSETaskUpdateExpression::Create(actor, type, index, value);
+	if(cmd) {
+		QueueTask(cmd);
+	}
+}
+
+void BSTaskPool::UpdateHarvestModel(TESObjectREFR * refr)
+{
+	SKSETaskUpdateHarvestModel * cmd = SKSETaskUpdateHarvestModel::Create(refr);
 	if(cmd) {
 		QueueTask(cmd);
 	}
@@ -207,6 +216,8 @@ SKSETaskUpdateWorldData * SKSETaskUpdateWorldData::Create(NiAVObject * object)
 	SKSETaskUpdateWorldData * cmd = s_updateWorldDataDelegatePool.Allocate();
 	if (cmd)
 	{
+		if(object)
+			object->IncRef();
 		cmd->m_object = object;
 	}
 	return cmd;
@@ -214,6 +225,8 @@ SKSETaskUpdateWorldData * SKSETaskUpdateWorldData::Create(NiAVObject * object)
 
 void SKSETaskUpdateWorldData::Dispose(void)
 {
+	if(m_object)
+		m_object->DecRef();
 	s_updateWorldDataDelegatePool.Free(this);
 }
 
@@ -221,6 +234,30 @@ void SKSETaskUpdateWorldData::Run()
 {
 	NiAVObject::ControllerUpdateContext ctx;
 	m_object->UpdateWorldData(&ctx);
+}
+
+SKSETaskUpdateHarvestModel * SKSETaskUpdateHarvestModel::Create(TESObjectREFR * reference)
+{
+	SKSETaskUpdateHarvestModel * cmd = s_updateHarvestModelDelegatePool.Allocate();
+	if (cmd)
+	{
+		cmd->m_reference = reference;
+	}
+	return cmd;
+}
+
+void SKSETaskUpdateHarvestModel::Dispose(void)
+{
+	s_updateHarvestModelDelegatePool.Free(this);
+}
+
+void SKSETaskUpdateHarvestModel::Run()
+{
+	if(m_reference) {
+		NiNode * rootModel = m_reference->GetNiNode();
+		if(rootModel)
+			UpdateHarvestModel(m_reference, rootModel);
+	}
 }
 
 SKSETaskUpdateExpression * SKSETaskUpdateExpression::Create(Actor * actor, UInt8 type, UInt16 index, float value)

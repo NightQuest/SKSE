@@ -33,11 +33,11 @@ namespace papyrusTree
 
 void papyrusTree::RegisterFuncs(VMClassRegistry* registry)
 {
-	registry->RegisterForm(TESObjectTREE::kTypeID, "Tree");
+	registry->RegisterForm(TESObjectTREE::kTypeID, "TreeObject");
 
 	registry->RegisterFunction(
-		new NativeFunction0<TESObjectTREE, IngredientItem*>("GetIngredient", "Tree", papyrusTree::GetIngredient, registry));
+		new NativeFunction0<TESObjectTREE, IngredientItem*>("GetIngredient", "TreeObject", papyrusTree::GetIngredient, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction0<TESObjectTREE, BGSSoundDescriptorForm*>("GetHarvestSound", "Tree", papyrusTree::GetHarvestSound, registry));
+		new NativeFunction0<TESObjectTREE, BGSSoundDescriptorForm*>("GetHarvestSound", "TreeObject", papyrusTree::GetHarvestSound, registry));
 }

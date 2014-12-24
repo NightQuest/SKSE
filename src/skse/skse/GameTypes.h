@@ -1051,6 +1051,19 @@ public:
 
 	void	Lock(void) { m_lock.Lock(); }
 	void	Release(void) { m_lock.Release(); }
+
+	template<typename T> friend class SafeDataLocker;
+};
+
+template<typename T>
+class SimpleLocker
+{
+public:
+	SimpleLocker(SafeDataHolder<T> * dataHolder) { m_holder = dataHolder; m_holder->Lock(); }
+	~SimpleLocker() { m_holder->Release(); }
+
+protected:
+	SafeDataHolder<T>	* m_holder;
 };
 
 // 0C

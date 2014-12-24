@@ -102,3 +102,30 @@ void Actor::UpdateSkinColor()
 		}
 	}
 }
+
+bool Actor::VisitFactions(FactionVisitor & visitor)
+{
+	TESNPC* npc = DYNAMIC_CAST(baseForm, TESForm, TESNPC);
+	if(npc) {
+		for(UInt32 i = 0; i < npc->actorData.factions.count; i++)
+		{
+			TESActorBaseData::FactionInfo info;
+			npc->actorData.factions.GetNthItem(i, info);
+			if(visitor.Accept(info.faction, info.rank))
+				return true;
+		}
+
+		ExtraFactionChanges* pFactionChanges = static_cast<ExtraFactionChanges*>(extraData.GetByType(kExtraData_FactionChanges));
+		if (pFactionChanges) {
+			for(UInt32 i = 0; i < pFactionChanges->factions.count; i++)
+			{
+				ExtraFactionChanges::FactionInfo info;
+				pFactionChanges->factions.GetNthItem(i, info);
+				if(visitor.Accept(info.faction, info.rank))
+					return true;
+			}
+		}
+	}
+
+	return false;
+}

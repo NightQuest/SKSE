@@ -407,6 +407,22 @@ namespace papyrusForm
 	{
 		return (thisForm) ? thisForm->IsPlayable() : false;
 	}
+
+	void RegisterForNiNodeUpdate(TESForm * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_ninodeUpdateEventRegs.Register<TESForm>(thisForm->GetFormType(), thisForm);
+	}
+
+	void UnregisterForNiNodeUpdate(TESForm * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_ninodeUpdateEventRegs.Unregister<TESForm>(thisForm->GetFormType(), thisForm);
+	}
 }
 
 #include "PapyrusVM.h"
@@ -500,6 +516,12 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESForm, void, UInt32> ("UnregisterForActorAction", "Form", papyrusForm::UnregisterForActorAction, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, void> ("RegisterForNiNodeUpdate", "Form", papyrusForm::RegisterForNiNodeUpdate, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, void> ("UnregisterForNiNodeUpdate", "Form", papyrusForm::UnregisterForNiNodeUpdate, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0 <TESForm, bool> ("HasWorldModel", "Form", papyrusForm::HasWorldModel, registry));

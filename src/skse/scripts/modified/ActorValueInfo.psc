@@ -52,3 +52,15 @@ Function SetSkillLegendaryLevel(int level) native
 ; unowned will add perks that the actor does not own, or only perks the actor owns
 ; allRanks will add all ranks of each perk to the list, unowned/owned filter also applies
 Function GetPerkTree(FormList list, Actor akActor = None, bool unowned = true, bool allRanks = false) native
+
+; Same as GetPerkTree except returns into a new array
+Perk[] Function GetPerks(Actor akActor = None, bool unowned = true, bool allRanks = false) native
+
+; Same as Actor.GetActorValue (convenience function)
+float Function GetCurrentValue(Actor akActor) native
+
+; Same as Actor.GetBaseActorValue (convenience function)
+float Function GetBaseValue(Actor akActor) native
+
+; Acquires the Maximum value for the current ActorValue
+float Function GetMaximumValue(Actor akActor) native

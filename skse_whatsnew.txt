@@ -1,3 +1,21 @@
+1.7.2:
+- renamed Tree -> TreeObject, avoids conflicts with vanilla scripts
+- container weight count takes stack size in to account
+- added Actor.GetFactions
+- added Cell.GetWaterLevel
+- added Faction functions
+- added ActorValueInfo.GetCurrent/Base/MaximumValue
+- added Game.GetCurrentConsoleRef
+- added many node manipulation functions to NetImmerse
+- fixed SetHarvested to update the visual model as well as the object state
+- added kMessage_NewGame to SKSEMessagingInterface
+- added Enchantment.Get/SetKeywordRestrictions
+- initial implementation of array return types
+- fix crash caused by many simultaneous key tap/press/release commands
+- add OnNiNodeUpdate event to ActiveMagicEffect, Alias, Form
+- added experimental support for creating arrays larger than 128 entries
+- added Game.SetPlayerLevel. Works analogously to console command SetLevel called on the player
+
 1.7.1:
 - fixed IsValidRace for armor races
 - added MagicEffect.GetCasting/DeliveryType

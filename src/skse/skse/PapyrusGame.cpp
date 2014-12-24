@@ -55,6 +55,13 @@ namespace papyrusGame
 		}
 	}
 
+	void SetPlayerLevel(StaticFunctionTag*, SInt32 level)
+	{
+		PlayerCharacter* pc = *g_thePlayer;
+		if (pc && pc->skills)
+			CALL_MEMBER_FN(pc->skills, SetLevel)(level);
+	}
+
 	float GetPlayerExperience(StaticFunctionTag*)
 	{
 		PlayerCharacter* pPC = (*g_thePlayer);
@@ -609,7 +616,19 @@ namespace papyrusGame
 	TESObjectREFR * GetCurrentCrosshairRef(StaticFunctionTag * base)
 	{
 		return Hooks_Gameplay_GetCrosshairRef();
-	}	
+	}
+
+	TESObjectREFR * GetCurrentConsoleRef(StaticFunctionTag * base)
+	{
+		UInt32 handle = (*g_consoleHandle);
+		TESObjectREFR * refr = NULL;
+		if(handle != 0 && handle != (*g_invalidRefHandle)) {
+			LookupREFRByHandle(&handle, &refr);
+			return refr;
+		}
+
+		return NULL;
+	}
 }
 
 #include "PapyrusVM.h"
@@ -636,6 +655,9 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, float, UInt32>("GetExperienceForLevel", "Game", papyrusGame::GetExperienceForLevel, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <StaticFunctionTag, void, SInt32>("SetPlayerLevel", "Game", papyrusGame::SetPlayerLevel, registry));
 
 
 	// Mods
@@ -760,6 +782,10 @@ void papyrusGame::RegisterFuncs(VMClassRegistry* registry)
 	// Crosshair ref
 	registry->RegisterFunction(
 		new NativeFunction0 <StaticFunctionTag, TESObjectREFR*>("GetCurrentCrosshairRef", "Game", papyrusGame::GetCurrentCrosshairRef, registry));
+
+	// Console ref
+	registry->RegisterFunction(
+		new NativeFunction0 <StaticFunctionTag, TESObjectREFR*>("GetCurrentConsoleRef", "Game", papyrusGame::GetCurrentConsoleRef, registry));
 
 	// Mod
 	registry->SetFunctionFlags("Game", "GetModCount", VMClassRegistry::kFunctionFlag_NoWait);

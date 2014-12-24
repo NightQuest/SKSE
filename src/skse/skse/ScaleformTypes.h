@@ -141,7 +141,11 @@ template <typename T>
 class GArray
 {
 public:
+	T * values;
+	UInt32 size;
 	// ### todo
+	MEMBER_FN_PREFIX(GArray);
+	DEFINE_MEMBER_FN(AddArgument, void, 0x00843150, T * value);
 };
 
 class GViewport

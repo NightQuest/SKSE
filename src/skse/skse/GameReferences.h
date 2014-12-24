@@ -451,20 +451,27 @@ public:
 	UInt32	flags2;									// 138
 	UInt32	unk13C[(0x19C - 0x13C) >> 2];
 
-	TESForm * GetEquippedObject(bool abLeftHand);
-
 	MEMBER_FN_PREFIX(Actor);
 	DEFINE_MEMBER_FN(QueueNiNodeUpdate, void, 0x00730EE0, bool updateWeight);
 	DEFINE_MEMBER_FN(HasPerk, bool, 0x006AA190, BGSPerk * perk);
 	DEFINE_MEMBER_FN(GetLevel, UInt16, 0x006A7320);
 	DEFINE_MEMBER_FN(SetRace, void, 0x006AF590, TESRace*, bool isPlayer);
-
-
 	DEFINE_MEMBER_FN(UpdateWeaponAbility, void, 0x006ED980, TESForm*, BaseExtraList * extraData, bool bLeftHand);
 	DEFINE_MEMBER_FN(UpdateArmorAbility, void, 0x006E8650, TESForm*, BaseExtraList * extraData);
+	DEFINE_MEMBER_FN(IsHostileToActor, bool, 0x006D4360, Actor * actor);
 
+	TESForm * GetEquippedObject(bool abLeftHand);
 	void UpdateSkinColor();
 	void UpdateHairColor();
+
+	class FactionVisitor
+	{
+	public:
+		virtual bool Accept(TESFaction * faction, SInt8 rank) = 0;
+	};
+
+	// Can contain duplicate entries with different rankings
+	bool VisitFactions(FactionVisitor & visitor);
 };
 
 STATIC_ASSERT(offsetof(Actor, magicTarget) == 0x54);

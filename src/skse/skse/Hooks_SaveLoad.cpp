@@ -106,6 +106,13 @@ void __stdcall DeleteSavegame_Hook(const char * saveNameIn, UInt32 unk1)
 	Serialization::HandleDeleteSave(saveName);
 }
 
+UInt8 TESQuest::NewGame_Hook(UInt8 * unk1, UInt8 unk2)
+{
+	UInt8 ret = CALL_MEMBER_FN(this, NewGame_Internal)(unk1, unk2);
+	PluginManager::Dispatch_Message(0, SKSEMessagingInterface::kMessage_NewGame, (void*)this, sizeof(void*), NULL);
+	return ret;
+}
+
 #if 0
 
 // 008
@@ -184,6 +191,9 @@ void Hooks_SaveLoad_Commit(void)
 	WriteRelCall(0x006814D0 + 0x01E2, GetFnAddr(&BGSSaveLoadManager::SaveGame_Hook));
 	WriteRelCall(0x006821C0 + 0x00B5, GetFnAddr(&BGSSaveLoadManager::LoadGame_Hook));
 	WriteRelCall(0x0069CBD0 + 0x0064, GetFnAddr(&BGSSaveLoadManager::ProcessEvents_Hook));
+
+	// New Game
+	WriteRelCall(0x00876710 + 0x57, GetFnAddr(&TESQuest::NewGame_Hook));
 
 	// Delete savegame
 	WriteRelCall(0x00677600 + 0x10, (UInt32)DeleteSavegame_Hook); // DeleteGame

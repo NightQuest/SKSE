@@ -27,6 +27,7 @@
 #include "PapyrusConstructibleObject.h"
 #include "PapyrusEnchantment.h"
 #include "PapyrusForm.h"
+#include "PapyrusFaction.h"
 #include "PapyrusGame.h"
 #include "PapyrusHeadPart.h"
 #include "PapyrusIngredient.h"
@@ -181,6 +182,9 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// Outfit
 	papyrusOutfit::RegisterFuncs(registry);
 
+	// SoundDescriptor
+	papyrusSoundDescriptor::RegisterFuncs(registry);
+
 	// Potion
 	papyrusPotion::RegisterFuncs(registry);
 
@@ -237,9 +241,6 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// ActiveMagicEffect
 	papyrusActiveMagicEffect::RegisterFuncs(registry);
 
-	// SoundDescriptor
-	papyrusSoundDescriptor::RegisterFuncs(registry);
-
 	// Sound
 	papyrusSound::RegisterFuncs(registry);
 
@@ -284,6 +285,9 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 
 	// WornObject
 	papyrusWornObject::RegisterFuncs(registry);
+
+	// Faction
+	papyrusFaction::RegisterFuncs(registry);
 
 //#ifdef _PPAPI
 	// Plugins

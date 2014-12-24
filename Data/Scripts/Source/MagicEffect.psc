@@ -2,7 +2,7 @@ Scriptname MagicEffect extends Form Hidden
 ; Get the Associated Skill for this MagicEffect
 string Function GetAssociatedSkill() native
 
-; SKSE additions built 2014-07-08 04:02:05.441000 UTC
+; SKSE additions built 2014-12-23 07:36:08.038000 UTC
 Function SetAssociatedSkill(string skill) native
 
 string Function GetResistance() native

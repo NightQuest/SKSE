@@ -51,7 +51,7 @@ void TESForm::CopyFromEx(TESForm * rhsForm)
 
 			lhs->armorValTimes100	= rhs->armorValTimes100;
 			lhs->armorAddons.CopyFrom(&rhs->armorAddons);
-			lhs->unk120				= rhs->unk120;
+			lhs->templateArmor = rhs->templateArmor;
 		}
 		break;
 

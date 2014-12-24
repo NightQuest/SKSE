@@ -109,3 +109,6 @@ Function SetExpressionModifier(int index, float value) native
 
 ; Resets all expression, phoneme, and modifiers
 Function ResetExpressionOverrides() native
+
+; Returns all factions with the specified min and max ranks (-128 to 127) 
+Faction[] Function GetFactions(int minRank, int maxRank) native

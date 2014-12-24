@@ -45,7 +45,6 @@ namespace papyrusUI
 		{
 			cmd->menuName = nameBuf;
 			cmd->target = targetBuf;
-			cmd->argCount = 0;
 		}
 		return cmd;
 	}
@@ -66,7 +65,11 @@ namespace papyrusUI
 		if (!view)
 			return;
 
-		view->Invoke(target.c_str(), NULL, args, argCount);
+		GFxValue * value = NULL;
+		if(args.size() > 0)
+			value = &args[0];
+
+		view->Invoke(target.c_str(), NULL, value, args.size());
 	}
 
 	UIInvokeFormDelegate * UIInvokeFormDelegate::Create(const char * nameBuf, const char * targetBuf)

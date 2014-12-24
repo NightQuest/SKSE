@@ -163,3 +163,9 @@ ObjectReference Function GetDialogueTarget() global native
 
 ; Returns the current crosshair ref
 ObjectReference Function GetCurrentCrosshairRef() global native
+
+; Returns the currently selected ref in the console
+ObjectReference Function GetCurrentConsoleRef() global native
+
+; Sets the player level
+Function SetPlayerLevel(int level) global native

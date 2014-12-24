@@ -27,3 +27,9 @@ Function SetNthEffectDuration(int index, int value) native
 
 ; returns the base enchantment of this enchantment
 Enchantment Function GetBaseEnchantment() native
+
+; Returns a Formlist of Keywords 
+FormList Function GetKeywordRestrictions() native
+
+; Sets the FormList of keywords
+Function SetKeywordRestrictions(FormList newKeywordList) native

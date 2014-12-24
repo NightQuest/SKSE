@@ -292,7 +292,7 @@ void PluginManager::InstallPlugins(void)
 		}
 		else
 		{
-			_ERROR("couldn't load plugin %s", pluginPath.c_str());
+			_ERROR("couldn't load plugin %s (Error %d)", pluginPath.c_str(), GetLastError());
 		}
 	}
 
@@ -437,6 +437,9 @@ void * PluginManager::GetEventDispatcher(UInt32 dispatcherId)
 		break;
 	case SKSEMessagingInterface::kDispatcher_ActionEvent:
 		result = (void *)&g_actionEventDispatcher;
+		break;
+	case SKSEMessagingInterface::kDispatcher_NiNodeUpdateEvent:
+		result = (void *)&g_ninodeUpdateEventDispatcher;
 		break;
 
 	default:

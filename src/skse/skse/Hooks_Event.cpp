@@ -22,6 +22,7 @@ PlayerControls * PlayerControls::ctor_Hook(void)
 	g_cameraEventDispatcher.AddEventSink(&g_cameraEventHandler);
 	g_crosshairRefEventDispatcher.AddEventSink(&g_crosshairRefEventHandler);
 	g_actionEventDispatcher.AddEventSink(&g_actionEventHandler);
+	g_ninodeUpdateEventDispatcher.AddEventSink(&g_ninodeUpdateEventHandler);
 
 	if (*g_inputEventDispatcher) {
 		(*g_inputEventDispatcher)->AddEventSink(&g_inputEventHandler);

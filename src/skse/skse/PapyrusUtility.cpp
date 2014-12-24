@@ -47,6 +47,14 @@ namespace papyrusUtility
 
 		return setting->data.s;
 	}
+
+	template<typename T>
+	VMResultArray<T> CreateArray(StaticFunctionTag* base, UInt32 size, T fillValue)
+	{
+		VMResultArray<T> data;
+		data.resize(size, fillValue);
+		return data;
+	}
 }
 
 void papyrusUtility::RegisterFuncs(VMClassRegistry* registry)
@@ -63,8 +71,33 @@ void papyrusUtility::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <StaticFunctionTag, BSFixedString, BSFixedString>("GetINIString", "Utility", papyrusUtility::GetINIString, registry));
 
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, VMResultArray<float>, UInt32, float>("CreateFloatArray", "Utility", papyrusUtility::CreateArray<float>, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, VMResultArray<SInt32>, UInt32, SInt32>("CreateIntArray", "Utility", papyrusUtility::CreateArray<SInt32>, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, VMResultArray<bool>, UInt32, bool>("CreateBoolArray", "Utility", papyrusUtility::CreateArray<bool>, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, VMResultArray<BSFixedString>, UInt32, BSFixedString>("CreateStringArray", "Utility", papyrusUtility::CreateArray<BSFixedString>, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, VMResultArray<TESForm*>, UInt32, TESForm*>("CreateFormArray", "Utility", papyrusUtility::CreateArray<TESForm*>, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <StaticFunctionTag, VMResultArray<BGSBaseAlias*>, UInt32, BGSBaseAlias*>("CreateAliasArray", "Utility", papyrusUtility::CreateArray<BGSBaseAlias*>, registry));
+
 	registry->SetFunctionFlags("Utility", "GetINIFloat", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Utility", "GetINIInt", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Utility", "GetINIBool", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Utility", "GetINIString", VMClassRegistry::kFunctionFlag_NoWait);
+
+	registry->SetFunctionFlags("Utility", "CreateFloatArray", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Utility", "CreateIntArray", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Utility", "CreateBoolArray", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Utility", "CreateStringArray", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Utility", "CreateFormArray", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Utility", "CreateAliasArray", VMClassRegistry::kFunctionFlag_NoWait);
 }

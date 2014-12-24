@@ -343,7 +343,7 @@ EndEvent
 
 
 
-; SKSE additions built 2014-07-08 04:02:05.441000 UTC
+; SKSE additions built 2014-12-23 07:36:08.038000 UTC
 ; Additional useful effect information
 float Function GetDuration() native
 float Function GetTimeElapsed() native
@@ -420,6 +420,13 @@ Function RegisterForActorAction(int actionType) native
 Function UnregisterForActorAction(int actionType) native
 
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
+EndEvent
+
+; Registers the script for when a QueueNiNodeUpdate is called
+Function RegisterForNiNodeUpdate() native
+Function UnregisterForNiNodeUpdate() native
+
+Event OnNiNodeUpdate(ObjectReference akActor)
 EndEvent
 
 ; returns the magnitude of the active effect

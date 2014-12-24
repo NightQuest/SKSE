@@ -168,6 +168,22 @@ namespace papyrusActiveMagicEffect
 
 		g_actionEventRegs.Unregister<ActiveEffect>(actionType, ActiveEffect::kTypeID, thisForm);
 	}
+
+	void UnregisterForNiNodeUpdate(ActiveEffect * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_ninodeUpdateEventRegs.Unregister<ActiveEffect>(ActiveEffect::kTypeID, thisForm);
+	}
+
+	void RegisterForNiNodeUpdate(ActiveEffect * thisForm)
+	{
+		if(!thisForm)
+			return;
+
+		g_ninodeUpdateEventRegs.Register<ActiveEffect>(ActiveEffect::kTypeID, thisForm);
+	}
 }
  
 #include "PapyrusVM.h"
@@ -240,6 +256,12 @@ void papyrusActiveMagicEffect::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <ActiveEffect, void, UInt32> ("UnregisterForActorAction", "ActiveMagicEffect", papyrusActiveMagicEffect::UnregisterForActorAction, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <ActiveEffect, void> ("RegisterForNiNodeUpdate", "ActiveMagicEffect", papyrusActiveMagicEffect::RegisterForNiNodeUpdate, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <ActiveEffect, void> ("UnregisterForNiNodeUpdate", "ActiveMagicEffect", papyrusActiveMagicEffect::UnregisterForNiNodeUpdate, registry));
 
 	registry->SetFunctionFlags("ActiveMagicEffect", "RegisterForKey", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("ActiveMagicEffect", "UnregisterForKey", VMClassRegistry::kFunctionFlag_NoWait);

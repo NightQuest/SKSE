@@ -59,7 +59,7 @@ void NiObjectNET::AddExtraData(NiExtraData * extraData)
 		m_extraDataCapacity = newSize;
 	}
 
-	m_extraData[++m_extraDataLen] = extraData;
+	m_extraData[m_extraDataLen++] = extraData;
 	qsort(m_extraData, m_extraDataLen, sizeof(NiExtraData*), ExtraDataCompare);
 }
 
@@ -103,16 +103,16 @@ bool NiObjectNET::RemoveExtraData(NiExtraData * extraData)
 }
 
 // This should be a BSFixedString before passing to this
-NiExtraData * NiObjectNET::GetExtraData(const char * name)
+NiExtraData * NiObjectNET::GetExtraData(BSFixedString name)
 {
 	SInt16 min = 0;
 	SInt16 max = (SInt16)m_extraDataLen - 1;
 
 	while (max >= min) { // Iterative binary search
 		SInt16 mid = (min + max) >> 1;
-		if(m_extraData[mid]->m_pcName == name)
+		if(m_extraData[mid]->m_pcName == name.data)
 			return m_extraData[mid]; 
-		else if (m_extraData[mid]->m_pcName < name)
+		else if (m_extraData[mid]->m_pcName < name.data)
 			min = mid + 1;
 		else
 			max = mid - 1;

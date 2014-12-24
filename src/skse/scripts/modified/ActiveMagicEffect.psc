@@ -76,5 +76,12 @@ Function UnregisterForActorAction(int actionType) native
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 EndEvent
 
+; Registers the script for when a QueueNiNodeUpdate is called
+Function RegisterForNiNodeUpdate() native
+Function UnregisterForNiNodeUpdate() native
+
+Event OnNiNodeUpdate(ObjectReference akActor)
+EndEvent
+
 ; returns the magnitude of the active effect
 float Function GetMagnitude() native

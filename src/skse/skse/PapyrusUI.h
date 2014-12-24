@@ -5,6 +5,8 @@
 #include "ScaleformMovie.h"
 #include "Hooks_UI.h"
 
+#include <vector>
+
 struct StaticFunctionTag;
 class VMClassRegistry;
 template <typename T> class VMArray;
@@ -37,13 +39,12 @@ namespace papyrusUI
 	public:
 		static UIInvokeDelegate * Create(const char * nameBuf, const char * targetBuf);
 
-		UIInvokeDelegate()	: argCount(0) {};
+		UIInvokeDelegate() {};
 
 		virtual void	Run(void);
 		virtual void	Dispose(void);
 
-		UInt32			argCount;
-		GFxValue		args[128];
+		std::vector<GFxValue>	args;
 	};
 
 	class UIInvokeFormDelegate : public UIDelegate
@@ -122,7 +123,7 @@ namespace papyrusUI
 			return;
 		}
 
-		cmd->argCount = 1;
+		cmd->args.resize(1);
 		SetGFxValue<T>(&cmd->args[0], arg);
 
 		uiManager->QueueCommand(cmd);
@@ -147,7 +148,7 @@ namespace papyrusUI
 			return;
 		}
 		
-		cmd->argCount = argCount;
+		cmd->args.resize(argCount);
 		for (UInt32 i=0; i<argCount; i++)
 		{
 			T arg;

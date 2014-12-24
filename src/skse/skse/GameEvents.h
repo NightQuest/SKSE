@@ -414,6 +414,30 @@ struct TESHitEvent
 	void			* unk14[7];			// 14
 };
 
+struct TESUniqueIDChangeEvent
+{
+	UInt32	oldOwnerFormId;
+	UInt32	newOwnerFormId;
+	UInt32	formId;
+	UInt16	oldUniqueId;
+	UInt16	newUniqueId;
+};
+
+struct TESContainerChangedEvent
+{
+	UInt32	fromFormId;
+	UInt32	toFormId;
+	UInt32	itemFormId;
+	UInt32	count;
+	UInt32	toReference;
+	UInt32	unk14;
+};
+
+struct TESObjectLoadedEvent
+{
+	UInt32 formId;
+};
+
 struct BGSFootstepEvent
 {
 	UInt32	actorHandle;
@@ -483,6 +507,30 @@ public:
 	virtual	EventResult ReceiveEvent(TESHitEvent * evn, EventDispatcher<TESHitEvent> * dispatcher) = 0;
 };
 
+template <>
+class BSTEventSink <TESUniqueIDChangeEvent>
+{
+public:
+	virtual ~BSTEventSink() {}	// todo?
+	virtual	EventResult ReceiveEvent(TESUniqueIDChangeEvent * evn, EventDispatcher<TESUniqueIDChangeEvent> * dispatcher) = 0;
+};
+
+template <>
+class BSTEventSink <TESContainerChangedEvent>
+{
+public:
+	virtual ~BSTEventSink() {}	// todo?
+	virtual	EventResult ReceiveEvent(TESContainerChangedEvent * evn, EventDispatcher<TESContainerChangedEvent> * dispatcher) = 0;
+};
+
+template <>
+class BSTEventSink <TESObjectLoadedEvent>
+{
+public:
+	virtual ~BSTEventSink() {}	// todo?
+	virtual	EventResult ReceiveEvent(TESObjectLoadedEvent * evn, EventDispatcher<TESObjectLoadedEvent> * dispatcher) = 0;
+};
+
 // For testing
 //extern EventDispatcher<TESSleepStartEvent> * g_sleepStartEventDispatcher;
 extern EventDispatcher<TESCombatEvent> * g_combatEventDispatcher;
@@ -492,3 +540,6 @@ extern EventDispatcher<TESQuestStageEvent> * g_questStageEventDispatcher;
 extern EventDispatcher<TESHarvestEvent::ItemHarvested> * g_harvestEventDispatcher;
 extern EventDispatcher<LevelIncrease::Event> * g_levelIncreaseEventDispatcher;
 extern EventDispatcher<TESHitEvent> * g_hitEventDispatcher;
+extern EventDispatcher<TESContainerChangedEvent> * g_containerChangedEventDispatcher;
+extern EventDispatcher<TESUniqueIDChangeEvent> * g_changeUniqueIDEventDispatcher;
+extern EventDispatcher<TESObjectLoadedEvent> * g_objectLoadedEventDispatcher;

@@ -66,6 +66,10 @@ void Core_RevertCallback(SKSESerializationInterface * intfc)
 	g_inputKeyEventRegs.Clear();
 	g_inputControlEventRegs.Clear();
 	g_modCallbackRegs.Clear();
+	g_crosshairRefEventRegs.Clear();
+	g_cameraEventRegs.Clear();
+	g_actionEventRegs.Clear();
+	g_ninodeUpdateEventRegs.Clear();
 }
 
 void Core_SaveCallback(SKSESerializationInterface * intfc)
@@ -92,6 +96,9 @@ void Core_SaveCallback(SKSESerializationInterface * intfc)
 
 	_MESSAGE("Saving actor action event registrations...");
 	g_actionEventRegs.Save(intfc, 'AACT', 1);
+
+	_MESSAGE("Saving NiNode update event registrations...");
+	g_ninodeUpdateEventRegs.Save(intfc, 'NINU', 1);
 }
 
 void Core_LoadCallback(SKSESerializationInterface * intfc)
@@ -148,6 +155,12 @@ void Core_LoadCallback(SKSESerializationInterface * intfc)
 		case 'AACT':
 			_MESSAGE("Loading actor action event registrations...");
 			g_actionEventRegs.Load(intfc, 1);
+			break;
+
+		// NiNode update events
+		case 'NiNU':
+			_MESSAGE("Loading NiNode update event registrations...");
+			g_ninodeUpdateEventRegs.Load(intfc, 1);
 			break;
 
 		default:

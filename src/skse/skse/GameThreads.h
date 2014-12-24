@@ -8,6 +8,7 @@ class BGSHeadPart;
 class NiAVObject;
 class BGSTextureSet;
 class NiAVObject;
+class TESObjectREFR;
 
 class TaskDelegate
 {
@@ -79,6 +80,17 @@ private:
 	NiAVObject * m_object;
 };
 
+class SKSETaskUpdateHarvestModel : public TaskDelegate
+{
+public:
+	static SKSETaskUpdateHarvestModel * Create(TESObjectREFR * reference);
+	virtual void Run();
+	virtual void Dispose();
+
+private:
+	TESObjectREFR * m_reference;
+};
+
 class SKSETaskUpdateExpression : public TaskDelegate
 {
 public:
@@ -113,6 +125,7 @@ public:
 	void UpdateWeight(Actor * actor, float delta, UInt32 updateFlags, bool redrawWeapon);
 	void UpdateWorldData(NiAVObject * object);
 	void UpdateExpression(Actor * actor, UInt8 type, UInt16 index, float value);
+	void UpdateHarvestModel(TESObjectREFR * refr);
 
 	static BSTaskPool *	GetSingleton(void)
 	{

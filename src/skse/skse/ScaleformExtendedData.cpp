@@ -13,6 +13,15 @@ double round(double r)
 	return (r >= 0.0) ? floor(r + 0.5) : ceil(r - 0.5);
 }
 
+void RegisterUnmanagedString(GFxValue * dst, const char * name, const char * str)
+{
+	GFxValue	fxValue;
+
+	fxValue.SetString(str);
+
+	dst->SetMember(name, &fxValue);
+}
+
 void RegisterString(GFxValue * dst,  GFxMovieView * view, const char * name, const char * str)
 {
 	GFxValue	fxValue;
@@ -228,7 +237,7 @@ namespace scaleformExtend
 				if(pMagicItem)
 				{
 					if(pMagicItem->fullName.name.data)
-						RegisterString(pFxVal, movieView, "spellName", pMagicItem->fullName.name.data);
+						RegisterUnmanagedString(pFxVal, "spellName", pMagicItem->fullName.name.data);
 
 					MagicItem::EffectItem * pEffect = CALL_MEMBER_FN(pMagicItem, GetCostliestEffectItem)(5, false);
 					if(pEffect && pEffect->mgef)
@@ -288,7 +297,7 @@ namespace scaleformExtend
 				if(pEffectSetting)
 				{
 					if(pEffectSetting->fullName.name.data)
-						RegisterString(pFxVal, movieView, "effectName", pEffectSetting->fullName.name.data);
+						RegisterUnmanagedString(pFxVal, "effectName", pEffectSetting->fullName.name.data);
 
 					RegisterNumber(pFxVal, "subType", pEffectSetting->school()); // DEPRECATED
 					RegisterNumber(pFxVal, "effectFlags", pEffectSetting->properties.flags);
@@ -310,7 +319,7 @@ namespace scaleformExtend
 				if(pShout)
 				{
 					if(pShout->fullName.name.data)
-						RegisterString(pFxVal, movieView, "fullName", pShout->fullName.name.data);
+						RegisterUnmanagedString(pFxVal, "fullName", pShout->fullName.name.data);
 
 					// Words
 					GFxValue words;
@@ -321,10 +330,10 @@ namespace scaleformExtend
 						movieView->CreateObject(&word);
 
 						if(pShout->words[i].word && pShout->words[i].word->fullName.name.data)
-							RegisterString(&word, movieView, "word", pShout->words[i].word->fullName.name.data);
+							RegisterUnmanagedString(&word, "word", pShout->words[i].word->fullName.name.data);
 
 						if(pShout->words[i].word && pShout->words[i].word->word.data)
-							RegisterString(&word, movieView, "fullName", pShout->words[i].word->word.data);
+							RegisterUnmanagedString(&word, "fullName", pShout->words[i].word->word.data);
 
 						RegisterNumber(&word, "recoveryTime", pShout->words[i].recoverytime);
 
@@ -355,10 +364,10 @@ namespace scaleformExtend
 				if(pRace)
 				{
 					if(pRace->fullName.name.data)
-						RegisterString(pFxVal, movieView, "fullName", pRace->fullName.name.data);
+						RegisterUnmanagedString(pFxVal, "fullName", pRace->fullName.name.data);
 
 					if(pRace->editorId.data)
-						RegisterString(pFxVal, movieView, "editorId", pRace->editorId.data);
+						RegisterUnmanagedString(pFxVal, "editorId", pRace->editorId.data);
 
 					// Spells
 					GFxValue spells;
@@ -404,9 +413,9 @@ namespace scaleformExtend
 				if(pNPC)
 				{
 					if(pNPC->fullName.name.data)
-						RegisterString(pFxVal, movieView, "fullName", pNPC->fullName.name.data);
+						RegisterUnmanagedString(pFxVal, "fullName", pNPC->fullName.name.data);
 					if(pNPC->shortName.data)
-						RegisterString(pFxVal, movieView, "shortName", pNPC->shortName.data);
+						RegisterUnmanagedString(pFxVal, "shortName", pNPC->shortName.data);
 
 					RegisterNumber(pFxVal, "weight", pNPC->weight);
 
@@ -463,7 +472,7 @@ namespace scaleformExtend
 					scaleformExtend::FormData(&actorBase, movieView, pActor->baseForm, bRecursive ? bExtra : false, bRecursive);
 					pFxVal->SetMember("actorBase", &actorBase);
 
-					RegisterString(pFxVal, movieView, "fullName", CALL_MEMBER_FN(pActor, GetReferenceName)());
+					RegisterUnmanagedString(pFxVal, "fullName", CALL_MEMBER_FN(pActor, GetReferenceName)());
 
 					// Spells as Array
 					GFxValue addedSpells;
@@ -585,13 +594,13 @@ namespace scaleformExtend
 						GFxValue fxValue;
 						btnText = message->buttons.GetNthItem(i);
 						if(btnText) {
-							movieView->CreateString(&fxValue, btnText->data);
+							fxValue.SetString(btnText->data);
 							btnArray.PushBack(&fxValue);
 						}
 					}
 
 					pFxVal->SetMember("buttons", &btnArray);
-					RegisterString(pFxVal, movieView, "message", message->GetDescription().c_str());
+					RegisterUnmanagedString(pFxVal, "message", message->GetDescription().c_str());
 				}
 			}
 			break;
@@ -600,10 +609,10 @@ namespace scaleformExtend
 				TESQuest * quest = DYNAMIC_CAST(pForm, TESForm, TESQuest);
 				if(quest)
 				{
-					RegisterString(pFxVal, movieView, "fullName", quest->fullName.name.data);
+					RegisterUnmanagedString(pFxVal, "fullName", quest->fullName.name.data);
 					RegisterNumber(pFxVal, "flags", quest->unk07C.flags);
 					RegisterNumber(pFxVal, "priority", quest->unk07C.priority);
-					RegisterString(pFxVal, movieView, "editorId", quest->questID.Get());
+					RegisterUnmanagedString(pFxVal, "editorId", quest->questID.Get());
 
 					GFxValue aliasArray;
 
@@ -615,7 +624,7 @@ namespace scaleformExtend
 						if(quest->aliases.GetNthItem(i, alias)) {
 							GFxValue arrArg;
 							movieView->CreateObject(&arrArg);
-							RegisterString(&arrArg, movieView, "name", alias->name.data);
+							RegisterUnmanagedString(&arrArg, "name", alias->name.data);
 							RegisterNumber(&arrArg, "id", alias->aliasId);
 							RegisterNumber(&arrArg, "flags", alias->flags);
 							aliasArray.PushBack(&arrArg);
@@ -631,14 +640,14 @@ namespace scaleformExtend
 				BGSHeadPart * headPart = DYNAMIC_CAST(pForm, TESForm, BGSHeadPart);
 				if(headPart)
 				{
-					RegisterString(pFxVal, movieView, "fullName", headPart->fullName.name.data);
-					RegisterString(pFxVal, movieView, "partName", headPart->partName.data);
+					RegisterUnmanagedString(pFxVal, "fullName", headPart->fullName.name.data);
+					RegisterUnmanagedString(pFxVal, "partName", headPart->partName.data);
 					RegisterNumber(pFxVal, "partFlags", headPart->partFlags);
 					RegisterNumber(pFxVal, "partType", headPart->type);
 
-					RegisterString(pFxVal, movieView, "modelPath", headPart->model.GetModelName());
-					RegisterString(pFxVal, movieView, "chargenMorphPath", headPart->chargenMorph.GetModelName());
-					RegisterString(pFxVal, movieView, "raceMorphPath", headPart->raceMorph.GetModelName());
+					RegisterUnmanagedString(pFxVal, "modelPath", headPart->model.GetModelName());
+					RegisterUnmanagedString(pFxVal, "chargenMorphPath", headPart->chargenMorph.GetModelName());
+					RegisterUnmanagedString(pFxVal, "raceMorphPath", headPart->raceMorph.GetModelName());
 
 					GFxValue extraParts;
 					movieView->CreateArray(&extraParts);
@@ -677,7 +686,7 @@ namespace scaleformExtend
 					for(int i = 0; i < BGSTextureSet::kNumTextures; i++)
 					{
 						GFxValue strArg;
-						movieView->CreateString(&strArg, textureSet->texturePaths[i].str.data);
+						strArg.SetString(textureSet->texturePaths[i].str.data);
 						textureArray.PushBack(&strArg);
 					}
 

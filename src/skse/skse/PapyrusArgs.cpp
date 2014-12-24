@@ -67,7 +67,7 @@ void PackHandle(VMValue * dst, void * src, UInt32 typeID, VMClassRegistry * regi
 	VMClassInfo	* classInfo = NULL;
 
 	// get class info
-	if(registry->GetFormClass(typeID, &classInfo))
+	if(registry->GetFormTypeClass(typeID, &classInfo))
 		if(classInfo)
 			classInfo->Release();
 
@@ -236,12 +236,6 @@ template <> void UnpackValue <VMArray<BSFixedString>>(VMArray<BSFixedString> * d
 	UnpackArray(dst, src, VMValue::kType_StringArray);
 }
 
-// This should be templated
-template <> void UnpackValue(VMArray<EffectSetting*> * dst, VMValue * src)
-{
-	UnpackArray(dst, src, GetTypeIDFromFormTypeID(EffectSetting::kTypeID, (*g_skyrimVM)->GetClassRegistry()) | VMValue::kType_Identifier);
-}
-
 void * UnpackHandle(VMValue * src, UInt32 typeID)
 {
 	if(!src->IsIdentifier()) return NULL;
@@ -272,12 +266,19 @@ template <> UInt32 GetTypeID <VMArray<float>>(VMClassRegistry * registry)			{ re
 template <> UInt32 GetTypeID <VMArray<bool>>(VMClassRegistry * registry)			{ return VMValue::kType_BoolArray; }
 template <> UInt32 GetTypeID <VMArray<BSFixedString>>(VMClassRegistry * registry)	{ return VMValue::kType_StringArray; }
 
+template <> UInt32 GetTypeID <VMResultArray<UInt32>>(VMClassRegistry * registry)			{ return VMValue::kType_IntArray; }
+template <> UInt32 GetTypeID <VMResultArray<SInt32>>(VMClassRegistry * registry)			{ return VMValue::kType_IntArray; }
+template <> UInt32 GetTypeID <VMResultArray<int>>(VMClassRegistry * registry)				{ return VMValue::kType_IntArray; }
+template <> UInt32 GetTypeID <VMResultArray<float>>(VMClassRegistry * registry)			{ return VMValue::kType_FloatArray; }
+template <> UInt32 GetTypeID <VMResultArray<bool>>(VMClassRegistry * registry)			{ return VMValue::kType_BoolArray; }
+template <> UInt32 GetTypeID <VMResultArray<BSFixedString>>(VMClassRegistry * registry)	{ return VMValue::kType_StringArray; }
+
 UInt32 GetTypeIDFromFormTypeID(UInt32 formTypeID, VMClassRegistry * registry)
 {
 	UInt32		result = 0;
 	VMClassInfo	* info = NULL;
 
-	if(registry->GetFormClass(formTypeID, &info))
+	if(registry->GetFormTypeClass(formTypeID, &info))
 	{
 		if(info)
 		{

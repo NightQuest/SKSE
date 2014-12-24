@@ -68,6 +68,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\skse_1_9_32.dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -335,6 +336,14 @@
 				</File>
 				<File
 					RelativePath=".\PapyrusEquipSlot.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusFaction.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusFaction.h"
 					>
 				</File>
 				<File
@@ -692,6 +701,10 @@
 			</File>
 			<File
 				RelativePath=".\GameAPI.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GameBSExtraData.cpp"
 				>
 			</File>
 			<File

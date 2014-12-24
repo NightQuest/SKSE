@@ -21,6 +21,7 @@ void * FormHeap_Allocate(UInt32 size);
 void FormHeap_Free(void * ptr);
 
 extern PlayerCharacter ** g_thePlayer;
+extern UInt32 * g_consoleHandle;
 
 void Console_Print(const char * fmt, ...);
 bool IsConsoleMode(void);

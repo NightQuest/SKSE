@@ -71,14 +71,61 @@ public:
 	DEFINE_MEMBER_FN(BindObject, void, 0x00C2BCD0, VMIdentifier ** identifier, UInt64 handle);
 };
 
+class VMClassFunctionVisitor
+{
+public:
+	virtual bool Accept(IFunction * func) = 0;
+};
+
 // 10
 class VMClassInfo
 {
 public:
-	SInt32				refCount;
-	StringCache::Ref	name;	// probably StringCache::Ref
-	VMClassInfo			* parent;
-	void				* unk0C;
+	SInt32				refCount;	// 00
+	StringCache::Ref	name;		// 04 probably StringCache::Ref
+	VMClassInfo			* parent;	// 08
+	StringCache::Ref	* unk0C;	// 0C
+	UInt32				unk10;		// 10
+	UInt32				unk14;		// 14
+	UInt32				numFuncs;	// 18
+	UInt32				funcPtr;	// 1C
+
+	IFunction** GetFunctions() const
+	{
+		return (IFunction**)(funcPtr + 
+			4 * (
+					((unk14 >> 10) & 0x3FF) * 10 +
+					((unk10 >> 8) & 0x3FF) * 2 +
+					((unk10 >> 2) & 0x3F) +
+					(unk14 & 0x3FF) * 3
+				)
+			);
+	}
+
+	UInt32 GetNumMemberFunctions() const
+	{
+		return numFuncs & 0x1FF;
+	}
+
+	UInt32 GetNumGlobalFunctions() const
+	{
+		return (unk14 >> 20) & 0x1FF;
+	}
+
+	void Visit(VMClassFunctionVisitor & visitor)
+	{
+		UInt32 globalFns = GetNumGlobalFunctions();
+		UInt32 memberFns = GetNumMemberFunctions();
+
+		IFunction ** funcPtr = GetFunctions();
+		for(UInt32 i = 0; i < globalFns + memberFns; i++) {
+			IFunction * func = funcPtr[i];
+			if(func) {
+				if(visitor.Accept(func))
+					break;
+			}	
+		}
+	}
 
 	void	AddRef(void);
 	void	Release(void);
@@ -335,7 +382,7 @@ class VMClassRegistry
 public:
 	enum
 	{
-		kFunctionFlag_NoWait = 0x01
+		kFunctionFlag_NoWait = 0x01	// set this only if your function is thread-safe
 	};
 
 	VMClassRegistry();
@@ -352,7 +399,7 @@ public:
 	virtual void	Unk_07(void);
 	virtual void	RegisterForm(UInt32 typeID, const char * papyrusClassName);
 	virtual void	Unk_09(void);
-	virtual bool	GetFormClass(UInt32 formID, VMClassInfo ** outClass);
+	virtual bool	GetFormTypeClass(UInt32 formType, VMClassInfo ** outClass);
 	virtual void	Unk_0B(void);
 	virtual void	Unk_0C(void);
 	virtual bool	Unk_0D(StringCache::Ref * className, UInt32 * unk);

@@ -17,6 +17,8 @@ static bool InjectDLL(PROCESS_INFORMATION * info, const char * dllPath, ProcHook
 static bool InjectDLLThread(PROCESS_INFORMATION * info, const char * dllPath, bool sync);
 static bool DoInjectDLLThread(PROCESS_INFORMATION * info, const char * dllPath, bool sync);
 static void PrintModuleInfo(UInt32 procID);
+static std::string GetAppName(void);
+static std::string GetAppPath(void);
 
 int main(int argc, char ** argv)
 {
@@ -84,6 +86,15 @@ int main(int argc, char ** argv)
 			if(procNameCheck != 'ESTV')
 			{
 				_ERROR("### someone kludged the default process name to (%s), don't ask me for support with your install ###", procName.c_str());
+			}
+
+			// check to see if someone screwed up their install
+			std::string appName = GetAppName();
+			if(!_stricmp(appName.c_str(), procName.c_str()))
+			{
+				_WARNING("### you have renamed skse_loader and have not specified the name of the runtime, trying TES_.exe");
+
+				appName = "TES_.exe";
 			}
 		}
 	}
@@ -457,4 +468,24 @@ static bool DoInjectDLLThread(PROCESS_INFORMATION * info, const char * dllPath, 
 		_ERROR("Process::InstallHook: couldn't get process handle");
 
 	return result;
+}
+
+static std::string GetAppPath(void)
+{
+	char	appPath[4096];
+
+	ASSERT(GetModuleFileName(GetModuleHandle(NULL), appPath, sizeof(appPath)));
+
+	return appPath;
+}
+
+static std::string GetAppName(void)
+{
+	std::string appPath = GetAppPath();
+
+	std::string::size_type slashOffset = appPath.rfind('\\');
+	if(slashOffset == std::string::npos)
+		return appPath;
+
+	return appPath.substr(slashOffset + 1);
 }

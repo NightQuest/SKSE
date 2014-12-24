@@ -1,4 +1,4 @@
-Scriptname Tree extends Form Hidden
+Scriptname TreeObject extends Form Hidden
 
 SoundDescriptor Function GetHarvestSound() native
 Function SetHarvestSound(SoundDescriptor akSoundDescriptor) native

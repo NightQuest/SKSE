@@ -6,7 +6,7 @@ Function AddForm(Form apForm, int aiLevel) native
 ; Removes all script added forms from this leveled list
 Function Revert() native
 
-; SKSE additions built 2014-07-08 04:02:05.441000 UTC
+; SKSE additions built 2014-12-23 07:36:08.038000 UTC
 int Function GetNumForms() native
 Form Function GetNthForm(int n) native
 

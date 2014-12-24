@@ -24,6 +24,7 @@ class TESWordOfPower;
 class BGSHazard;
 class TESNPC;
 class TESWorldSpace;
+class BSExtraData;
 
 typedef TESForm * (* _LookupFormByID)(UInt32 id);
 extern const _LookupFormByID LookupFormByID;
@@ -339,6 +340,7 @@ public:
 	enum { kTypeID = 0 };	// special-case
 
 	enum {
+		kFlagIsDeleted = 0x20,
 		kFlagPlayerKnows = 0x40
 	};
 
@@ -778,17 +780,26 @@ public:
 	enum { kTypeID = kFormType_ImpactData };
 
 	// 20
-	struct Data54
+	struct DecalData
 	{
-		float	unk00;		// 00 - init'd to 8
-		float	unk04;		// 04 - init'd to 32
-		float	unk08;		// 08 - init'd to 8
-		float	unk0C;		// 0C - init'd to 32
-		float	unk10;		// 10 - init'd to 32
-		float	unk14;		// 14 - init'd to 4
-		float	unk18;		// 18 - init'd to 1
-		UInt8	unk1C;		// 1C - init'd to 4
-		UInt8	unk1D;		// 1D - init'd to 0
+		float	minw;				// 00 - init'd to 8
+		float	maxw;				// 04 - init'd to 32
+		float	minh;				// 08 - init'd to 8
+		float	maxh;				// 0C - init'd to 32
+		float	depth;				// 10 - init'd to 32
+		float	shininess;			// 14 - init'd to 4
+		float	parallaxScale;		// 18 - init'd to 1
+		UInt8	parallaxPasses;		// 1C - init'd to 4
+
+		enum
+		{
+			kDecalFlag_Parallax			= (1 << 0),
+			kDecalFlag_AlphaBlending	= (1 << 1),
+			kDecalFlag_AlphaTesting		= (1 << 2),
+			kDecalFlag_NoSubtextures	= (1 << 3)
+		};
+
+		UInt8	flags;		// 1D - init'd to 0
 		UInt8	pad1E[2];	// 1E
 	};
 
@@ -796,18 +807,33 @@ public:
 	TESModel	model;		// 14
 
 	// members
-	float	unk28;			// 28 - init'd to .25
-	UInt32	unk2C;			// 2C - init'd to 2
-	float	unk30;			// 30 - init'd to 15
-	float	unk34;			// 34 - init'd to 16
-	UInt32	unk38;			// 38 - init'd to 1
-	UInt8	pad3C[4];		// 3C - init'd to 0 via memset (block from 28-40)
+	float	duration;			// 28 - init'd to .25
+
+	enum
+	{
+		kOrientation_SurfaceNormal = 0,
+		kOrientation_ProjectileNormal = 1,
+		kOrientation_ProjtectileReflection = 2
+	};
+	UInt32	orientation;		// 2C - init'd to 2
+	float	angleThreshold;		// 30 - init'd to 15
+	float	placementRadius;		// 34 - init'd to 16
+	UInt32	soundLevel;			// 38 - init'd to 1
+
+	enum
+	{
+		kFlags_NoDecalData = 1
+	};
+
+	UInt8	flags;				// 3C
+	UInt8	impactResult;		// 3D
+	UInt16	pad3E[2];
 
 	BGSTextureSet			* textures[2];	// 40 - texture set
 	BGSSoundDescriptorForm	* sounds[2];	// 48 - sound
 	BGSHazard				* hazard;		// 50 - hazard
 
-	Data54	unk54;			// 54
+	DecalData	unk54;			// 54
 	
 	UInt32	pad74;			// 74
 };
@@ -913,6 +939,8 @@ public:
 
 	MEMBER_FN_PREFIX(BGSListForm);
 	DEFINE_MEMBER_FN(AddFormToList, void, 0x004FB380, TESForm * form);
+	DEFINE_MEMBER_FN(RemoveFormFromList, void, 0x004FB4A0, TESForm * form);
+	DEFINE_MEMBER_FN(RevertList, void, 0x004FB2F0);
 
 	class Visitor
 	{
@@ -1559,7 +1587,10 @@ public:
 	UnkArray	unk14C;		// 14C
 
 	MEMBER_FN_PREFIX(TESQuest);
-	DEFINE_MEMBER_FN(ForceRefTo, UInt32, 0x005728C0, UInt32 aliasId, TESObjectREFR * reference);	
+	DEFINE_MEMBER_FN(ForceRefTo, UInt32, 0x005728C0, UInt32 aliasId, TESObjectREFR * reference);
+	DEFINE_MEMBER_FN(NewGame_Internal, UInt8, 0x575A20, UInt8 * unk1, UInt8 unk2);
+
+	UInt8 NewGame_Hook(UInt8 * unk1, UInt8 unk2);
 };
 
 STATIC_ASSERT(sizeof(TESQuest) == 0x158);
@@ -2045,15 +2076,39 @@ public:
 	// members
 
 	// 2C
-	struct Data34
+	struct CrimeValues
 	{
-		UInt32	pad[0x2C / 4];
+		UInt32	unk00;				// 00
+		UInt32	unk04;				// 04
+		UInt32	unk08;				// 08
+		UInt32	unk0C;				// 0C
+		UInt32	unk10;				// 10
+		UInt32	unk14;				// 14
+		bool	arrest;				// 18
+		bool	attackOnSight;		// 19
+		UInt16	murder;				// 1A
+		UInt16	assault;			// 1C
+		UInt16	trespass;			// 20
+		UInt16	pickpocket;			// 22
+		float	stealMult;			// 24
+		UInt16	escape;				// 28
+		UInt16	werewolf;			// 2A
 	};
 
 	// 20
-	struct Data60
+	struct VendorData
 	{
-		UInt32	pad[0x20 / 4];
+		UInt16			startHour;				// 00
+		UInt16			endHour;				// 02
+		UInt32			radius;					// 04
+		UInt8			onlyBuysStolenItems;	// 08
+		UInt8			notSellBuy;				// 0A
+		UInt16			pad0B;					// 0B
+		void			* packageLocation;		// 0C
+		UInt32			unk10;					// 10
+		BGSListForm		* buySellList;			// 14
+		TESObjectREFR	* merchantContainer;	// 18
+		UInt32			unk1C;					// 1C
 	};
 
 	// 8
@@ -2064,15 +2119,35 @@ public:
 	};
 
 	UInt32	unk2C;	// 2C
-	UInt32	unk30;	// 30
-	Data34	unk34;	// 34
-	Data60	unk60;	// 60
-	Data80	unk80;	// 80
-	UInt32	unk88;	// 88
-	UInt32	unk8C;	// 8C
-	float	unk90;	// 90
-	UInt32	unk94;	// 94
+
+	enum
+	{
+		kFactionFlag_HiddenFromNPC		= (1 << 0),
+		kFactionFlag_SpecialCombat		= (1 << 1),
+		kFactionFlag_TrackCrime			= (1 << 4),
+		kFactionFlag_IgnoreMurder		= (1 << 5),
+		kFactionFlag_IgnoreAssult		= (1 << 6),
+		kFactionFlag_IngoreStealing		= (1 << 7),
+		kFactionFlag_IgnoreTrespass		= (1 << 8),
+		kFactionFlag_NoReportCrime		= (1 << 9),
+		kFactionFlag_CrimeGoldDefaults	= (1 << 10),
+		kFactionFlag_IgnorePickpocket	= (1 << 11),
+		kFactionFlag_Vendor				= (1 << 12),
+		kFactionFlag_CanBeOwner			= (1 << 13),
+		kFactionFlag_IgnoreWerewolf		= (1 << 14)
+	};
+
+	UInt32		factionFlags;	// 30
+	CrimeValues	crimeValues;	// 34
+	VendorData	vendorData;		// 60
+	Data80		unk80;			// 80
+	UInt32		unk88;			// 88
+	UInt32		unk8C;			// 8C
+	float		unk90;			// 90
+	UInt32		unk94;			// 94
 };
+STATIC_ASSERT(sizeof(TESFaction) == 0x98);
+STATIC_ASSERT(offsetof(TESFaction, vendorData) == 0x60);
 
 // 24
 class TESGlobal : public TESForm
@@ -2265,7 +2340,7 @@ public:
 	StringCache::Ref	unk34;			// 34
 };
 
-// 8C
+// 90
 class TESObjectCELL : public TESForm
 {
 public:
@@ -2307,28 +2382,37 @@ public:
 	};
 
 
-	Data						unk1C;		// 1C
-	Data						unk24;		// 24
-	UInt16						unk2C;		// 2C	1 - no 3C
-	UInt16						unk2E;		// 2E
-	UInt8						unk30;		// 30
-	UInt8						unk31;		// 31
-	UInt8						unk32;		// 32
-	UInt8						pad33;		// 33
-	TESAIForm::Data				unk34;		// 34 - ExtraDataList
-	TVDT						* unk3C;	// 3C
-	UInt32						unk40;		// 40
-	UInt32						unk44;		// 44
-	UInt32						unk48;		// 48
-	tArray<TESObjectREFR*> objectList;		// 4C
-	UInt32						unk58;		// 58
-	UInt32						unk5C;		// 5C
-	UnkArray					unk60;		// 60
-	UnkArray					unk6C;		// 6C
-	Data						unk78;		// 78
-	UInt32						unk80;		// 80
-	UInt32						unk84;		// 84
-	UInt32						unk88;		// 88
+	Data						unk1C;			// 1C
+	Data						unk24;			// 24
+	UInt16						unk2C;			// 2C	1 - no 3C
+	UInt16						unk2E;			// 2E
+	UInt8						unk30;			// 30
+	UInt8						unk31;			// 31
+	UInt8						unk32;			// 32
+	UInt8						pad33;			// 33
+	BSExtraData					* extraData;	// 34 - ExtraDataList
+	// ExtraEditorID
+	// ExtraCellImageSpace
+	// ExtraCellMusicType
+	// ExtraLocation
+	// ExtraEncounterZone
+	// ExtraCellAcousticSpace
+	// ExtraSeenData
+	// ExtraHavok
+	void						* unk38;		// 38
+	TVDT						* unk3C;		// 3C
+	void						* unk40;		// 40
+	float						waterLevel;		// 44
+	void						* unk48;		// 48
+	tArray<TESObjectREFR*>		objectList;		// 4C
+	UnkArray					unk58;			// 58
+	UnkArray					unk64;			// 64
+	UnkArray					unk70;			// 70
+	Data						unk7C;			// 78
+	UInt32						unk80;			// 80
+	TESWorldSpace				* unk84;		// 84
+	UInt32						unk88;			// 88
+	BGSLightingTemplate			* lightingTemplate;	// 8C
 
 	MEMBER_FN_PREFIX(TESObjectCELL);
 	DEFINE_MEMBER_FN(GetNorthRotation, double, 0x004C0FC0);

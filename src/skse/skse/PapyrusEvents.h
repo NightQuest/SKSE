@@ -492,6 +492,7 @@ extern RegistrationMapHolder<BSFixedString,ModCallbackParameters>	g_modCallbackR
 extern RegistrationSetHolder<NullParameters>						g_cameraEventRegs;
 extern RegistrationSetHolder<NullParameters>						g_crosshairRefEventRegs;
 extern RegistrationMapHolder<UInt32>								g_actionEventRegs;
+extern RegistrationSetHolder<NullParameters>						g_ninodeUpdateEventRegs;
 
 struct SKSEModCallbackEvent
 {
@@ -579,6 +580,23 @@ struct SKSEActionEvent
 	type(a_type), actor(a_actor), sourceForm(a_source), slot(a_slot) {}
 };
 
+struct SKSENiNodeUpdateEvent
+{
+	TESObjectREFR * reference;
+
+	SKSENiNodeUpdateEvent(TESObjectREFR * a_reference) : reference(a_reference) {}
+};
+
+template <>
+class BSTEventSink <SKSENiNodeUpdateEvent>
+{
+public:
+	virtual ~BSTEventSink() {}; // todo?
+	virtual	EventResult ReceiveEvent(SKSENiNodeUpdateEvent * evn, EventDispatcher<SKSENiNodeUpdateEvent> * dispatcher) = 0;
+};
+
+extern EventDispatcher<SKSENiNodeUpdateEvent> g_ninodeUpdateEventDispatcher;
+
 template <>
 class BSTEventSink <SKSEActionEvent>
 {
@@ -626,9 +644,16 @@ public:
 	virtual	EventResult		ReceiveEvent(SKSEActionEvent * evn, EventDispatcher<SKSEActionEvent> * dispatcher);
 };
 
+class NiNodeUpdateEventHandler : public BSTEventSink <SKSENiNodeUpdateEvent>
+{
+public:
+	virtual	EventResult		ReceiveEvent(SKSENiNodeUpdateEvent * evn, EventDispatcher<SKSENiNodeUpdateEvent> * dispatcher);
+};
+
 extern MenuEventHandler				g_menuEventHandler;
 extern InputEventHandler			g_inputEventHandler;
 extern ModCallbackEventHandler		g_modCallbackEventHandler;
 extern CameraEventHandler			g_cameraEventHandler;
 extern CrosshairRefEventHandler		g_crosshairRefEventHandler;
 extern ActionEventHandler			g_actionEventHandler;
+extern NiNodeUpdateEventHandler		g_ninodeUpdateEventHandler;

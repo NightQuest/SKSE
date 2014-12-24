@@ -1,4 +1,4 @@
-Skyrim Script Extender v1.7.1
+Skyrim Script Extender v1.7.2
 by Ian Patterson and Stephen Abel (ianpatt and behippo)
 Thanks to: Paul Connelly (scruggsywuggsy the ferret), gibbed, Purple Lunchbox, snakster
 
@@ -6,7 +6,7 @@ The Skyrim Script Extender, or SKSE for short, is a modder's resource that expan
 
 Compatibility:
 
-SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.9.32.0.*). When a new version is released, we will update as soon as possible; please be patient. The editor does not currently need modification, however a custom set of .pex/psc files must be installed.
+SKSE will support the latest version of Skyrim available on Steam, and _only_ this version (currently 1.9.32 with any combination of numbers after that). When a new version is released, we will update as soon as possible; please be patient. The editor does not currently need modification, however a custom set of .pex/psc files must be installed.
 
 [ Installation ]
 

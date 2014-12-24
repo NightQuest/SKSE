@@ -335,7 +335,14 @@ namespace Serialization
 					s_chunkOpen = false;
 
 					// call the plugin
-					info->save(&g_SKSESerializationInterface);
+					try
+					{
+						info->save(&g_SKSESerializationInterface);
+					}
+					catch( ... )
+					{
+						_ERROR("HandleSaveGlobalData: exception occurred saving %08X at %016I64X data may be corrupt.", s_pluginHeader.signature, s_currentFile.GetOffset());
+					}
 
 					// flush the remaining chunk data
 					FlushWriteChunk();
@@ -416,27 +423,35 @@ namespace Serialization
 					if(iter->hadUID && (iter->uid == s_pluginHeader.signature))
 						pluginIdx = iter - s_pluginCallbacks.begin();
 
-				if(pluginIdx != kPluginHandle_Invalid)
+				try
 				{
-					PluginCallbacks	* info = &s_pluginCallbacks[pluginIdx];
-
-					info->hadData = true;
-
-					if(info->load)
+					if(pluginIdx != kPluginHandle_Invalid)
 					{
-						s_chunkOpen = false;
-						info->load(&g_SKSESerializationInterface);
+						PluginCallbacks	* info = &s_pluginCallbacks[pluginIdx];
+
+						info->hadData = true;
+
+						if(info->load)
+						{
+							s_chunkOpen = false;
+							info->load(&g_SKSESerializationInterface);
+						}
+					}
+					else
+					{
+						_WARNING("HandleLoadGame: plugin with signature %08X not loaded", s_pluginHeader.signature);
 					}
 				}
-				else
+				catch( ... )
 				{
-					_WARNING("plugin with signature %08X not loaded", s_pluginHeader.signature);
+					_ERROR("HandleLoadGame: exception occurred loading %08X", s_pluginHeader.signature);
 				}
 
+				// if plugin failed to read all its data or threw exception, jump to the next chunk
 				UInt64	expectedOffset = pluginChunkStart + s_pluginHeader.length;
 				if(s_currentFile.GetOffset() != expectedOffset)
 				{
-					_WARNING("plugin did not read all of its data (at %016I64X expected %016I64X)", s_currentFile.GetOffset(), expectedOffset);
+					_WARNING("HandleLoadGame: plugin did not read all of its data (at %016I64X expected %016I64X)", s_currentFile.GetOffset(), expectedOffset);
 					s_currentFile.SetOffset(expectedOffset);
 				}
 			}

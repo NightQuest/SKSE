@@ -35,10 +35,7 @@ public:
 			return false;
 		}
 
-		cmd->argCount = 0;
-
 		invokeDelegate_ = cmd;
-
 		return true;
 	}
 
@@ -47,14 +44,9 @@ public:
 	{
 		using namespace papyrusUI;
 
-		if (invokeDelegate_->argCount >= 128)
-		{
-			_WARNING("Tried to push more than 128 arguments into PapyrusUICallback.");
-			return;
-		}
-
-		SetGFxValue<T>(&invokeDelegate_->args[invokeDelegate_->argCount], arg);
-		invokeDelegate_->argCount++;
+		GFxValue value;
+		SetGFxValue<T>(&value, arg);
+		invokeDelegate_->args.push_back(value);
 	}
 
 	template <typename T>
@@ -64,16 +56,10 @@ public:
 
 		UInt32 argCount = args.Length();
 
-		UInt32 offset = invokeDelegate_->argCount;
+		UInt32 offset = invokeDelegate_->args.size();
 		UInt32 newArgCount = offset + argCount;
-
-		if (newArgCount > 128)
-		{
-			_WARNING("Tried to push more than 128 arguments into PapyrusUICallback.");
-			return;
-		}
 		
-		invokeDelegate_->argCount = newArgCount;
+		invokeDelegate_->args.resize(newArgCount);
 		for (UInt32 i=0; i<argCount; i++, offset++)
 		{
 			T arg;

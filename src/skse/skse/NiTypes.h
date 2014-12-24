@@ -180,6 +180,9 @@ public:
 	float	a;	// C
 };
 
+// math.h
+#define MATH_PI       3.14159265358979323846
+
 // 24
 class NiMatrix33
 {
@@ -200,6 +203,11 @@ public:
 
 	// Scalar multiplier
 	NiMatrix33 operator*(float fScalar) const;
+
+	NiMatrix33 Transpose() const;
+
+	void GetEulerAngles(float * heading, float * attitude, float * bank);
+	void SetEulerAngles(float heading, float attitude, float bank);
 };
 
 STATIC_ASSERT(sizeof(NiMatrix33) == 0x24);
@@ -219,6 +227,9 @@ public:
 
 	// Transform point
 	NiPoint3 operator*(const NiPoint3 &pt) const;
+
+	// Invert
+	void Invert(NiTransform& kDest) const;
 };
 
 STATIC_ASSERT(sizeof(NiTransform) == 0x34);

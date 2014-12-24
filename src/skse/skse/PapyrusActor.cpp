@@ -1,4 +1,5 @@
 #include "PapyrusActor.h"
+#include "PapyrusArgs.h"
 
 #include "GameForms.h"
 #include "GameData.h"
@@ -10,6 +11,8 @@
 #include "HashUtil.h"
 
 #include "NiExtraData.h"
+
+#include <set>
 
 class MatchBySlot : public FormMatcher
 {
@@ -39,6 +42,24 @@ public:
 	MatchByForm(TESForm * form) : m_form(form) {}
 
 	bool Matches(TESForm* pForm) const { return m_form == pForm; }
+};
+
+typedef std::set<TESFaction*> FactionRankSet;
+class CollectUniqueFactions : public Actor::FactionVisitor
+{
+public:
+	CollectUniqueFactions::CollectUniqueFactions(FactionRankSet * rankSet, SInt8 min, SInt8 max) : m_rankSet(rankSet), m_min(min), m_max(max) { }
+	virtual bool Accept(TESFaction * faction, SInt8 rank)
+	{
+		if(rank >= m_min && rank <= m_max)
+			m_rankSet->insert(faction);
+		return false;
+	}
+
+private:
+	SInt8 m_min;
+	SInt8 m_max;
+	FactionRankSet * m_rankSet;
 };
 
 bool CanEquipBothHands(Actor* actor, TESForm * item)
@@ -589,6 +610,29 @@ namespace papyrusActor
 			taskPool->UpdateExpression(thisActor, BSFaceGenAnimationData::kKeyframeType_Reset, 0, 0);
 		}
 	}
+
+	VMResultArray<TESFaction*> GetFactions(Actor* thisActor, SInt32 gte, SInt32 lte)
+	{
+		VMResultArray<TESFaction*> factions;
+		if(thisActor) {
+			if(gte > SCHAR_MAX)
+				gte = SCHAR_MAX;
+			if(gte < SCHAR_MIN)
+				gte = SCHAR_MIN;
+			if(lte < SCHAR_MIN)
+				lte = SCHAR_MIN;
+			if(lte > SCHAR_MAX)
+				lte = SCHAR_MAX;
+			FactionRankSet rankSet;
+			CollectUniqueFactions factionVisitor(&rankSet, gte, lte);
+			thisActor->VisitFactions(factionVisitor);
+
+			for(FactionRankSet::iterator it = rankSet.begin(); it != rankSet.end(); ++it)
+				factions.push_back(*it);
+		}
+
+		return factions;
+	}
 }
 
 #include "PapyrusVM.h"
@@ -666,4 +710,7 @@ void papyrusActor::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0 <Actor, void>("ResetExpressionOverrides", "Actor", papyrusActor::ResetExpressionOverrides, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction2 <Actor, VMResultArray<TESFaction*>, SInt32, SInt32>("GetFactions", "Actor", papyrusActor::GetFactions, registry));
 }

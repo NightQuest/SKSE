@@ -94,6 +94,23 @@ UInt32 ActorValueList::ResolveActorValueByName(const char * name)
 	return id;
 }
 
+const _GetRelationshipIndex GetRelationshipIndex = (_GetRelationshipIndex)0x00555750;
+
+RelationshipRanks * RelationshipRanks::GetSingleton(void)
+{
+	return (RelationshipRanks *)0x01257100;
+}
+
+SInt32 RelationshipRanks::GetRelationshipRank(TESForm * form1, TESForm * form2)
+{
+	RelationshipRanks * ranks = RelationshipRanks::GetSingleton();
+	if (form1 && form2) {
+		return ranks->value[GetRelationshipIndex(form1, form2)];
+	}
+
+	return ranks->value[kRelationshipAcquaintance];
+}
+
 DefaultObjectList * DefaultObjectList::GetSingleton(void)
 {
 	return (DefaultObjectList*)0x01245C60;
@@ -124,6 +141,7 @@ const _ApplyMasksToRenderTarget ApplyMasksToRenderTarget = (_ApplyMasksToRenderT
 const _UpdateModelSkin UpdateModelSkin = (_UpdateModelSkin)0x005A9810; // Applies tint to ShaderType 5 nodes
 const _UpdateModelHair UpdateModelHair = (_UpdateModelHair)0x005A9890; // Applies tint to ShaderType 6 nodes
 const _UpdateModelFace UpdateModelFace = (_UpdateModelFace)0x005AA210;
+const _UpdateHarvestModel UpdateHarvestModel = (_UpdateHarvestModel)0x00455BD0;
 
 const _CacheTRIFile CacheTRIFile = (_CacheTRIFile)0x005A2B40;
 

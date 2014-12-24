@@ -4,6 +4,8 @@
 #include "skse/NiObjects.h"
 #include "skse/GameTypes.h"
 
+class NiGeometryData;
+
 class BSFaceGenKeyframe
 {
 public:
@@ -44,6 +46,17 @@ public:
 	~NiExtraData();
 
 	char *	m_pcName;	// 08
+
+	static NiExtraData* Create(UInt32 size, UInt32 vtbl);
+};
+
+class NiBooleanExtraData : public NiExtraData
+{
+public:
+	NiBooleanExtraData();
+	~NiBooleanExtraData();
+
+	bool	m_data;	// 0C
 };
 
 // 10
@@ -129,6 +142,7 @@ public:
 		kKeyframeType_Unk1,
 		kKeyframeType_Modifier,
 		kKeyframeType_Phoneme,
+		kKeyframeType_Custom,
 		kKeyframeType_Reset = 255,
 		kNumKeyframes = 12
 	};
@@ -192,7 +206,7 @@ STATIC_ASSERT(offsetof(BSFaceGenAnimationData, overrideFlag) == 0x1A6);
 STATIC_ASSERT(sizeof(BSFaceGenAnimationData) == 0x1B4);
 
 
-// 30
+// 30 (FMD)
 class BSFaceGenModelExtraData : public NiExtraData
 {
 public:
@@ -201,3 +215,14 @@ public:
 	
 };
 STATIC_ASSERT(sizeof(BSFaceGenModelExtraData) == 0x30);
+
+// 18 (FOD)
+class BSFaceGenBaseMorphExtraData : public NiExtraData
+{
+public:
+	NiPoint3 * vertexData;		// 0C
+	UInt32	modelVertexCount;	// 10 - Same as 14 if the tri model is correct
+	UInt32	vertexCount;		// 14
+
+	static BSFaceGenBaseMorphExtraData* Create(NiGeometryData * data);
+};

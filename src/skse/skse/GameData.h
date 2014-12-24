@@ -470,6 +470,32 @@ private:
 	ActorValueInfo * actorValues[kNumActorValues];
 };
 
+typedef UInt32(*_GetRelationshipIndex)(TESForm * form1, TESForm * form2);
+extern const _GetRelationshipIndex GetRelationshipIndex;
+
+class RelationshipRanks
+{
+public:
+	static RelationshipRanks * GetSingleton(void);
+
+	enum
+	{
+		kRelationshipLover = 0,
+		kRelationshipAlly,
+		kRelationshipConfidant,
+		kRelationshipFriend,
+		kRelationshipAcquaintance,
+		kRelationshipRival,
+		kRelationshipFoe,
+		kRelationshipEnemy,
+		kRelationshipArchnemesis,
+		kNumRelationships
+	};
+	SInt32 value[kNumRelationships];
+
+	static SInt32 GetRelationshipRank(TESForm * form1, TESForm * form2);
+};
+
 class DefaultObjectList
 {
 public:
@@ -622,14 +648,17 @@ extern const _GetNumActorBaseOverlays GetNumActorBaseOverlays;
 typedef bool (* _ApplyMasksToRenderTarget)(tArray<TintMask*> * tintMask, BSRenderTargetGroup ** renderTarget);
 extern const _ApplyMasksToRenderTarget ApplyMasksToRenderTarget;
 
-typedef UInt32 (* _UpdateModelSkin)(NiNode*, NiColorA**);
+typedef UInt32 (* _UpdateModelSkin)(NiAVObject*, NiColorA**);
 extern const _UpdateModelSkin UpdateModelSkin;
 
-typedef UInt32 (* _UpdateModelHair)(NiNode*, NiColorA**);
+typedef UInt32 (* _UpdateModelHair)(NiAVObject*, NiColorA**);
 extern const _UpdateModelHair UpdateModelHair;
 
-typedef UInt32 (* _UpdateModelFace)(NiNode*);
+typedef UInt32 (* _UpdateModelFace)(NiAVObject*);
 extern const _UpdateModelFace UpdateModelFace;
+
+typedef void (*_UpdateHarvestModel)(TESObjectREFR*, NiAVObject*);
+extern const _UpdateHarvestModel UpdateHarvestModel;
 
 // Loads a TRI file into the FaceGenDB, parameters are unknown ptrs
 // unk1 seems to be inited to zero before calling however

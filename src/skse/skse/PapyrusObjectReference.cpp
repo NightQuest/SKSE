@@ -9,6 +9,7 @@
 #include "GameObjects.h"
 #include "GameExtraData.h"
 #include "GameData.h"
+#include "GameThreads.h"
 
 #include "NiNodes.h"
 
@@ -17,6 +18,36 @@
 
 typedef std::vector<ExtraContainerChanges::EntryData*> ExtraDataVec;
 typedef std::map<TESForm*, UInt32> ExtraContainerMap;
+
+class ExtraContainerReceiver
+{
+public:
+	virtual void AddFormToReceiver(TESForm * form) = 0;
+};
+
+class ExtraContainerFormList : public ExtraContainerReceiver
+{
+	BGSListForm * m_formList;
+public:
+	ExtraContainerFormList::ExtraContainerFormList(BGSListForm * list) : m_formList(list) { }
+
+	virtual void AddFormToReceiver(TESForm * form)
+	{
+		CALL_MEMBER_FN(m_formList, AddFormToList)(form);
+	}
+};
+
+class ExtraContainerArray : public ExtraContainerReceiver
+{
+	VMResultArray<TESForm*> * m_array;
+public:
+	ExtraContainerArray::ExtraContainerArray(VMResultArray<TESForm*> * list) : m_array(list) { }
+
+	virtual void AddFormToReceiver(TESForm * form)
+	{
+		m_array->push_back(form);
+	}
+};
 
 class ExtraContainerInfo
 {
@@ -98,25 +129,24 @@ public:
 		while (it != itEnd) {
 			ExtraContainerChanges::EntryData* extraData = (*it);
 			if (extraData && (extraData->countDelta > 0)) {
-				weight += papyrusForm::GetWeight(extraData->type);
+				weight += papyrusForm::GetWeight(extraData->type) * extraData->countDelta;
 			}
 			++it;
 		}
 		return weight;
 	}
 
-	void GetRemainingForms(BGSListForm * list) {
+	void GetRemainingForms(ExtraContainerReceiver * receiver) {
 		ExtraDataVec::iterator itEnd = m_vec.end();
 		ExtraDataVec::iterator it = m_vec.begin();
 		while (it != itEnd) {
 			ExtraContainerChanges::EntryData* extraData = (*it);
 			if (extraData && (extraData->countDelta > 0)) {
-				CALL_MEMBER_FN(list, AddFormToList)(extraData->type);
+				receiver->AddFormToReceiver(extraData->type);
 			}
 			++it;
 		}
 	}
-
 
 	ExtraContainerChanges::EntryData* GetNth(UInt32 n, UInt32 count) {
 		ExtraDataVec::iterator itEnd = m_vec.end();
@@ -194,18 +224,18 @@ public:
 	float GetTotalWeight() { return m_totalWeight; }
 };
 
-class ContainerFormFiller
+class ExtraContainerFiller
 {
 	ExtraContainerInfo& m_info;
-	BGSListForm * m_formList;
+	ExtraContainerReceiver * m_receiver;
 public:
-	ContainerFormFiller(ExtraContainerInfo& info, BGSListForm * formList) : m_info(info), m_formList(formList) { }
+	ExtraContainerFiller(ExtraContainerInfo& info, ExtraContainerReceiver * receiver) : m_info(info), m_receiver(receiver) { }
 
 	bool Accept(TESContainer::Entry* pEntry)
 	{
 		SInt32 numObjects = 0;
 		if (m_info.IsValidEntry(pEntry, numObjects)) {
-			CALL_MEMBER_FN(m_formList, AddFormToList)(pEntry->form);
+			m_receiver->AddFormToReceiver(pEntry->form);
 		}
 
 		return true;
@@ -330,6 +360,9 @@ namespace papyrusObjectReference
 
 	bool IsHarvested(TESObjectREFR* pProduceRef)
 	{
+		if(!pProduceRef)
+			return false;
+
 		UInt8 formType = pProduceRef->baseForm->formType;
 		if (formType == kFormType_Tree || formType == kFormType_Flora) {
 			return (pProduceRef->flags & TESObjectREFR::kFlag_Harvested) != 0;
@@ -339,12 +372,19 @@ namespace papyrusObjectReference
 
 	void SetHarvested(TESObjectREFR * pProduceRef, bool isHarvested)
 	{
-		UInt8 formType = pProduceRef->baseForm->formType;
-		if (formType == kFormType_Tree || formType == kFormType_Flora) {
-			if(isHarvested)
-				pProduceRef->flags |= TESObjectREFR::kFlag_Harvested;
-			else
-				pProduceRef->flags &= ~TESObjectREFR::kFlag_Harvested;
+		if(pProduceRef) {
+			UInt8 formType = pProduceRef->baseForm->formType;
+			if (formType == kFormType_Tree || formType == kFormType_Flora) {
+				if(isHarvested)
+					pProduceRef->flags |= TESObjectREFR::kFlag_Harvested;
+				else
+					pProduceRef->flags &= ~TESObjectREFR::kFlag_Harvested;
+			}
+
+			BSTaskPool * taskPool = BSTaskPool::GetSingleton();
+			if(taskPool) {
+				taskPool->UpdateHarvestModel(pProduceRef);
+			}
 		}
 	}
 
@@ -476,16 +516,46 @@ namespace papyrusObjectReference
 				if (pBaseForm)
 					pContainer = DYNAMIC_CAST(pBaseForm, TESForm, TESContainer);
 
+				ExtraContainerFormList formContainer(list);
 				ExtraContainerInfo info(pXContainerChanges ? pXContainerChanges->data->objList : NULL);
 				// first walk the base container
 				if (pContainer) {
-					ContainerFormFiller formFiller(info, list);
+					ExtraContainerFiller formFiller(info, &formContainer);
 					pContainer->Visit(formFiller);
 				}
 
-				info.GetRemainingForms(list);
+				info.GetRemainingForms(&formContainer);
 			}
 		}
+	}
+
+	VMResultArray<TESForm*> GetContainerForms(TESObjectREFR* pContainerRef)
+	{
+		VMResultArray<TESForm*> result;
+		if(pContainerRef) {
+			ExtraContainerChanges* pXContainerChanges = static_cast<ExtraContainerChanges*>(pContainerRef->extraData.GetByType(kExtraData_ContainerChanges));
+			if (pXContainerChanges) {
+				TESContainer* pContainer = NULL;
+				TESForm* pBaseForm = pContainerRef->baseForm;
+				if (pBaseForm)
+					pContainer = DYNAMIC_CAST(pBaseForm, TESForm, TESContainer);
+
+				// Declare the container to receive the forms
+				ExtraContainerArray formContainer(&result);
+				ExtraContainerInfo info(pXContainerChanges ? pXContainerChanges->data->objList : NULL);
+				// first walk the base container
+				if (pContainer) {
+					// Fill the container
+					ExtraContainerFiller formFiller(info, &formContainer);
+					pContainer->Visit(formFiller);
+				}
+
+				// Fill the container with remaining forms
+				info.GetRemainingForms(&formContainer);
+			}
+		}
+
+		return result;
 	}
 };
 
@@ -564,4 +634,7 @@ void papyrusObjectReference::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1<TESObjectREFR, void, BGSListForm*>("GetAllForms", "ObjectReference", papyrusObjectReference::GetAllForms, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectREFR, VMResultArray<TESForm*>>("GetContainerForms", "ObjectReference", papyrusObjectReference::GetContainerForms, registry));
 }

@@ -749,7 +749,7 @@ public:
 	UInt32		unk114;			// 114
 	TESCombatStyle*	combatStyle;// 118
 	UInt32		unk11C;			// 11C
-	UInt32		unk120;			// 120
+	TESRace		* overlayRace;	// 120
 	TESNPC		* nextTemplate;	// 124
 	float		height;			// 128
 	float		weight;			// 12C
@@ -1090,7 +1090,7 @@ public:
 	// members
 	UInt32						armorValTimes100;	// 110
 	tArray<TESObjectARMA *>		armorAddons;		// 114
-	UInt32						unk120;				// 120 - enchantment related?
+	TESObjectARMO				* templateArmor;	// 120 - enchantment related?
 };
 
 STATIC_ASSERT(offsetof(TESObjectARMO, armorValTimes100) == 0x110);

@@ -821,7 +821,7 @@ Function ForceTargetAngle(float afXAngle = 0.0, float afYAngle = 0.0, float afZA
 Function ClearForcedMovement() native
 
 
-; SKSE additions built 2014-07-08 04:02:05.441000 UTC
+; SKSE additions built 2014-12-23 07:36:08.038000 UTC
 ; returns the form for the item worn at the specified slotMask
 ; use Armor.GetMaskForSlot() to generate appropriate slotMask
 Form Function GetWornForm(int slotMask) native
@@ -933,3 +933,6 @@ Function SetExpressionModifier(int index, float value) native
 
 ; Resets all expression, phoneme, and modifiers
 Function ResetExpressionOverrides() native
+
+; Returns all factions with the specified min and max ranks (-128 to 127) 
+Faction[] Function GetFactions(int minRank, int maxRank) native

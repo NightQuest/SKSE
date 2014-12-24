@@ -88,6 +88,7 @@ struct BSFaceGenDB
 
 			UInt32 unk04[(0x6C - 0x04) >> 2];	// 04
 			tArray<Data*> triEntries;			// 6C
+			UInt32			maxCache;			// 70
 		};
 	};
 

@@ -372,6 +372,8 @@ void DIHookControl::BufferedKeyTap(UInt32 key)
 	data.dwOfs = key;
 	data.dwData = 0x80;
 
+	IScopedCriticalSection lock(&m_bufferedPressesLock);
+
 	// key down
 	m_bufferedPresses.push(data);
 
@@ -390,6 +392,7 @@ void DIHookControl::BufferedKeyPress(UInt32 key)
 	data.dwOfs = key;
 	data.dwData = 0x80;
 
+	IScopedCriticalSection lock(&m_bufferedPressesLock);
 	m_bufferedPresses.push(data);
 }
 
@@ -403,6 +406,7 @@ void DIHookControl::BufferedKeyRelease(UInt32 key)
 	data.dwOfs = key;
 	data.dwData = 0x00;
 
+	IScopedCriticalSection lock(&m_bufferedPressesLock);
 	m_bufferedPresses.push(data);
 }
 
@@ -458,6 +462,8 @@ void DIHookControl::ProcessMouseData(DIMOUSESTATE2 * data)
 HRESULT	DIHookControl::ProcessBufferedData(IDirectInputDevice8 * device, DWORD dataSize, DIDEVICEOBJECTDATA * outData, DWORD * outDataLen, DWORD flags)
 {
 	ASSERT(dataSize == sizeof(DIDEVICEOBJECTDATA));
+
+	IScopedCriticalSection lock(&m_bufferedPressesLock);
 
 	// if we have nothing to inject, pass through
 	if(m_bufferedPresses.empty())

@@ -3,6 +3,7 @@
 #include "skse/NiRTTI.h"
 #include "skse/NiTypes.h"
 #include "skse/Utilities.h"
+#include "skse/GameTypes.h"
 
 // NiRefObject/NiObject and important children
 // generally other children should go in other files
@@ -129,7 +130,7 @@ public:
 	void AddExtraData(NiExtraData * extraData);
 	bool RemoveExtraData(NiExtraData * extraData);
 	SInt32 GetIndexOf(NiExtraData * extraData);
-	NiExtraData * GetExtraData(const char * name);
+	NiExtraData * GetExtraData(BSFixedString name);
 };
 
 STATIC_ASSERT(sizeof(NiObjectNET) == 0x18);
@@ -241,15 +242,15 @@ public:
 	DEFINE_MEMBER_FN(ApplyMorph, UInt8, 0x005A5B70, const char ** morphName, TESModelTri * triModel, NiAVObject ** headNode, float relative, UInt8 unk1);
 };
 
-// ??
+// 10
 class BSFaceGenMorphData : public NiRefObject
 {
 public:
 	void	* unk08;	// 08
-	UInt32	unk0C;		// 0C
+	SInt32	unk0C;		// 0C
 
-	//MEMBER_FN_PREFIX(BSFaceGenMorphData);
-	//DEFINE_MEMBER_FN(ApplyMorph, UInt8, 0x005A75F0, const char ** morphName, NiAVObject * faceTrishape, float relative, UInt8 unk2);
+	MEMBER_FN_PREFIX(BSFaceGenMorphData);
+	DEFINE_MEMBER_FN(ApplyMorph, UInt8, 0x005A75F0, const char ** morphName, NiAVObject * faceTrishape, float relative, UInt8 unk2);
 };
 
 // 10
@@ -300,7 +301,9 @@ STATIC_ASSERT(offsetof(LoadedAreaBound, boundsMax) == 0x44);
 class BSFaceGenMorphDataHead : public BSFaceGenMorphData
 {
 public:
-	UInt32	unk10[(0x48 - 0x10) >> 2];
+	UInt32	unk10[(0x40 - 0x10) >> 2];
+	UInt32	unk40;
+	UInt32	unk44;
 	UInt32	unk48;
 };
 

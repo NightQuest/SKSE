@@ -3,20 +3,18 @@
 #include "GameData.h"
 #include "GameSettings.h"
 
+#include "PapyrusArgs.h"
+
 class MatchSkillPerks : public BGSSkillPerkTreeNode::PerkVisitor
 {
-	BGSListForm * m_formList;
 	Actor * m_actor;
 	bool m_unowned; // Only perks the actor doesn't own, or only perks the actor does own
 	bool m_allRanks; // Walk all ranks for all perks
 public:
-	MatchSkillPerks(BGSListForm * formList, Actor * actor, bool unowned, bool allRanks) : m_formList(formList), m_actor(actor), m_unowned(unowned), m_allRanks(allRanks) {}
+	MatchSkillPerks(Actor * actor, bool unowned, bool allRanks) : m_actor(actor), m_unowned(unowned), m_allRanks(allRanks) {}
 
 	virtual bool Accept(BGSPerk * perk)
 	{
-		if(!m_formList)
-			return true;
-
 		if(perk)
 		{
 			bool addPerk = true;
@@ -28,7 +26,7 @@ public:
 			}
 
 			if(addPerk) {
-				CALL_MEMBER_FN(m_formList, AddFormToList)(perk);
+				AddPerk(perk);
 			}
 
 			if(m_allRanks) {
@@ -43,7 +41,7 @@ public:
 					}
 
 					if(addPerk) {
-						CALL_MEMBER_FN(m_formList, AddFormToList)(nextPerk);
+						AddPerk(nextPerk);
 					}
 
 					nextPerk = nextPerk->nextPerk;
@@ -52,6 +50,36 @@ public:
 		}
 
 		return false;
+	}
+	virtual void AddPerk(BGSPerk * perk) = 0;
+};
+
+class PerkFormListVisitor : public MatchSkillPerks
+{
+	BGSListForm * m_formList;
+public:
+	PerkFormListVisitor::PerkFormListVisitor(BGSListForm * list, Actor * actor, bool unowned, bool allRanks) : MatchSkillPerks(actor, unowned, allRanks)
+	{
+		m_formList = list;
+	}
+
+	virtual void AddPerk(BGSPerk * perk)
+	{
+		CALL_MEMBER_FN(m_formList, AddFormToList)(perk);
+	}
+};
+
+class PerkArrayVisitor : public MatchSkillPerks
+{
+	VMResultArray<BGSPerk*> * m_perks;
+public:
+	PerkArrayVisitor::PerkArrayVisitor(VMResultArray<BGSPerk*> * perkArray, Actor * actor, bool unowned, bool allRanks) : MatchSkillPerks(actor, unowned, allRanks)
+	{
+		m_perks = perkArray;
+	}
+	virtual void AddPerk(BGSPerk * perk)
+	{
+		m_perks->push_back(perk);
 	}
 };
 
@@ -188,11 +216,58 @@ namespace papyrusActorValueInfo
 	void GetPerkTree(ActorValueInfo * info, BGSListForm * formList, Actor * actor, bool unowned, bool allRanks)
 	{
 		if(info && formList) {
-			if(info->perkTree) {
-				MatchSkillPerks matcher(formList, actor, unowned, allRanks);
-				info->perkTree->VisitPerks(matcher);
+			BGSSkillPerkTreeNode * root = info->perkTree;
+			if(root) {
+				PerkFormListVisitor matcher(formList, actor, unowned, allRanks);
+				root->VisitPerks(matcher);
 			}
 		}
+	}
+
+	VMResultArray<BGSPerk*> GetPerks(ActorValueInfo * info, Actor * actor, bool unowned, bool allRanks)
+	{
+		VMResultArray<BGSPerk*> result;
+		if(info) {
+			BGSSkillPerkTreeNode * root = info->perkTree;
+			if(root) {
+				PerkArrayVisitor matcher(&result, actor, unowned, allRanks);
+				root->VisitPerks(matcher);
+			}
+		}
+		return result;
+	}
+
+	float GetCurrentValue(ActorValueInfo * info, Actor * actor)
+	{
+		if(info && actor) {
+			UInt32 actorValue = LookupActorValueByName(info->name);
+			if(actorValue < ActorValueList::kNumActorValues) {
+				return actor->actorValueOwner.GetCurrent(actorValue);
+			}
+		}
+		return 0.0;
+	}
+
+	float GetBaseValue(ActorValueInfo * info, Actor * actor)
+	{
+		if(info && actor) {
+			UInt32 actorValue = LookupActorValueByName(info->name);
+			if(actorValue < ActorValueList::kNumActorValues) {
+				return actor->actorValueOwner.GetBase(actorValue);
+			}
+		}
+		return 0.0;
+	}
+
+	float GetMaximumValue(ActorValueInfo * info, Actor * actor)
+	{
+		if(info && actor) {
+			UInt32 actorValue = LookupActorValueByName(info->name);
+			if(actorValue < ActorValueList::kNumActorValues) {
+				return actor->actorValueOwner.GetMaximum(actorValue);
+			}
+		}
+		return 0.0;
 	}
 }
 
@@ -260,6 +335,21 @@ void papyrusActorValueInfo::RegisterFuncs(VMClassRegistry* registry)
 	// Perk Tree
 	registry->RegisterFunction(
 		new NativeFunction4 <ActorValueInfo, void, BGSListForm*, Actor*, bool, bool>("GetPerkTree", "ActorValueInfo", papyrusActorValueInfo::GetPerkTree, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction3 <ActorValueInfo, VMResultArray<BGSPerk*>, Actor*, bool, bool>("GetPerks", "ActorValueInfo", papyrusActorValueInfo::GetPerks, registry));
+
+
+
+	// Value Info
+	registry->RegisterFunction(
+		new NativeFunction1 <ActorValueInfo, float, Actor*>("GetCurrentValue", "ActorValueInfo", papyrusActorValueInfo::GetCurrentValue, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <ActorValueInfo, float, Actor*>("GetBaseValue", "ActorValueInfo", papyrusActorValueInfo::GetBaseValue, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <ActorValueInfo, float, Actor*>("GetMaximumValue", "ActorValueInfo", papyrusActorValueInfo::GetMaximumValue, registry));
 
 
 	registry->SetFunctionFlags("ActorValueInfo", "GetActorValueInfoByName", VMClassRegistry::kFunctionFlag_NoWait);

@@ -8,7 +8,7 @@
 // TESCellAttachDetachEvent																												0x012E3F20
 // TESCellFullyLoadedEvent																												0x012E3F50
 EventDispatcher<TESCombatEvent>* g_combatEventDispatcher = (EventDispatcher<TESCombatEvent>*) 0x012E4DB0;
-// TESContainerChangedEvent																												0x012E3FE0
+EventDispatcher<TESContainerChangedEvent>* g_containerChangedEventDispatcher = (EventDispatcher<TESContainerChangedEvent>*) 0x012E4DE0;
 EventDispatcher<TESDeathEvent>* g_deathEventDispatcher = (EventDispatcher<TESDeathEvent>*) 0x012E4E10;
 // TESDestructionStageChangedEvent																										0x012E4E40
 // TESEnterBleedoutEvent																												0x012E4E70
@@ -22,7 +22,7 @@ EventDispatcher<TESHitEvent>* g_hitEventDispatcher = (EventDispatcher<TESHitEven
 // TESMagicEffectApplyEvent																												0x012E5020
 // TESMagicWardHitEvent																													0x012E5050
 // TESMoveAttachDetachEvent																												0x012E5080
-// TESObjectLoadedEvent																													0x012E50B0
+EventDispatcher<TESObjectLoadedEvent>* g_objectLoadedEventDispatcher = (EventDispatcher<TESObjectLoadedEvent>*) 0x012E50B0;
 // TESObjectREFRTranslationEvent																										0x012E50E0
 // TESOpenCloseEvent																													0x012E5110
 // TESPackageEvent																														0x012E5140
@@ -44,7 +44,7 @@ EventDispatcher<TESQuestStageEvent>* g_questStageEventDispatcher = (EventDispatc
 // TESTriggerEvent																														0x012E54D0
 // TESTriggerEnterEvent																													0x012E5500
 // TESTriggerLeaveEvent																													0x012E5530
-// TESUniqueIDChangeEvent																												0x012E5560
+EventDispatcher<TESUniqueIDChangeEvent>* g_changeUniqueIDEventDispatcher = (EventDispatcher<TESUniqueIDChangeEvent>*) 0x012E5560;
 // TESSwitchRaceCompleteEvent																											0x012E55F0
 // TESPlayerBowShotEvent																												0x012E5410
 

@@ -3,6 +3,8 @@
 #include "skse/Utilities.h"
 #include "skse/PapyrusVM.h"
 
+#include <vector>
+
 class VMState;
 class VMValue;
 class VMClassRegistry;
@@ -34,6 +36,47 @@ public:
 		PackValue(arr->GetData()+idx, src, registry);
 	}
 };
+
+template<typename T>
+class VMResultArray : public std::vector<T>
+{
+public:
+	void PackArray(VMValue::ArrayData * data, VMClassRegistry * registry)
+	{
+		// Copy the contents from the reference array to the VM array
+		UInt32 i = 0;
+		for(std::vector<T>::iterator it = begin(); it != end(); ++it, i++)
+			PackValue(data->GetData()+i, (T*)&(*it), registry);
+	}
+};
+
+template <typename T>
+void PackValue(VMValue * dst, VMResultArray<T> * src, VMClassRegistry * registry)
+{
+	// Clear out old contents if any
+	dst->SetNone();
+	if(src->size() > 0) {
+		VMValue::ArrayData * data = NULL;
+		// Request the VM allocate a new array
+		registry->CreateArray(dst, src->size(), &data);
+		if(data) {
+			src->PackArray(data, registry);
+
+			// Set the appropriate TypeID and assign the new data array
+			dst->type = GetTypeID<VMResultArray<T>>(registry);
+			dst->data.arr = data;
+		}
+	}
+
+	// Clear the temp contents of the reference array
+	src->clear();
+}
+
+template <typename T>
+void UnpackValue(VMArray<T*> * dst, VMValue * src)
+{
+	UnpackArray(dst, src, GetTypeIDFromFormTypeID(T::kTypeID, (*g_skyrimVM)->GetClassRegistry()) | VMValue::kType_Identifier);
+}
 
 template <typename T>
 void PackValue(VMValue * dst, T * src, VMClassRegistry * registry);
@@ -111,6 +154,13 @@ template <> UInt32 GetTypeID <VMArray<float>>(VMClassRegistry * registry);
 template <> UInt32 GetTypeID <VMArray<bool>>(VMClassRegistry * registry);
 template <> UInt32 GetTypeID <VMArray<BSFixedString>>(VMClassRegistry * registry);
 
+template <> UInt32 GetTypeID <VMResultArray<UInt32>>(VMClassRegistry * registry);
+template <> UInt32 GetTypeID <VMResultArray<SInt32>>(VMClassRegistry * registry);
+template <> UInt32 GetTypeID <VMResultArray<int>>(VMClassRegistry * registry);
+template <> UInt32 GetTypeID <VMResultArray<float>>(VMClassRegistry * registry);
+template <> UInt32 GetTypeID <VMResultArray<bool>>(VMClassRegistry * registry);
+template <> UInt32 GetTypeID <VMResultArray<BSFixedString>>(VMClassRegistry * registry);
+
 template<typename T>
 struct IsArrayType
 {
@@ -120,6 +170,13 @@ struct IsArrayType
 
 template<typename T>
 struct IsArrayType<VMArray<T*>>
+{
+	enum { value = 1 };
+	typedef T TypedArg;
+};
+
+template<typename T>
+struct IsArrayType<VMResultArray<T*>>
 {
 	enum { value = 1 };
 	typedef T TypedArg;

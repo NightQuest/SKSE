@@ -310,7 +310,15 @@ public:
 	BGSVoiceType		* voiceType;	// 20
 	UInt32				unk24;	// 24
 	UInt32				unk28;	// 28 - init'd to 0
-	tArray<TESFaction*>	unk2C;	// 2C
+
+	struct FactionInfo
+	{
+		TESFaction	* faction;	// 00
+		SInt8		rank;		// 04
+		UInt8		pad[3];		// 05
+	};
+
+	tArray<FactionInfo>	factions;	// 2C
 };
 
 // 8
@@ -996,12 +1004,13 @@ public:
 class ActorWeightData
 {
 public:
-	UInt32	unk00;		// 00 - Refcount?
+	volatile SInt32	refCount;		// 00 - Refcount?
 	void	* unk04;	// 04
 	void	* unk08;	// 08
 
 	MEMBER_FN_PREFIX(ActorWeightData);
 	DEFINE_MEMBER_FN(UpdateWeightData, void, 0x0046D690);
+	DEFINE_MEMBER_FN(DeleteThis, void, 0x0046DAA0);
 	// DEFINE_MEMBER_FN(Unk_02, void, 0x004145F0);
 };
 
@@ -1205,6 +1214,8 @@ public:
 	DEFINE_MEMBER_FN(SetEquipFlag, void, 0x0071F520, UInt8 flags);
 	DEFINE_MEMBER_FN(UpdateEquipment, void, 0x007031A0, Actor * actor);
 	DEFINE_MEMBER_FN(SetDataFlag, void, 0x006FD1A0, UInt32 flag); // Sets a number on the 0x08 object
+
+	void UpdateEquipment_Hooked(Actor * actor);
 };
 
 STATIC_ASSERT(offsetof(ActorProcessManager, equippedObject) == 0x68);
@@ -1286,6 +1297,7 @@ public:
 	MEMBER_FN_PREFIX(PlayerSkills);
 	DEFINE_MEMBER_FN(GetSkillData, UInt32, 0x00760150, UInt32 actorValue, float * level, float * points, float * pointsMax, UInt32 * unk6);
 	DEFINE_MEMBER_FN(IncrementLegendary, UInt32, 0x00760110, UInt32 actorValue);
+	DEFINE_MEMBER_FN(SetLevel, void, 0x00760900, UInt32 level);
 };
 
 // 08

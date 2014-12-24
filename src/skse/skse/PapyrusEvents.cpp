@@ -16,11 +16,13 @@ RegistrationMapHolder<BSFixedString,ModCallbackParameters>	g_modCallbackRegs;
 RegistrationSetHolder<NullParameters>						g_cameraEventRegs;
 RegistrationSetHolder<NullParameters>						g_crosshairRefEventRegs;
 RegistrationMapHolder<UInt32>								g_actionEventRegs;
+RegistrationSetHolder<NullParameters>						g_ninodeUpdateEventRegs;
 
 EventDispatcher<SKSEModCallbackEvent>	g_modCallbackEventDispatcher;
 EventDispatcher<SKSECameraEvent>		g_cameraEventDispatcher;
 EventDispatcher<SKSECrosshairRefEvent>	g_crosshairRefEventDispatcher;
 EventDispatcher<SKSEActionEvent>		g_actionEventDispatcher;
+EventDispatcher<SKSENiNodeUpdateEvent>	g_ninodeUpdateEventDispatcher;
 
 MenuEventHandler			g_menuEventHandler;
 InputEventHandler			g_inputEventHandler;
@@ -28,6 +30,7 @@ ModCallbackEventHandler		g_modCallbackEventHandler;
 CameraEventHandler			g_cameraEventHandler;
 CrosshairRefEventHandler	g_crosshairRefEventHandler;
 ActionEventHandler			g_actionEventHandler;
+NiNodeUpdateEventHandler	g_ninodeUpdateEventHandler;
 
 //// Generic functors
 
@@ -305,6 +308,15 @@ EventResult ActionEventHandler::ReceiveEvent(SKSEActionEvent * evn, EventDispatc
 	g_actionEventRegs.ForEach(
 		evn->type,
 		EventQueueFunctor4<SInt32, Actor*, TESForm*, UInt32>(BSFixedString("OnActorAction"), evn->type, evn->actor, evn->sourceForm, evn->slot)
+	);
+
+	return kEvent_Continue;
+}
+
+EventResult NiNodeUpdateEventHandler::ReceiveEvent(SKSENiNodeUpdateEvent * evn, EventDispatcher<SKSENiNodeUpdateEvent> * dispatcher)
+{
+	g_ninodeUpdateEventRegs.ForEach(
+		EventQueueFunctor1<TESObjectREFR*>(BSFixedString("OnNiNodeUpdate"), evn->reference)
 	);
 
 	return kEvent_Continue;

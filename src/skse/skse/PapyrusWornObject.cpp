@@ -137,8 +137,8 @@ namespace referenceUtils
 		if (baseForm) {
 			TESObjectWEAP * weapon = DYNAMIC_CAST(baseForm, TESForm, TESObjectWEAP);
 			if(weapon) {
-				if(maxCharge > 65535.0)
-					maxCharge = 65535.0;
+				if(maxCharge > USHRT_MAX)
+					maxCharge = USHRT_MAX;
 
 				if(ExtraEnchantment* extraEnchant = static_cast<ExtraEnchantment*>(extraData->GetByType(kExtraData_Enchantment))) // Enchanted
 					extraEnchant->maxCharge = (UInt16)maxCharge;

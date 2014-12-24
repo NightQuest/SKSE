@@ -142,13 +142,13 @@ public:
 		DEFINE_MEMBER_FN(Invoke, bool, 0x00922ED0, void * obj, GFxValue * result, const char * name, GFxValue * args, UInt32 numArgs, bool isDisplayObj);
 		DEFINE_MEMBER_FN(AttachMovie, bool, 0x00923060, void * obj, GFxValue * value, const char * symbolName, const char * instanceName, SInt32 depth, void * initArgs);
 		DEFINE_MEMBER_FN(PushBack, bool, 0x00920EF0, void * obj, GFxValue * value);
-		DEFINE_MEMBER_FN(SetText, bool, 0x009233A0, void * obj, const wchar_t * text, bool html);
+		DEFINE_MEMBER_FN(SetText, bool, 0x009233A0, void * obj, const char * text, bool html);
 		//DEFINE_MEMBER_FN(PopBack, bool, 0x00000000, void * obj, GFxValue * value);
 		DEFINE_MEMBER_FN(GetArraySize, UInt32, 0x00920E80, void * obj);
 		//DEFINE_MEMBER_FN(SetArraySize, bool, 0x00000000, void * obj, UInt32 size);
 		DEFINE_MEMBER_FN(GetElement, bool, 0x00923AD0, void * obj, UInt32 index, GFxValue * value);
 		//DEFINE_MEMBER_FN(SetElement, bool, 0x00000000, void * obj, UInt32 index, GFxValue * value);
-		//DEFINE_MEMBER_FN(GotoLabeledFrame, bool, 0x00000000, void * obj, const char * frameLabel, bool stop);
+		DEFINE_MEMBER_FN(GotoLabeledFrame, bool, 0x00920660, void * obj, const char * frameLabel, bool stop);
 		//DEFINE_MEMBER_FN(GotoFrame, bool, 0x00000000, void * obj, UInt32 frameNumber, bool stop);
 		DEFINE_MEMBER_FN(GetDisplayInfo, bool, 0x00920F90, void * obj, DisplayInfo * displayInfo);
 		DEFINE_MEMBER_FN(SetDisplayInfo, bool, 0x009211B0, void * obj, DisplayInfo * displayInfo);
@@ -191,6 +191,7 @@ public:
 	bool	PushBack(GFxValue * value);
 	bool	GetDisplayInfo(DisplayInfo * displayInfo);
 	bool	SetDisplayInfo(DisplayInfo * displayInfo);
+	bool	SetText(const char * text, bool html);
 };
 
 STATIC_ASSERT(sizeof(GFxValue) == 0x10);
@@ -258,11 +259,10 @@ void RegisterFunction(GFxValue * dst, GFxMovieView * movie, const char * name)
 class FxResponseArgsBase
 {
 public:
-	FxResponseArgsBase();
-	virtual ~FxResponseArgsBase();
+	FxResponseArgsBase() { };
+	virtual ~FxResponseArgsBase() { };
 
-	virtual UInt32	GetValues(GFxValue ** params);
-
+	virtual UInt32	GetValues(GFxValue ** params) = 0;
 //	void	** _vtbl;	// 00
 };
 
@@ -284,8 +284,21 @@ class FxResponseArgsList : public FxResponseArgsBase
 {
 public:
 	FxResponseArgsList();
+	virtual ~FxResponseArgsList();
 
+	void Clear();
+
+	void Add(GFxValue * value) { CALL_MEMBER_FN(&args, AddArgument)(value); }
+	virtual UInt32	GetValues(GFxValue ** params) { return CALL_MEMBER_FN(this, GetArguments)(params); }
+
+	MEMBER_FN_PREFIX(FxResponseArgsList);
+	DEFINE_MEMBER_FN(ctor, FxResponseArgsList *, 0x00844210);
+	
+	DEFINE_MEMBER_FN(GetArguments, UInt32, 0x00844270, GFxValue ** values);
+
+private:
 	GArray <GFxValue>	args;
+	UInt32	unk0C;
 };
 
 // 20

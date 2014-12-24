@@ -4,6 +4,7 @@
 #include <dinput.h>
 #include <queue>
 #include "InputMap.h"
+#include "common/ICriticalSection.h"
 
 void Hooks_DirectInput_Commit(void);
 
@@ -73,6 +74,7 @@ private:
 
 	KeyInfo	m_keys[InputMap::kMaxMacros];
 
+	ICriticalSection	m_bufferedPressesLock;	// hold this when modifying m_bufferedPresses
 	typedef std::queue <DIDEVICEOBJECTDATA>	BufferedPressQueue;
 	BufferedPressQueue	m_bufferedPresses;
 };

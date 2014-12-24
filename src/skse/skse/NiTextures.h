@@ -117,8 +117,43 @@ public:
 	struct FormatPrefs
 	{
 	public:
+		enum
+		{
+			kPixelLayoutPalettized8,
+			kPixelLayoutHighColor16,
+			kPixelLayoutTrueColor32,
+			kPixelLayoutCompressed,
+			kPixelLayoutBumpmap,
+			kPixelLayoutPalettized4,
+			kPixelLayoutPixDefault,
+			kPixelLayoutSingleColor8,
+			kPixelLayoutSingleColor16,
+			kPixelLayoutSingleColor32,
+			kPixelLayoutDoubleColor32,
+			kPixelLayoutDoubleColor64,
+			kPixelLayoutFloatColor32,
+			kPixelLayoutFloatColor64,
+			kPixelLayoutFloatColor128,
+			kPixelLayoutSingleColor4,
+		};
 		UInt32	pixelLayout;	// 00
+
+		enum
+		{
+			kAlphaFormatNone,
+			kAlphaFormatBinary,
+			kAlphaFormatSmooth,
+			kAlphaFormatDefault
+		};
+
 		UInt32	alphaFormat;	// 04
+
+		enum
+		{
+			kMipFlagNo = false,
+			kMipFlagYes = true,
+			kMipFlagDefault
+		};
 		UInt32	mipMapped;		// 08
 	};
 

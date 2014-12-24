@@ -98,6 +98,18 @@ public:
 	void	AllocateNormals(UInt32 numVerts);
 	void	AllocateNBT(UInt32 numVerts);
 	void	AllocateColors(UInt32 numVerts);
+
+	struct Data0
+	{
+		UInt32	unk00;
+		UInt32	unk04;
+		UInt32	unk08;
+	};
+
+	MEMBER_FN_PREFIX(NiGeometryData);
+	DEFINE_MEMBER_FN(Unk1, UInt8, 0x00AC1010, UInt8);
+	DEFINE_MEMBER_FN(Unk2, UInt32, 0x00AC10B0, Data0 *);
+	DEFINE_MEMBER_FN(Unk3, UInt32, 0x00AC1070, UInt8);
 };
 
 // 4C

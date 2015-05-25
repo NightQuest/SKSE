@@ -203,7 +203,7 @@ namespace referenceUtils
 			}
 			renamed = (inUse == false || force);
 			CALL_MEMBER_FN(xTextData, SetName_Internal)(value.data);
-		} else  {
+		} else {
 			ExtraTextDisplayData* newTextData = ExtraTextDisplayData::Create();
 			CALL_MEMBER_FN(newTextData, SetName_Internal)(value.data);
 			extraData->Add(kExtraData_TextDisplayData, newTextData);
@@ -314,6 +314,26 @@ namespace referenceUtils
 			return NULL;
 
 		return xAliases->aliases.count;
+	}
+
+	VMResultArray<BGSRefAlias*> GetReferenceAliases(BaseExtraList* extraData)
+	{
+		VMResultArray<BGSRefAlias*> result;
+		ExtraAliasInstanceArray* xAliases = static_cast<ExtraAliasInstanceArray*>(extraData->GetByType(kExtraData_AliasInstanceArray));
+		if(!xAliases)
+			return result;
+
+		ExtraAliasInstanceArray::AliasInfo * info = NULL;
+		for(UInt32 n = 0; n < xAliases->aliases.count; n++)
+		{
+			BGSRefAlias * alias = NULL;
+			if(xAliases->aliases.GetNthItem(n, info))
+				alias = DYNAMIC_CAST(info->alias, BGSBaseAlias, BGSRefAlias);
+
+			result.push_back(alias);
+		}
+		
+		return result;
 	}
 
 	BGSRefAlias * GetNthReferenceAlias(BaseExtraList * extraData, UInt32 n)
@@ -480,6 +500,17 @@ namespace papyrusWornObject
 
 		return NULL;
 	}
+
+	VMResultArray<BGSRefAlias*> GetReferenceAliases(WORNOBJECT_PARAMS)
+	{
+		VMResultArray<BGSRefAlias*> result;
+		EquipData equipData = referenceUtils::ResolveEquippedObject(actor, weaponSlot, slotMask);
+		if(equipData.pForm && equipData.pExtraData) {
+			result = referenceUtils::GetReferenceAliases(equipData.pExtraData);
+		}
+
+		return result;
+	}
 };
 
 #include "PapyrusVM.h"
@@ -529,4 +560,7 @@ void papyrusWornObject::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction4<StaticFunctionTag, BGSRefAlias*, WORNOBJECT_TEMPLATE, UInt32>("GetNthReferenceAlias", "WornObject", papyrusWornObject::GetNthReferenceAlias, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction3<StaticFunctionTag, VMResultArray<BGSRefAlias*>, WORNOBJECT_TEMPLATE>("GetReferenceAliases", "WornObject", papyrusWornObject::GetReferenceAliases, registry));
 }

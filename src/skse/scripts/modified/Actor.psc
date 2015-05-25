@@ -61,6 +61,9 @@ Function UpdateWeight(float neckDelta) native
 ; Returns whether the actors AI is enabled
 bool Function IsAIEnabled() native
 
+; Resets Actor AI
+Function ResetAI() native
+
 ; Returns whether the actor is currently swimming
 bool Function IsSwimming() native
 

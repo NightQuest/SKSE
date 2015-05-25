@@ -8,9 +8,14 @@
 
 class BSAnimationGraphEvent;
 class NiNode;
+class NiPoint3;
 class TESObjectREFR;
 class BSFaceGenNiNode;
 class BSFaceGenAnimationData;
+
+class InventoryEntryData;
+
+class VMClassRegistry;
 
 // TESObjectREFR and child classes
 
@@ -53,6 +58,19 @@ typedef bool (* _LookupREFRObjectByHandle)(UInt32 * refHandle, BSHandleRefObject
 extern const _LookupREFRObjectByHandle LookupREFRObjectByHandle;
 
 extern const UInt32 * g_invalidRefHandle;
+
+// Try to retrive/create handle. Return invalid handle otherwise.
+UInt32 GetOrCreateRefrHandle(TESObjectREFR* refr);
+
+// Place/move reference
+typedef void (* _MoveRefrToPosition)(TESObjectREFR* source, UInt32* pTargetHandle, void* parentCell, void* worldSpace, NiPoint3* postion, NiPoint3* rotation);
+extern const _MoveRefrToPosition MoveRefrToPosition;
+
+typedef TESObjectREFR* (* _PlaceAtMe_Native)(VMClassRegistry* registry, UInt32 stackId, TESObjectREFR* target, TESForm* form, SInt32 count, bool bForcePersist, bool bInitiallyDisabled);
+extern const _PlaceAtMe_Native PlaceAtMe_Native;
+
+typedef void (* _AddItem_Native)(VMClassRegistry* registry, UInt32 stackId, TESObjectREFR* target, TESForm* form, SInt32 count, bool bSilent);
+extern const _AddItem_Native AddItem_Native;
 
 // 4
 class IAnimationGraphManagerHolder
@@ -238,6 +256,7 @@ public:
 	DEFINE_MEMBER_FN(IsOffLimits, bool, 0x004DA760);
 	DEFINE_MEMBER_FN(GetWeight, float, 0x004EA180);
 	DEFINE_MEMBER_FN(GetReferenceName, const char *, 0x004DE820);
+	DEFINE_MEMBER_FN(GetWorldspace, TESWorldSpace*, 0x4D5EB0);
 };
 
 STATIC_ASSERT(sizeof(TESObjectREFR) == 0x54);
@@ -459,6 +478,7 @@ public:
 	DEFINE_MEMBER_FN(UpdateWeaponAbility, void, 0x006ED980, TESForm*, BaseExtraList * extraData, bool bLeftHand);
 	DEFINE_MEMBER_FN(UpdateArmorAbility, void, 0x006E8650, TESForm*, BaseExtraList * extraData);
 	DEFINE_MEMBER_FN(IsHostileToActor, bool, 0x006D4360, Actor * actor);
+	DEFINE_MEMBER_FN(ResetAI, void, 0x51EA30, UInt32 unk1, UInt32 unk2);
 
 	TESForm * GetEquippedObject(bool abLeftHand);
 	void UpdateSkinColor();
@@ -542,7 +562,7 @@ public:
 	// Confirmed - Same as ExtraContainerChanges::EntryData
 	// This type is used by scaleform to extend data
 	// It can be used to extend more of the "ExtraData"
-	struct ObjDesc
+	/*struct ObjDesc
 	{
 		TESForm					* form;
 		tList<BaseExtraList>	* extraData;
@@ -550,14 +570,14 @@ public:
 
 		MEMBER_FN_PREFIX(ObjDesc);
 		DEFINE_MEMBER_FN(GenerateName, const char *, 0x00475AA0);
-	};
+	};*/
 
 	MEMBER_FN_PREFIX(PlayerCharacter);
 	DEFINE_MEMBER_FN(GetTintList, tArray <TintMask *> *, 0x0055FF90);
 	DEFINE_MEMBER_FN(GetNumTints, UInt32, 0x00735F40, UInt32 tintType);
 	DEFINE_MEMBER_FN(GetTintMask, TintMask *, 0x00735F00, UInt32 tintType, UInt32 index);
-	DEFINE_MEMBER_FN(GetDamage, double, 0x00730810, ObjDesc * pForm);
-	DEFINE_MEMBER_FN(GetArmorValue, double, 0x007307E0, ObjDesc * pForm);
+	DEFINE_MEMBER_FN(GetDamage, double, 0x00730810, InventoryEntryData * pForm);
+	DEFINE_MEMBER_FN(GetArmorValue, double, 0x007307E0, InventoryEntryData * pForm);
 };
 
 STATIC_ASSERT(offsetof(PlayerCharacter, userEventEnabledEvent) == 0x1A4);
@@ -591,7 +611,14 @@ class Hazard : public TESObjectREFR
 // 140+
 class Projectile : public TESObjectREFR
 {
-	//
+	class LaunchData
+	{
+	public:
+		virtual ~LaunchData();
+
+		float	unk04[(0x68 - 0x04) >> 2];
+		bool	unk68[7];
+	};
 };
 
 // 150

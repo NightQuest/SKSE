@@ -58,7 +58,7 @@ int Function GetCurrentBudget(int aiBudgetNumber) native global
 bool Function OverBudget(int aiBudgetNumber) native global
 string Function GetBudgetName(int aiBudgetNumber) native global
 
-; SKSE additions built 2014-12-23 07:36:08.038000 UTC
+; SKSE additions built 2015-05-24 00:46:48.937000 UTC
 
 float Function GetINIFloat(string ini) global native
 int Function GetINIInt(string ini) global native
@@ -74,3 +74,10 @@ bool[] Function CreateBoolArray(int size, bool fill = false) global native
 string[] Function CreateStringArray(int size, string fill = "") global native
 Form[] Function CreateFormArray(int size, Form fill = None) global native
 Alias[] Function CreateAliasArray(int size, Alias fill = None) global native
+
+float[] Function ResizeFloatArray(float[] source, int size, float fill = 0.0) global native
+int[] Function ResizeIntArray(int[] source, int size, int fill = 0) global native
+bool[] Function ResizeBoolArray(bool[] source, int size, bool fill = false) global native
+string[] Function ResizeStringArray(string[] source, int size, string fill = "") global native
+Form[] Function ResizeFormArray(Form[] source, int size, Form fill = None) global native
+Alias[] Function ResizeAliasArray(Alias[] source, int size, Alias fill = None) global native

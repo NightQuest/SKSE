@@ -438,6 +438,11 @@ struct TESObjectLoadedEvent
 	UInt32 formId;
 };
 
+struct TESInitScriptEvent
+{
+	TESObjectREFR * reference;
+};
+
 struct BGSFootstepEvent
 {
 	UInt32	actorHandle;
@@ -531,6 +536,14 @@ public:
 	virtual	EventResult ReceiveEvent(TESObjectLoadedEvent * evn, EventDispatcher<TESObjectLoadedEvent> * dispatcher) = 0;
 };
 
+template <>
+class BSTEventSink <TESInitScriptEvent>
+{
+public:
+	virtual ~BSTEventSink() {}	// todo?
+	virtual	EventResult ReceiveEvent(TESInitScriptEvent * evn, EventDispatcher<TESInitScriptEvent> * dispatcher) = 0;
+};
+
 // For testing
 //extern EventDispatcher<TESSleepStartEvent> * g_sleepStartEventDispatcher;
 extern EventDispatcher<TESCombatEvent> * g_combatEventDispatcher;
@@ -543,3 +556,4 @@ extern EventDispatcher<TESHitEvent> * g_hitEventDispatcher;
 extern EventDispatcher<TESContainerChangedEvent> * g_containerChangedEventDispatcher;
 extern EventDispatcher<TESUniqueIDChangeEvent> * g_changeUniqueIDEventDispatcher;
 extern EventDispatcher<TESObjectLoadedEvent> * g_objectLoadedEventDispatcher;
+extern EventDispatcher<TESInitScriptEvent> * g_initScriptEventDispatcher;

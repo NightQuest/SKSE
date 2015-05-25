@@ -1,6 +1,7 @@
 #pragma once
 
-class UIDelegate
+// Old interface for compatibility with plugins
+class UIDelegate_v1
 {
 public:
 	virtual void	Run(void)		= 0;

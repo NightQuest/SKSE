@@ -16,7 +16,7 @@
 #include <vector>
 #include <map>
 
-typedef std::vector<ExtraContainerChanges::EntryData*> ExtraDataVec;
+typedef std::vector<InventoryEntryData*> ExtraDataVec;
 typedef std::map<TESForm*, UInt32> ExtraContainerMap;
 
 class ExtraContainerReceiver
@@ -54,7 +54,7 @@ class ExtraContainerInfo
 	ExtraDataVec	m_vec;
 	ExtraContainerMap m_map;
 public:
-	ExtraContainerInfo(ExtraContainerChanges::EntryDataList * entryList) : m_map(), m_vec()
+	ExtraContainerInfo(EntryDataList * entryList) : m_map(), m_vec()
 	{
 		m_vec.reserve(128);
 		if (entryList) {
@@ -62,7 +62,7 @@ public:
 		}
 	}
 
-	bool Accept(ExtraContainerChanges::EntryData* data) 
+	bool Accept(InventoryEntryData* data) 
 	{
 		if (data) {
 			m_vec.push_back(data);
@@ -84,7 +84,7 @@ public:
 			ExtraContainerMap::iterator itEnd = m_map.end();
 			if (it != itEnd) {
 				UInt32 index = it->second;
-				ExtraContainerChanges::EntryData* pXData = m_vec[index];
+				InventoryEntryData* pXData = m_vec[index];
 				if (pXData) {
 					numObjects += pXData->countDelta;
 				}
@@ -109,7 +109,7 @@ public:
 		ExtraDataVec::iterator itEnd = m_vec.end();
 		ExtraDataVec::iterator it = m_vec.begin();
 		while (it != itEnd) {
-			ExtraContainerChanges::EntryData* extraData = (*it);
+			InventoryEntryData* extraData = (*it);
 			if (extraData && (extraData->countDelta > 0)) {
 				count++;
 				//if (IsConsoleMode()) {
@@ -127,7 +127,7 @@ public:
 		ExtraDataVec::iterator itEnd = m_vec.end();
 		ExtraDataVec::iterator it = m_vec.begin();
 		while (it != itEnd) {
-			ExtraContainerChanges::EntryData* extraData = (*it);
+			InventoryEntryData* extraData = (*it);
 			if (extraData && (extraData->countDelta > 0)) {
 				weight += papyrusForm::GetWeight(extraData->type) * extraData->countDelta;
 			}
@@ -140,7 +140,7 @@ public:
 		ExtraDataVec::iterator itEnd = m_vec.end();
 		ExtraDataVec::iterator it = m_vec.begin();
 		while (it != itEnd) {
-			ExtraContainerChanges::EntryData* extraData = (*it);
+			InventoryEntryData* extraData = (*it);
 			if (extraData && (extraData->countDelta > 0)) {
 				receiver->AddFormToReceiver(extraData->type);
 			}
@@ -148,11 +148,11 @@ public:
 		}
 	}
 
-	ExtraContainerChanges::EntryData* GetNth(UInt32 n, UInt32 count) {
+	InventoryEntryData* GetNth(UInt32 n, UInt32 count) {
 		ExtraDataVec::iterator itEnd = m_vec.end();
 		ExtraDataVec::iterator it = m_vec.begin();
 		while (it != itEnd) {
-			ExtraContainerChanges::EntryData* extraData = (*it);
+			InventoryEntryData* extraData = (*it);
 			if (extraData && (extraData->countDelta > 0)) {
 				if(count == n)
 				{
@@ -306,7 +306,7 @@ namespace papyrusObjectReference
 		}
 
 		// now walk the remaining items in the map
-		ExtraContainerChanges::EntryData* pEntryData = info.GetNth(n, count);
+		InventoryEntryData* pEntryData = info.GetNth(n, count);
 		if (pEntryData) {
 			return pEntryData->type;
 		}
@@ -506,6 +506,15 @@ namespace papyrusObjectReference
 		return referenceUtils::GetNthReferenceAlias(&object->extraData, n);
 	}
 
+	VMResultArray<BGSRefAlias*> GetReferenceAliases(TESObjectREFR* object)
+	{
+		VMResultArray<BGSRefAlias*> result;
+		if(!object)
+			return result;
+
+		return referenceUtils::GetReferenceAliases(&object->extraData);
+	}
+
 	void GetAllForms(TESObjectREFR* pContainerRef, BGSListForm * list)
 	{
 		if(pContainerRef && list) {
@@ -631,6 +640,9 @@ void papyrusObjectReference::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1<TESObjectREFR, BGSRefAlias*, UInt32>("GetNthReferenceAlias", "ObjectReference", papyrusObjectReference::GetNthReferenceAlias, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0<TESObjectREFR, VMResultArray<BGSRefAlias*>>("GetReferenceAliases", "ObjectReference", papyrusObjectReference::GetReferenceAliases, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction1<TESObjectREFR, void, BGSListForm*>("GetAllForms", "ObjectReference", papyrusObjectReference::GetAllForms, registry));

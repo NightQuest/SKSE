@@ -42,3 +42,5 @@ public:
 
 	void	* scriptContext;	// 00
 };
+
+__int64 GetPerfCounter(void);

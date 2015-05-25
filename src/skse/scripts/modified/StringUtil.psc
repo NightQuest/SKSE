@@ -41,4 +41,5 @@ int Function AsOrd(string c) global native
 ; returns a single character string interpreting c as a character
 string Function AsChar(int c) global native
 
-
+; returns array of strings separated by the specified delimiter
+string[] Function Split(string s, string delim) global native

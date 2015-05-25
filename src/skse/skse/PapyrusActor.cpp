@@ -256,7 +256,7 @@ namespace papyrusActor
 			return;
 
 		// Copy/merge of extraData and container base. Free after use.
-		ExtraContainerChanges::EntryData* entryData = containerData->CreateEquipEntryData(item);
+		InventoryEntryData* entryData = containerData->CreateEquipEntryData(item);
 		if (!entryData)
 			return;
 
@@ -358,7 +358,7 @@ namespace papyrusActor
 		if (!containerData)
 			return;
 
-		ExtraContainerChanges::EquipItemData itemData;
+		InventoryEntryData::EquipData itemData;
 		containerData->GetEquipItemData(itemData, item, itemId);
 
 		BGSEquipSlot * targetEquipSlot = GetEquipSlotById(slotId);
@@ -437,7 +437,7 @@ namespace papyrusActor
 		if (!containerData)
 			return;
 
-		ExtraContainerChanges::EntryData* entryData = containerData->FindItemEntry(item);
+		InventoryEntryData* entryData = containerData->FindItemEntry(item);
 		if (!entryData)
 			return;
 
@@ -550,6 +550,18 @@ namespace papyrusActor
 			return false;
 
 		return (thisActor->flags1 & Actor::kFlags_AIEnabled) == Actor::kFlags_AIEnabled;
+	}
+
+	void ResetAI(Actor * thisActor)
+	{
+		if (!thisActor)
+			return;
+
+		UInt32 flags = thisActor->flags;
+
+		if (!(flags & TESForm::kFlagUnk_0x800) &&
+			!(flags & TESForm::kFlagIsDeleted))
+			CALL_MEMBER_FN(thisActor,ResetAI)(0,1);
 	}
 
 	bool IsSwimming(Actor * thisActor)
@@ -683,6 +695,9 @@ void papyrusActor::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction0 <Actor, bool>("IsAIEnabled", "Actor", papyrusActor::IsAIEnabled, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <Actor, void>("ResetAI", "Actor", papyrusActor::ResetAI, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0 <Actor, bool>("IsSwimming", "Actor", papyrusActor::IsSwimming, registry));

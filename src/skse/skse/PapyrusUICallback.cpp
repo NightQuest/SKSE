@@ -2,214 +2,131 @@
 
 #include "common/ICriticalSection.h"
 
+#include "PapyrusVM.h"
+#include "PapyrusNativeFunctions.h"
+
 #include "PapyrusArgs.h"
 #include "PapyrusUI.h"
 #include "PapyrusObjects.h"
 
-class PapyrusUICallback : public SKSEObject<kSKSEObjType_UICallback>
+///
+/// Native functions
+///
+
+namespace papyrusUICallback
 {
-public:
-	PapyrusUICallback() :
-		invokeDelegate_(NULL),
-		hasRun_(false)
+	SInt32 Create(VMClassRegistry* registry, UInt32 stackId, StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr)
 	{
+		ERROR_AND_RETURN_0_IF(!menuName.data, "Menu name must not be empty.", registry, stackId)
+		ERROR_AND_RETURN_0_IF(!targetStr.data, "Target name must not be empty.", registry, stackId)
+		
+		UIInvokeDelegate* cmd = new UIInvokeDelegate(menuName.data, targetStr.data);
+
+		UInt32 handle = SKSEObjectStorageInstance().StoreObject(cmd, stackId);
+		return handle;
 	}
 
-	virtual void Reset()
+	bool Send(VMClassRegistry* registry, UInt32 stackId, StaticFunctionTag* thisInput, SInt32 handle)
 	{
-		if (invokeDelegate_ && !hasRun_)
-			invokeDelegate_->Dispose();
+		ERROR_AND_RETURN_0_IF(handle <= 0, "Invalid handle.", registry, stackId)
 
-		invokeDelegate_ = NULL;
-		hasRun_ = false;
-	}
-
-	bool Init(BSFixedString menuName, BSFixedString targetStr)
-	{
-		using namespace papyrusUI;
-
-		UIInvokeDelegate * cmd = UIInvokeDelegate::Create(menuName.data, targetStr.data);
-		if (!cmd)
-		{
-			_WARNING("Failed to allocate UIInvokeDelegate for PapyrusUICallback.");
+		UIManager* uiManager = UIManager::GetSingleton();
+		if (!uiManager)
 			return false;
-		}
 
-		invokeDelegate_ = cmd;
+		UIInvokeDelegate* cmd = SKSEObjectStorageInstance().TakeObject<UIInvokeDelegate>(handle);
+		
+		ERROR_AND_RETURN_0_IF(cmd == NULL, "Failed to lookup object for given handle.", registry, stackId)
+
+		// Transfers ownership to UIManager
+		uiManager->QueueCommand(cmd);
+
 		return true;
 	}
 
-	template <typename T>
-	void PushArg(T arg)
+	void Release(VMClassRegistry* registry, UInt32 stackId, StaticFunctionTag* thisInput, SInt32 handle)
 	{
-		using namespace papyrusUI;
+		ERROR_AND_RETURN_IF(handle <= 0, "Invalid handle.", registry, stackId)
 
-		GFxValue value;
-		SetGFxValue<T>(&value, arg);
-		invokeDelegate_->args.push_back(value);
+		UIInvokeDelegate* cmd = SKSEObjectStorageInstance().TakeObject<UIInvokeDelegate>(handle);
+		
+		ERROR_AND_RETURN_IF(cmd == NULL, "Failed to lookup object for given handle.", registry, stackId)
+		
+		delete cmd;
 	}
 
 	template <typename T>
-	void PushArgs(VMArray<T> args)
+	void Push(VMClassRegistry* registry, UInt32 stackId, StaticFunctionTag* thisInput, SInt32 handle, T arg)
 	{
-		using namespace papyrusUI;
+		ERROR_AND_RETURN_IF(handle <= 0, "Invalid handle.", registry, stackId)
+
+		UIInvokeDelegate* cmd = SKSEObjectStorageInstance().AccessObject<UIInvokeDelegate>(handle);
+		
+		ERROR_AND_RETURN_IF(cmd == NULL, "Failed to lookup object for given handle.", registry, stackId)
+
+		GFxValue value;
+		SetGFxValue<T>(&value, arg);
+		cmd->args.push_back(value);
+	}
+
+	template <typename T>
+	void PushArray(VMClassRegistry* registry, UInt32 stackId, StaticFunctionTag* thisInput, SInt32 handle, VMArray<T> args)
+	{
+		ERROR_AND_RETURN_IF(handle <= 0, "Invalid handle.", registry, stackId)
+
+		UIInvokeDelegate* cmd = SKSEObjectStorageInstance().AccessObject<UIInvokeDelegate>(handle);
+		
+		ERROR_AND_RETURN_IF(cmd == NULL, "Failed to lookup object for given handle.", registry, stackId)
 
 		UInt32 argCount = args.Length();
 
-		UInt32 offset = invokeDelegate_->args.size();
+		UInt32 offset = cmd->args.size();
 		UInt32 newArgCount = offset + argCount;
 		
-		invokeDelegate_->args.resize(newArgCount);
+		cmd->args.resize(newArgCount);
 		for (UInt32 i=0; i<argCount; i++, offset++)
 		{
 			T arg;
 			args.Get(&arg, i);
-			SetGFxValue<T>(&invokeDelegate_->args[offset], arg);
+			SetGFxValue<T>(&cmd->args[offset], arg);
 		}
-	}
-
-	bool Send()
-	{
-		UIManager * uiManager = UIManager::GetSingleton();
-
-		if (!invokeDelegate_ || hasRun_ || !uiManager)
-		{
-			_WARNING("Failed to run PapyrusUICallback.");
-			return false;
-		}
-
-		// UI manager is now responsible for disposing
-		uiManager->QueueCommand(invokeDelegate_);
-		hasRun_ = true;
-
-		return true;
-	}
-
-private:
-	papyrusUI::UIInvokeDelegate*	invokeDelegate_;
-	bool							hasRun_;
-};
-
-namespace papyrusUICallback
-{
-	ICriticalSection						s_objectManagerLock;
-	SKSEObjectManager<PapyrusUICallback>	s_objectManager;
-
-	RawHandleT Create(StaticFunctionTag* thisInput, BSFixedString menuName, BSFixedString targetStr)
-	{
-		if (!menuName.data || !targetStr.data)
-			return SKSEObjectHandle::NullHandle;
-
-		s_objectManagerLock.Enter();
-
-		SKSEObjectHandle handleOut;
-		PapyrusUICallback* obj = s_objectManager.CreateObject(handleOut);
-
-		if (!obj || !obj->Init(menuName, targetStr))
-		{
-			s_objectManager.FreeObject(handleOut);
-			handleOut = SKSEObjectHandle::NullHandle;
-		}
-
-		s_objectManagerLock.Leave();
-
-		return handleOut;
-	}
-
-	bool Send(StaticFunctionTag* thisInput, RawHandleT handle)
-	{
-		bool result = false;
-
-		s_objectManagerLock.Enter();
-
-		PapyrusUICallback* obj = s_objectManager.GetObject(handle);
-		if (obj)
-		{
-			result = obj->Send();
-			s_objectManager.FreeObject(handle);
-		}
-
-		s_objectManagerLock.Leave();
-
-		return result;
-	}
-
-	void Release(StaticFunctionTag* thisInput, RawHandleT handle)
-	{
-		s_objectManagerLock.Enter();
-
-		s_objectManager.FreeObject(handle);
-
-		s_objectManagerLock.Leave();
-	}
-
-	template <typename T>
-	void Push(StaticFunctionTag* thisInput, RawHandleT handle, T arg)
-	{
-		s_objectManagerLock.Enter();
-
-		PapyrusUICallback* obj = s_objectManager.GetObject(handle);
-		if (obj)
-			obj->PushArg<T>(arg);
-
-		s_objectManagerLock.Leave();
-	}
-
-	template <typename T>
-	void PushArray(StaticFunctionTag* thisInput, RawHandleT handle, VMArray<T> args)
-	{
-		s_objectManagerLock.Enter();
-
-		PapyrusUICallback* obj = s_objectManager.GetObject(handle);
-		if (obj)
-			obj->PushArgs<T>(args);
-
-		s_objectManagerLock.Leave();
-	}
-
-	void RevertGlobalData()
-	{
-		s_objectManager.FreeAll();
 	}
 }
-
-#include "PapyrusVM.h"
-#include "PapyrusNativeFunctions.h"
 
 void papyrusUICallback::RegisterFuncs(VMClassRegistry* registry)
 {
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, RawHandleT, BSFixedString, BSFixedString> ("Create", "UICallback", papyrusUICallback::Create, registry));
+		new NativeFunction2 <StaticFunctionTag, SInt32, BSFixedString, BSFixedString> ("Create", "UICallback", papyrusUICallback::Create, registry));
 	
 	registry->RegisterFunction(
-		new NativeFunction1 <StaticFunctionTag, bool, RawHandleT> ("Send", "UICallback", papyrusUICallback::Send, registry));
+		new NativeFunction1 <StaticFunctionTag, bool, SInt32> ("Send", "UICallback", papyrusUICallback::Send, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction1 <StaticFunctionTag, void, RawHandleT> ("Release", "UICallback", papyrusUICallback::Release, registry));
+		new NativeFunction1 <StaticFunctionTag, void, SInt32> ("Release", "UICallback", papyrusUICallback::Release, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, void, RawHandleT, bool> ("PushBool", "UICallback", papyrusUICallback::Push<bool>, registry));
+		new NativeFunction2 <StaticFunctionTag, void, SInt32, bool> ("PushBool", "UICallback", papyrusUICallback::Push<bool>, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, void, RawHandleT, SInt32> ("PushInt", "UICallback", papyrusUICallback::Push<SInt32>, registry));
+		new NativeFunction2 <StaticFunctionTag, void, SInt32, SInt32> ("PushInt", "UICallback", papyrusUICallback::Push<SInt32>, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, void, RawHandleT, float> ("PushFloat", "UICallback", papyrusUICallback::Push<float>, registry));
+		new NativeFunction2 <StaticFunctionTag, void, SInt32, float> ("PushFloat", "UICallback", papyrusUICallback::Push<float>, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, void, RawHandleT, BSFixedString> ("PushString", "UICallback", papyrusUICallback::Push<BSFixedString>, registry));
+		new NativeFunction2 <StaticFunctionTag, void, SInt32, BSFixedString> ("PushString", "UICallback", papyrusUICallback::Push<BSFixedString>, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, void, RawHandleT, VMArray<bool>> ("PushBoolA", "UICallback", papyrusUICallback::PushArray<bool>, registry));
+		new NativeFunction2 <StaticFunctionTag, void, SInt32, VMArray<bool>> ("PushBoolA", "UICallback", papyrusUICallback::PushArray<bool>, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, void, RawHandleT, VMArray<SInt32>> ("PushIntA", "UICallback", papyrusUICallback::PushArray<SInt32>, registry));
+		new NativeFunction2 <StaticFunctionTag, void, SInt32, VMArray<SInt32>> ("PushIntA", "UICallback", papyrusUICallback::PushArray<SInt32>, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, void, RawHandleT, VMArray<float>> ("PushFloatA", "UICallback", papyrusUICallback::PushArray<float>, registry));
+		new NativeFunction2 <StaticFunctionTag, void, SInt32, VMArray<float>> ("PushFloatA", "UICallback", papyrusUICallback::PushArray<float>, registry));
 
 	registry->RegisterFunction(
-		new NativeFunction2 <StaticFunctionTag, void, RawHandleT, VMArray<BSFixedString>> ("PushStringA", "UICallback", papyrusUICallback::PushArray<BSFixedString>, registry));
+		new NativeFunction2 <StaticFunctionTag, void, SInt32, VMArray<BSFixedString>> ("PushStringA", "UICallback", papyrusUICallback::PushArray<BSFixedString>, registry));
 
 	registry->SetFunctionFlags("UICallback", "Create", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("UICallback", "Send", VMClassRegistry::kFunctionFlag_NoWait);

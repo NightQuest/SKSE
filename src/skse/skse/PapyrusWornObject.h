@@ -40,6 +40,8 @@ namespace referenceUtils
 	UInt32 GetNumReferenceAliases(BaseExtraList * extraData);
 	BGSRefAlias * GetNthReferenceAlias(BaseExtraList * extraData, UInt32 n);
 
+	VMResultArray<BGSRefAlias*> GetReferenceAliases(BaseExtraList* extraData);
+
 	bool HasItemAbility(Actor * actor, TESForm* baseForm, BaseExtraList * extraData);
 	void UpdateItemAbility(Actor * actor, TESForm* baseForm, BaseExtraList * extraData, bool bLeftHand);
 };

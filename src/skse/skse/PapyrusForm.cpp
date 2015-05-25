@@ -1,4 +1,5 @@
 #include "PapyrusForm.h"
+#include "PapyrusArgs.h"
 
 #include "GameForms.h"
 #include "GameObjects.h"
@@ -114,6 +115,23 @@ namespace papyrusForm
 			return pKeywords->keywords[index];
 		}
 		return NULL;
+	}
+
+	VMResultArray<BGSKeyword*> GetKeywords(TESForm* thisForm)
+	{
+		VMResultArray<BGSKeyword*> result;
+		if (!thisForm)
+			return result;
+
+		BGSKeywordForm* pKeywords = DYNAMIC_CAST(thisForm, TESForm, BGSKeywordForm);
+		if (pKeywords) {
+			for(UInt32 i = 0; i < pKeywords->numKeywords; i++)
+			{
+				if(pKeywords->keywords[i])
+					result.push_back(pKeywords->keywords[i]);
+			}
+		}
+		return result;
 	}
 
 	void SetPlayerKnows(TESForm * thisForm, bool knows)
@@ -453,6 +471,9 @@ void papyrusForm::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESForm, BGSKeyword *, UInt32> ("GetNthKeyword", "Form", papyrusForm::GetNthKeyword, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESForm, VMResultArray<BGSKeyword*>> ("GetKeywords", "Form", papyrusForm::GetKeywords, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESForm, void, bool> ("SetPlayerKnows", "Form", papyrusForm::SetPlayerKnows, registry));

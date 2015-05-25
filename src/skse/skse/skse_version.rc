@@ -20,7 +20,7 @@ BEGIN
             VALUE "FileDescription", "A component of the Skyrim Script Extender"
 			VALUE "FileVersion", SKSE_VERSION_VERSTRING
             VALUE "InternalName", "SKSE"
-            VALUE "LegalCopyright", "Copyright (C) 2006-2014"
+            VALUE "LegalCopyright", "Copyright (C) 2006-2015"
             VALUE "ProductName", "SKSE"
 			VALUE "ProductVersion", SKSE_VERSION_VERSTRING
         END

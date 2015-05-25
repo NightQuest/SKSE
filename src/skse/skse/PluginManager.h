@@ -40,10 +40,6 @@ private:
 
 		_SKSEPlugin_Query	query;
 		_SKSEPlugin_Load	load;
-
-		// scaleform info
-		SKSEScaleformInterface::RegisterCallback	scaleformRegisterCallback;
-		const char	* scaleformName;
 	};
 
 	bool	FindPluginDirectory(void);

@@ -153,15 +153,15 @@ struct GetMatchingEquipped
 		m_found.pExtraData = NULL;
 	}
 
-	bool Accept(ExtraContainerChanges::EntryData* pEntryData)
+	bool Accept(InventoryEntryData* pEntryData)
 	{
 		if (pEntryData)
 		{
 			// quick check - needs an extendData or can't be equipped
-			ExtraContainerChanges::ExtendDataList* pExtendList = pEntryData->extendDataList;
+			ExtendDataList* pExtendList = pEntryData->extendDataList;
 			if (pExtendList && m_matcher.Matches(pEntryData->type))
 			{
-				for (ExtraContainerChanges::ExtendDataList::Iterator it = pExtendList->Begin(); !it.End(); ++it)
+				for (ExtendDataList::Iterator it = pExtendList->Begin(); !it.End(); ++it)
 				{
 					BaseExtraList * pExtraDataList = it.Get();
 
@@ -225,7 +225,7 @@ public:
 		m_found.pHotkey = NULL;
 	}
 
-	bool Accept(ExtraContainerChanges::EntryData* pEntryData)
+	bool Accept(InventoryEntryData* pEntryData)
 	{
 		if (!pEntryData)
 			return true;
@@ -234,7 +234,7 @@ public:
 		if (m_matchForm && m_matchForm != pEntryData->type)
 			return true;
 
-		ExtraContainerChanges::ExtendDataList* pExtendList = pEntryData->extendDataList;
+		ExtendDataList* pExtendList = pEntryData->extendDataList;
 		if (!pExtendList)
 			return true;
 
@@ -298,20 +298,25 @@ HotkeyData ExtraContainerChanges::FindHotkey(TESForm * form) const
 	return hotkeyData;
 }
 
-ExtraContainerChanges::EntryData * ExtraContainerChanges::EntryData::Create(TESForm * item, UInt32 count)
+InventoryEntryData::InventoryEntryData(TESForm * item, UInt32 count)
 {
-	EntryData * p = (EntryData *)FormHeap_Allocate(sizeof(EntryData));
+	type = item;
+	countDelta = count;
+	extendDataList = NULL;
+}
+
+InventoryEntryData * InventoryEntryData::Create(TESForm * item, UInt32 count)
+{
+	InventoryEntryData * p = (InventoryEntryData *)FormHeap_Allocate(sizeof(InventoryEntryData));
 	ASSERT(p);
 
-	new (p) EntryData;
-	p->type = item;
-	p->countDelta = count;
+	new (p) InventoryEntryData(item, count);
 	p->extendDataList = ExtendDataList::Create();
 
 	return p;
 }
 
-void ExtraContainerChanges::EntryData::Delete(void)
+void InventoryEntryData::Delete(void)
 {
 	if (extendDataList)
 	{
@@ -321,7 +326,7 @@ void ExtraContainerChanges::EntryData::Delete(void)
 	FormHeap_Free(this);
 }
 
-void ExtraContainerChanges::EntryData::GetExtraWornBaseLists(BaseExtraList ** pWornBaseListOut, BaseExtraList ** pWornLeftBaseListOut) const
+void InventoryEntryData::GetExtraWornBaseLists(BaseExtraList ** pWornBaseListOut, BaseExtraList ** pWornLeftBaseListOut) const
 {
 	bool checkWorn = pWornBaseListOut != NULL;
 	bool checkWornLeft = pWornLeftBaseListOut != NULL;
@@ -358,7 +363,7 @@ void ExtraContainerChanges::EntryData::GetExtraWornBaseLists(BaseExtraList ** pW
 	}
 }
 
-ExtraContainerChanges::EquipItemData::EquipItemData() :
+InventoryEntryData::EquipData::EquipData() :
 	itemCount(0),
 	itemExtraList(NULL),
 	wornExtraList(NULL),
@@ -370,7 +375,7 @@ ExtraContainerChanges::EquipItemData::EquipItemData() :
 {
 }
 
-void ExtraContainerChanges::EntryData::GetEquipItemData(EquipItemData& stateOut, SInt32 itemId, SInt32 baseCount) const
+void InventoryEntryData::GetEquipItemData(EquipData& stateOut, SInt32 itemId, SInt32 baseCount) const
 {
 	bool checkDisplayName = itemId != 0;
 
@@ -445,16 +450,16 @@ void ExtraContainerChanges::EntryData::GetEquipItemData(EquipItemData& stateOut,
 	}
 }
 
-ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::FindItemEntry(TESForm * item) const
+InventoryEntryData * ExtraContainerChanges::Data::FindItemEntry(TESForm * item) const
 {
-	typedef ExtraContainerChanges::EntryDataList::Iterator	EntryDataIterator;
+	typedef EntryDataList::Iterator	EntryDataIterator;
 
 	if (!objList)
 		return NULL;
 
 	for (EntryDataIterator it = objList->Begin(); !it.End(); ++it)
 	{
-		EntryData * e = it.Get();
+		InventoryEntryData * e = it.Get();
 		if (e && e->type == item)
 			return e;
 	}
@@ -462,9 +467,9 @@ ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::FindItemEntry(TE
 	return NULL;
 }
 
-ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::CreateEquipEntryData(TESForm * item)
+InventoryEntryData * ExtraContainerChanges::Data::CreateEquipEntryData(TESForm * item)
 {
-	EntryData * newEntryData = NULL;
+	InventoryEntryData * newEntryData = NULL;
 
 	// Get count from baseForm container
 	UInt32 baseCount = 0;
@@ -476,11 +481,11 @@ ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::CreateEquipEntry
 	}
 
 	// Find existing entryData for this item
-	EntryData * curEntryData = FindItemEntry(item);
+	InventoryEntryData * curEntryData = FindItemEntry(item);
 
 	if (curEntryData)
 	{
-		newEntryData = EntryData::Create(item, baseCount + curEntryData->countDelta);
+		newEntryData = InventoryEntryData::Create(item, baseCount + curEntryData->countDelta);
 		
 		ExtendDataList * curExtendDataList = curEntryData->extendDataList;
 		ExtendDataList * newExtendDataList = newEntryData->extendDataList;
@@ -504,14 +509,14 @@ ExtraContainerChanges::EntryData * ExtraContainerChanges::Data::CreateEquipEntry
 	{
 		if (baseCount > 0)
 		{
-			newEntryData = EntryData::Create(item, baseCount);
+			newEntryData = InventoryEntryData::Create(item, baseCount);
 		}
 	}
 
 	return newEntryData;
 }
 
-void ExtraContainerChanges::Data::GetEquipItemData(EquipItemData& stateOut, TESForm * item, SInt32 itemId) const
+void ExtraContainerChanges::Data::GetEquipItemData(InventoryEntryData::EquipData& stateOut, TESForm * item, SInt32 itemId) const
 {
 	// Get count from baseForm container
 	UInt32 baseCount = 0;
@@ -536,7 +541,7 @@ void ExtraContainerChanges::Data::GetEquipItemData(EquipItemData& stateOut, TESF
 	}
 
 	// Find existing entryData for this item
-	EntryData * curEntryData = FindItemEntry(item);
+	InventoryEntryData * curEntryData = FindItemEntry(item);
 
 	// Found entryData
 	if (curEntryData)

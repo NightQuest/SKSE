@@ -83,8 +83,12 @@ class CLASS_NAME
 	: public NativeFunction
 {
 public:
+
+// Callback with short signature
 	typedef
-#if VOID_SPEC
+#if LATENT_SPEC
+		bool
+#elif VOID_SPEC
 		void
 #else
 		T_Result
@@ -122,12 +126,74 @@ public:
 #endif
 		);
 
+// Callback with long signature
+	typedef
+#if LATENT_SPEC
+		bool
+#elif VOID_SPEC
+		void
+#else
+		T_Result
+#endif
+		(* CallbackType_LongSig)(VMClassRegistry* registry, UInt32 stackId, T_Base * base
+#if NUM_PARAMS >= 1
+		, T_Arg0 arg0
+#endif
+#if NUM_PARAMS >= 2
+		, T_Arg1 arg1
+#endif
+#if NUM_PARAMS >= 3
+		, T_Arg2 arg2
+#endif
+#if NUM_PARAMS >= 4
+		, T_Arg3 arg3
+#endif
+#if NUM_PARAMS >= 5
+		, T_Arg4 arg4
+#endif
+#if NUM_PARAMS >= 6
+		, T_Arg5 arg5
+#endif
+#if NUM_PARAMS >= 7
+		, T_Arg6 arg6
+#endif
+#if NUM_PARAMS >= 8
+		, T_Arg7 arg7
+#endif
+#if NUM_PARAMS >= 9
+		, T_Arg8 arg8
+#endif
+#if NUM_PARAMS >= 10
+		, T_Arg9 arg9
+#endif
+		);
+
+	// Short signature
 	CLASS_NAME(const char * fnName, const char * className, CallbackType callback, VMClassRegistry * registry)
 		:NativeFunction(fnName, className, IsStaticType <T_Base>::value, NUM_PARAMS)
 	{
 		// store callback
 		m_callback = (void *)callback;
 
+		m_bUseLongSignature = false;
+
+		InitParams(registry);
+	}
+
+	// Long signature
+	CLASS_NAME(const char * fnName, const char * className, CallbackType_LongSig callback, VMClassRegistry * registry)
+		:NativeFunction(fnName, className, IsStaticType <T_Base>::value, NUM_PARAMS)
+	{
+		// store callback
+		m_callback = (void *)callback;
+
+		m_bUseLongSignature = true;
+
+		InitParams(registry);
+	}
+
+	void InitParams(VMClassRegistry * registry)
+	{
 #if NUM_PARAMS >= 1
 		m_params.data[0].type = GetTypeID <T_Arg0>(registry);
 #endif
@@ -163,6 +229,10 @@ public:
 		m_retnType = GetTypeID <void>(registry);
 #else
 		m_retnType = GetTypeID <T_Result>(registry);
+#endif
+
+#if LATENT_SPEC
+		m_isLatent = true;
 #endif
 
 #ifdef _NATIVEDUMP
@@ -227,10 +297,10 @@ public:
 
 	virtual ~CLASS_NAME()	{ }
 
-	virtual bool	Run(VMValue * baseValue, VMClassRegistry * registry, UInt32 unk2, VMValue * resultValue, VMState * state)
+	virtual bool	Run(VMValue * baseValue, VMClassRegistry * registry, UInt32 stackId, VMValue * resultValue, VMState * state)
 	{
 #if _DEBUG
-		DebugRunHook(baseValue, registry, unk2, resultValue, state);
+		DebugRunHook(baseValue, registry, stackId, resultValue, state);
 #endif
 
 		// get argument list
@@ -287,51 +357,109 @@ public:
 		UnpackValue(&arg9, CALL_MEMBER_FN(state->argList, Get)(state, 9, argOffset));
 #endif
 
-		// call the callback
-#if !VOID_SPEC
-		T_Result	result =
+		// long signature
+		if (m_bUseLongSignature)
+		{
+			// call the callback
+#if LATENT_SPEC
+			bool		result =
+#elif !VOID_SPEC
+			T_Result	result =
 #endif
-			((CallbackType)m_callback)(base
-
+				((CallbackType_LongSig)m_callback)(registry, stackId, base
 #if NUM_PARAMS >= 1
-			, arg0
+				, arg0
 #endif
 #if NUM_PARAMS >= 2
-			, arg1
+				, arg1
 #endif
 #if NUM_PARAMS >= 3
-			, arg2
+				, arg2
 #endif
 #if NUM_PARAMS >= 4
-			, arg3
+				, arg3
 #endif
 #if NUM_PARAMS >= 5
-			, arg4
+				, arg4
 #endif
 #if NUM_PARAMS >= 6
-			, arg5
+				, arg5
 #endif
 #if NUM_PARAMS >= 7
-			, arg6
+				, arg6
 #endif
 #if NUM_PARAMS >= 8
-			, arg7
+				, arg7
 #endif
 #if NUM_PARAMS >= 9
-			, arg8
+				, arg8
 #endif
 #if NUM_PARAMS >= 10
-			, arg9
+				, arg9
 #endif
-
 			);
 
-		// pack the result
-#if VOID_SPEC
-		resultValue->SetNone();
+			// pack the result
+#if LATENT_SPEC
+			resultValue->SetBool(result);
+#elif VOID_SPEC
+			resultValue->SetNone();
 #else
-		PackValue(resultValue, &result, registry);
+			PackValue(resultValue, &result, registry);
 #endif
+		}
+
+		// Short signature
+		else
+		{
+			// call the callback
+#if LATENT_SPEC
+			bool		result =
+#elif !VOID_SPEC
+			T_Result	result =
+#endif
+				((CallbackType)m_callback)(base
+#if NUM_PARAMS >= 1
+				, arg0
+#endif
+#if NUM_PARAMS >= 2
+				, arg1
+#endif
+#if NUM_PARAMS >= 3
+				, arg2
+#endif
+#if NUM_PARAMS >= 4
+				, arg3
+#endif
+#if NUM_PARAMS >= 5
+				, arg4
+#endif
+#if NUM_PARAMS >= 6
+				, arg5
+#endif
+#if NUM_PARAMS >= 7
+				, arg6
+#endif
+#if NUM_PARAMS >= 8
+				, arg7
+#endif
+#if NUM_PARAMS >= 9
+				, arg8
+#endif
+#if NUM_PARAMS >= 10
+				, arg9
+#endif
+			);
+
+			// pack the result
+#if LATENT_SPEC
+			resultValue->SetBool(result);
+#elif VOID_SPEC
+			resultValue->SetNone();
+#else
+			PackValue(resultValue, &result, registry);
+#endif
+		}
 
 		return true;
 	}
@@ -339,6 +467,9 @@ public:
 private:
 	// hide
 	CLASS_NAME();
+
+	// Temporary workaround until refactoring
+	bool m_bUseLongSignature;
 };
 
 #undef VOID_SPEC

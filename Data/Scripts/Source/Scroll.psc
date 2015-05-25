@@ -3,7 +3,7 @@ Scriptname Scroll extends Form Hidden
 ; Cast this scroll from an ObjectReference, optionally toward another.
 Function Cast(ObjectReference akSource, ObjectReference akTarget=NONE) native	
 
-; SKSE additions built 2014-12-23 07:36:08.038000 UTC
+; SKSE additions built 2015-05-24 00:46:48.937000 UTC
 ; return the casting time
 float Function GetCastTime() native
 
@@ -40,3 +40,15 @@ Function SetNthEffectDuration(int index, int value) native
 ; Returns the particular equipslot type
 EquipSlot Function GetEquipType() native
 Function SetEquipType(EquipSlot type) native
+
+; Returns all the magnitudes of this object in order
+float[] Function GetEffectMagnitudes() native
+
+; Returns all the areas of this object in order
+int[] Function GetEffectAreas() native
+
+; Returns all the durations of this object in order
+int[] Function GetEffectDurations() native
+
+; Returns all the magic effects of this object in order
+MagicEffect[] Function GetMagicEffects() native

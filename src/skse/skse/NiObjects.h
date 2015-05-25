@@ -157,7 +157,7 @@ public:
 		};
 
 		float	delta;
-		UInt8	flags;
+		UInt32	flags;
 	};
 
 	virtual void	UpdateControllers(ControllerUpdateContext * ctx);	// calls controller vtbl+0x8C

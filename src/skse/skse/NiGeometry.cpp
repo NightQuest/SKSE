@@ -85,3 +85,12 @@ BSDismemberSkinInstance * BSDismemberSkinInstance::Create()
 	CALL_MEMBER_FN(xData, ctor)();
 	return xData;
 }
+
+BSSharedVertexesTriShapeData * BSSharedVertexesTriShapeData::Create(NiTriShapeData * triShape)
+{
+	void* memory = FormHeap_Allocate(sizeof(BSSharedVertexesTriShapeData));
+	memset(memory, 0, sizeof(BSSharedVertexesTriShapeData));
+	BSSharedVertexesTriShapeData* xData = (BSSharedVertexesTriShapeData*)memory;
+	CALL_MEMBER_FN(xData, ctor)(triShape, -2);
+	return xData;
+}

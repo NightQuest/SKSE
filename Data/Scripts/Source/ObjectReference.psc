@@ -759,7 +759,7 @@ int Property Motion_ThinBoxIntertia = 6 AutoReadOnly
 int Property Motion_Character = 7 AutoReadOnly
 
 
-; SKSE additions built 2014-12-23 07:36:08.038000 UTC
+; SKSE additions built 2015-05-24 00:46:48.937000 UTC
 
 ; Container-only functions
 int Function GetNumItems() native
@@ -829,3 +829,6 @@ Function GetAllForms(FormList toFill) native
 
 ; Returns all base forms from the container into a new array
 Form[] Function GetContainerForms() native
+
+; Returns all of the aliases holding this reference
+ReferenceAlias[] Function GetReferenceAliases() native

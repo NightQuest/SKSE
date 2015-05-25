@@ -45,6 +45,11 @@ namespace papyrusPotion
 
 	void SetNthEffectDuration(AlchemyItem* thisMagic, UInt32 index, UInt32 value)
 	{ magicItemUtils::SetNthEffectDuration(thisMagic, index, value); }
+
+	VMResultArray<float> GetEffectMagnitudes(AlchemyItem* thisMagic) { return magicItemUtils::GetEffectMagnitudes(thisMagic); }
+	VMResultArray<UInt32> GetEffectAreas(AlchemyItem* thisMagic) { return magicItemUtils::GetEffectAreas(thisMagic); }
+	VMResultArray<UInt32> GetEffectDurations(AlchemyItem* thisMagic) { return magicItemUtils::GetEffectDurations(thisMagic); }
+	VMResultArray<EffectSetting*> GetMagicEffects(AlchemyItem* thisMagic) { return magicItemUtils::GetMagicEffects(thisMagic); }
 }
 
 #include "PapyrusVM.h"
@@ -89,6 +94,19 @@ void papyrusPotion::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction2<AlchemyItem, void, UInt32, UInt32>("SetNthEffectDuration", "Potion", papyrusPotion::SetNthEffectDuration, registry));
 
+	// Array gets
+	registry->RegisterFunction(
+		new NativeFunction0 <AlchemyItem, VMResultArray<float>>("GetEffectMagnitudes", "Potion", papyrusPotion::GetEffectMagnitudes, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <AlchemyItem, VMResultArray<UInt32>>("GetEffectAreas", "Potion", papyrusPotion::GetEffectAreas, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <AlchemyItem, VMResultArray<UInt32>>("GetEffectDurations", "Potion", papyrusPotion::GetEffectDurations, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <AlchemyItem, VMResultArray<EffectSetting*>>("GetMagicEffects", "Potion", papyrusPotion::GetMagicEffects, registry));
+
 	registry->SetFunctionFlags("Potion", "IsFood", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Potion", "GetNumEffects", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Potion", "GetNthEffectMagnitude", VMClassRegistry::kFunctionFlag_NoWait);
@@ -100,4 +118,9 @@ void papyrusPotion::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Potion", "SetNthEffectMagnitude", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Potion", "SetNthEffectArea", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Potion", "SetNthEffectDuration", VMClassRegistry::kFunctionFlag_NoWait);
+
+	registry->SetFunctionFlags("Potion", "GetEffectMagnitudes", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Potion", "GetEffectAreas", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Potion", "GetEffectDurations", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Potion", "GetMagicEffects", VMClassRegistry::kFunctionFlag_NoWait);
 }

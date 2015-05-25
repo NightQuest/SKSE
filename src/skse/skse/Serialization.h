@@ -3,6 +3,10 @@
 #include "PluginAPI.h"
 #include "GameTypes.h"
 
+#include <string>
+
+class GFxValue;
+
 extern SKSESerializationInterface	g_SKSESerializationInterface;
 
 namespace Serialization
@@ -44,6 +48,7 @@ namespace Serialization
 	bool	GetNextRecordInfo(UInt32 * type, UInt32 * version, UInt32 * length);
 	UInt32	ReadRecordData(void * buf, UInt32 length);
 
+	bool	ResolveFormId(UInt32 formId, UInt32 * formIdOut);
 	bool	ResolveHandle(UInt64 handle, UInt64 * handleOut);
 
 	// internal event handlers
@@ -69,4 +74,25 @@ namespace Serialization
 
 	template <> bool WriteData<BSFixedString>(SKSESerializationInterface * intfc, const BSFixedString * data);
 	template <> bool ReadData<BSFixedString>(SKSESerializationInterface * intfc, BSFixedString * data);
+
+	template <> bool WriteData<std::string>(SKSESerializationInterface * intfc, const std::string * data);
+	template <> bool ReadData<std::string>(SKSESerializationInterface * intfc, std::string * data);
+
+	// Note: Read would have to allocate somehow. You have to do that manually.
+	template <> bool WriteData<const char>(SKSESerializationInterface * intfc, const char* data);
+
+	template <>
+	bool WriteData<GFxValue>(SKSESerializationInterface* intfc, const GFxValue* val);
+	
+	template <>
+	bool ReadData<GFxValue>(SKSESerializationInterface* intfc, GFxValue* val);
+
+	template <typename T>
+	bool SaveClassHelper(SKSESerializationInterface* intfc, UInt32 type, T& instance)
+	{
+		if (! intfc->OpenRecord(type, T::kSaveVersion))
+			return false;
+
+		return instance.Save(intfc);
+	}
 }

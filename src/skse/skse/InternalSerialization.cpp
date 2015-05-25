@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <string>
 #include "PapyrusEvents.h"
+#include "PapyrusDelayFunctors.h"
+#include "PapyrusObjects.h"
 #include "GameData.h"
 
 // Internal
@@ -70,10 +72,16 @@ void Core_RevertCallback(SKSESerializationInterface * intfc)
 	g_cameraEventRegs.Clear();
 	g_actionEventRegs.Clear();
 	g_ninodeUpdateEventRegs.Clear();
+
+	SKSEDelayFunctorManagerInstance().OnRevert();
+
+	SKSEObjectStorageInstance().ClearAndRelease();
 }
 
 void Core_SaveCallback(SKSESerializationInterface * intfc)
 {
+	using Serialization::SaveClassHelper;
+
 	SaveModList(intfc);
 
 	_MESSAGE("Saving menu open/close event registrations...");
@@ -99,6 +107,12 @@ void Core_SaveCallback(SKSESerializationInterface * intfc)
 
 	_MESSAGE("Saving NiNode update event registrations...");
 	g_ninodeUpdateEventRegs.Save(intfc, 'NINU', 1);
+
+	_MESSAGE("Saving SKSEPersistentObjectStorage data...");
+	SaveClassHelper(intfc, 'OBMG', SKSEObjectStorageInstance());
+
+	_MESSAGE("Saving SKSEDelayFunctorManager data...");
+	SaveClassHelper(intfc, 'DFMG', SKSEDelayFunctorManagerInstance());
 }
 
 void Core_LoadCallback(SKSESerializationInterface * intfc)
@@ -161,6 +175,18 @@ void Core_LoadCallback(SKSESerializationInterface * intfc)
 		case 'NiNU':
 			_MESSAGE("Loading NiNode update event registrations...");
 			g_ninodeUpdateEventRegs.Load(intfc, 1);
+			break;
+
+		// SKSEPersistentObjectStorage
+		case 'OBMG':
+			_MESSAGE("Loading SKSEPersistentObjectStorage data...");
+			SKSEObjectStorageInstance().Load(intfc, version);
+			break;
+
+		// SKSEDelayFunctorManager
+		case 'DFMG':
+			_MESSAGE("Loading SKSEDelayFunctorManager data...");
+			SKSEDelayFunctorManagerInstance().Load(intfc, version);
 			break;
 
 		default:

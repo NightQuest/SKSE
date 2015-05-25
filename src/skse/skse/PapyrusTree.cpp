@@ -3,12 +3,12 @@
 
 namespace papyrusTree
 {
-	IngredientItem * GetIngredient(TESObjectTREE* thisTree)
+	TESForm * GetIngredient(TESObjectTREE* thisTree)
 	{
 		return (thisTree) ? thisTree->produce.produce : NULL;
 	}
 
-	void SetIngredient(TESObjectTREE* thisTree, IngredientItem* ingredient)
+	void SetIngredient(TESObjectTREE* thisTree, TESForm* ingredient)
 	{
 		if (thisTree) {
 			thisTree->produce.produce = ingredient;
@@ -36,7 +36,10 @@ void papyrusTree::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterForm(TESObjectTREE::kTypeID, "TreeObject");
 
 	registry->RegisterFunction(
-		new NativeFunction0<TESObjectTREE, IngredientItem*>("GetIngredient", "TreeObject", papyrusTree::GetIngredient, registry));
+		new NativeFunction0<TESObjectTREE, TESForm*>("GetIngredient", "TreeObject", papyrusTree::GetIngredient, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<TESObjectTREE, void, TESForm*>("SetIngredient", "TreeObject", papyrusTree::SetIngredient, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0<TESObjectTREE, BGSSoundDescriptorForm*>("GetHarvestSound", "TreeObject", papyrusTree::GetHarvestSound, registry));

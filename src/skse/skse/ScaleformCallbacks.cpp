@@ -69,7 +69,7 @@ void GFxValue::SetWideString(const wchar_t * value)
 	data.wideString = value;
 }
 
-bool GFxValue::GetBool(void)
+bool GFxValue::GetBool(void) const
 {
 	switch(GetType())
 	{
@@ -79,7 +79,7 @@ bool GFxValue::GetBool(void)
 	}
 }
 
-const char * GFxValue::GetString(void)
+const char * GFxValue::GetString(void) const
 {
 	if(GetType() != kType_String)
 		return NULL;
@@ -90,7 +90,7 @@ const char * GFxValue::GetString(void)
 		return data.string;
 }
 
-const wchar_t * GFxValue::GetWideString(void)
+const wchar_t * GFxValue::GetWideString(void) const
 {
 	if(GetType() != kType_WideString)
 		return NULL;
@@ -101,7 +101,7 @@ const wchar_t * GFxValue::GetWideString(void)
 		return data.wideString;
 }
 
-double GFxValue::GetNumber(void)
+double GFxValue::GetNumber(void) const
 {
 	switch(GetType())
 	{

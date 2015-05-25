@@ -105,7 +105,7 @@ namespace papyrusActorBase
 	{
 		if (thisNPC && thisNPC->headparts) {
 			for(int i = 0; i < thisNPC->numHeadParts; i++) {
-				if(thisNPC->headparts[i] && thisNPC->headparts[i]->type == type) {
+				if(thisNPC->headparts[i] && thisNPC->headparts[i]->type == type && !thisNPC->headparts[i]->IsExtraPart()) {
 					return i;
 				}
 			}
@@ -142,7 +142,7 @@ namespace papyrusActorBase
 		BGSHeadPart ** overlays = GetActorBaseOverlays(thisNPC);
 		for(UInt32 i = 0; i < numOverlays; i++)
 		{
-			if(overlays[i] && overlays[i]->type == type)
+			if(overlays[i] && overlays[i]->type == type && !overlays[i]->IsExtraPart())
 				return i;
 		}
 

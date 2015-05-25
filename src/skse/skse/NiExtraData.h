@@ -79,6 +79,16 @@ public:
 	SInt32 m_data;	// 0C
 };
 
+// 10
+class NiFloatExtraData : public NiExtraData
+{
+public:
+	NiFloatExtraData();
+	~NiFloatExtraData();
+
+	float m_data;	// 0C
+};
+
 // 14
 class NiBinaryExtraData : public NiExtraData
 {
@@ -224,5 +234,5 @@ public:
 	UInt32	modelVertexCount;	// 10 - Same as 14 if the tri model is correct
 	UInt32	vertexCount;		// 14
 
-	static BSFaceGenBaseMorphExtraData* Create(NiGeometryData * data);
+	static BSFaceGenBaseMorphExtraData* Create(NiGeometryData * data, bool copy = false);
 };

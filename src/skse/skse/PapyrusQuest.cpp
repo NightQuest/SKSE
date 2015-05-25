@@ -1,4 +1,5 @@
 #include "PapyrusQuest.h"
+#include "PapyrusArgs.h"
 
 #include "GameForms.h"
 #include "GameData.h"
@@ -88,6 +89,39 @@ namespace papyrusQuest
 		
 		return NULL;
 	}
+
+	VMResultArray<BGSBaseAlias*> GetAliases(TESQuest* thisQuest)
+	{
+		VMResultArray<BGSBaseAlias*> foundAliases;
+		if(!thisQuest)
+			return foundAliases;
+
+		for(UInt32 n = 0; n < thisQuest->aliases.count; n++) {
+			BGSBaseAlias* alias = NULL;
+			thisQuest->aliases.GetNthItem(n, alias);
+			if(alias) {
+				foundAliases.push_back(alias);
+			}
+		}
+
+		return foundAliases;
+	}
+
+	BGSBaseAlias* GetAliasById(TESQuest* thisQuest, UInt32 aliasId)
+	{
+		if(!thisQuest)
+			return NULL;
+
+		for(UInt32 n = 0; n < thisQuest->aliases.count; n++) {
+			BGSBaseAlias* alias = NULL;
+			thisQuest->aliases.GetNthItem(n, alias);
+			if(alias && alias->aliasId == aliasId) {
+				return alias;
+			}
+		}
+
+		return NULL;
+	}
 }
 
 #include "PapyrusVM.h"
@@ -112,4 +146,10 @@ void papyrusQuest::RegisterFuncs(VMClassRegistry* registry)
 
 	registry->RegisterFunction(
 		new NativeFunction1 <TESQuest, BGSBaseAlias*, BSFixedString> ("GetAliasByName", "Quest", papyrusQuest::GetAliasByName, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1 <TESQuest, BGSBaseAlias*, UInt32> ("GetAliasById", "Quest", papyrusQuest::GetAliasById, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <TESQuest, VMResultArray<BGSBaseAlias*>> ("GetAliases", "Quest", papyrusQuest::GetAliases, registry));
 }

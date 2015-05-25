@@ -12,7 +12,7 @@ NiExtraData* NiExtraData::Create(UInt32 size, UInt32 vtbl)
 	return xData;
 }
 
-BSFaceGenBaseMorphExtraData* BSFaceGenBaseMorphExtraData::Create(NiGeometryData * geometryData)
+BSFaceGenBaseMorphExtraData* BSFaceGenBaseMorphExtraData::Create(NiGeometryData * geometryData, bool copy)
 {
 	BSFaceGenBaseMorphExtraData* data = (BSFaceGenBaseMorphExtraData*)NiExtraData::Create(sizeof(BSFaceGenBaseMorphExtraData), s_BSFaceGenBaseMorphExtraDataVtbl);
 	data->m_pcName = const_cast<char*>(BSFixedString("FOD").data);
@@ -26,7 +26,10 @@ BSFaceGenBaseMorphExtraData* BSFaceGenBaseMorphExtraData::Create(NiGeometryData 
 		data->modelVertexCount = geometryData->m_usVertices;
 
 		data->vertexData = (NiPoint3*)FormHeap_Allocate(sizeof(NiPoint3) * data->vertexCount);
-		memset(data->vertexData, 0, sizeof(NiPoint3) * data->vertexCount);
+		if(copy)
+			memcpy(data->vertexData, geometryData->m_pkVertex, sizeof(NiPoint3) * data->vertexCount);
+		else
+			memset(data->vertexData, 0, sizeof(NiPoint3) * data->vertexCount);
 	}
 
 	return data;

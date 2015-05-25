@@ -67,3 +67,6 @@ Function GetAllForms(FormList toFill) native
 
 ; Returns all base forms from the container into a new array
 Form[] Function GetContainerForms() native
+
+; Returns all of the aliases holding this reference
+ReferenceAlias[] Function GetReferenceAliases() native

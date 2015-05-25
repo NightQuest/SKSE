@@ -57,3 +57,6 @@ ReferenceAlias Function GetNthReferenceAlias(Actor akActor, int handSlot, int sl
 
 ; Returns the poison on the specified item
 Potion Function GetPoison(Actor akActor, int handSlot, int slotMask) global native
+
+; Returns all of the ReferenceAlias holding this reference
+ReferenceAlias[] Function GetReferenceAliases(Actor akActor, int handSlot, int slotMask) global native

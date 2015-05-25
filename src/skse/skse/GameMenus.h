@@ -9,11 +9,15 @@
 #include "skse/ScaleformMovie.h"
 
 #include "skse/Utilities.h"
-#include "skse/Hooks_UI.h"
 #include "skse/NiNodes.h"
 
 class TESObjectREFR;
 class TESFullName;
+
+class InventoryEntryData;
+
+class UIDelegate;
+class UIDelegate_v1;
 
 //// menu implementations
 
@@ -442,6 +446,132 @@ public:
 };
 STATIC_ASSERT(sizeof(HUDMenu) == 0x58);
 
+class CraftingMenu : public IMenu
+{
+public:
+};
+
+// ???
+class CraftingSubMenu : public FxDelegateHandler
+{
+public:
+	virtual ~CraftingSubMenu();
+
+	UInt32			unk08;		// 008
+	GFxMovieView*	view;		// 00C
+	// ...
+};
+
+STATIC_ASSERT(offsetof(CraftingSubMenu, view) == 0x00C);
+
+// 158
+class EnchantConstructMenu : public CraftingSubMenu
+{
+public:
+	enum
+	{
+		kFilterFlag_EnchantWeapon	 = 0x1,
+		kFilterFlag_DisenchantWeapon = 0x2,
+		kFilterFlag_EnchanteArmor	 = 0x4,
+		kFilterFlag_DisenchantArmor  = 0x8,
+		kFilterFlag_EffectWeapon     = 0x10,
+		kFilterFlag_EffectArmor      = 0x20,
+		kFilterFlag_SoulGem          = 0x40
+	};
+
+	class CategoryListEntry
+	{
+	public:
+		virtual ~CategoryListEntry();
+
+		virtual void Unk1();
+		virtual void Unk2();
+		virtual void Unk3(); // pure
+		virtual void SetData(GFxValue* dataContainer);
+
+	//	void		** _vtbl;	// 00
+		UInt32		unk04;		// 04
+		UInt32		filterFlag;	// 08
+		UInt8		bEquipped;	// 0C
+		UInt8		bEnabled;	// 0D
+		UInt16		pad0E;		// 0E
+
+		MEMBER_FN_PREFIX(CategoryListEntry);
+		DEFINE_MEMBER_FN(SetData, void, 0x0084CF60, GFxValue* target);
+
+		// Implemented in Hooks_Scaleform - note the extra parameter
+		void SetData_Extended(EnchantConstructMenu*	subMenu, GFxValue* target);
+	};
+
+	// 014
+	class ItemChangeEntry : public CategoryListEntry
+	{
+	public:
+		InventoryEntryData*	data;	// 10
+		UInt32				unk14;	// 14
+		UInt32				unk18;	// 18
+	};
+
+	// 01C
+	class EnchantmentEntry : public CategoryListEntry
+	{
+	public:
+		EnchantmentItem*	data;	// 10
+	};
+
+	// ...
+};
+
+// 0E8
+class SmithingMenu : public CraftingSubMenu
+{
+public:
+
+
+	// ...
+};
+
+// 0E0
+class ConstructibleObjectMenu : public CraftingSubMenu
+{
+public:
+	// 08
+	struct EntryData
+	{
+		BGSConstructibleObject*	object;			// 00
+		UInt32					filterFlag;		// 04
+	};
+
+	// ...
+};
+
+// Declared outside of AlchemyMenu for forward decls
+// 08
+struct AlchemyEffectCategory
+{
+	UInt32 formId;
+	UInt32 unk1;
+};
+
+// 100
+class AlchemyMenu : public CraftingSubMenu
+{
+public:
+	// 0C
+	struct EntryData
+	{
+		InventoryEntryData*	data;		// 00
+		UInt32				filterFlag;	// 04
+		UInt8				bEquipped;	// 08
+		UInt8				bEnabled;	// 09
+		UInt16				pad0E;		// 0A
+	};
+
+	// ...
+};
+
+
+
 // HUDMenu
 // unk0C - 2
 // Flags - 0x18902
@@ -602,7 +732,8 @@ public:
 
 	// Used by Hooks_UI
 	void ProcessCommands(void);
-	void QueueCommand(UIDelegate * cmd);
+	void QueueCommand(UIDelegate* cmd);
+	void QueueCommand(UIDelegate_v1* cmd);
 
 	DEFINE_MEMBER_FN(ProcessEventQueue_HookTarget, void, 0x00A5C270);
 };
@@ -731,7 +862,7 @@ public:
 	UInt8			padE3;
 
 	MEMBER_FN_PREFIX(Inventory3DManager);
-	DEFINE_MEMBER_FN(UpdateItem3D, void, 0x00867C00, PlayerCharacter::ObjDesc * objDesc);
+	DEFINE_MEMBER_FN(UpdateItem3D, void, 0x00867C00, InventoryEntryData * objDesc);
 	DEFINE_MEMBER_FN(UpdateMagic3D, void, 0x00867930, TESForm * form, UInt32 unk1);
 	DEFINE_MEMBER_FN(Clear3D, void, 0x008668C0);
 	DEFINE_MEMBER_FN(Render, UInt32, 0x00867730);

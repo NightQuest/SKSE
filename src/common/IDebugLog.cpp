@@ -59,7 +59,7 @@ void IDebugLog::OpenRelative(int folderID, const char * relPath)
 	HRESULT err = SHGetFolderPath(NULL, folderID, NULL, SHGFP_TYPE_CURRENT, path);
 	if(!SUCCEEDED(err))
 	{
-		_ERROR("SHGetFolderPath %08X failed (result = %08X lasterr = %08X)", folderID, err, GetLastError());
+		_FATALERROR("SHGetFolderPath %08X failed (result = %08X lasterr = %08X)", folderID, err, GetLastError());
 	}
 	ASSERT_CODE(SUCCEEDED(err), err);
 

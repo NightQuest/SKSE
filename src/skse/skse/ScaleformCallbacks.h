@@ -169,10 +169,10 @@ public:
 	bool	IsObject(void) const		{ return GetType() == kType_Object; }
 	bool	IsDisplayObject(void) const	{ return GetType() == kType_DisplayObject; }
 
-	bool			GetBool(void);
-	const char *	GetString(void);
-	const wchar_t *	GetWideString(void);
-	double			GetNumber(void);
+	bool			GetBool(void) const;
+	const char *	GetString(void) const;
+	const wchar_t *	GetWideString(void) const;
+	double			GetNumber(void) const;
 
 	void	SetUndefined(void);
 	void	SetNull(void);

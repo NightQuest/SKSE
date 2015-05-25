@@ -1,6 +1,6 @@
 Scriptname Armor extends Form Hidden
 
-; SKSE additions built 2014-12-23 07:36:08.038000 UTC
+; SKSE additions built 2015-05-24 00:46:48.937000 UTC
 int Function GetArmorRating() native
 int Function GetAR()
 	return GetArmorRating()

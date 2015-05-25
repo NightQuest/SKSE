@@ -23,6 +23,9 @@ int Function GetNumKeywords() native
 ; returns the keyword at the specified index
 Keyword Function GetNthKeyword(int index) native
 
+; returns all keywords of the form
+Keyword[] Function GetKeywords() native
+
 bool Function HasKeywordString(string s)
 	Keyword k = Keyword.GetKeyword(s)
 	if k == None

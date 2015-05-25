@@ -163,7 +163,7 @@ protected:
 	ParameterInfo		m_params;		// 18
 	UInt8				unk20;			// 20 - related to extra entries in m_params
 	UInt8				unk21;			// 21
-	UInt8				unk22;			// 22
+	UInt8				m_isLatent;		// 22
 	UInt8				pad23;			// 23
 	UInt32				unk24;			// 24
 	StringCache::Ref	unk28;			// 28
@@ -227,3 +227,19 @@ protected:
 
 #define NUM_PARAMS 10
 #include "PapyrusNativeFunctionDef.inl"
+
+// Less boilerplate for checking of input parameters in native function callbacks.
+
+#define ERROR_AND_RETURN_IF(condition, message, registry, stackId) \
+	if (condition)								\
+	{											\
+		registry->LogError(message, stackId);	\
+		return;									\
+	}
+
+#define ERROR_AND_RETURN_0_IF(condition, message, registry, stackId) \
+	if (condition)								\
+	{											\
+		registry->LogError(message, stackId);	\
+		return 0;								\
+	}

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "GameTypes.h"
 #include "Utilities.h"
 
 class ExtraTextDisplayData;
@@ -253,5 +254,7 @@ private:
 	// This also does some internal ReferenceHandle lookup
 	DEFINE_MEMBER_FN(GetExtraTextDisplayData_Internal, ExtraTextDisplayData*, 0x00418590);	
 };
+
+typedef tList<BaseExtraList> ExtendDataList;
 
 STATIC_ASSERT(sizeof(BaseExtraList) == 0x08);

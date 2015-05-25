@@ -3,12 +3,12 @@
 
 namespace papyrusFlora
 {
-	IngredientItem * GetIngredient(TESFlora* thisFlora)
+	TESForm * GetIngredient(TESFlora* thisFlora)
 	{
 		return (thisFlora) ? thisFlora->produce.produce : NULL;
 	}
 
-	void SetIngredient(TESFlora* thisFlora, IngredientItem* ingredient)
+	void SetIngredient(TESFlora* thisFlora, TESForm* ingredient)
 	{
 		if (thisFlora) {
 			thisFlora->produce.produce = ingredient;
@@ -34,7 +34,10 @@ namespace papyrusFlora
 void papyrusFlora::RegisterFuncs(VMClassRegistry* registry)
 {
 	registry->RegisterFunction(
-		new NativeFunction0<TESFlora, IngredientItem*>("GetIngredient", "Flora", papyrusFlora::GetIngredient, registry));
+		new NativeFunction0<TESFlora, TESForm*>("GetIngredient", "Flora", papyrusFlora::GetIngredient, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction1<TESFlora, void, TESForm*>("SetIngredient", "Flora", papyrusFlora::SetIngredient, registry));
 
 	registry->RegisterFunction(
 		new NativeFunction0<TESFlora, BGSSoundDescriptorForm*>("GetHarvestSound", "Flora", papyrusFlora::GetHarvestSound, registry));

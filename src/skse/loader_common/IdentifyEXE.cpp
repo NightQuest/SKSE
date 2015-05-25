@@ -1,8 +1,9 @@
 #include "IdentifyEXE.h"
 #include "Error.h"
 #include "skse/skse_version.h"
+#include <string>
 
-static bool GetFileVersion(const char * path, VS_FIXEDFILEINFO * info)
+static bool GetFileVersion(const char * path, VS_FIXEDFILEINFO * info, std::string * outProductName)
 {
 	bool result = false;
 
@@ -30,6 +31,17 @@ static bool GetFileVersion(const char * path, VS_FIXEDFILEINFO * info)
 			{
 				_ERROR("VerQueryValue failed (%08X)", GetLastError());
 			}
+
+			if(outProductName)
+			{
+				// try to get the product name, failure is ok
+				char * productName = NULL;
+				UInt32 productNameLen = 0;
+				if(VerQueryValue(versionBuf, "\\StringFileInfo\\040904B0\\ProductName", (void **)&productName, (PUINT)&productNameLen) && productNameLen && productName)
+				{
+					*outProductName = productName;
+				}
+			}
 		}
 		else
 		{
@@ -42,10 +54,10 @@ static bool GetFileVersion(const char * path, VS_FIXEDFILEINFO * info)
 	return result;
 }
 
-static bool GetFileVersionNumber(const char * path, UInt64 * out)
+static bool GetFileVersionData(const char * path, UInt64 * out, std::string * outProductName)
 {
 	VS_FIXEDFILEINFO	versionInfo;
-	if(!GetFileVersion(path, &versionInfo))
+	if(!GetFileVersion(path, &versionInfo, outProductName))
 	{
 		return false;
 	}
@@ -305,16 +317,24 @@ bool ScanEXE(const char * path, ProcHookInfo * hookInfo)
 
 bool IdentifyEXE(const char * procName, bool isEditor, std::string * dllSuffix, ProcHookInfo * hookInfo)
 {
-	UInt64	version;
+	UInt64		version;
+	std::string	productName;
 
 	// check file version
-	if(!GetFileVersionNumber(procName, &version))
+	if(!GetFileVersionData(procName, &version, &productName))
 	{
 		PrintLoaderError("Couldn't retrieve EXE version information.");
 		return false;
 	}
 
 	_MESSAGE("version = %016I64X", version);
+	_MESSAGE("product name = %s", productName.c_str());
+
+	if(productName == "SKSE")
+	{
+		_MESSAGE("found an SKSE component");
+		return false;
+	}
 
 	// check protection type
 	if(!ScanEXE(procName, hookInfo))

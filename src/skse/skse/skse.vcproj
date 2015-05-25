@@ -363,11 +363,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusFormList.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusFormList.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusGame.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\PapyrusGame.h"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusGameData.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusGameData.h"
 					>
 				</File>
 				<File
@@ -547,6 +563,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PapyrusSpawnerTask.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusSpawnerTask.h"
+					>
+				</File>
+				<File
 					RelativePath=".\PapyrusSpell.cpp"
 					>
 				</File>
@@ -674,6 +698,14 @@
 			<Filter
 				Name="internals"
 				>
+				<File
+					RelativePath=".\PapyrusDelayFunctors.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\PapyrusDelayFunctors.h"
+					>
+				</File>
 				<File
 					RelativePath=".\PapyrusEvents.cpp"
 					>
@@ -936,11 +968,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Hooks_Data.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_Data.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Hooks_Debug.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Hooks_Debug.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_Diagnostics.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Hooks_Diagnostics.h"
 				>
 			</File>
 			<File
@@ -1139,6 +1187,14 @@
 		<Filter
 			Name="netimmerse"
 			>
+			<File
+				RelativePath=".\NiAdditionalGeometryData.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NiAdditionalGeometryData.h"
+				>
+			</File>
 			<File
 				RelativePath=".\NiControllers.cpp"
 				>

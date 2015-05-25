@@ -3,14 +3,14 @@
 class VMClassRegistry;
 class BGSSoundDescriptorForm;
 class TESFlora;
-class IngredientItem;
+class TESForm;
 
 namespace papyrusFlora
 {
 	void RegisterFuncs(VMClassRegistry* registry);
 
-	IngredientItem * GetIngredient(TESFlora* thisFlora);
-	void SetIngredient(TESFlora* thisFlora, IngredientItem* ingredient);
+	TESForm * GetIngredient(TESFlora* thisFlora);
+	void SetIngredient(TESFlora* thisFlora, TESForm* ingredient);
 
 	BGSSoundDescriptorForm * GetHarvestSound(TESFlora* thisFlora);
 	void SetHarvestSound(TESFlora* thisFlora, BGSSoundDescriptorForm * sound);

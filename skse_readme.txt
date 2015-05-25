@@ -1,4 +1,4 @@
-Skyrim Script Extender v1.7.2
+Skyrim Script Extender v1.7.3
 by Ian Patterson and Stephen Abel (ianpatt and behippo)
 Thanks to: Paul Connelly (scruggsywuggsy the ferret), gibbed, Purple Lunchbox, snakster
 
@@ -14,11 +14,9 @@ SKSE will support the latest version of Skyrim available on Steam, and _only_ th
 
 2. Copy the .pex files in Data\Scripts\ into the Data\Scripts\ folder of your installation. The .pex files are needed by all users of SKSE. 
 
-3. Copy the .psc files in Data\Scripts\Source\ into the Data\Scripts\Source\ folder of your installation. The .psc files are only needed if you have the CreationKit installed and intend to create or compile Papyrus scripts.
+3. If you create mods, copy the .psc files in Data\Scripts\Source\ into the Data\Scripts\Source\ folder of your installation. The .psc files are only needed if you have the CreationKit installed and intend to create or compile Papyrus scripts.
 
-4. Launch the game via running skse_loader.exe. Steam must be running before launching Skyrim.
-
-If you use a desktop shortcut to launch Skyrim normally, just update the shortcut to point to skse_loader.exe instead of TESV.exe or SkyrimLauncher.exe.
+4. Steam will automatically load SKSE if found. If you want more control over the launch process, you can keep using skse_loader.exe.
 
 [ Suggestions for Modders ]
 
@@ -61,6 +59,12 @@ If your mod requires SKSE, please provide a link to the main SKSE website <http:
 
 * Where did the log files go?
  - To support users on machines that don't have write access to the Program Files folder, they have been moved to the <My Documents>\My Games\Skyrim\SKSE\ folder.
+
+* Where is the skse.ini file?
+ - SKSE does not include one by default. Create an empty text file in <skyrim root>\Data\SKSE\ named skse.ini. Create the SKSE folder if it doesn't already exist.
+
+* How do I uninstall SKSE?
+ - Delete the .dll and .exe files starting with skse_ from your Skyrim folder.
 
 [ Contact the SKSE Team ]
 

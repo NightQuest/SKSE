@@ -17,6 +17,8 @@ EventDispatcher<TESDeathEvent>* g_deathEventDispatcher = (EventDispatcher<TESDea
 // TESFurnitureEvent																													0x012E4F00
 // TESGrabReleaseEvent																													0x012E4F30
 EventDispatcher<TESHitEvent>* g_hitEventDispatcher = (EventDispatcher<TESHitEvent>*) 0x012E4F60;
+EventDispatcher<TESInitScriptEvent>* g_initScriptEventDispatcher = (EventDispatcher<TESInitScriptEvent>*) 0x012E4F90;
+// TESInitScriptEvent
 // TESLoadGameEvent																														0x012E4FC0
 // TESLockChangedEvent																													0x012E4FF0
 // TESMagicEffectApplyEvent																												0x012E5020

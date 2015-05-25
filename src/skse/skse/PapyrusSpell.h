@@ -1,5 +1,7 @@
 #pragma once
 
+#include "PapyrusArgs.h"
+
 class SpellItem;
 class MagicItem;
 class BGSPerk;
@@ -44,4 +46,9 @@ namespace magicItemUtils {
 	void SetNthEffectMagnitude(MagicItem* thisMagic, UInt32 index, float value);
 	void SetNthEffectArea(MagicItem* thisMagic, UInt32 index, UInt32 value);
 	void SetNthEffectDuration(MagicItem* thisMagic, UInt32 index, UInt32 value);
+
+	VMResultArray<float> GetEffectMagnitudes(MagicItem* thisMagic);
+	VMResultArray<UInt32> GetEffectAreas(MagicItem* thisMagic);
+	VMResultArray<UInt32> GetEffectDurations(MagicItem* thisMagic);
+	VMResultArray<EffectSetting*> GetMagicEffects(MagicItem* thisMagic);
 }

@@ -12,6 +12,27 @@ const _LookupREFRObjectByHandle		LookupREFRObjectByHandle = (_LookupREFRObjectBy
 
 const UInt32 * g_invalidRefHandle = (UInt32*)0x01310630;
 
+const _MoveRefrToPosition MoveRefrToPosition = (_MoveRefrToPosition)0x90C9F0;
+const _PlaceAtMe_Native PlaceAtMe_Native = (_PlaceAtMe_Native)0x90D1D0;
+const _AddItem_Native AddItem_Native = (_AddItem_Native)0x908120;
+
+UInt32 GetOrCreateRefrHandle(TESObjectREFR* ref)
+{
+	if (ref == NULL)
+		return *g_invalidRefHandle;
+
+	ExtraReferenceHandle* xRefHandle = static_cast<ExtraReferenceHandle*>(ref->extraData.GetByType(kExtraData_ReferenceHandle));
+
+	UInt32 result = xRefHandle != NULL ?
+		xRefHandle->handle :
+		*g_invalidRefHandle;
+
+	if (result == *g_invalidRefHandle)
+		result = ref->CreateRefHandle();
+
+	return result;
+}
+
 UInt32 TESObjectREFR::CreateRefHandle(void)
 {
 	if (handleRefObject.GetRefCount() > 0)

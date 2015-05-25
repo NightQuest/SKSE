@@ -5,7 +5,9 @@
 #include "GameForms.h"
 #include "GameObjects.h"
 #include "GameReferences.h"
+#include "GameExtraData.h"
 #include "GameRTTI.h"
+#include "GameMenus.h"
 
 // Helpers
 double round(double r)
@@ -95,10 +97,12 @@ public:
 	FormListExtender::FormListExtender(GFxValue	* formArray, GFxMovieView * movie, bool bExtra, bool bRecursive) : m_array(formArray), m_movie(movie), m_bExtra(bExtra), m_bRecursive(bRecursive) { }
 	virtual bool Accept(TESForm * form)
 	{
-		GFxValue arrArg;
-		m_movie->CreateObject(&arrArg);
-		scaleformExtend::FormData(&arrArg, m_movie, form, m_bRecursive ? m_bExtra : false, m_bRecursive);
-		m_array->PushBack(&arrArg);
+		if(form) {
+			GFxValue arrArg;
+			m_movie->CreateObject(&arrArg);
+			scaleformExtend::FormData(&arrArg, m_movie, form, m_bRecursive ? m_bExtra : false, m_bRecursive);
+			m_array->PushBack(&arrArg);
+		}
 		return false;
 	};
 };
@@ -717,9 +721,9 @@ namespace scaleformExtend
 		scaleformExtend::FormListData(pFxVal, movieView, pForm, bExtra, bRecursive);
 	}
 
-	void InventoryData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerCharacter::ObjDesc * objDesc)
+	void InventoryData(GFxValue * pFxVal, GFxMovieView * movieView, InventoryEntryData * objDesc)
 	{
-		TESForm	* pForm = objDesc->form;
+		TESForm	* pForm = objDesc->type;
 
 		if(!pForm || !pFxVal || !pFxVal->IsObject())
 			return;
@@ -770,6 +774,129 @@ namespace scaleformExtend
 
 		default:
 			break;
+		}
+	}
+
+	// SkyUI currently uses the itemcard info in ItemMenus to retrieve this data.
+	// This should replace the hack in future menus.
+	void ItemInfoData(GFxValue* pFxVal, InventoryEntryData * pEntry)
+	{
+		if(!pFxVal || !pEntry || !pFxVal->IsObject())
+			return;
+
+		RegisterNumber(pFxVal, "value", (double)CALL_MEMBER_FN(pEntry,GetValue)());
+		RegisterNumber(pFxVal, "weight", GetFormWeight(pEntry->type));
+		RegisterNumber(pFxVal, "isStolen", ! CALL_MEMBER_FN(pEntry,IsOwnedBy)(*g_thePlayer, 1));
+	}
+
+	void CraftDisenchantData(GFxValue * pFxVal, GFxMovieView * movieView, InventoryEntryData * pEntry)
+	{
+		if(!pEntry || !pEntry->type || !pFxVal || !pFxVal->IsObject())
+			return;
+
+		EnchantmentItem* enchantment = NULL;
+
+		TESEnchantableForm * enchantable = DYNAMIC_CAST(pEntry->type, TESForm, TESEnchantableForm);
+		if (enchantable && enchantable->enchantment)
+		{
+			enchantment = enchantable->enchantment;
+		}
+		else if (pEntry->extendDataList)
+		{
+			for (ExtendDataList::Iterator it = pEntry->extendDataList->Begin(); !it.End(); ++it)
+			{
+				BaseExtraList * pExtraDataList = it.Get();
+
+				if (pExtraDataList)
+				{
+					ExtraEnchantment* extraEnchant = static_cast<ExtraEnchantment*>(pExtraDataList->GetByType(kExtraData_Enchantment));
+					if (extraEnchant)
+					{
+						enchantment = extraEnchant->enchant;
+						break;
+					}
+				}
+			}
+		}
+
+		if (enchantment)
+		{
+			RegisterUnmanagedString(pFxVal, "effectName", enchantment->fullName.name.data);
+		}
+	}
+
+	enum
+	{
+		kCustomAlchemyFlag_None = 0x0,
+		kCustomAlchemyFlag_Any = 0x1,
+		kCustomAlchemyFlag_Beneficial = 0x2,
+		kCustomAlchemyFlag_Harmful = 0x4,
+		kCustomAlchemyFlag_Other = 0x8
+	};
+
+	void AlchemyCategoryArgs(AlchemyEffectCategory* effectArray, GFxValue * args, UInt32 numArgs)
+	{
+		AlchemyEffectCategory* curEffect = effectArray;
+
+		// Replace the "flag" value (at offset 1) with a new value.
+		// Previously, flag was just an incrementing number 1 to N+1, no special cases.
+		// We can easily calculate this number in AS, so flag can be used for other things.
+
+		const UInt32 kStride = 3;
+		const UInt32 kFlagOffset = 1;
+
+		// Start at kStride, because [0 .. kStride-1] is the "INGREDIENTS" entry
+		for (UInt32 i=kStride + kFlagOffset; i<numArgs; i+=kStride)
+		{
+			TESForm* form = LookupFormByID(curEffect->formId);
+
+			UInt32 newFlag = kCustomAlchemyFlag_None;
+
+			EffectSetting * effect = DYNAMIC_CAST(form, TESForm, EffectSetting);
+			if (effect)
+			{
+				UInt32 archetype = effect->properties.archetype;
+				UInt32 bDetrimental = (effect->properties.flags & EffectSetting::Properties::kEffectType_Detrimental) != 0;
+
+				switch (archetype)
+				{
+				case EffectSetting::Properties::kArchetype_ValueMod:
+				case EffectSetting::Properties::kArchetype_DualValueMod:
+				case EffectSetting::Properties::kArchetype_PeakValueMod:
+				{
+					newFlag = bDetrimental ? kCustomAlchemyFlag_Harmful : kCustomAlchemyFlag_Beneficial;
+					break;
+				}
+				case EffectSetting::Properties::kArchetype_Absorb:
+				case EffectSetting::Properties::kArchetype_CureDisease:
+				case EffectSetting::Properties::kArchetype_Invisibility:
+				case EffectSetting::Properties::kArchetype_CureParalysis:
+				case EffectSetting::Properties::kArchetype_CureAddiction:
+				case EffectSetting::Properties::kArchetype_CurePoison:
+				case EffectSetting::Properties::kArchetype_Dispel:
+				{
+					newFlag = kCustomAlchemyFlag_Beneficial;
+					break;
+				}
+				case EffectSetting::Properties::kArchetype_Frenzy:
+				case EffectSetting::Properties::kArchetype_Calm:
+				case EffectSetting::Properties::kArchetype_Demoralize:
+				case EffectSetting::Properties::kArchetype_Paralysis:
+				{
+					newFlag = kCustomAlchemyFlag_Harmful;
+					break;
+				}
+				default:
+				{
+					newFlag = kCustomAlchemyFlag_Other;
+					break;
+				}
+				}
+			}
+			
+			args[i].SetNumber(newFlag);
+
+			curEffect++;
 		}
 	}
 }

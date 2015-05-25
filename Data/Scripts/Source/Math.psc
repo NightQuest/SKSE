@@ -39,7 +39,7 @@ float Function sqrt(float afValue) global native
 ; Calculates the tangent of the passed in value (in degrees)
 float Function tan(float afValue) global native
 
-; SKSE additions built 2014-12-23 07:36:08.038000 UTC
+; SKSE additions built 2015-05-24 00:46:48.937000 UTC
 int Function LeftShift(int value, int shiftBy) global native
 int Function RightShift(int value, int shiftBy) global native
 int Function LogicalAnd(int arg1, int arg2) global native

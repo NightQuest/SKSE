@@ -8,6 +8,7 @@
 #include "GameObjects.h"
 #include "GameReferences.h"
 #include "PapyrusEvents.h"
+#include "PapyrusDelayFunctors.h"
 #include "Serialization.h"
 //#ifdef _PPAPI
 #include <list>
@@ -66,6 +67,9 @@
 #include "PapyrusModEvent.h"
 #include "PapyrusWornObject.h"
 #include "PapyrusDefaultObjectManager.h"
+#include "PapyrusSpawnerTask.h"
+#include "PapyrusFormList.h"
+#include "PapyrusGameData.h"
 
 #ifdef PAPYRUS_CUSTOM_CLASS
 #include "PapyrusTintMask.h"
@@ -289,6 +293,15 @@ void RegisterPapyrusFunctions_Hook(VMClassRegistry ** registryPtr)
 	// Faction
 	papyrusFaction::RegisterFuncs(registry);
 
+	// PapyrusSpawnerTask
+	papyrusSpawnerTask::RegisterFuncs(registry);
+
+	// FormList
+	papyrusFormList::RegisterFuncs(registry);
+
+	// GameData
+	papyrusGameData::RegisterFuncs(registry);
+
 //#ifdef _PPAPI
 	// Plugins
 	for(PapyrusPluginList::iterator iter = s_pap_plugins.begin(); iter != s_pap_plugins.end(); ++iter)
@@ -321,9 +334,6 @@ void SkyrimVM::RevertGlobalData_Hook(void)
 	CALL_MEMBER_FN(this, RevertGlobalData_Internal)();
 
 	Serialization::HandleRevertGlobalData();
-
-	papyrusUICallback::RevertGlobalData();
-	papyrusModEvent::RevertGlobalData();
 }
 
 bool SkyrimVM::SaveGlobalData_Hook(void * handleReaderWriter, void * saveStorageWrapper)
@@ -338,6 +348,44 @@ bool SkyrimVM::LoadGlobalData_Hook(void * handleReaderWriter, void * loadStorage
 	bool success = CALL_MEMBER_FN(this, LoadRegSleepEventHandles_Internal)(handleReaderWriter, loadStorageWrapper);
 	Serialization::HandleLoadGlobalData();
 	return success;
+}
+
+// Only a single thread calls this at a time
+__int64 DelayFunctorQueue_Hook(float budget)
+{
+	SKSEDelayFunctorManagerInstance().OnPreTick();
+
+	LARGE_INTEGER startTime;
+	QueryPerformanceCounter(&startTime);
+
+	// Sharing budget with papyrus queue
+	SKSEDelayFunctorManagerInstance().OnTick(startTime.QuadPart, budget);
+
+	return startTime.QuadPart;
+}
+
+static const UInt32 kDFQueueHook_Base		= 0x008C7B90;
+static const UInt32 kDFQueueHook_Entry_retn = kDFQueueHook_Base + 0x0053;
+
+__declspec(naked) void DelayFunctorQueue_Entry(void)
+{
+	// Need timeBudget as parameter, so we push it before.
+	// Using cdecl because we replace one cdecl call with another.
+
+	__asm
+	{
+		push	ecx
+
+		mov		ecx, [ebp+14h]	// float timeBudgetMS
+		push	ecx
+
+		call	DelayFunctorQueue_Hook
+
+		add		esp, 4
+		pop		ecx
+
+		jmp		[kDFQueueHook_Entry_retn]
+	}
 }
 
 void Hooks_Papyrus_Init(void)
@@ -364,6 +412,8 @@ void Hooks_Papyrus_Commit(void)
 	WriteRelCall(0x008D69C0 + 0x01B9, GetFnAddr(&SkyrimVM::LoadGlobalData_Hook));
 
 //	SafeWrite32(0x01149B98 + 4 * 3, GetFnAddr(&VMClassLoader::Load_Hook));
+
+	WriteRelJump(kDFQueueHook_Base + 0x004E, (UInt32)DelayFunctorQueue_Entry);
 }
 
 bool VMClassLoader::Load_Hook(const char * name, VMClass * out)

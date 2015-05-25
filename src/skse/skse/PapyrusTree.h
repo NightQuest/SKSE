@@ -3,14 +3,14 @@
 class VMClassRegistry;
 class BGSSoundDescriptorForm;
 class TESObjectTREE;
-class IngredientItem;
+class TESForm;
 
 namespace papyrusTree
 {
 	void RegisterFuncs(VMClassRegistry* registry);
 
-	IngredientItem * GetIngredient(TESObjectTREE* thisTree);
-	void SetIngredient(TESObjectTREE* thisTree, IngredientItem* ingredient);
+	TESForm * GetIngredient(TESObjectTREE* thisTree);
+	void SetIngredient(TESObjectTREE* thisTree, TESForm* ingredient);
 
 	BGSSoundDescriptorForm * GetHarvestSound(TESObjectTREE* thisTree);
 	void SetHarvestSound(TESObjectTREE* thisTree, BGSSoundDescriptorForm * sound);

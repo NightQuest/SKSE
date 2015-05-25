@@ -68,6 +68,11 @@ namespace papyrusSpell
 			thisMagic->equipType.SetEquipSlot(slot);
 		}
 	}
+
+	VMResultArray<float> GetEffectMagnitudes(SpellItem* thisMagic) { return magicItemUtils::GetEffectMagnitudes(thisMagic); }
+	VMResultArray<UInt32> GetEffectAreas(SpellItem* thisMagic) { return magicItemUtils::GetEffectAreas(thisMagic); }
+	VMResultArray<UInt32> GetEffectDurations(SpellItem* thisMagic) { return magicItemUtils::GetEffectDurations(thisMagic); }
+	VMResultArray<EffectSetting*> GetMagicEffects(SpellItem* thisMagic) { return magicItemUtils::GetMagicEffects(thisMagic); }
 }
 
 namespace magicItemUtils
@@ -156,6 +161,63 @@ namespace magicItemUtils
 		MagicItem::EffectItem * pEI = CALL_MEMBER_FN(thisMagic, GetCostliestEffectItem)(5, false);
 		return pEI ? thisMagic->effectItemList.GetItemIndex(pEI) : 0;
 	}
+
+	VMResultArray<float> GetEffectMagnitudes(MagicItem* thisMagic)
+	{
+		VMResultArray<float> result;
+		for(UInt32 i = 0; i < thisMagic->effectItemList.count; i++)
+		{
+			MagicItem::EffectItem* pEI = NULL;
+			thisMagic->effectItemList.GetNthItem(i, pEI);
+			if(pEI)
+				result.push_back(pEI->magnitude);
+			else
+				result.push_back(0.0f);
+		}
+		return result;
+	}
+	VMResultArray<UInt32> GetEffectAreas(MagicItem* thisMagic)
+	{
+		VMResultArray<UInt32> result;
+		for(UInt32 i = 0; i < thisMagic->effectItemList.count; i++)
+		{
+			MagicItem::EffectItem* pEI = NULL;
+			thisMagic->effectItemList.GetNthItem(i, pEI);
+			if(pEI)
+				result.push_back(pEI->area);
+			else
+				result.push_back(0);
+		}
+		return result;
+	}
+	VMResultArray<UInt32> GetEffectDurations(MagicItem* thisMagic)
+	{
+		VMResultArray<UInt32> result;
+		for(UInt32 i = 0; i < thisMagic->effectItemList.count; i++)
+		{
+			MagicItem::EffectItem* pEI = NULL;
+			thisMagic->effectItemList.GetNthItem(i, pEI);
+			if(pEI)
+				result.push_back(pEI->duration);
+			else
+				result.push_back(0);
+		}
+		return result;
+	}
+	VMResultArray<EffectSetting*> GetMagicEffects(MagicItem* thisMagic)
+	{
+		VMResultArray<EffectSetting*> result;
+		for(UInt32 i = 0; i < thisMagic->effectItemList.count; i++)
+		{
+			MagicItem::EffectItem* pEI = NULL;
+			thisMagic->effectItemList.GetNthItem(i, pEI);
+			if(pEI)
+				result.push_back(pEI->mgef);
+			else
+				result.push_back(NULL);
+		}
+		return result;
+	}
 }
 
 #include "PapyrusVM.h"
@@ -210,6 +272,19 @@ void papyrusSpell::RegisterFuncs(VMClassRegistry* registry)
 	registry->RegisterFunction(
 		new NativeFunction1 <SpellItem, void, BGSEquipSlot*>("SetEquipType", "Spell", papyrusSpell::SetEquipType, registry));
 
+	// Array gets
+	registry->RegisterFunction(
+		new NativeFunction0 <SpellItem, VMResultArray<float>>("GetEffectMagnitudes", "Spell", papyrusSpell::GetEffectMagnitudes, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <SpellItem, VMResultArray<UInt32>>("GetEffectAreas", "Spell", papyrusSpell::GetEffectAreas, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <SpellItem, VMResultArray<UInt32>>("GetEffectDurations", "Spell", papyrusSpell::GetEffectDurations, registry));
+
+	registry->RegisterFunction(
+		new NativeFunction0 <SpellItem, VMResultArray<EffectSetting*>>("GetMagicEffects", "Spell", papyrusSpell::GetMagicEffects, registry));
+
 	registry->SetFunctionFlags("Spell", "GetCastTime", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Spell", "GetPerk", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Spell", "GetNumEffects", VMClassRegistry::kFunctionFlag_NoWait);
@@ -226,4 +301,9 @@ void papyrusSpell::RegisterFuncs(VMClassRegistry* registry)
 	registry->SetFunctionFlags("Spell", "SetNthEffectArea", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Spell", "SetNthEffectDuration", VMClassRegistry::kFunctionFlag_NoWait);
 	registry->SetFunctionFlags("Spell", "SetEquipType", VMClassRegistry::kFunctionFlag_NoWait);
+
+	registry->SetFunctionFlags("Spell", "GetEffectMagnitudes", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Spell", "GetEffectAreas", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Spell", "GetEffectDurations", VMClassRegistry::kFunctionFlag_NoWait);
+	registry->SetFunctionFlags("Spell", "GetMagicEffects", VMClassRegistry::kFunctionFlag_NoWait);
 }

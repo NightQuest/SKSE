@@ -19,7 +19,7 @@ namespace papyrusArmor
 	void ModArmorRating(TESObjectARMO* thisArmor, SInt32 modBy)
 	{
 		if (thisArmor) {
-			UInt32 nuAR = thisArmor->armorValTimes100 + (modBy * 100);
+			SInt32 nuAR = thisArmor->armorValTimes100 + (modBy * 100);
 			if (nuAR < 0)
 				nuAR = 0;
 			thisArmor->armorValTimes100 = nuAR;

@@ -165,6 +165,26 @@ UInt32 VMValue::GetUnmangledType(void)
 	return (type & 1) ? kType_Unk0B : kType_Identifier;
 }
 
+VMStackInfo* VMClassRegistry::GetStackInfo(UInt32 stackId)
+{
+	VMStackInfo* result = NULL;
+
+	stackLock.Lock();
+
+	VMStackTableItem* item = allStacks.Find(&stackId);
+
+	if (item != NULL &&
+		item->data != NULL &&
+		item->data->unkData != NULL)
+	{
+		result = item->data->unkData->stackInfo;
+	}	
+
+	stackLock.Release();
+
+	return result;
+}
+
 UInt32 SkyrimVM::ClearInvalidRegistrations(void)
 {
 	IObjectHandlePolicy * policy = m_classRegistry->GetHandlePolicy();
@@ -273,3 +293,44 @@ bool VMClassRegistry::CreateArrayVariable(VMValue * value, UInt32 size)
 
 	return ret;
 }*/
+
+#if 0
+
+bool DelayFunctor::Save(SaveStorageWrapper* stor)
+{
+	UInt8 type = GetTypeId();
+
+	// Types are hardcoded in vanilla
+	if (type >= 0x19)
+		return false;
+
+	if (stor->Write(1, &type) != 0)
+		return false;
+
+	UInt32 t = stackId;
+
+	if (stor->bByteSwap)
+		t = t; // todo
+
+	if (stor->Write(4, &t) != 0)
+		return false;
+
+	return true;
+}
+
+bool DelayFunctor::Load(LoadStorageWrapper* stor, void* unk2)
+{
+	UInt32 t;
+
+	if (stor->Read(4, &t) != 0)
+		return false;
+
+	if (stor->bByteSwap)
+		t = t; // todo
+
+	stackId = t;
+
+	return true;
+}
+
+#endif

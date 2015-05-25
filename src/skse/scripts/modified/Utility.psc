@@ -13,3 +13,10 @@ bool[] Function CreateBoolArray(int size, bool fill = false) global native
 string[] Function CreateStringArray(int size, string fill = "") global native
 Form[] Function CreateFormArray(int size, Form fill = None) global native
 Alias[] Function CreateAliasArray(int size, Alias fill = None) global native
+
+float[] Function ResizeFloatArray(float[] source, int size, float fill = 0.0) global native
+int[] Function ResizeIntArray(int[] source, int size, int fill = 0) global native
+bool[] Function ResizeBoolArray(bool[] source, int size, bool fill = false) global native
+string[] Function ResizeStringArray(string[] source, int size, string fill = "") global native
+Form[] Function ResizeFormArray(Form[] source, int size, Form fill = None) global native
+Alias[] Function ResizeAliasArray(Alias[] source, int size, Alias fill = None) global native

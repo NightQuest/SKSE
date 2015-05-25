@@ -241,7 +241,7 @@ Event OnStoryTrespass(ObjectReference akVictim, ObjectReference akTrespasser, \
 	Location akLocation, int aiCrime)
 EndEvent
 
-; SKSE additions built 2014-12-23 07:36:08.038000 UTC
+; SKSE additions built 2015-05-24 00:46:48.937000 UTC
 
 ; returns the quest with the specified editor id
 Quest Function GetQuest(string editorId) global native
@@ -260,3 +260,9 @@ Alias Function GetNthAlias(int index) native
 
 ; returns the alias associated with the quest by name
 Alias Function GetAliasByName(string name) native
+
+; returns the alias by AlisID
+Alias Function GetAliasById(int aliasId) native
+
+; Returns all the aliases of this quest
+Alias[] Function GetAliases() native

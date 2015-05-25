@@ -61,6 +61,8 @@ void TESForm::CopyFromEx(TESForm * rhsForm)
 	}
 }
 
+const _GetFormWeight GetFormWeight = (_GetFormWeight)0x00457EC0;
+
 UInt32 BGSListForm::GetSize()
 {
 	UInt32 totalSize = forms.count;
@@ -90,11 +92,38 @@ bool BGSListForm::Visit(BGSListForm::Visitor & visitor)
 			UInt32 formid = 0;
 			addedForms->GetNthItem(i, formid);
 			TESForm* childForm = LookupFormByID(formid);
-			if(childForm) {
-				if(visitor.Accept(childForm))
-					return true;
-			}
+			if(visitor.Accept(childForm))
+				return true;
 		}
+	}
+
+	return false;
+}
+
+// 005DEFA0 - 1.9.32
+bool TESPackage::IsExtraType()
+{
+	switch(type)
+	{
+	case kPackageType_Activate:
+	case kPackageType_Alarm:
+	case kPackageType_Flee:
+	case kPackageType_Trespass:
+	case kPackageType_Spectator:
+	case kPackageType_ReactToDead:
+	case kPackageType_DoNothing:
+	case kPackageType_InGameDialogue:
+	case kPackageType_Surface:
+	case kPackageType_AvoidPlayer:
+	case kPackageType_ReactToDestroyedObject:
+	case kPackageType_ReactToGrenadeOrMine:
+	case kPackageType_StealWarning:
+	case kPackageType_PickPocketWarning:
+	case kPackageType_MovementBlocked:
+	case kPackageType_Unk37:
+	case kPackageType_Unk38:
+		return true;
+		break;
 	}
 
 	return false;

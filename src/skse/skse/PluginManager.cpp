@@ -44,7 +44,8 @@ static const SKSEScaleformInterface g_SKSEScaleformInterface =
 {
 	SKSEScaleformInterface::kInterfaceVersion,
 
-	RegisterScaleformPlugin
+	RegisterScaleformPlugin,
+	RegisterScaleformInventory
 };
 
 #include "Hooks_Threads.h"

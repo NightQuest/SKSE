@@ -317,13 +317,19 @@ public:
 	tArray<BGSCollisionLayer*>	collisonLayers;
 	tArray<BGSColorForm*>		colors;
 	tArray<BGSReverbParameters*>	reverbParams;
-	UInt32 unks[0x0E]; // 03 Cell** 06 TESGlobal**
-	ModList							modList;
-	UInt32 moreunks[100];
+	UInt32 unks[0x0E]; // 03 Cell** 06 TESGlobal**		// 65C
+	ModList							modList;			// 694
+	UInt32 moreunks[100];								// A9C
 
 	const ModInfo* LookupModByName(const char* modName);
 	UInt8 GetModIndex(const char* modName);
+
+	MEMBER_FN_PREFIX(DataHandler);
+	DEFINE_MEMBER_FN(LoadScripts, UInt32, 0x0043D100);
+
+	UInt32 LoadScripts_Hook();
 };
+STATIC_ASSERT(offsetof(DataHandler, unks)  == 0x65C);
 
 // 58
 class BGSSaveLoadManager
@@ -762,7 +768,8 @@ public:
 	MEMBER_FN_PREFIX(PersistentFormManager);
 	DEFINE_MEMBER_FN(CreateOffensiveEnchantment, EnchantmentItem *, 0x00689D30, tArray<MagicItem::EffectItem> * effectArray);
 	DEFINE_MEMBER_FN(CreateDefensiveEnchantment, EnchantmentItem *, 0x00689D80, tArray<MagicItem::EffectItem> * effectArray);
-	DEFINE_MEMBER_FN(CreatePotion, void, 0x0068ACB0, AlchemyItem ** potion, tArray<MagicItem::EffectItem> * effectArray);
+	DEFINE_MEMBER_FN(CreatePoison, void, 0x0068AD00, tArray<MagicItem::EffectItem> * effectArray, AlchemyItem ** poison);
+	DEFINE_MEMBER_FN(CreatePotion, void, 0x0068ACB0, tArray<MagicItem::EffectItem> * effectArray, AlchemyItem ** potion);
 	//DEFINE_MEMBER_FN(AddPersistentForm, void, 0x0068A0F0, TESForm *);
 	DEFINE_MEMBER_FN(ScheduleForDeletion, void, 0x0068A1B0, TESForm *);
 };

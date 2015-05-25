@@ -821,7 +821,7 @@ Function ForceTargetAngle(float afXAngle = 0.0, float afYAngle = 0.0, float afZA
 Function ClearForcedMovement() native
 
 
-; SKSE additions built 2014-12-23 07:36:08.038000 UTC
+; SKSE additions built 2015-05-24 00:46:48.937000 UTC
 ; returns the form for the item worn at the specified slotMask
 ; use Armor.GetMaskForSlot() to generate appropriate slotMask
 Form Function GetWornForm(int slotMask) native
@@ -884,6 +884,9 @@ Function UpdateWeight(float neckDelta) native
 
 ; Returns whether the actors AI is enabled
 bool Function IsAIEnabled() native
+
+; Resets Actor AI
+Function ResetAI() native
 
 ; Returns whether the actor is currently swimming
 bool Function IsSwimming() native

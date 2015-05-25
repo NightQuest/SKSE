@@ -27,6 +27,8 @@ STATIC_ASSERT(RUNTIME_VERSION == RUNTIME_VERSION_1_9_32_0);
 #include "Hooks_Camera.h"
 #include "Hooks_Threads.h"
 #include "Hooks_Handlers.h"
+#include "Hooks_Data.h"
+#include "Hooks_Diagnostics.h"
 
 #else
 
@@ -98,12 +100,13 @@ void SKSE_Initialize(void)
 		Hooks_UI_Commit();
 		Hooks_Camera_Commit();
 		Hooks_NetImmerse_Commit();
-
+		Hooks_Data_Commit();
 		Hooks_SaveLoad_Commit();
 		Init_CoreSerialization_Callbacks();
 
 		Hooks_DirectInput_Commit();
 		Hooks_Event_Commit();
+		Hooks_Diagnostics_Commit();
 
 		FlushInstructionCache(GetCurrentProcess(), NULL, 0);
 

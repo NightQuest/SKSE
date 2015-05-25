@@ -5,6 +5,8 @@ class ActiveEffect;
 class GFxMovieView;
 class GFxValue;
 class BGSKeywordForm;
+class InventoryEntryData;
+struct AlchemyEffectCategory;
 
 #include "GameReferences.h"
 
@@ -23,5 +25,10 @@ namespace scaleformExtend
 	void FormListData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive);
 	void MiscData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive);
 	void FormData(GFxValue * pFxVal, GFxMovieView * movieView, TESForm * pForm, bool bExtra, bool bRecursive);
-	void InventoryData(GFxValue * pFxVal, GFxMovieView * movieView, PlayerCharacter::ObjDesc * objDesc);
+	void InventoryData(GFxValue * pFxVal, GFxMovieView * movieView, InventoryEntryData * objDesc);
+
+	void ItemInfoData(GFxValue* pFxVal, InventoryEntryData * pEntry);
+
+	void CraftDisenchantData(GFxValue * pFxVal, GFxMovieView * movieView, InventoryEntryData * pEntry);
+	void AlchemyCategoryArgs(AlchemyEffectCategory* effectArray, GFxValue * args, UInt32 numArgs);
 };

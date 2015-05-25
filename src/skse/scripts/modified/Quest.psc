@@ -16,3 +16,9 @@ Alias Function GetNthAlias(int index) native
 
 ; returns the alias associated with the quest by name
 Alias Function GetAliasByName(string name) native
+
+; returns the alias by AlisID
+Alias Function GetAliasById(int aliasId) native
+
+; Returns all the aliases of this quest
+Alias[] Function GetAliases() native

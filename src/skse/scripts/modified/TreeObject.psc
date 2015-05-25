@@ -3,5 +3,5 @@ Scriptname TreeObject extends Form Hidden
 SoundDescriptor Function GetHarvestSound() native
 Function SetHarvestSound(SoundDescriptor akSoundDescriptor) native
 
-Ingredient Function GetIngredient() native
-Function SetIngredient(Ingredient akIngredient) native
+Form Function GetIngredient() native
+Function SetIngredient(Form akIngredient) native

@@ -1,3 +1,29 @@
+1.7.3:
+- added SpawnerTask for batch PlaceAtMe with positioning (see SpawnerTask.psc for details)
+- fixed chance of ModEvent/UICallback instances failing if the game was saved+loaded between their creation and execution
+- added Spell.GetEffectMagnitudes/GetEffectAreas/GetEffectDurations/GetMagicEffects
+- added ObjectReference.GetContainerForms/GetReferenceAliases
+- added WornObject.GetReferenceAliases
+- added Form.GetKeywords
+- added StringUtil.Split
+- added Utility.ResizeArray
+- added Actor.ResetAI (similar to console function)
+- fixed ActorBase.GetIndexOf*
+- fixed Utility.CreateArray initialization with empty Forms/Aliases
+- added support for skse.ExtendData(true) to enchanting/alchemy/smithing/crafting menus
+- added Ingredient/Potion/Scroll/Spell.GetIsNthEffectKnown/Magnitudes/Areas/Durations/MagicEffects
+- added Quest.GetAliasById/GetAliases
+- fixed Armor.ModArmorRating to disallow underflow
+- added FormList.ToArray/AddForms
+- added experimental GameData functions
+- TreeObject and Flora accept general forms as produce
+- added diagnostic messages that help detecting the cause of common crashes or problems.
+	(1) Shows which masterfile is missing when the game CTDs on startup.
+	(2) Lists the missing files in the removed content dialog when loading a save.
+	Both are disabled by default; to enable them add this to \Data\SKSE\skse.ini:
+	[General]
+	EnableDiagnostics=1
+
 1.7.2:
 - renamed Tree -> TreeObject, avoids conflicts with vanilla scripts
 - container weight count takes stack size in to account

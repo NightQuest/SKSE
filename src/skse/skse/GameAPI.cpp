@@ -60,3 +60,10 @@ bool IsConsoleMode(void)
 {
 	return GetTLSData()->consoleMode != 0;
 }
+
+__int64 GetPerfCounter(void)
+{
+	LARGE_INTEGER li;
+	QueryPerformanceCounter(&li);
+	return li.QuadPart;
+}

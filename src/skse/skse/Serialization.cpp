@@ -8,6 +8,7 @@
 #include "GameData.h"
 #include "InternalSerialization.h"
 #include "GameSettings.h"
+#include "ScaleformCallbacks.h"
 
 namespace Serialization
 {
@@ -271,13 +272,36 @@ namespace Serialization
 		return length;
 	}
 
+	bool ResolveFormId(UInt32 formId, UInt32 * formIdOut)
+	{
+		UInt8	modID = formId >> 24;
+
+		if (modID == 0xFF)
+		{
+			*formIdOut = formId;
+			return true;
+		}
+
+		UInt8	loadedModID = ResolveModIndex(modID);
+
+		if (loadedModID == 0xFF) 
+			return false;
+
+		// fixup ID, success
+		*formIdOut = (formId & 0x00FFFFFF) | (((UInt32)loadedModID) << 24);
+
+		return true;
+	}
+
 	bool ResolveHandle(UInt64 handle, UInt64 * handleOut)
 	{
 		UInt8	modID = handle >> 24;
 
-		// should not have been saved anyway?
 		if (modID == 0xFF)
-			return false;
+		{
+			*handleOut = handle;
+			return true;
+		}
 
 		UInt8	loadedModID = ResolveModIndex(modID);
 
@@ -504,27 +528,147 @@ namespace Serialization
 	template <>
 	bool WriteData<BSFixedString>(SKSESerializationInterface * intfc, const BSFixedString * str)
 	{
-		UInt16 len = strlen(str->data);
-
-		if (! intfc->WriteRecordData(&len, sizeof(len)))
-			return false;
-		if (! intfc->WriteRecordData(str->data, len))
-			return false;
-		return true;
+		return WriteData<const char>(intfc, str->data);
 	}
 
 	template <>
 	bool ReadData<BSFixedString>(SKSESerializationInterface * intfc, BSFixedString * str)
 	{
-		char buf[256] = {0};
+		char buf[257] = { 0 };
 		UInt16 len = 0;
+
 		if (! intfc->ReadRecordData(&len, sizeof(len)))
 			return false;
+
+		if (len > 256)
+			return false;
+
 		if (! intfc->ReadRecordData(buf, len))
 			return false;
 
 		*str = BSFixedString(buf);
 		return true;
+	}
+
+	template <>
+	bool WriteData<std::string>(SKSESerializationInterface * intfc, const std::string * str)
+	{
+		UInt16 len = str->length();
+		if (len > 256)
+			return false;
+
+		if (! intfc->WriteRecordData(&len, sizeof(len)))
+			return false;
+		if (! intfc->WriteRecordData(str->data(), len))
+			return false;
+		return true;
+	}
+
+	template <>
+	bool ReadData<std::string>(SKSESerializationInterface * intfc, std::string * str)
+	{
+		char buf[257] = { 0 };
+		UInt16 len = 0;
+
+		if (! intfc->ReadRecordData(&len, sizeof(len)))
+			return false;
+
+		if (len > 256)
+			return false;
+
+		if (! intfc->ReadRecordData(buf, len))
+			return false;
+
+		*str = std::string(buf);
+		return true;
+	}
+
+	template <>
+	bool WriteData<const char>(SKSESerializationInterface * intfc, const char* str)
+	{
+		UInt16 len = strlen(str);
+		if (len > 256)
+			return false;
+
+		if (! intfc->WriteRecordData(&len, sizeof(len)))
+			return false;
+		if (! intfc->WriteRecordData(str, len))
+			return false;
+		return true;
+	}
+
+	template <>
+	bool WriteData<GFxValue>(SKSESerializationInterface* intfc, const GFxValue* val)
+	{
+		UInt32 type = val->GetType();
+		if (! WriteData(intfc, &type))
+			return false;
+
+		switch (type)
+		{
+		case GFxValue::kType_Bool:
+		{
+			bool t = val->GetBool();
+			return WriteData(intfc, &t);
+		}
+		case GFxValue::kType_Number:
+		{
+			double t = val->GetNumber();
+			return WriteData(intfc, &t);
+		}
+		case GFxValue::kType_String:
+		{
+			const char* t = val->GetString();
+			return WriteData(intfc, &t);
+		}
+		default:
+			// Unsupported
+			return false;
+		}
+
+		return false;
+	}
+
+	template <>
+	bool ReadData<GFxValue>(SKSESerializationInterface* intfc, GFxValue* val)
+	{
+		UInt32 type;
+		if (! ReadData(intfc, &type))
+			return false;
+
+		switch (type)
+		{
+		case GFxValue::kType_Bool:
+		{
+			bool t;
+			if (! ReadData(intfc, &t))
+				return false;
+			val->SetBool(t);
+			return true;
+		}
+		case GFxValue::kType_Number:
+		{
+			double t;
+			if (! ReadData(intfc, &t))
+				return false;
+			val->SetNumber(t);
+			return true;
+		}
+		case GFxValue::kType_String:
+		{
+			// As usual, using string cache to manage strings
+			BSFixedString t;
+			if (! ReadData(intfc, &t))
+				return false;
+			val->SetString(t.data);
+			return true;
+		}
+		default:
+			// Unsupported
+			return false;
+		}
+
+		return false;
 	}
 }
 
@@ -545,5 +689,6 @@ SKSESerializationInterface	g_SKSESerializationInterface =
 
 	Serialization::GetNextRecordInfo,
 	Serialization::ReadRecordData,
-	Serialization::ResolveHandle
+	Serialization::ResolveHandle,
+	Serialization::ResolveFormId
 };

@@ -17,6 +17,7 @@
 #include "GameReferences.h"
 #include "GameRTTI.h"
 #include "GameData.h"
+#include "GameExtraData.h"
 #include <new>
 #include <list>
 #include "PapyrusEvents.h"
@@ -39,6 +40,9 @@ struct ScaleformPluginInfo
 typedef std::list <ScaleformPluginInfo> PluginList;
 static PluginList s_plugins;
 
+typedef std::list <SKSEScaleformInterface::RegisterInventoryCallback> InventoryPluginList;
+static InventoryPluginList s_inventoryPlugins;
+
 bool RegisterScaleformPlugin(const char * name, SKSEScaleformInterface::RegisterCallback callback)
 {
 	// check for a name collision
@@ -59,6 +63,11 @@ bool RegisterScaleformPlugin(const char * name, SKSEScaleformInterface::Register
 	s_plugins.push_back(info);
 
 	return true;
+}
+
+void RegisterScaleformInventory(SKSEScaleformInterface::RegisterInventoryCallback callback)
+{
+	s_inventoryPlugins.push_back(callback);
 }
 
 //// commands
@@ -387,6 +396,21 @@ public:
 		bool bExtend = args->args[0].GetBool();
 		
 		s_bExtendData = bExtend;
+	}
+};
+
+static bool s_bExtendAlchemyCategories = false;
+
+class SKSEScaleform_ExtendAlchemyCategories : public GFxFunctionHandler
+{
+public:
+	virtual void	Invoke(Args* args)
+	{
+		ASSERT(args->numArgs >= 1);
+
+		bool bExtend = args->args[0].GetBool();
+		
+		s_bExtendAlchemyCategories = bExtend;
 	}
 };
 
@@ -1098,22 +1122,22 @@ public:
 	virtual bool			GetEnabled(void);
 
 //	void						** _vtbl;	// 00
-	PlayerCharacter::ObjDesc	* objDesc;	// 04
+	InventoryEntryData			* objDesc;	// 04
 	void						* unk08;	// 08
 	UInt32						unk0C;		// 0C
 	GFxValue					fxValue;	// 10
 
 	MEMBER_FN_PREFIX(StandardItemData);
-	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00842140, GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
+	DEFINE_MEMBER_FN(ctor_data, StandardItemData *, 0x00842140, GFxMovieView ** movieView, InventoryEntryData * objDesc, int unk);
 
 	enum { kCtorHookAddress = 0x008433B0 + 0x0049 };
 
-	StandardItemData * ctor_Hook(GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk);
+	StandardItemData * ctor_Hook(GFxMovieView ** movieView, InventoryEntryData * objDesc, int unk);
 };
 
 STATIC_ASSERT(sizeof(StandardItemData) == 0x20);
 
-StandardItemData * StandardItemData::ctor_Hook(GFxMovieView ** movieView, PlayerCharacter::ObjDesc * objDesc, int unk)
+StandardItemData * StandardItemData::ctor_Hook(GFxMovieView ** movieView, InventoryEntryData * objDesc, int unk)
 {
 	StandardItemData	* result = CALL_MEMBER_FN(this, ctor_data)(movieView, objDesc, unk);
 
@@ -1121,12 +1145,18 @@ StandardItemData * StandardItemData::ctor_Hook(GFxMovieView ** movieView, Player
 
 	if(s_bExtendData)
 	{
-		scaleformExtend::CommonItemData(&result->fxValue, objDesc->form);
-		scaleformExtend::StandardItemData(&result->fxValue, objDesc->form);
+		scaleformExtend::CommonItemData(&result->fxValue, objDesc->type);
+		scaleformExtend::StandardItemData(&result->fxValue, objDesc->type);
 		scaleformExtend::InventoryData(&result->fxValue, *movieView, objDesc);
 		// Calling this to set scrolls, potions, ingredients
 		// as this function is called for inventory, barter, container
-		scaleformExtend::MagicItemData(&result->fxValue, *movieView, objDesc->form, true, false);
+		scaleformExtend::MagicItemData(&result->fxValue, *movieView, objDesc->type, true, false);
+
+		for(InventoryPluginList::iterator iter = s_inventoryPlugins.begin(); iter != s_inventoryPlugins.end(); ++iter)
+		{
+			if(*iter)
+				(*iter)(*movieView, &result->fxValue, objDesc);
+		}
 	}
 
 	return result;
@@ -1187,20 +1217,26 @@ namespace favMenuDataHook
 		GFxValue		* entryList;	// 08
 	};
 
-	void __stdcall SetItemData(IMenu * menu, GFxValue * dataContainer, PlayerCharacter::ObjDesc * objDesc)
+	void __stdcall SetItemData(IMenu * menu, GFxValue * dataContainer, InventoryEntryData * objDesc)
 	{
 		if (s_bExtendData)
 		{
 			GFxMovieView * movieView = menu->view;
 
-			scaleformExtend::CommonItemData(dataContainer, objDesc->form);
-			scaleformExtend::StandardItemData(dataContainer, objDesc->form);
+			scaleformExtend::CommonItemData(dataContainer, objDesc->type);
+			scaleformExtend::StandardItemData(dataContainer, objDesc->type);
 			scaleformExtend::InventoryData(dataContainer, movieView, objDesc);
-			scaleformExtend::MagicItemData(dataContainer, movieView, objDesc->form, true, false);
+			scaleformExtend::MagicItemData(dataContainer, movieView, objDesc->type, true, false);
+
+			for(InventoryPluginList::iterator iter = s_inventoryPlugins.begin(); iter != s_inventoryPlugins.end(); ++iter)
+			{
+				if(*iter)
+					(*iter)(movieView, dataContainer, objDesc);
+			}
 
 			// itemId to uniquely identify items
 			const char* name = CALL_MEMBER_FN(objDesc, GenerateName)();
-			SInt32 itemId = (SInt32)HashUtil::CRC32(name, objDesc->form->formID & 0x00FFFFFF);
+			SInt32 itemId = (SInt32)HashUtil::CRC32(name, objDesc->type->formID & 0x00FFFFFF);
 			RegisterNumber(dataContainer, "itemId", itemId);
 		}
 	};
@@ -1333,6 +1369,222 @@ namespace favMenuDataHook
 	};
 }
 
+//// enchanting menu
+
+namespace enchantMenuDataHook
+{
+	static const UInt32 kSetData_Base = 0x0084E450;
+	static const UInt32 kSetData_retn = kSetData_Base + 0xA2;
+
+	__declspec(naked) void SetData_Entry(void)
+	{
+		__asm
+		{
+			// stack was prepared to call ItemChangeEntry::SetData
+			// add an extra parameter and call our function instead
+			push	edi
+			call	EnchantConstructMenu::ItemChangeEntry::SetData_Extended
+
+			jmp		[kSetData_retn]
+		}
+	};
+}
+
+void EnchantConstructMenu::CategoryListEntry::SetData_Extended(EnchantConstructMenu* subMenu, GFxValue* dataContainer)
+{
+	CALL_MEMBER_FN(this, SetData)(dataContainer);
+
+	if (!s_bExtendData)
+		return;
+
+	if (!subMenu)
+		return;
+
+	GFxMovieView* movieView = subMenu->view;
+
+	// Note: Unsafe casts due to missing RTTI data.
+	// Filterflag should indicate the correct type though.
+	switch (filterFlag)
+	{
+	case kFilterFlag_EnchantWeapon:
+	case kFilterFlag_DisenchantWeapon:
+	case kFilterFlag_EnchanteArmor:
+	case kFilterFlag_DisenchantArmor:
+	case kFilterFlag_SoulGem:
+	{
+		//ItemChangeEntry* entry = DYNAMIC_CAST(this, CategoryListEntry, ItemChangeEntry);
+		ItemChangeEntry* entry = reinterpret_cast<ItemChangeEntry*>(this);
+
+		if (entry && entry->data && entry->data->type)
+		{
+			InventoryEntryData*	data = entry->data;
+			scaleformExtend::CommonItemData(dataContainer, data->type);
+			scaleformExtend::ItemInfoData(dataContainer, data);
+			scaleformExtend::StandardItemData(dataContainer, data->type);
+			scaleformExtend::InventoryData(dataContainer, movieView, data);
+			scaleformExtend::MagicItemData(dataContainer, movieView, data->type, true, false);
+
+			scaleformExtend::CraftDisenchantData(dataContainer, movieView, data);
+
+			for(InventoryPluginList::iterator iter = s_inventoryPlugins.begin(); iter != s_inventoryPlugins.end(); ++iter)
+			{
+				if(*iter)
+					(*iter)(movieView, dataContainer, data);
+			}
+		}
+		break;
+	}
+	case kFilterFlag_EffectWeapon:
+	case kFilterFlag_EffectArmor:
+	{
+		//EnchantmentEntry* entry = DYNAMIC_CAST(this, CategoryListEntry, EnchantmentEntry);
+		EnchantmentEntry* entry = reinterpret_cast<EnchantmentEntry*>(this);
+
+		if (entry)
+		{
+			EnchantmentItem* data = entry->data;
+			scaleformExtend::CommonItemData(dataContainer, data);
+			scaleformExtend::MagicItemData(dataContainer, movieView, data, true, false);
+		}
+		break;
+	}
+	}
+}
+
+// smithing menu
+
+namespace smithingMenuDataHook
+{
+	static const UInt32 kSetData_Base = 0x00856C40;
+
+	typedef void (__cdecl * _SetData_Hooked)(GFxValue * dataContainer, InventoryEntryData ** pObjDesc, SmithingMenu * menu);
+	static const _SetData_Hooked SetData_Hooked = (_SetData_Hooked)0x00856650;
+
+	void SetData_Hook(GFxValue * dataContainer, InventoryEntryData ** pObjDesc, SmithingMenu * menu)
+	{
+		SetData_Hooked(dataContainer, pObjDesc, menu);
+
+		if (s_bExtendData && pObjDesc && menu && menu->view)
+		{
+			InventoryEntryData * objDesc = *pObjDesc;
+
+			scaleformExtend::CommonItemData(dataContainer, objDesc->type);
+			scaleformExtend::ItemInfoData(dataContainer, objDesc);
+			scaleformExtend::StandardItemData(dataContainer, objDesc->type);
+			scaleformExtend::InventoryData(dataContainer, menu->view, objDesc);
+			scaleformExtend::MagicItemData(dataContainer, menu->view, objDesc->type, true, false);
+
+			for(InventoryPluginList::iterator iter = s_inventoryPlugins.begin(); iter != s_inventoryPlugins.end(); ++iter)
+			{
+				if(*iter)
+					(*iter)(menu->view, dataContainer, objDesc);
+			}
+		}
+	}
+}
+
+// crafting menu
+
+namespace craftingMenuDataHook
+{
+	static const UInt32 kSetData_Base = 0x0084E130;
+
+	typedef void (__cdecl * _SetData_Hooked)(GFxValue * dataContainer, ConstructibleObjectMenu::EntryData * entry, ConstructibleObjectMenu * menu);
+	static const _SetData_Hooked SetData_Hooked = (_SetData_Hooked)0x0084CD40;
+
+	void SetData_Hook(GFxValue * dataContainer, ConstructibleObjectMenu::EntryData * entry, ConstructibleObjectMenu * menu)
+	{
+		SetData_Hooked(dataContainer, entry, menu);
+
+		if (s_bExtendData && entry && entry->object && menu && menu->view)
+		{
+			BGSConstructibleObject* object = entry->object;
+			TESForm* form = object->createdObject;
+
+			InventoryEntryData entryData(form, 0);
+
+			scaleformExtend::CommonItemData(dataContainer, form);
+			scaleformExtend::ItemInfoData(dataContainer, &entryData);
+			scaleformExtend::StandardItemData(dataContainer, form);
+			scaleformExtend::InventoryData(dataContainer, menu->view, &entryData);
+			scaleformExtend::MagicItemData(dataContainer, menu->view, form, true, false);
+
+			for(InventoryPluginList::iterator iter = s_inventoryPlugins.begin(); iter != s_inventoryPlugins.end(); ++iter)
+			{
+				if(*iter)
+					(*iter)(menu->view, dataContainer, &entryData);
+			}
+		}
+	}
+}
+
+// alchemy menu
+
+namespace alchemyMenuDataHook
+{
+	// Item data
+	static const UInt32 kSetData_Base = 0x0084E540;
+
+	typedef void (__cdecl * _SetData_Hooked)(GFxValue * dataContainer, AlchemyMenu::EntryData * entry, AlchemyMenu * menu);
+	static const _SetData_Hooked SetData_Hooked = (_SetData_Hooked)0x0084D560;
+
+	void SetData_Hook(GFxValue * dataContainer, AlchemyMenu::EntryData * entry, AlchemyMenu * menu)
+	{
+		SetData_Hooked(dataContainer, entry, menu);
+
+		if (s_bExtendData && entry && entry->data && menu && menu->view)
+		{
+			InventoryEntryData* entryData = entry->data;
+
+			scaleformExtend::CommonItemData(dataContainer, entryData->type);
+			scaleformExtend::ItemInfoData(dataContainer, entryData);
+			scaleformExtend::MagicItemData(dataContainer, menu->view, entryData->type, true, false);
+
+			for(InventoryPluginList::iterator iter = s_inventoryPlugins.begin(); iter != s_inventoryPlugins.end(); ++iter)
+			{
+				if(*iter)
+					(*iter)(menu->view, dataContainer, entryData);
+			}
+		}
+	}
+
+
+	// Category arguments 
+	// (note: this passes data in arguments to SetCategoriesList. makes it more difficult to extend)
+
+	static const UInt32 kExtendCategoryArgs_Base = 0x0084F7A0;
+	static const UInt32 kExtendCategoryArgs_retn = kExtendCategoryArgs_Base + 0x4F8;
+
+	class GFxInvokeHook
+	{
+	public:
+		// targetData is added parameter to signature of GFxValue Invoke
+		bool Invoke(AlchemyEffectCategory* effectArray, void * obj, GFxValue * result, const char * name, GFxValue * args, UInt32 numArgs, bool isDisplayObj)
+		{
+			if (s_bExtendAlchemyCategories)
+				scaleformExtend::AlchemyCategoryArgs(effectArray, args, numArgs);
+
+			// Call hooked func
+			GFxValue::ObjectInterface* p = reinterpret_cast<GFxValue::ObjectInterface*>(this);
+			return CALL_MEMBER_FN(p,Invoke)(obj, result, name, args, numArgs, isDisplayObj);
+		}	
+	};
+
+	__declspec(naked) void ExtendCategoryArgs_Entry(void)
+	{
+		__asm
+		{
+			mov     ebx, [esp + 0xD8 - 0x4C] // We need a pointer to the formId array
+			push    ebx
+			xor     ebx, ebx // was 0 before, restore old value
+
+			call    GFxInvokeHook::Invoke
+
+			jmp		[kExtendCategoryArgs_retn]
+		}
+	}
+}
+
 //// core hook
 void __stdcall InstallHooks(GFxMovieView * view)
 {
@@ -1364,6 +1616,7 @@ void __stdcall InstallHooks(GFxMovieView * view)
 	RegisterFunction <SKSEScaleform_OpenMenu>(&skse, view, "OpenMenu");
 	RegisterFunction <SKSEScaleform_CloseMenu>(&skse, view, "CloseMenu");
 	RegisterFunction <SKSEScaleform_ExtendData>(&skse, view, "ExtendData");
+	RegisterFunction <SKSEScaleform_ExtendAlchemyCategories>(&skse, view, "ExtendAlchemyCategories");
 	RegisterFunction <SKSEScaleform_ForceContainerCategorization>(&skse, view, "ForceContainerCategorization");
 	RegisterFunction <SKSEScaleform_SendModEvent>(&skse, view, "SendModEvent");
 	RegisterFunction <SKSEScaleform_RequestActivePlayerEffects>(&skse, view, "RequestActivePlayerEffects");
@@ -1460,6 +1713,14 @@ void Hooks_Scaleform_Commit(void)
 	WriteRelJump(favMenuDataHook::kSetItemData_Base + 0x96, (UInt32)favMenuDataHook::SetItemData_Entry);
 	WriteRelJump(favMenuDataHook::kSetMagicData_Base + 0x41, (UInt32)favMenuDataHook::SetMagicData_Entry);
 	WriteRelJump(favMenuDataHook::kSetVampireData_Base + 0x64, (UInt32)favMenuDataHook::SetVampireData_Entry);
+
+	// crafting menu data hooks
+	WriteRelJump(enchantMenuDataHook::kSetData_Base + 0x9D, (UInt32)enchantMenuDataHook::SetData_Entry);
+	WriteRelCall(smithingMenuDataHook::kSetData_Base + 0x9D, (UInt32)smithingMenuDataHook::SetData_Hook);
+	WriteRelCall(craftingMenuDataHook::kSetData_Base + 0x9D, (UInt32)craftingMenuDataHook::SetData_Hook);
+	WriteRelCall(alchemyMenuDataHook::kSetData_Base + 0xA0, (UInt32)alchemyMenuDataHook::SetData_Hook);
+
+	WriteRelJump(alchemyMenuDataHook::kExtendCategoryArgs_Base + 0x4F3, (UInt32)alchemyMenuDataHook::ExtendCategoryArgs_Entry);
 
 	// gfxloader creation hook
 	WriteRelCall(GFxLoader::kCtorHookAddress, GetFnAddr(&GFxLoader::ctor_Hook));
